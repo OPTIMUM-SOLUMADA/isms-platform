@@ -1,0 +1,229 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================================================================
+// DEPARTMENT
+// ===========================================================================================
+model Department {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
+  description String?
+
+  managerId String? @unique @db.ObjectId
+  manager   User?   @relation("ManagedDepartment", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  members   User[]  @relation("DepartmentMembers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("departments")
+}
+
+// ===========================================================================================
+// USERS MANAGEMENT AND ROLES
+// ===========================================================================================
+
+enum RoleType {
+  ADMIN
+  REVIEWER
+  VIEWER
+}
+
+model User {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  email        String    @unique
+  name         String?
+  role         RoleType  @default(VIEWER)
+  isActive     Boolean   @default(true)
+  lastLogin    DateTime?
+  ssoId        String?   @unique
+  passwordHash String?
+
+  departmentId String?     @db.ObjectId
+  department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict)
+  managedDept  Department? @relation("ManagedDepartment")
+
+  ownedDocuments    Document[]         @relation("DocumentOwner")
+  documentReviews   DocumentReview[]
+  documentApprovals DocumentApproval[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metadata Json?
+
+  @@index([email, isActive])
+  @@index([role])
+  @@map("users")
+}
+
+// ===========================================================================================
+// DOCUMENTS MANAGEMENT AND POLITICS
+// ===========================================================================================
+
+model Category {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  name            String     @unique
+  description     String?
+  isoClauseNumber String?
+  documents       Document[]
+
+  @@map("categories")
+}
+
+enum DocumentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  EXPIRED
+}
+
+model Document {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String?
+  fileUrl         String?
+  status          DocumentStatus @default(DRAFT)
+  nextReviewDate  DateTime? // Essentiel pour les alertes de révision
+  reviewFrequency Int? // Ajouté : Fréquence en mois (e.g. 12 pour annuel)
+
+  ownerId    String  @db.ObjectId
+  categoryId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner         User               @relation("DocumentOwner", fields: [ownerId], references: [id])
+  category      Category?          @relation(fields: [categoryId], references: [id])
+  versions      DocumentVersion[]
+  reviews       DocumentReview[]
+  approvals     DocumentApproval[]
+  // permissions  DocumentPermission[]
+  notifications Notification[]
+  auditlogs     AuditLog[]
+
+  @@index([title])
+  @@map("documents")
+}
+
+model DocumentVersion {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId    String   @db.ObjectId
+  versionNumber Int
+  comment       String?
+  createdAt     DateTime @default(now())
+  isCurrent     Boolean  @default(false) // optional: flag the latest version
+
+  document  Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approvals DocumentApproval[]
+
+  @@index([documentId, versionNumber])
+  @@map("document_versions")
+}
+
+// ===========================================================================================
+// REVIEWS SYSTEM, APPROVAL AND NOTIFICATIONS
+// ===========================================================================================
+
+// Ce modèle est plus robuste et inclut l'état de la révision et les commentaire
+model DocumentReview {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String    @db.ObjectId
+  reviewerId  String    @db.ObjectId
+  comment     String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  isApproved  Boolean? // Ajouté : Indique si le réviseur a approuvé
+  isCompleted Boolean   @default(false) // Ajouté : pour suivre si la tâche est terminée
+  reviewDate  DateTime? // Ajouté : La date à laquelle la révision a été effectuée
+
+  document Document @relation(fields: [documentId], references: [id])
+  reviewer User     @relation(fields: [reviewerId], references: [id])
+
+  @@index([documentId])
+  @@index([reviewerId])
+  @@map("document_reviews")
+}
+
+// Ce modèle est la piste d'audit des approbations.
+model DocumentApproval {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId String   @db.ObjectId
+  approverId String   @db.ObjectId
+  versionId  String   @db.ObjectId
+  approvedAt DateTime @default(now())
+
+  document Document        @relation(fields: [documentId], references: [id])
+  version  DocumentVersion @relation(fields: [versionId], references: [id])
+  approver User            @relation(fields: [approverId], references: [id])
+
+  @@unique([documentId, versionId, approverId])
+  @@map("document_approvals")
+}
+
+// Les notifications sont essentielles pour les rappels et les alertes.
+enum NotificationType {
+  REVIEW_NEEDED
+  REVIEW_OVERDUE
+  DOCUMENT_APPROVED
+  DOCUMENT_UPDATED
+}
+
+model Notification {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String           @db.ObjectId
+  type       NotificationType
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  documentId String?          @db.ObjectId // Ajouté : Pour lier la notification à un document
+  createdAt  DateTime         @default(now())
+
+  user     User      @relation(fields: [userId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id])
+
+  @@map("notifications")
+}
+
+// ===========================================================================================
+// AUDIT LOGS
+// ===========================================================================================
+
+enum AuditEventType {
+  DOCUMENT_UPLOAD
+  DOCUMENT_UPDATE
+  DOCUMENT_VERSION_CREATED
+  DOCUMENT_STATUS_CHANGE
+  DOCUMENT_REVIEW_SUBMITTED
+  USER_ROLE_CHANGE
+  ACCESS_LOG // Journal d'accès au document
+  EXPORT_LOGS // Exportation des journaux
+}
+
+model AuditLog {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String?        @db.ObjectId
+  eventType  AuditEventType
+  documentId String?        @db.ObjectId
+  details    Json? // Stocke les détails de l'événement (e.g. { oldStatus: 'DRAFT', newStatus: 'IN_REVIEW' })
+  timestamp  DateTime       @default(now())
+
+  user     User?     @relation(fields: [userId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id])
+
+  @@index([userId, documentId, eventType, timestamp])
+  @@map("audit_logs")
+}

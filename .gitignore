@@ -1,0 +1,22 @@
+# ====== Node.js (server) ======
+/server/node_modules
+/server/.env
+/server/dist
+/server/build
+/server/npm-debug.log*
+/server/yarn-debug.log*
+/server/yarn-error.log*
+
+# ====== React + Vite (client) ======
+/client/node_modules
+/client/dist
+/client/.env
+/client/.env.local
+/client/.env.*.local
+/client/npm-debug.log*
+/client/yarn-debug.log*
+/client/yarn-error.log*
+
+# ====== General ======
+.DS_Store
+*.log
