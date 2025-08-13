@@ -34,7 +34,9 @@ export const envSchema = z.object({
 
     // JWT
     JWT_ACCESS_SECRET: z.string().min(10, "JWT_ACCESS_SECRET must be at least 10 characters for security"),
-    JWT_ACCESS_EXPIRES_IN: z.string().default("1h"), // e.g. "1h", "7d"
+    JWT_ACCESS_EXPIRES_IN: z.string().default("1h"),
+    JWT_REFRESH_SECRET: z.string().min(10, "JWT_REFRESH_SECRET must be at least 10 characters for security"),
+    JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
     JWT_ISSUER: z.string().default(''),
 
     // Optional Email Config (if you want password reset)
@@ -50,6 +52,8 @@ const envServer = envSchema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
     JWT_ISSUER: process.env.JWT_ISSUER,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
     CORS_ORIGIN: process.env.CORS_ORIGIN,

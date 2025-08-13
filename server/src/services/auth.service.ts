@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 export class AuthService {
     private userService = new UserService();
 
-    async login(email: string, password: string) {
+    login = async (email: string, password: string) => {
         const user = await this.userService.findByEmail(email);
         if (!user || !user.passwordHash) return null;
 
@@ -20,7 +20,7 @@ export class AuthService {
     /**
      * Change user's password securely
      */
-    async changePassword(userId: string, newPassword: string) {
+    changePassword = async (userId: string, newPassword: string) => {
         const passwordHash = await hashPassword(newPassword);
         return this.userService.updateUser(userId, { passwordHash });
     }
