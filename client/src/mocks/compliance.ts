@@ -1,0 +1,172 @@
+import type { ComplianceClause } from "@/types";
+
+export const iso27001Clauses: ComplianceClause[] = [
+    {
+        id: 'a5',
+        clause: 'A.5',
+        title: 'Information Security Policies',
+        progress: 100,
+        status: 'compliant',
+        documents: 8,
+        lastReviewed: '2024-11-15',
+        nextReview: '2025-05-15',
+        owner: 'John Smith',
+        priority: 'high'
+    },
+    {
+        id: 'a6',
+        clause: 'A.6',
+        title: 'Organization of Information Security',
+        progress: 95,
+        status: 'compliant',
+        documents: 12,
+        lastReviewed: '2024-12-01',
+        nextReview: '2025-06-01',
+        owner: 'Sarah Johnson',
+        priority: 'high'
+    },
+    {
+        id: 'a7',
+        clause: 'A.7',
+        title: 'Human Resource Security',
+        progress: 88,
+        status: 'partial',
+        documents: 6,
+        lastReviewed: '2024-10-20',
+        nextReview: '2025-04-20',
+        owner: 'Mike Chen',
+        priority: 'medium'
+    },
+    {
+        id: 'a8',
+        clause: 'A.8',
+        title: 'Asset Management',
+        progress: 92,
+        status: 'compliant',
+        documents: 15,
+        lastReviewed: '2024-11-30',
+        nextReview: '2025-05-30',
+        owner: 'Emma Davis',
+        priority: 'high'
+    },
+    {
+        id: 'a9',
+        clause: 'A.9',
+        title: 'Access Control',
+        progress: 85,
+        status: 'partial',
+        documents: 18,
+        lastReviewed: '2024-12-10',
+        nextReview: '2025-06-10',
+        owner: 'David Wilson',
+        priority: 'high'
+    },
+    {
+        id: 'a10',
+        clause: 'A.10',
+        title: 'Cryptography',
+        progress: 78,
+        status: 'partial',
+        documents: 4,
+        lastReviewed: '2024-09-15',
+        nextReview: '2025-03-15',
+        owner: 'Alice Cooper',
+        priority: 'medium'
+    },
+    {
+        id: 'a11',
+        clause: 'A.11',
+        title: 'Physical and Environmental Security',
+        progress: 94,
+        status: 'compliant',
+        documents: 10,
+        lastReviewed: '2024-11-20',
+        nextReview: '2025-05-20',
+        owner: 'Bob Martinez',
+        priority: 'medium'
+    },
+    {
+        id: 'a12',
+        clause: 'A.12',
+        title: 'Operations Security',
+        progress: 91,
+        status: 'compliant',
+        documents: 22,
+        lastReviewed: '2024-12-05',
+        nextReview: '2025-06-05',
+        owner: 'Carol Lee',
+        priority: 'high'
+    },
+    {
+        id: 'a13',
+        clause: 'A.13',
+        title: 'Communications Security',
+        progress: 82,
+        status: 'partial',
+        documents: 8,
+        lastReviewed: '2024-10-10',
+        nextReview: '2025-04-10',
+        owner: 'David Wilson',
+        priority: 'medium'
+    },
+    {
+        id: 'a14',
+        clause: 'A.14',
+        title: 'System Acquisition, Development and Maintenance',
+        progress: 76,
+        status: 'partial',
+        documents: 14,
+        lastReviewed: '2024-09-25',
+        nextReview: '2025-03-25',
+        owner: 'Emma Davis',
+        priority: 'high'
+    },
+    {
+        id: 'a15',
+        clause: 'A.15',
+        title: 'Supplier Relationships',
+        progress: 68,
+        status: 'partial',
+        documents: 7,
+        lastReviewed: '2024-08-30',
+        nextReview: '2025-02-28',
+        owner: 'Mike Chen',
+        priority: 'medium'
+    },
+    {
+        id: 'a16',
+        clause: 'A.16',
+        title: 'Information Security Incident Management',
+        progress: 89,
+        status: 'partial',
+        documents: 9,
+        lastReviewed: '2024-11-10',
+        nextReview: '2025-05-10',
+        owner: 'Sarah Johnson',
+        priority: 'high'
+    },
+    {
+        id: 'a17',
+        clause: 'A.17',
+        title: 'Information Security Aspects of Business Continuity Management',
+        progress: 72,
+        status: 'partial',
+        documents: 6,
+        lastReviewed: '2024-09-05',
+        nextReview: '2025-03-05',
+        owner: 'John Smith',
+        priority: 'high'
+    },
+    {
+        id: 'a18',
+        clause: 'A.18',
+        title: 'Compliance',
+        progress: 96,
+        status: 'compliant',
+        documents: 11,
+        lastReviewed: '2024-12-01',
+        nextReview: '2025-06-01',
+        owner: 'Alice Cooper',
+        priority: 'high'
+    }
+];
