@@ -1,19 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import LoginForm, { type LoginFormData } from '@/templates/forms/LoginForm';
+import ForgotPasswordForm, { type ForgotPasswordFormData } from '@/templates/forms/ForgotPasswordForm';
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
     const navigate = useNavigate();
 
-    const handleFormSubmit = async (data: LoginFormData) => {
+    const handleFormSubmit = async (data: ForgotPasswordFormData) => {
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        localStorage.setItem("isAuthenticated", "true");
+        // localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("userEmail", data.email);
 
-        navigate("/dashboard");
+        navigate("/reset-password");
     };
 
     return (
@@ -34,7 +34,7 @@ export default function LoginPage() {
                 <Card className="shadow-lg border-0">
                     <CardHeader className="space-y-1 pb-6">
                         <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
-                            Sign In
+                            Reset password
                         </CardTitle>
                         <p className="text-sm text-gray-600 text-center">
                             Enter your credentials to access the ISMS portal
@@ -42,9 +42,8 @@ export default function LoginPage() {
                     </CardHeader>
                     <CardContent>
 
-                        <LoginForm
+                        <ForgotPasswordForm
                             onSubmit={handleFormSubmit}
-                            onForgotPassword={() => navigate("/forgot-password")}
                         />
 
                         {/* Demo Credentials */}
@@ -53,7 +52,7 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <div className="text-center mt-8 text-sm text-gray-500">
-                    <p>© 2025 ISMS SOLUMADA.</p>
+                    <p>© 2025 ISMS Portal. All rights reserved.</p>
                     <p className="mt-1">ISO 27001 Compliance Management System</p>
                 </div>
             </div>
