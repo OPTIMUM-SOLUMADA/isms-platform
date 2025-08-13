@@ -21,8 +21,8 @@ export class JwtService {
         const { passwordHash, ...rest } = user;
         return jwt.sign(
             { user: rest },
-            "refresghtoken",
-            { expiresIn: '7d' }
+            env.JWT_REFRESH_SECRET,
+            { expiresIn: env.JWT_REFRESH_EXPIRES_IN as any }
         )
     }
 
