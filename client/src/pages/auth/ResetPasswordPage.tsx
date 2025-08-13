@@ -3,7 +3,7 @@ import { Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LoginForm, { type LoginFormData } from '@/templates/forms/LoginForm';
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
     const navigate = useNavigate();
 
     const handleFormSubmit = async (data: LoginFormData) => {
@@ -13,7 +13,7 @@ export default function LoginPage() {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("userEmail", data.email);
 
-        navigate("/dashboard");
+        navigate("/reset-password");
     };
 
     return (
@@ -44,7 +44,6 @@ export default function LoginPage() {
 
                         <LoginForm
                             onSubmit={handleFormSubmit}
-                            onForgotPassword={() => navigate("/forgot-password")}
                         />
 
                         {/* Demo Credentials */}
@@ -53,7 +52,7 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <div className="text-center mt-8 text-sm text-gray-500">
-                    <p>© 2025 ISMS SOLUMADA.</p>
+                    <p>© 2025 ISMS Portal. All rights reserved.</p>
                     <p className="mt-1">ISO 27001 Compliance Management System</p>
                 </div>
             </div>
