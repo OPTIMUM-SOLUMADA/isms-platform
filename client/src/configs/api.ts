@@ -10,6 +10,7 @@ export const API_CONFIG = {
             REFRESH: '/auth/refresh',
             VERIFY: '/auth/verify',
             LOGOUT: '/auth/logout',
+            VERIFY_RESET_TOKEN: '/auth/verify-reset-token',
         },
         USERS: '/users',
     },

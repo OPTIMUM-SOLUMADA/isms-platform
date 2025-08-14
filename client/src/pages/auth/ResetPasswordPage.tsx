@@ -1,15 +1,76 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ResetPasswordForm, { type ResetFormData } from '@/templates/forms/ResetPasswordForm';
 import AuthLayout from '@/templates/layout/AuthLayout';
+import { useCallback, useEffect, useState } from 'react';
+import AuthService from '@/services/authService';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useChangePassword } from '@/hooks/queries/useAuth';
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get("token");
+    const [error, setError] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
 
-    const handleFormSubmit = async (data: ResetFormData) => {
-        console.log(data);
-        navigate("/login");
-    };
+    const { login } = useAuth();
+    const {
+        mutateAsync: changePassword,
+        isPending,
+        isError,
+        error: changePasswordError
+    } = useChangePassword();
+
+    useEffect(() => {
+        if (!token) return;
+
+        AuthService.verifyResetToken(token)
+            .then(res => {
+                setEmail(res.data.email);
+            }).catch(err => {
+                setError(err.response.data.error);
+            });
+
+    }, [token]);
+
+    const handleFormSubmit = useCallback(
+        async (formData: ResetFormData) => {
+            if (!email || !token) return;
+
+            try {
+                await changePassword({ resetToken: token, password: formData.password });
+
+                if (formData.keepSignedIn) {
+                    await login(email, formData.password);
+                } else {
+                    navigate("/login");
+                }
+            } catch (err) {
+                console.error("Change password failed:", err);
+            }
+        },
+        [email, token, changePassword, login, navigate]
+    );
+
+    if (error) return (
+        <AuthLayout>
+            <Card className="shadow-lg border-0">
+                <CardHeader className="space-y-1 pb-6">
+                    <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
+                        Error
+                    </CardTitle>
+                    <p className="text-sm text-gray-600 text-center my-4">
+                        {error}
+                    </p>
+                </CardHeader>
+                <CardContent className='flex'>
+                    <Button onClick={() => navigate("/login")} className='mx-auto'>Go back to login</Button>
+                </CardContent>
+            </Card>
+        </AuthLayout>
+    )
 
     return (
         <AuthLayout>
@@ -25,6 +86,8 @@ export default function ResetPasswordPage() {
                 <CardContent>
                     <ResetPasswordForm
                         onSubmit={handleFormSubmit}
+                        isPending={isPending}
+                        error={isError ? changePasswordError.response.data.error : null}
                     />
                 </CardContent>
             </Card>
