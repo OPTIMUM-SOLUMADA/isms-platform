@@ -1,36 +1,50 @@
 import { useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ForgotPasswordForm, { type ForgotPasswordFormData } from '@/templates/forms/ForgotPasswordForm';
+import AuthService from '@/services/authService';
+import { useState } from 'react';
+import AuthLayout from '@/templates/layout/AuthLayout';
+import { CheckCircle } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
+    const [isPending, setIsPending] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const [email, setEmail] = useState<string | null>(null);
 
     const handleFormSubmit = async (data: ForgotPasswordFormData) => {
-        // Simulate API call
-        // await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", data.email);
-
-        navigate("/reset-password");
+        setError(null);
+        setEmail(null)
+        setIsPending(true);
+        AuthService.resetPassword(data.email).then(res => {
+            console.log(res);
+            setEmail(data.email);
+            setIsSuccess(true);
+        }).catch(err => {
+            setError(err.response.data.error);
+        }).finally(() => {
+            setIsPending(false);
+        })
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="flex items-center justify-center mb-4">
-                        <div className="bg-green-600 p-3 rounded-full">
-                            <Shield className="h-8 w-8 text-white" />
-                        </div>
-                    </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">ISMS SOLUMADA</h1>
-                    <p className="text-gray-600">ISO 27001 Information Security Management System</p>
-                </div>
-
-                {/* Login Card */}
+        <AuthLayout>
+            {isSuccess ? (
+                <Card className="border-0 shadow-lg bg-green-50">
+                    <CardContent className="flex flex-col items-center gap-4 py-8">
+                        <CheckCircle className="w-12 h-12 text-green-600" />
+                        <h2 className="text-xl font-semibold text-green-800 text-center">
+                            Request Sent!
+                        </h2>
+                        <p className="text-center text-green-900">
+                            A password reset link has been sent to <strong>{email}</strong>.
+                            <br />
+                            Please check your inbox and follow the instructions to reset your password.
+                        </p>
+                    </CardContent>
+                </Card>
+            ) : (
                 <Card className="shadow-lg border-0">
                     <CardHeader className="space-y-1 pb-6">
                         <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
@@ -41,21 +55,15 @@ export default function ForgotPasswordPage() {
                         </p>
                     </CardHeader>
                     <CardContent>
-
                         <ForgotPasswordForm
                             onSubmit={handleFormSubmit}
+                            onClickBack={() => navigate("/login")}
+                            isPending={isPending}
+                            error={error}
                         />
-
-                        {/* Demo Credentials */}
                     </CardContent>
                 </Card>
-
-                {/* Footer */}
-                <div className="text-center mt-8 text-sm text-gray-500">
-                    <p>© 2025 ISMS Portal. All rights reserved.</p>
-                    <p className="mt-1">ISO 27001 Compliance Management System</p>
-                </div>
-            </div>
-        </div>
+            )}
+        </AuthLayout>
     );
 }
