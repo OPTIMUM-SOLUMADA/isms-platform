@@ -6,6 +6,7 @@ import { EmailService } from '@/services/email.service';
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import { hashPassword } from '@/utils/password';
+import jwt from 'jsonwebtoken';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -145,11 +146,13 @@ export class AuthController {
     }
 
     // update password
-    resetPassword = async (req: Request, res: Response) => {
+    changePassword = async (req: Request, res: Response) => {
         const { resetToken, password } = req.body;
         try {
+            console.log(resetToken)
             const decoded = await jwtService.verifyPasswordResetToken(resetToken);
 
+            console.log(decoded)
             // find user
             const user = await userService.findByEmail(decoded.user.email);
             if (!user) {
@@ -172,7 +175,44 @@ export class AuthController {
             res.status(200).json({ message: 'Password reset successfully' });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: (err as Error).message });
+            if (err instanceof jwt.TokenExpiredError) {
+                res.status(401).json({ error: "Reset token has expired" });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                res.status(401).json({ error: "Invalid reset token" });
+            } else {
+                res.status(500).json({ error: (err as Error).message });
+            }
+        }
+    }
+
+    // Verify password reset token
+    verifyPasswordResetToken = async (req: Request, res: Response) => {
+        const { resetToken } = req.body;
+        try {
+            const decoded = await jwtService.verifyPasswordResetToken(resetToken);
+
+            // find user
+            const user = await userService.findByEmail(decoded.user.email);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            if (user.passwordResetToken !== resetToken) {
+                res.status(400).json({ error: 'Link has expired' });
+                return;
+            }
+
+            res.status(200).json(decoded.user);
+        } catch (err) {
+            console.error("Error verifying password reset token:", err);
+            if (err instanceof jwt.TokenExpiredError) {
+                res.status(401).json({ error: "Reset token has expired" });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                res.status(401).json({ error: "Invalid reset token" });
+            } else {
+                res.status(500).json({ error: "Server error verifying token" });
+            }
         }
     }
 }

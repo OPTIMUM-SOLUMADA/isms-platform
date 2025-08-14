@@ -60,7 +60,7 @@ export const EmailTemplate = {
         </p>
         <p>If you didn't request this, you can safely ignore this email.</p>
         <div class="footer">
-            &copy; ${new Date().getFullYear()} Your Company Name. All rights reserved.
+            &copy; ${new Date().getFullYear()} Solumada. All rights reserved.
         </div>
         </div>
     </body>

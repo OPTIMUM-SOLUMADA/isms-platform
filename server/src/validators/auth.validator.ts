@@ -26,3 +26,9 @@ export const changePasswordSchema = Joi.object({
         "string.empty": "Reset token is required",
     })
 });
+
+export const verifyResetTokenSchema = Joi.object({
+    resetToken: Joi.string().required().messages({
+        "string.empty": "Reset token is required",
+    })
+});
