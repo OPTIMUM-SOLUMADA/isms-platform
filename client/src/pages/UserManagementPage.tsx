@@ -3,7 +3,6 @@ import {
   Users,
   UserPlus,
   Search,
-  Settings,
   Shield,
   Mail,
   Calendar,
@@ -39,14 +38,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { userRoleColors, userStatusColors } from '@/constants/color';
 import { users } from '@/mocks/user';
+import UserModal from '@/pages/user/UserModal'; // chemin à adapter selon ton projet
+import { User } from '@/types';
 
 export default function UserManagementPage() {
+  const [userList, setUserList] = useState(users);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDepartment, setFilterDepartment] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false); 
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = userList.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.department.toLowerCase().includes(searchTerm.toLowerCase());
@@ -64,13 +68,27 @@ export default function UserManagementPage() {
 
   const roleStats = {
     admin: users.filter(u => u.role === 'admin').length,
-    manager: users.filter(u => u.role === 'manager').length,
-    contributor: users.filter(u => u.role === 'contributor').length,
     reviewer: users.filter(u => u.role === 'reviewer').length,
     viewer: users.filter(u => u.role === 'viewer').length
   };
 
   const departments = [...new Set(users.map(u => u.department))];
+
+  const handleSaverUser = (newUser: User) => {
+    setUserList((prev) => {
+      const exists = prev.some(u => u.id === newUser.id);
+      if(exists){
+        return prev.map(u => u.id === newUser.id ? newUser : u);
+      }
+      return [...prev, newUser];
+    })
+  }
+  const handleDeleteUser = (userId: string) => {
+  if (window.confirm("Are you sure you want to delete this user?")) {
+    setUserList((prevUsers) => prevUsers.filter(u => u.id !== userId));
+  }
+};
+
 
   return (
     <div className="space-y-6">
@@ -80,14 +98,14 @@ export default function UserManagementPage() {
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-1">Manage user accounts, roles, and permissions</p>
         </div>
-        <Button className="flex items-center space-x-2">
+        <Button onClick={() => setShowAddModal(true)} className="flex items-center space-x-2">
           <UserPlus className="h-4 w-4" />
           <span>Add User</span>
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -96,7 +114,7 @@ export default function UserManagementPage() {
                 <p className="text-2xl font-bold">{users.length}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
-            </div>
+            </div> 
           </CardContent>
         </Card>
 
@@ -138,8 +156,6 @@ export default function UserManagementPage() {
                 <SelectContent>
                   <SelectItem value="all">All Roles</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="contributor">Contributor</SelectItem>
                   <SelectItem value="reviewer">Reviewer</SelectItem>
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>
@@ -247,15 +263,14 @@ export default function UserManagementPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setEditingUser(user)
+                        }}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit User
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Settings className="mr-2 h-4 w-4" />
-                          Permissions
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem className="text-red-600"
+                          onClick={() => handleDeleteUser(user.id)}>
                           <Trash2 className="mr-2 h-4 w-4" />
                           Delete User
                         </DropdownMenuItem>
@@ -275,12 +290,28 @@ export default function UserManagementPage() {
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
             <p className="text-gray-500 mb-4">Try adjusting your search criteria or filters</p>
-            <Button>
+            <Button onClick={() => setShowAddModal(true)}>
               <UserPlus className="h-4 w-4 mr-2" />
               Add New User
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {showAddModal && (
+        <UserModal onClose={() => setShowAddModal(false)} onSave = {handleSaverUser} />
+      )}
+
+      {editingUser && (
+        <UserModal 
+          user={editingUser} 
+          onClose={() => setEditingUser(null)} 
+          onSave = {(updatedUser) => {
+            setUserList((prevUsers) => 
+              prevUsers.map((user) => 
+                user.id === updatedUser.id ? updatedUser : user
+              ))
+          }} />
       )}
     </div>
   );
