@@ -34,7 +34,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           {/* Logo and close button */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
             <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-blue-600" />
+              <Shield className="h-8 w-8 text-green-600" />
               <span className="text-xl font-bold text-gray-900">ISMS Tool</span>
             </div>
             <button
@@ -61,19 +61,19 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   className={cn(
                     "w-full flex items-center px-3 py-3 text-left rounded-lg transition-colors duration-200",
                     isActive
-                      ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600"
+                      ? "bg-green-50 text-green-700 border-l-4 border-green-600"
                       : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   )}
                 >
                   <Icon className={cn(
                     "h-5 w-5 mr-3",
-                    isActive ? "text-blue-600" : "text-gray-500"
+                    isActive ? "text-green-600" : "text-gray-500"
                   )} />
                   <div className="flex-1">
                     <div className="font-medium">{item.label}</div>
                     <div className={cn(
                       "text-xs mt-0.5",
-                      isActive ? "text-blue-600" : "text-gray-500"
+                      isActive ? "text-green-600" : "text-gray-500"
                     )}>{item.description}</div>
                   </div>
                 </button>
