@@ -14,11 +14,11 @@ const AuthService = {
     verify: async () => {
         return axios.post(API.ENDPOINTS.AUTH.VERIFY);
     },
-    forgotPassword: async (email: string) => {
-        return axios.post(API.ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+    resetPassword: async (email: string) => {
+        return axios.post(API.ENDPOINTS.AUTH.RESET_PASSWORD, { email });
     },
-    resetPassword: async (token: string, password: string) => {
-        return axios.post(API.ENDPOINTS.AUTH.RESET_PASSWORD, { token, password });
+    changePassword: async (resetToken: string, password: string) => {
+        return axios.post(API.ENDPOINTS.AUTH.CHANGE_PASSWORD, { resetToken, password });
     },
 }
 

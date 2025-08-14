@@ -9,22 +9,35 @@ import { Input } from "@/components/ui/input";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-const resetSchema = z.object({
-    password: z.string().min(1, "Password is required"),
-    confirmPassword: z.string().min(1, "Password is required"),
-});
+const resetSchema = z
+    .object({
+        password: z
+            .string()
+            .min(8, "Password must be at least 8 characters long")
+            .regex(
+                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).*$/,
+                "Password must contain uppercase, lowercase, number, and special character"
+            ),
+        confirmPassword: z.string().min(1, "Please confirm your password"),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+export { resetSchema };
+
 
 export type ResetFormData = z.infer<typeof resetSchema>;
 
 
-interface LoginFormProps extends CustomFormProps<ResetFormData> {
+interface ResetPasswordProps extends CustomFormProps<ResetFormData> {
     onForgotPassword?: () => void;
 }
-export default function ResetPasswordPage({
+export default function ResetPasswordForm({
     isPending = false,
     onSubmit,
-    // onForgotPassword,
-}: LoginFormProps) {
+}: ResetPasswordProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<ResetFormData>({
@@ -38,8 +51,6 @@ export default function ResetPasswordPage({
     const {
         handleSubmit,
         formState: { isSubmitting },
-        // watch,
-        // setValue,
     } = form;
 
 
@@ -116,10 +127,10 @@ export default function ResetPasswordPage({
                     {isPending || isSubmitting ? (
                         <div className="flex items-center space-x-2 ">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Signing in...</span>
+                            <span>Updating password...</span>
                         </div>
                     ) : (
-                        "Sign In"
+                        "Submit"
                     )}
                 </Button>
             </form>

@@ -5,7 +5,7 @@ export const API_CONFIG = {
     ENDPOINTS: {
         AUTH: {
             LOGIN: '/auth/login',
-            FORGOT_PASSWORD: '/auth/forgot-password',
+            CHANGE_PASSWORD: '/auth/change-password',
             RESET_PASSWORD: '/auth/reset-password',
             REFRESH: '/auth/refresh',
             VERIFY: '/auth/verify',
