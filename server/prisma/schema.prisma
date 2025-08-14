@@ -56,6 +56,8 @@ model User {
   department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict)
   managedDept  Department? @relation("ManagedDepartment")
 
+  passwordResetToken String?
+
   ownedDocuments    Document[]         @relation("DocumentOwner")
   documentReviews   DocumentReview[]
   documentApprovals DocumentApproval[]

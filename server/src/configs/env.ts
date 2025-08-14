@@ -39,11 +39,14 @@ export const envSchema = z.object({
     JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
     JWT_ISSUER: z.string().default(''),
 
+    JWT_RESET_EXPIRES_IN: z.string().default("1h"),
+
     // Optional Email Config (if you want password reset)
     SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.string().transform(val => parseInt(val)).optional(),
+    SMTP_PORT: z.string().transform(val => parseInt(val)).optional().default(587),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
+    SMTP_SECURE: z.string().optional().default("false"),
 });
 
 const envServer = envSchema.safeParse({
@@ -55,6 +58,7 @@ const envServer = envSchema.safeParse({
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
     JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
     JWT_ISSUER: process.env.JWT_ISSUER,
+    JWT_RESET_EXPIRES_IN: process.env.JWT_RESET_EXPIRES_IN,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
     CORS_ORIGIN: process.env.CORS_ORIGIN,
     SESSION_SECRET: process.env.SESSION_SECRET,
@@ -62,6 +66,7 @@ const envServer = envSchema.safeParse({
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
+    SMTP_SECURE: process.env.SMTP_SECURE,
 });
 
 if (!envServer.success) {
