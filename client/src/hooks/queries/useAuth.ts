@@ -13,3 +13,7 @@ export const useLogout = () => useMutation({
 export const useVerify = () => useMutation({
     mutationFn: () => AuthService.verify(),
 });
+
+export const useChangePassword = () => useMutation({
+    mutationFn: (payload: { password: string, resetToken: string }) => AuthService.changePassword(payload.resetToken, payload.password),
+});

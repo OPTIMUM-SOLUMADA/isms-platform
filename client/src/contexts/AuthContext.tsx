@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import AuthService from '@/services/authService';
 import { User } from '@/types';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import axios from '@/lib/axios';
+import { env } from '@/configs/env';
 
 interface AuthContextType {
     user: User | null;
@@ -20,9 +23,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [token, setToken] = useLocalStorage<string | null>(env.ACCESS_TOKEN_KEY, null);
+
     const isAuthenticated = !!user;
 
     useEffect(() => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         AuthService.verify().then(res => {
             if (res.data) {
                 console.log('Checking auth status', res.data);
@@ -33,12 +39,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }).finally(() => {
             setIsLoading(false);
         });
-    }, []);
+    }, [token]);
 
     const login = useCallback(async (email: string, password: string): Promise<string | null> => {
         try {
             const res = await AuthService.login(email, password);
-            console.log(res.status)
             setUser(res.data);
             return null;
         } catch (err: any) {
@@ -53,6 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             await AuthService.logout();
             setUser(null);
+            setToken(null);
         } catch (error) {
             console.error('Logout error:', error);
         }

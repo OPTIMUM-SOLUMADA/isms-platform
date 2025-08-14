@@ -1,4 +1,5 @@
 import { API_CONFIG } from '@/configs/api';
+import { env } from '@/configs/env';
 import AuthService from '@/services/authService';
 import originalAxios, { AxiosError, AxiosRequestConfig } from 'axios';
 
@@ -7,7 +8,8 @@ const axios = originalAxios.create({
     withCredentials: true,
 });
 
-let accessToken: string | null = null;
+
+let accessToken: string | null = localStorage.getItem(env.ACCESS_TOKEN_KEY) || null;
 let isRefreshing = false;
 let failedQueue: ((token?: string) => void)[] = [];
 
@@ -23,7 +25,7 @@ axios.interceptors.response.use(
         const authHeader = response.headers["authorization"];
         if (authHeader?.startsWith("Bearer ")) {
             accessToken = authHeader.split(" ")[1];
-            axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+            localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
         }
 
         return response;
@@ -33,7 +35,7 @@ axios.interceptors.response.use(
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
         // Skip refresh for login request
-        if (originalRequest?.url?.includes("/login")) {
+        if (originalRequest?.url?.includes("/auth")) {
             return Promise.reject(error);
         }
 
@@ -61,6 +63,8 @@ axios.interceptors.response.use(
                 const newToken = response.headers["authorization"]?.split(" ")[1];
                 accessToken = newToken || null;
 
+                localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
+
                 // Update queued requests
                 processQueue(accessToken || undefined);
 
@@ -84,7 +88,7 @@ axios.interceptors.response.use(
 axios.interceptors.request.use((config) => {
     if (accessToken && config.headers) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
-        console.log(config.headers);
+        localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
     }
     return config;
 });

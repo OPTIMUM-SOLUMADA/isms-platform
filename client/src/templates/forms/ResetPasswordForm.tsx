@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const resetSchema = z
     .object({
@@ -19,6 +21,7 @@ const resetSchema = z
                 "Password must contain uppercase, lowercase, number, and special character"
             ),
         confirmPassword: z.string().min(1, "Please confirm your password"),
+        keepSignedIn: z.boolean().optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
@@ -37,6 +40,7 @@ interface ResetPasswordProps extends CustomFormProps<ResetFormData> {
 export default function ResetPasswordForm({
     isPending = false,
     onSubmit,
+    error,
 }: ResetPasswordProps) {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -44,13 +48,16 @@ export default function ResetPasswordForm({
         resolver: zodResolver(resetSchema),
         defaultValues: {
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            keepSignedIn: false
         },
     });
 
     const {
         handleSubmit,
         formState: { isSubmitting },
+        watch,
+        setValue
     } = form;
 
 
@@ -117,6 +124,21 @@ export default function ResetPasswordForm({
                         </FormItem>
                     )}
                 />
+
+                {/* Error */}
+                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+
+                <div className="flex items-center space-x-2 pb-4">
+                    <Checkbox
+                        id="keepSignedIn"
+                        checked={watch("keepSignedIn")}
+                        onCheckedChange={(checked) => setValue("keepSignedIn", checked as boolean)}
+                        className="h-5 w-5"
+                    />
+                    <Label htmlFor="keepSignedIn" className="text-sm text-gray-600">
+                        Keep me signed in
+                    </Label>
+                </div>
 
                 {/* Submit */}
                 <Button
