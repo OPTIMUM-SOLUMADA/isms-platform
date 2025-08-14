@@ -34,6 +34,18 @@ export class JwtService {
         return jwt.verify(token, env.JWT_REFRESH_SECRET) as Payload;
     }
 
+    generatePasswordResetToken(user: User) {
+        const { passwordHash, ...rest } = user;
+        return jwt.sign({ user: rest }, env.JWT_ACCESS_SECRET, {
+            expiresIn: env.JWT_RESET_EXPIRES_IN as any,
+            issuer: env.JWT_ISSUER
+        });
+    }
+
+    verifyPasswordResetToken = (token: string) => {
+        return jwt.verify(token, env.JWT_ACCESS_SECRET) as Payload;
+    }
+
     decode = (token: string) => {
         return jwt.decode(token);
     };

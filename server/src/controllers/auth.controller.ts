@@ -2,10 +2,15 @@ import { Request, Response } from 'express';
 import { AuthService } from '@/services/auth.service';
 import { JwtService } from '@/services/jwt.service';
 import { UserService } from '@/services/user.service';
+import { EmailService } from '@/services/email.service';
+import { EmailTemplate } from '@/configs/email-template';
+import { env } from '@/configs/env';
+import { hashPassword } from '@/utils/password';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
 const userService = new UserService();
+const emailService = new EmailService();
 
 export class AuthController {
     login = async (req: Request, res: Response) => {
@@ -104,5 +109,70 @@ export class AuthController {
         });
         res.status(200)
             .json({ message: 'Logged out successfully' });
+    }
+
+    // Request password reset link
+    requestPasswordReset = async (req: Request, res: Response) => {
+        const { email } = req.body;
+        try {
+            const user = await userService.findByEmail(email);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            const resetToken = await jwtService.generatePasswordResetToken(user);
+
+            // update user password reset token
+            await userService.updateUser(user.id, {
+                passwordResetToken: resetToken
+            });
+
+            await emailService.sendMail({
+                to: user.email!,
+                subject: "Reset Password",
+                html: EmailTemplate.resetPassword({
+                    username: user.name!,
+                    resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`
+                })
+            });
+
+            res.status(200).json({ message: 'Password reset email sent' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    // update password
+    resetPassword = async (req: Request, res: Response) => {
+        const { resetToken, password } = req.body;
+        try {
+            const decoded = await jwtService.verifyPasswordResetToken(resetToken);
+
+            // find user
+            const user = await userService.findByEmail(decoded.user.email);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            if (user.passwordResetToken !== resetToken) {
+                res.status(400).json({ error: 'Invalid or expired token' });
+                return;
+            }
+
+            const passwordHash = await hashPassword(password);
+            // update user password
+            await userService.updateUser(user.id, {
+                passwordResetToken: null,
+                passwordHash
+            });
+
+            res.status(200).json({ message: 'Password reset successfully' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: (err as Error).message });
+        }
     }
 }
