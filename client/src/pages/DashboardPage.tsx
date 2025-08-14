@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Users,
   Shield,
-  Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -18,23 +17,6 @@ import { complianceProgress, recentActivities, stats, upcomingDeadlines } from '
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Welcome back, John!</h1>
-        <p className="text-blue-100 mb-4">Here's your ISMS overview for today</p>
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => {
@@ -173,7 +155,7 @@ export default function DashboardPage() {
             </Button>
             <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
               <Users className="h-6 w-6" />
-              <span className="text-xs">Manage Users</span>
+              <span className="text-xs">Manage Users</span> 
             </Button>
             <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
               <Shield className="h-6 w-6" />

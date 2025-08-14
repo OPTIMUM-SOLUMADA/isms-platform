@@ -43,7 +43,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <Input
               type="search"
               placeholder="Search documents, policies..."
-              className="pl-10 w-80 bg-white border-gray-200 focus:border-blue-500"
+              className="pl-10 w-80 bg-white border-gray-200 focus:border-green-500"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
-                <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="h-8 w-8 bg-green-600 rounded-full flex items-center justify-center">
                   <User className="h-4 w-4 text-white" />
                 </div>
                 <div className="hidden md:block text-left">
