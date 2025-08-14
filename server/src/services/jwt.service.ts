@@ -30,6 +30,10 @@ export class JwtService {
         return jwt.verify(token, env.JWT_ACCESS_SECRET) as Payload;
     }
 
+    verifyRefreshToken = (token: string) => {
+        return jwt.verify(token, env.JWT_REFRESH_SECRET) as Payload;
+    }
+
     decode = (token: string) => {
         return jwt.decode(token);
     };

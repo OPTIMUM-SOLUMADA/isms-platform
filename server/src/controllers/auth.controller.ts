@@ -29,7 +29,7 @@ export class AuthController {
             // set cookie and header, then send json response
             res
                 .cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
-                .header('Authorization', accessToken)
+                .header('Authorization', `Bearer ${accessToken}`)
                 .json({
                     user: {
                         id: user.id,
@@ -47,26 +47,52 @@ export class AuthController {
     refresh = async (req: Request, res: Response) => {
         console.log('[AuthController] Refreshing token...');
         const refreshToken = req.cookies['refreshToken'];
-
         if (!refreshToken) {
             res.status(401).send('Access Denied. No refresh token provided.');
             return;
         }
 
         try {
-            const decoded = jwtService.verifyToken(refreshToken) as any;
+            const decoded = jwtService.verifyRefreshToken(refreshToken) as any;
             const user = await userService.findByEmail(decoded.user.email);
             if (!user) {
                 res.status(404).json({ user: 'User not found' });
             } else {
                 const accessToken = jwtService.generateAccessToken(user);
+                const { passwordHash, ...rest } = user;
                 // Exclude password
-                res.header('Authorization', accessToken)
-                    .send(user);
+                res.header('Authorization', `Bearer ${accessToken}`)
+                    .status(200)
+                    .send(rest);
             }
         } catch (error: any) {
             console.error(error);
             res.status(400).send('Invalid refresh token.');
+        }
+    }
+
+    // Verify JWT from Authorization header
+    verify = async (req: Request, res: Response) => {
+        try {
+            const authHeader = req.headers['authorization'];
+            console.log(authHeader);
+            if (!authHeader || !authHeader.startsWith("Bearer ")) {
+                res.status(401).json({ error: "No token provided or malformed header" });
+                return;
+            }
+
+            const accessToken = authHeader.split(' ')[1];
+            const decoded = jwtService.verifyToken(accessToken!);
+            const user = await userService.findByEmail(decoded.user.email);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+            res.json(user);
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Invalid or expired token" });
         }
     }
 
