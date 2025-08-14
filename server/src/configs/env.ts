@@ -34,14 +34,19 @@ export const envSchema = z.object({
 
     // JWT
     JWT_ACCESS_SECRET: z.string().min(10, "JWT_ACCESS_SECRET must be at least 10 characters for security"),
-    JWT_ACCESS_EXPIRES_IN: z.string().default("1h"), // e.g. "1h", "7d"
+    JWT_ACCESS_EXPIRES_IN: z.string().default("1h"),
+    JWT_REFRESH_SECRET: z.string().min(10, "JWT_REFRESH_SECRET must be at least 10 characters for security"),
+    JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
     JWT_ISSUER: z.string().default(''),
+
+    JWT_RESET_EXPIRES_IN: z.string().default("1h"),
 
     // Optional Email Config (if you want password reset)
     SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.string().transform(val => parseInt(val)).optional(),
+    SMTP_PORT: z.string().transform(val => parseInt(val)).optional().default(587),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
+    SMTP_SECURE: z.string().optional().default("false"),
 });
 
 const envServer = envSchema.safeParse({
@@ -50,7 +55,10 @@ const envServer = envSchema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
     JWT_ISSUER: process.env.JWT_ISSUER,
+    JWT_RESET_EXPIRES_IN: process.env.JWT_RESET_EXPIRES_IN,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
     CORS_ORIGIN: process.env.CORS_ORIGIN,
     SESSION_SECRET: process.env.SESSION_SECRET,
@@ -58,6 +66,7 @@ const envServer = envSchema.safeParse({
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
+    SMTP_SECURE: process.env.SMTP_SECURE,
 });
 
 if (!envServer.success) {

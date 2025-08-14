@@ -27,14 +27,15 @@ export default function LoginForm({
     isPending = false,
     onSubmit,
     onForgotPassword,
+    error
 }: LoginFormProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: "",
-            password: "",
+            email: "njatotianafiononana@gmail.com",
+            password: "njato007",
             rememberMe: false
         },
     });
@@ -102,6 +103,9 @@ export default function LoginForm({
                         </FormItem>
                     )}
                 />
+
+                {/* Error */}
+                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
                 {/* Remember Me */}
                 <div className="flex items-center justify-between">

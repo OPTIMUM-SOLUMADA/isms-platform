@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CustomFormProps } from "@/types";
-import { Mail } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const passwordSchema = z.object({
@@ -16,11 +16,13 @@ export type ForgotPasswordFormData = z.infer<typeof passwordSchema>;
 
 
 interface ForgotPasswrodFormProps extends CustomFormProps<ForgotPasswordFormData> {
-    onForgotPassword?: () => void;
+    onClickBack?: () => void
 }
 export default function ForgotPasswordPage({
     isPending = false,
+    onClickBack,
     onSubmit,
+    error,
 }: ForgotPasswrodFormProps) {
 
     const form = useForm<ForgotPasswordFormData>({
@@ -62,21 +64,33 @@ export default function ForgotPasswordPage({
                     )}
                 />
 
+                {/* Error */}
+                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+
                 {/* Submit */}
-                <Button
-                    type="submit"
-                    className="w-full h-11  text-white font-medium bg-green-600 hover:bg-green-700"
-                    disabled={isPending || isSubmitting}
-                >
-                    {isPending || isSubmitting ? (
-                        <div className="flex items-center space-x-2 ">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Signing in...</span>
-                        </div>
-                    ) : (
-                        "Reset"
-                    )}
-                </Button>
+                <div className="flex items-center justify-between gap-2">
+                    <Button
+                        type="button"
+                        className="w-fit h-11 text-slate-800 font-medium bg-gray-200 hover:bg-gray-300 border border-gray-300"
+                        onClick={onClickBack}
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    </Button>
+                    <Button
+                        type="submit"
+                        className="w-full h-11  text-white font-medium bg-green-600 hover:bg-green-700"
+                        disabled={isPending || isSubmitting}
+                    >
+                        {isPending || isSubmitting ? (
+                            <div className="flex items-center space-x-2 ">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>Requesting...</span>
+                            </div>
+                        ) : (
+                            "Request link"
+                        )}
+                    </Button>
+                </div>
             </form>
         </Form>
     );
