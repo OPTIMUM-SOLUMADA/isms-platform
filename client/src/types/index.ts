@@ -77,4 +77,5 @@ export interface CustomFormProps<T> {
     onCancel?: () => void;
     onSubmit: (data: T) => void;
     isPending?: boolean;
+    error?: string | null;
 }

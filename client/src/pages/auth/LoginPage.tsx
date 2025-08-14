@@ -2,18 +2,21 @@ import { useNavigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LoginForm, { type LoginFormData } from '@/templates/forms/LoginForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const [isLoginPending, setIsLoginPending] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const { login } = useAuth();
 
     const handleFormSubmit = async (data: LoginFormData) => {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", data.email);
-
-        navigate("/dashboard");
+        setError(null);
+        setIsLoginPending(true);
+        const error = await login(data.email, data.password);
+        setError(error);
+        setIsLoginPending(false);
     };
 
     return (
@@ -41,13 +44,12 @@ export default function LoginPage() {
                         </p>
                     </CardHeader>
                     <CardContent>
-
                         <LoginForm
                             onSubmit={handleFormSubmit}
                             onForgotPassword={() => navigate("/forgot-password")}
+                            error={error}
+                            isPending={isLoginPending}
                         />
-
-                        {/* Demo Credentials */}
                     </CardContent>
                 </Card>
 
