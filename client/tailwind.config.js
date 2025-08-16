@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
@@ -15,6 +17,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        theme: 'hsl(var(--theme))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -80,5 +83,23 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    plugin(function ({ addComponents }) {
+      addComponents({
+        ".btn": {
+          "@apply w-fit !h-11": {},
+        },
+        ".btn-sm": {
+          "@apply w-fit !h-8": {},
+        },
+        ".btn-lg": {
+          "@apply w-fit !h-12": {},
+        },
+        ".btn-block": {
+          "@apply !w-full": {},
+        },
+      })
+    })
+  ],
 };

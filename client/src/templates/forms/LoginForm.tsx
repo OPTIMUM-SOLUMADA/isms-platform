@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import ErrorField from "@/components/ui/error-field";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -105,7 +106,7 @@ export default function LoginForm({
                 />
 
                 {/* Error */}
-                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                <ErrorField value={error} />
 
                 {/* Remember Me */}
                 <div className="flex items-center justify-between">
@@ -129,20 +130,14 @@ export default function LoginForm({
                 </div>
 
                 {/* Submit */}
-                <Button
+                <LoadingButton
                     type="submit"
-                    className="w-full h-11  text-white font-medium bg-green-600 hover:bg-green-700"
-                    disabled={isPending || isSubmitting}
+                    className="w-full btn"
+                    isLoading={isPending || isSubmitting}
+                    loadingText="Signing in..."
                 >
-                    {isPending || isSubmitting ? (
-                        <div className="flex items-center space-x-2 ">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Signing in...</span>
-                        </div>
-                    ) : (
-                        "Sign In"
-                    )}
-                </Button>
+                    Sign In
+                </LoadingButton>
             </form>
         </Form>
     );

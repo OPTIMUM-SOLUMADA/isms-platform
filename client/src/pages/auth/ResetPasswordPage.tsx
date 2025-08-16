@@ -12,14 +12,13 @@ export default function ResetPasswordPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-    const [error, setError] = useState<string | null>(null);
+    const [tokenError, setTokenError] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
 
-    const { login } = useAuth();
+    const { login, error: loginError } = useAuth();
     const {
         mutateAsync: changePassword,
         isPending,
-        isError,
         error: changePasswordError
     } = useChangePassword();
 
@@ -30,7 +29,7 @@ export default function ResetPasswordPage() {
             .then(res => {
                 setEmail(res.data.email);
             }).catch(err => {
-                setError(err.response.data.error);
+                setTokenError(err.response.data.error);
             });
 
     }, [token]);
@@ -43,7 +42,10 @@ export default function ResetPasswordPage() {
                 await changePassword({ resetToken: token, password: formData.password });
 
                 if (formData.keepSignedIn) {
-                    await login(email, formData.password);
+                    await login({
+                        email: email,
+                        password: formData.password
+                    });
                 } else {
                     navigate("/login");
                 }
@@ -54,15 +56,15 @@ export default function ResetPasswordPage() {
         [email, token, changePassword, login, navigate]
     );
 
-    if (error) return (
+    if (tokenError) return (
         <AuthLayout>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg">
                 <CardHeader className="space-y-1 pb-6">
                     <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
                         Error
                     </CardTitle>
                     <p className="text-sm text-gray-600 text-center my-4">
-                        {error}
+                        {tokenError}
                     </p>
                 </CardHeader>
                 <CardContent className='flex'>
@@ -74,7 +76,7 @@ export default function ResetPasswordPage() {
 
     return (
         <AuthLayout>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg">
                 <CardHeader className="space-y-1 pb-6">
                     <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
                         Change your password
@@ -87,7 +89,7 @@ export default function ResetPasswordPage() {
                     <ResetPasswordForm
                         onSubmit={handleFormSubmit}
                         isPending={isPending}
-                        error={isError ? changePasswordError.response.data.error : null}
+                        error={changePasswordError?.response?.data.error || loginError}
                     />
                 </CardContent>
             </Card>

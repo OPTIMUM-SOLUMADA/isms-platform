@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
     return (
         <AuthLayout>
             {isSuccess ? (
-                <Card className="border-0 shadow-lg bg-green-50">
+                <Card className="shadow-lg bg-green-50">
                     <CardContent className="flex flex-col items-center gap-4 py-8">
                         <CheckCircle className="w-12 h-12 text-green-600" />
                         <h2 className="text-xl font-semibold text-green-800 text-center">
@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <Card className="shadow-lg border-0">
+                <Card className="shadow-lg">
                     <CardHeader className="space-y-1 pb-6">
                         <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
                             Reset password

@@ -15,6 +15,17 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* --bits-gradients-checkoutIridescentBgLight:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.00) 0%, #FFF 50.81%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.80) 100%),
+    linear-gradient(66deg, #7491FF 14.55%, #FF90E0 42.56%, #616161 73.53%); */
+  --bits-gradients-checkoutIridescentBgLight:
+    linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #FFF 50.81%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.80) 100%),
+    linear-gradient(66deg, #6FCF97 14.55%, #56CCF2 42.56%, #FF90E0 73.53%);
+
+
 }
 
 a {
@@ -22,12 +33,14 @@ a {
   color: #56c45a;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #4caf50;
 }
 
 @layer base {
   :root {
+    --theme: 124 32% 45%;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -54,6 +67,7 @@ a:hover {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -86,7 +100,9 @@ a:hover {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-image: var(--bits-gradients-checkoutIridescentBgLight);
+    @apply text-foreground;
   }
 }

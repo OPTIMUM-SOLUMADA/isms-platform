@@ -1,16 +1,25 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '@/services/authService';
 import { User } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import axios from '@/lib/axios';
 import { env } from '@/configs/env';
+import { useMutation } from '@tanstack/react-query';
+import type { ApiAxiosError } from '@/types/api';
+
+export type LoginCredentials = {
+    email: string;
+    password: string;
+}
 
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (email: string, password: string) => Promise<string | null>;
+    isLoggingIn: boolean;
+    login: (data: LoginCredentials) => Promise<void>;
     logout: () => Promise<void>;
+    error?: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,35 +50,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
     }, [token]);
 
-    const login = useCallback(async (email: string, password: string): Promise<string | null> => {
-        try {
-            const res = await AuthService.login(email, password);
+    const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
+        mutationFn: async (credentials) => AuthService.login(
+            credentials.email,
+            credentials.password
+        ),
+        onSuccess: (res) => {
             setUser(res.data);
-            return null;
-        } catch (err: any) {
-            // Handle API error message
-            const errorMessage = err.response?.data?.error || "Login failed. Please try again.";
-            console.log(errorMessage)
-            return errorMessage;
         }
-    }, []);
+    });
 
-    const logout = async (): Promise<void> => {
-        try {
-            await AuthService.logout();
-            setUser(null);
+    const logoutMutation = useMutation<any, ApiAxiosError, void>({
+        mutationFn: async () => AuthService.logout(),
+        onSuccess: () => {
             setToken(null);
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    };
+            setUser(null);
+        },
+    });
 
     const value: AuthContextType = {
         user,
         isAuthenticated,
         isLoading: isLoading,
-        login,
-        logout,
+        isLoggingIn: loginMutation.isPending,
+        error: loginMutation.error?.response?.data?.error,
+        login: loginMutation.mutateAsync,
+        logout: logoutMutation.mutateAsync,
     };
 
     return (

@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import ErrorField from "@/components/ui/error-field";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 const resetSchema = z
     .object({
@@ -126,7 +127,7 @@ export default function ResetPasswordForm({
                 />
 
                 {/* Error */}
-                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                <ErrorField value={error} />
 
                 <div className="flex items-center space-x-2 pb-4">
                     <Checkbox
@@ -141,20 +142,14 @@ export default function ResetPasswordForm({
                 </div>
 
                 {/* Submit */}
-                <Button
+                <LoadingButton
                     type="submit"
-                    className="w-full h-11  text-white font-medium bg-green-600 hover:bg-green-700"
-                    disabled={isPending || isSubmitting}
+                    className="btn btn-block"
+                    isLoading={isPending || isSubmitting}
+                    loadingText="Updating password..."
                 >
-                    {isPending || isSubmitting ? (
-                        <div className="flex items-center space-x-2 ">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Updating password...</span>
-                        </div>
-                    ) : (
-                        "Submit"
-                    )}
-                </Button>
+                    Submit
+                </LoadingButton>
             </form>
         </Form>
     );
