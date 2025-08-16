@@ -1,6 +1,8 @@
 import { PropsWithChildren } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
+    const { t } = useTranslation();
     return (
         <div className="min-h-screen flex flex-col w-full">
             {/* Left Side - Logo + Title */}
@@ -24,9 +26,8 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             </div>
 
             {/* Footer */}
-            <div className="text-center mt-2 text-sm text-gray-500 py-4">
-                <p>© 2025 ISMS Solumada. All rights reserved.</p>
-                <p className="mt-1">ISO 27001 Compliance Management System</p>
+            <div className="text-center py-8 text-sm text-gray-500">
+                <p>{t('authentification.copyright')}</p>
             </div>
         </div>
     );

@@ -12,6 +12,7 @@ import { ProtectedRoute } from './components/routes/ProtectedRoute';
 import { PublicRoute } from './components/routes/PublicRoute';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
+import "@/i18n/config";
 
 export type PageType = 'dashboard' | 'documents' | 'reviews' | 'users' | 'audit' | 'compliance';
 

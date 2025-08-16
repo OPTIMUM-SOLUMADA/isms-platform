@@ -9,6 +9,7 @@ import { ArrowLeft, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import ErrorField from "@/components/ui/error-field";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { useTranslation } from "react-i18next";
 
 const passwordSchema = z.object({
     email: z.string().email("Please enter a valid email address")
@@ -26,7 +27,7 @@ export default function ForgotPasswordPage({
     onSubmit,
     error,
 }: ForgotPasswrodFormProps) {
-
+    const { t } = useTranslation();
     const form = useForm<ForgotPasswordFormData>({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
@@ -49,14 +50,14 @@ export default function ForgotPasswordPage({
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel>{t('authentification.forgotPassword.form.email.label')}</FormLabel>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="text"
-                                        placeholder="john.smith@company.com"
+                                        placeholder={t('authentification.forgotPassword.form.email.placeholder')}
                                         className="pl-10 h-11"
                                     />
                                 </FormControl>
@@ -77,7 +78,7 @@ export default function ForgotPasswordPage({
                         className="bg-gray-50 btn"
                         onClick={onClickBack}
                     >
-                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                        <ArrowLeft className="w-4 h-4 mr-2" /> {t('authentification.forgotPassword.form.actions.back.label')}
                     </Button>
                     <LoadingButton
                         type="submit"
@@ -85,7 +86,7 @@ export default function ForgotPasswordPage({
                         isLoading={isPending || isSubmitting}
                         loadingText="Requesting..."
                     >
-                        Request link
+                        {t('authentification.forgotPassword.form.actions.submit.label')}
                     </LoadingButton>
                 </div>
             </form>

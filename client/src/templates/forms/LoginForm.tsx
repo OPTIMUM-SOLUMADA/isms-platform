@@ -11,6 +11,7 @@ import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import ErrorField from "@/components/ui/error-field";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { useTranslation } from "react-i18next";
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -30,6 +31,7 @@ export default function LoginForm({
     onForgotPassword,
     error
 }: LoginFormProps) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<LoginFormData>({
@@ -58,14 +60,14 @@ export default function LoginForm({
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel>{t('authentification.login.form.email.label')}</FormLabel>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="text"
-                                        placeholder="john.smith@company.com"
+                                        placeholder={t('authentification.login.form.email.placeholder')}
                                         className="pl-10 h-11"
                                     />
                                 </FormControl>
@@ -81,13 +83,13 @@ export default function LoginForm({
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>{t('authentification.login.form.password.label')}</FormLabel>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
+                                        placeholder={t('authentification.login.form.password.placeholder')}
                                         {...field}
                                         className="pl-10 pr-10 h-11"
                                     />
@@ -117,7 +119,7 @@ export default function LoginForm({
                             onCheckedChange={(checked) => setValue("rememberMe", checked as boolean)}
                         />
                         <Label htmlFor="rememberMe" className="text-sm text-gray-600">
-                            Remember me
+                            {t('authentification.login.form.rememberMe')}
                         </Label>
                     </div>
                     <button
@@ -125,7 +127,7 @@ export default function LoginForm({
                         className="text-sm text-blue-600 hover:text-blue-800 font-medium border-none"
                         onClick={onForgotPassword}
                     >
-                        Forgot password?
+                        {t('authentification.login.form.forgotPassword')}
                     </button>
                 </div>
 
@@ -134,9 +136,9 @@ export default function LoginForm({
                     type="submit"
                     className="w-full btn"
                     isLoading={isPending || isSubmitting}
-                    loadingText="Signing in..."
+                    loadingText={t('authentification.login.form.actions.submit.loading')}
                 >
-                    Sign In
+                    {t('authentification.login.form.actions.submit.label')}
                 </LoadingButton>
             </form>
         </Form>
