@@ -34,11 +34,6 @@ axios.interceptors.response.use(
 
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        // Skip refresh for login request
-        if (originalRequest?.url?.includes("/auth")) {
-            return Promise.reject(error);
-        }
-
         if (
             error.response?.status === 401 &&
             !originalRequest?._retry // prevent infinite loop

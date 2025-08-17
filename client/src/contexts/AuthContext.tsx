@@ -2,9 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AuthService from '@/services/authService';
 import { User } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import axios from '@/lib/axios';
 import { env } from '@/configs/env';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ApiAxiosError } from '@/types/api';
 
 export type LoginCredentials = {
@@ -30,25 +29,31 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-
     const [token, setToken] = useLocalStorage<string | null>(env.ACCESS_TOKEN_KEY, null);
 
     const isAuthenticated = !!user;
 
+
+    // Verify user if token exists
+    const { isLoading, data: verifiedUser } = useQuery<User | null, ApiAxiosError>({
+        queryKey: ['auth', token],
+        queryFn: async () => {
+            if (!token) return null;
+            const res = await AuthService.verify();
+            return res.data ?? null;
+        },
+        enabled: !!token,
+        retry: false,
+    });
+
     useEffect(() => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        AuthService.verify().then(res => {
-            if (res.data) {
-                console.log('Checking auth status', res.data);
-                setUser(res.data);
-            } else {
-                setUser(null);
-            }
-        }).finally(() => {
-            setIsLoading(false);
-        });
-    }, [token]);
+        console.log(verifiedUser)
+        if (verifiedUser) {
+            setUser(verifiedUser);
+        }
+    }, [verifiedUser]);
+
+
 
     const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
         mutationFn: async (credentials) => AuthService.login(

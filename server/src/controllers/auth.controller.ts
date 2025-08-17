@@ -19,12 +19,12 @@ export class AuthController {
         try {
             const user = await authService.login(email, password);
             if (!user) {
-                res.status(401).json({ error: 'Invalid email or password' });
+                res.status(400).json({ error: 'Invalid email or password' });
                 return;
             }
 
             if (!user.isActive) {
-                res.status(401).json({ error: 'User is inactive. Please contact admin.' });
+                res.status(400).json({ error: 'User is inactive. Please contact admin.' });
                 return;
             }
 
@@ -81,7 +81,6 @@ export class AuthController {
     verify = async (req: Request, res: Response) => {
         try {
             const authHeader = req.headers['authorization'];
-            console.log(authHeader);
             if (!authHeader || !authHeader.startsWith("Bearer ")) {
                 res.status(401).json({ error: "No token provided or malformed header" });
                 return;
@@ -98,7 +97,13 @@ export class AuthController {
 
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: "Invalid or expired token" });
+            if (err instanceof jwt.TokenExpiredError) {
+                res.status(401).json({ error: "Reset token has expired" });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                res.status(401).json({ error: "Invalid reset token" });
+            } else {
+                res.status(500).json({ error: "Server error verifying token" });
+            }
         }
     }
 
