@@ -58,16 +58,19 @@ axios.interceptors.response.use(
                 const newToken = response.headers["authorization"]?.split(" ")[1];
                 accessToken = newToken || null;
 
-                localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
 
                 // Update queued requests
                 processQueue(accessToken || undefined);
 
                 if (originalRequest?.headers && newToken) {
                     originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                    localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
+                    console.log("Get new token", newToken)
                 }
                 return axios(originalRequest!);
             } catch (refreshError) {
+                console.log("Refresh token error", refreshError);
+                localStorage.setItem(env.ACCESS_TOKEN_KEY, "");
                 processQueue(undefined);
                 return Promise.reject(refreshError);
             } finally {
