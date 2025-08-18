@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import AuthService from '@/services/authService';
 import { User } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { env } from '@/configs/env';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { ApiAxiosError } from '@/types/api';
 
 export type LoginCredentials = {
@@ -18,7 +18,7 @@ interface AuthContextType {
     isLoggingIn: boolean;
     login: (data: LoginCredentials) => Promise<void>;
     logout: () => Promise<void>;
-    error?: string | null;
+    errorCode?: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,30 +30,25 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useLocalStorage<string | null>(env.ACCESS_TOKEN_KEY, null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const isAuthenticated = !!user;
-
-
-    // Verify user if token exists
-    const { isLoading, data: verifiedUser } = useQuery<User | null, ApiAxiosError>({
-        queryKey: ['auth', token],
-        queryFn: async () => {
-            if (!token) return null;
-            const res = await AuthService.verify();
-            return res.data ?? null;
-        },
-        enabled: !!token,
-        retry: false,
-    });
+    const isAuthenticated = useMemo(() => !!user, [user]);
 
     useEffect(() => {
-        console.log(verifiedUser)
-        if (verifiedUser) {
-            setUser(verifiedUser);
+        if (!token) {
+            setUser(null);
+            setIsLoading(false);
+            return;
         }
-    }, [verifiedUser]);
 
-
+        AuthService.verify()
+            .then(res => {
+                setUser(res.data);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            })
+    }, [token]);
 
     const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
         mutationFn: async (credentials) => AuthService.login(
@@ -78,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated,
         isLoading: isLoading,
         isLoggingIn: loginMutation.isPending,
-        error: loginMutation.error?.response?.data?.error,
+        errorCode: loginMutation.error?.response?.data?.code,
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
     };

@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     const [tokenError, setTokenError] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
 
-    const { login, error: loginError } = useAuth();
+    const { login, errorCode } = useAuth();
     const {
         mutateAsync: changePassword,
         isPending,
@@ -99,7 +99,7 @@ export default function ResetPasswordPage() {
                     <ResetPasswordForm
                         onSubmit={handleFormSubmit}
                         isPending={isPending}
-                        error={changePasswordError?.response?.data.error || loginError}
+                        error={changePasswordError?.response?.data.code || errorCode}
                     />
                 </CardContent>
             </Card>

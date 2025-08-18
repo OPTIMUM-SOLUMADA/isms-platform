@@ -70,7 +70,9 @@ axios.interceptors.response.use(
                 return axios(originalRequest!);
             } catch (refreshError) {
                 console.log("Refresh token error", refreshError);
-                localStorage.setItem(env.ACCESS_TOKEN_KEY, "");
+                AuthService.logout().then(() => {
+                    localStorage.setItem(env.ACCESS_TOKEN_KEY, "");
+                });
                 processQueue(undefined);
                 return Promise.reject(refreshError);
             } finally {

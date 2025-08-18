@@ -1,38 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ForgotPasswordForm, { type ForgotPasswordFormData } from '@/templates/forms/ForgotPasswordForm';
-import AuthService from '@/services/authService';
-import { useState } from 'react';
 import AuthLayout from '@/templates/layout/AuthLayout';
 import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useResetPassword } from '@/hooks/queries/useAuth';
 
 export default function ForgotPasswordPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [isPending, setIsPending] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isSuccess, setIsSuccess] = useState<boolean>(false);
-    const [email, setEmail] = useState<string | null>(null);
+
+    const {
+        isPending,
+        isSuccess,
+        variables,
+        error,
+        mutateAsync: resetPassword
+    } = useResetPassword();
 
     const handleFormSubmit = async (data: ForgotPasswordFormData) => {
-        setError(null);
-        setEmail(null)
-        setIsPending(true);
-        AuthService.resetPassword(data.email).then(res => {
-            console.log(res);
-            setEmail(data.email);
-            setIsSuccess(true);
-        }).catch(err => {
-            setError(err.response.data.error);
-        }).finally(() => {
-            setIsPending(false);
-        })
+        await resetPassword({ email: data.email });
     };
 
     return (
         <AuthLayout>
-            {(isSuccess && email) ? (
+            {(isSuccess && variables?.email) ? (
                 <Card className="shadow-lg bg-green-50">
                     <CardContent className="flex flex-col items-center gap-4 py-8">
                         <CheckCircle className="w-12 h-12 text-green-600" />
@@ -42,7 +34,7 @@ export default function ForgotPasswordPage() {
                         <p
                             className="text-center text-green-900"
                             dangerouslySetInnerHTML={{
-                                __html: t("authentification.forgotPassword.success.message", { email })
+                                __html: t("authentification.forgotPassword.success.message", { email: variables.email })
                             }}
                         />
                     </CardContent>
@@ -62,7 +54,7 @@ export default function ForgotPasswordPage() {
                             onSubmit={handleFormSubmit}
                             onClickBack={() => navigate("/login")}
                             isPending={isPending}
-                            error={error}
+                            error={error?.response?.data.code}
                         />
                     </CardContent>
                 </Card>

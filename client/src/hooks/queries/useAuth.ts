@@ -18,3 +18,7 @@ export const useVerify = () => useMutation({
 export const useChangePassword = () => useMutation<any, ApiAxiosError, { password: string, resetToken: string }>({
     mutationFn: (payload: { password: string, resetToken: string }) => AuthService.changePassword(payload.resetToken, payload.password),
 });
+
+export const useResetPassword = () => useMutation<any, ApiAxiosError, { email: string }>({
+    mutationFn: (payload: { email: string }) => AuthService.resetPassword(payload.email),
+});

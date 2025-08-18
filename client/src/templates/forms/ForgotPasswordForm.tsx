@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cz } from "@/lib/czod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -7,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { CustomFormProps } from "@/types";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import ErrorField from "@/components/ui/error-field";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { useTranslation } from "react-i18next";
+import ErrorCodeField from "@/components/ErrorCodeField";
 
-const passwordSchema = z.object({
-    email: z.string().email("Please enter a valid email address")
+const passwordSchema = cz.z.object({
+    email: cz.email()
 });
 
 export type ForgotPasswordFormData = z.infer<typeof passwordSchema>;
@@ -68,7 +69,7 @@ export default function ForgotPasswordPage({
                 />
 
                 {/* Error */}
-                <ErrorField value={error} />
+                <ErrorCodeField code={error} />
 
                 {/* Submit */}
                 <div className="flex items-center justify-between gap-2">
