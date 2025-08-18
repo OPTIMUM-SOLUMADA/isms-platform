@@ -1,41 +1,34 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import LoginForm, { type LoginFormData } from '@/templates/forms/LoginForm';
+import LoginForm from '@/templates/forms/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
 import AuthLayout from '@/templates/layout/AuthLayout';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
-    const [isLoginPending, setIsLoginPending] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const { login } = useAuth();
+    const { login, isLoggingIn, error } = useAuth();
 
-    const handleFormSubmit = async (data: LoginFormData) => {
-        setError(null);
-        setIsLoginPending(true);
-        const error = await login(data.email, data.password);
-        setError(error);
-        setIsLoginPending(false);
-    };
+    if (error) console.log(error);
 
     return (
         <AuthLayout>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg">
                 <CardHeader className="space-y-1 pb-6">
                     <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
-                        Sign In
+                        {t('authentification.login.title')}
                     </CardTitle>
                     <p className="text-sm text-gray-600 text-center">
-                        Enter your credentials to access the ISMS portal
+                        {t('authentification.login.subtitle')}
                     </p>
                 </CardHeader>
                 <CardContent>
                     <LoginForm
-                        onSubmit={handleFormSubmit}
+                        onSubmit={login}
                         onForgotPassword={() => navigate("/forgot-password")}
                         error={error}
-                        isPending={isLoginPending}
+                        isPending={isLoggingIn}
                     />
                 </CardContent>
             </Card>

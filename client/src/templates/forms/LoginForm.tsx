@@ -4,12 +4,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import ErrorField from "@/components/ui/error-field";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { useTranslation } from "react-i18next";
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -29,6 +31,7 @@ export default function LoginForm({
     onForgotPassword,
     error
 }: LoginFormProps) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<LoginFormData>({
@@ -57,14 +60,14 @@ export default function LoginForm({
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel>{t('authentification.login.form.email.label')}</FormLabel>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="text"
-                                        placeholder="john.smith@company.com"
+                                        placeholder={t('authentification.login.form.email.placeholder')}
                                         className="pl-10 h-11"
                                     />
                                 </FormControl>
@@ -80,13 +83,13 @@ export default function LoginForm({
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>{t('authentification.login.form.password.label')}</FormLabel>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
+                                        placeholder={t('authentification.login.form.password.placeholder')}
                                         {...field}
                                         className="pl-10 pr-10 h-11"
                                     />
@@ -105,7 +108,7 @@ export default function LoginForm({
                 />
 
                 {/* Error */}
-                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                <ErrorField value={error} />
 
                 {/* Remember Me */}
                 <div className="flex items-center justify-between">
@@ -116,7 +119,7 @@ export default function LoginForm({
                             onCheckedChange={(checked) => setValue("rememberMe", checked as boolean)}
                         />
                         <Label htmlFor="rememberMe" className="text-sm text-gray-600">
-                            Remember me
+                            {t('authentification.login.form.rememberMe')}
                         </Label>
                     </div>
                     <button
@@ -124,25 +127,19 @@ export default function LoginForm({
                         className="text-sm text-blue-600 hover:text-blue-800 font-medium border-none"
                         onClick={onForgotPassword}
                     >
-                        Forgot password?
+                        {t('authentification.login.form.forgotPassword')}
                     </button>
                 </div>
 
                 {/* Submit */}
-                <Button
+                <LoadingButton
                     type="submit"
-                    className="w-full h-11  text-white font-medium bg-green-600 hover:bg-green-700"
-                    disabled={isPending || isSubmitting}
+                    className="w-full btn"
+                    isLoading={isPending || isSubmitting}
+                    loadingText={t('authentification.login.form.actions.submit.loading')}
                 >
-                    {isPending || isSubmitting ? (
-                        <div className="flex items-center space-x-2 ">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Signing in...</span>
-                        </div>
-                    ) : (
-                        "Sign In"
-                    )}
-                </Button>
+                    {t('authentification.login.form.actions.submit.label')}
+                </LoadingButton>
             </form>
         </Form>
     );

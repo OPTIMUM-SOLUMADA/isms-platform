@@ -1,19 +1,29 @@
-
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from '@/templates/layout/Layout';
-import DashboardPage from '@/pages/DashboardPage';
-import DocumentRepositoryPage from '@/pages/DocumentRepositoryPage';
-import ReviewWorkflowPage from '@/pages/ReviewWorkflowPage';
-import UserManagementPage from '@/pages/UserManagementPage';
-import AuditLogPage from '@/pages/AuditLogPage';
-import ComplianceDashboardPage from '@/pages/ComplianceDashboardPage';
+
+// Lazy load pages
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const DocumentRepositoryPage = lazy(() => import('@/pages/DocumentRepositoryPage'));
+const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
+const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
+const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
+const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage'));
+
 import LoginPage from '@/pages/auth/LoginPage';
-import { ProtectedRoute } from './components/routes/ProtectedRoute';
-import { PublicRoute } from './components/routes/PublicRoute';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 
-export type PageType = 'dashboard' | 'documents' | 'reviews' | 'users' | 'audit' | 'compliance';
+import { ProtectedRoute } from './components/routes/ProtectedRoute';
+import { PublicRoute } from './components/routes/PublicRoute';
+import "@/i18n/config";
+
+
+const Loading = () => (
+  <div className="flex justify-center items-center h-screen">
+    Loading...
+  </div>
+);
 
 function App() {
 
@@ -51,12 +61,54 @@ function App() {
           </ProtectedRoute>
         }>
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/documents" element={<DocumentRepositoryPage />} />
-        <Route path="/reviews" element={<ReviewWorkflowPage />} />
-        <Route path="/compliance" element={<ComplianceDashboardPage />} />
-        <Route path="/users" element={<UserManagementPage />} />
-        <Route path="/audit" element={<AuditLogPage />} />
+        <Route
+          path="dashboard"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DashboardPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="documents"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DocumentRepositoryPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="reviews"
+          element={
+            <Suspense fallback={<Loading />}>
+              <ReviewWorkflowPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="compliance"
+          element={
+            <Suspense fallback={<Loading />}>
+              <ComplianceDashboardPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="users"
+          element={
+            <Suspense fallback={<Loading />}>
+              <UserManagementPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="audit"
+          element={
+            <Suspense fallback={<Loading />}>
+              <AuditLogPage />
+            </Suspense>
+          }
+        />
       </Route>
     </Routes>
   );

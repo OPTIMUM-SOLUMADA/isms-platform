@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import ResetPasswordForm, { type ResetFormData } from '@/templates/forms/ResetPasswordForm';
 import AuthLayout from '@/templates/layout/AuthLayout';
 import { useCallback, useEffect, useState } from 'react';
@@ -7,19 +7,21 @@ import AuthService from '@/services/authService';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChangePassword } from '@/hooks/queries/useAuth';
+import { useTranslation } from 'react-i18next';
+import { OctagonAlert } from 'lucide-react';
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-    const [error, setError] = useState<string | null>(null);
+    const [tokenError, setTokenError] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
 
-    const { login } = useAuth();
+    const { login, error: loginError } = useAuth();
     const {
         mutateAsync: changePassword,
         isPending,
-        isError,
         error: changePasswordError
     } = useChangePassword();
 
@@ -30,7 +32,7 @@ export default function ResetPasswordPage() {
             .then(res => {
                 setEmail(res.data.email);
             }).catch(err => {
-                setError(err.response.data.error);
+                setTokenError(err.response.data.error);
             });
 
     }, [token]);
@@ -43,7 +45,10 @@ export default function ResetPasswordPage() {
                 await changePassword({ resetToken: token, password: formData.password });
 
                 if (formData.keepSignedIn) {
-                    await login(email, formData.password);
+                    await login({
+                        email: email,
+                        password: formData.password
+                    });
                 } else {
                     navigate("/login");
                 }
@@ -54,19 +59,26 @@ export default function ResetPasswordPage() {
         [email, token, changePassword, login, navigate]
     );
 
-    if (error) return (
+    if (tokenError) return (
         <AuthLayout>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg">
                 <CardHeader className="space-y-1 pb-6">
-                    <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
-                        Error
+                    <CardTitle className="text-2xl flex items-center gap-2 justify-center font-semibold text-center text-gray-900 ">
+                        <OctagonAlert className='text-red-600' />
+                        {t('authentification.resetPassword.error.title')}
                     </CardTitle>
-                    <p className="text-sm text-gray-600 text-center my-4">
-                        {error}
-                    </p>
+                    <CardDescription className="text-gray-600 text-center pt-4">
+                        {tokenError}
+                    </CardDescription>
                 </CardHeader>
-                <CardContent className='flex'>
-                    <Button onClick={() => navigate("/login")} className='mx-auto'>Go back to login</Button>
+                <CardContent className='flex flex-col gap-3'>
+                    <Button
+                        variant="outline"
+                        className='mx-auto'
+                        onClick={() => navigate("/login")}
+                    >
+                        {t('authentification.resetPassword.error.button.label')}
+                    </Button>
                 </CardContent>
             </Card>
         </AuthLayout>
@@ -74,20 +86,20 @@ export default function ResetPasswordPage() {
 
     return (
         <AuthLayout>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg">
                 <CardHeader className="space-y-1 pb-6">
                     <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
-                        Change your password
+                        {t('authentification.resetPassword.title')}
                     </CardTitle>
                     <p className="text-sm text-gray-600 text-center">
-                        Enter your new password, then submit
+                        {t('authentification.resetPassword.subtitle')}
                     </p>
                 </CardHeader>
                 <CardContent>
                     <ResetPasswordForm
                         onSubmit={handleFormSubmit}
                         isPending={isPending}
-                        error={isError ? changePasswordError.response.data.error : null}
+                        error={changePasswordError?.response?.data.error || loginError}
                     />
                 </CardContent>
             </Card>

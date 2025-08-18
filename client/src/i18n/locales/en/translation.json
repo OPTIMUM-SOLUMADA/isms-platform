@@ -1,0 +1,55 @@
+{
+    "authentification": {
+        "login": {
+            "title": "Connexion",
+            "subtitle": "Saisissez vos identifiants pour accéder au portail ISMS",
+            "form": {
+                "email": {
+                    "label": "Adresse email",
+                    "placeholder": "isms@example.com"
+                },
+                "password": {
+                    "label": "Mot de passe",
+                    "placeholder": "Mot de passe"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Se connecter",
+                        "loading": "Connexion en cours..."
+                    }
+                },
+                "rememberMe": "Se souvenir de moi",
+                "forgotPassword": "Mot de passe oublié?",
+                "errors": {
+                    "INVALID_EMAIL_OR_PASSWORD": "Email ou mot de passe incorrect"
+                }
+            }
+        },
+        "forgotPassword": {
+            "title": "Mot de passe oublié",
+            "subtitle": "Entrer votre email pour réinitialiser votre mot de passe",
+            "form": {
+                "email": {
+                    "label": "Adresse email",
+                    "placeholder": "isms@example.com"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Recevoir le lien",
+                        "loading": "Envoi en cours..."
+                    },
+                    "back": {
+                        "label": "Retour"
+                    }
+                },
+                "errors": {
+                    "EMAIL_NOT_FOUND": "Email non trouvé"
+                },
+                "success": {
+                    "title": "Demande envoyée !",
+                    "message": "Un lien de réinitialisation du mot de passe a été envoyé à <strong>{{email}}</strong>.\nVeuillez vérifier votre boîte de réception et suivre les instructions pour réinitialiser votre mot de passe."
+                }
+            }
+        }
+    }
+}
