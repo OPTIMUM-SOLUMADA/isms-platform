@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { cz } from "@/lib/czod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,28 +10,23 @@ import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import ErrorField from "@/components/ui/error-field";
 import { LoadingButton } from "@/components/ui/loading-button";
+import ErrorCodeField from "@/components/ErrorCodeField";
+import i18n from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 
-const resetSchema = z
+const resetSchema = cz.z
     .object({
-        password: z
-            .string()
-            .min(8, "Password must be at least 8 characters long")
-            .regex(
-                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).*$/,
-                "Password must contain uppercase, lowercase, number, and special character"
-            ),
-        confirmPassword: z.string().min(1, "Please confirm your password"),
-        keepSignedIn: z.boolean().optional(),
+        password: cz.password(),
+        confirmPassword: cz.z.string().min(1, i18n.t("zod.errors.confirmPassword.min")),
+        keepSignedIn: cz.z.boolean().optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords do not match",
+        message: i18n.t("zod.errors.confirmPassword.matches"),
         path: ["confirmPassword"],
     });
 
 export { resetSchema };
-
 
 export type ResetFormData = z.infer<typeof resetSchema>;
 
@@ -43,6 +39,7 @@ export default function ResetPasswordForm({
     onSubmit,
     error,
 }: ResetPasswordProps) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<ResetFormData>({
@@ -72,13 +69,13 @@ export default function ResetPasswordForm({
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>{t("authentification.resetPassword.form.password.label")}</FormLabel>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
+                                        placeholder={t("authentification.resetPassword.form.password.placeholder")}
                                         {...field}
                                         className="pl-10 pr-10 h-11"
                                     />
@@ -102,13 +99,13 @@ export default function ResetPasswordForm({
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Confirm Password</FormLabel>
+                            <FormLabel>{t("authentification.resetPassword.form.confirmPassword.label")}</FormLabel>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <FormControl>
                                     <Input
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
+                                        placeholder={t("authentification.resetPassword.form.confirmPassword.placeholder")}
                                         {...field}
                                         className="pl-10 pr-10 h-11"
                                     />
@@ -127,7 +124,7 @@ export default function ResetPasswordForm({
                 />
 
                 {/* Error */}
-                <ErrorField value={error} />
+                <ErrorCodeField code={error} />
 
                 <div className="flex items-center space-x-2 pb-4">
                     <Checkbox
@@ -137,7 +134,7 @@ export default function ResetPasswordForm({
                         className="h-5 w-5"
                     />
                     <Label htmlFor="keepSignedIn" className="text-sm text-gray-600">
-                        Keep me signed in
+                        {t("authentification.resetPassword.form.keepSignedIn.label")}
                     </Label>
                 </div>
 
@@ -148,7 +145,7 @@ export default function ResetPasswordForm({
                     isLoading={isPending || isSubmitting}
                     loadingText="Updating password..."
                 >
-                    Submit
+                    {t("authentification.resetPassword.form.actions.submit.label")}
                 </LoadingButton>
             </form>
         </Form>

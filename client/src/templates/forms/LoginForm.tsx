@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
+import { cz } from "@/lib/czod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -9,13 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CustomFormProps } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import ErrorField from "@/components/ui/error-field";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { useTranslation } from "react-i18next";
+import ErrorCodeField from "@/components/ErrorCodeField";
+import i18n from "@/i18n/config";
 
-const loginSchema = z.object({
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(1, "Password is required"),
+const loginSchema = cz.z.object({
+    email: cz.email(),
+    password: z.string().nonempty(i18n.t("zod.errors.password.required")),
     rememberMe: z.boolean().optional(),
 });
 
@@ -38,7 +40,7 @@ export default function LoginForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "njatotianafiononana@gmail.com",
-            password: "njato007",
+            password: "Njato!0011",
             rememberMe: false
         },
     });
@@ -108,7 +110,7 @@ export default function LoginForm({
                 />
 
                 {/* Error */}
-                <ErrorField value={error} />
+                <ErrorCodeField code={error} />
 
                 {/* Remember Me */}
                 <div className="flex items-center justify-between">

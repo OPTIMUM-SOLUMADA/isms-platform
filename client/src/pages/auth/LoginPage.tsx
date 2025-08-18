@@ -8,9 +8,7 @@ import { useTranslation } from 'react-i18next';
 export default function LoginPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { login, isLoggingIn, error } = useAuth();
-
-    if (error) console.log(error);
+    const { login, isLoggingIn, errorCode } = useAuth();
 
     return (
         <AuthLayout>
@@ -27,7 +25,7 @@ export default function LoginPage() {
                     <LoginForm
                         onSubmit={login}
                         onForgotPassword={() => navigate("/forgot-password")}
-                        error={error}
+                        error={errorCode}
                         isPending={isLoggingIn}
                     />
                 </CardContent>

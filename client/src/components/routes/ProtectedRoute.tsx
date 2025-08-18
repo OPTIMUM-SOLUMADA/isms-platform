@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import LoadingSplash from '../loading';
+import LoadingSplash from '@/components/loading';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
