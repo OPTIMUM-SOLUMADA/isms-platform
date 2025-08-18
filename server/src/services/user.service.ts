@@ -11,7 +11,6 @@ export class UserService {
             where: { id },
             include: {
                 department: true,
-                managedDept: true,
                 ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,

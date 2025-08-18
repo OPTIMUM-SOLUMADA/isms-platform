@@ -52,4 +52,13 @@ export class DepartmentController {
             res.status(400).json({ error: (err as Error).message });
         }
     }
+
+    initialize = async (req: Request, res: Response) => {
+        try {
+            const departments = await service.init();
+            res.json(departments);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    };
 }
