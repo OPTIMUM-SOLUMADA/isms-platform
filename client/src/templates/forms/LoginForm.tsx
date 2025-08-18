@@ -38,7 +38,7 @@ export default function LoginForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "njatotianafiononana@gmail.com",
-            password: "njato007",
+            password: "Njato!0011",
             rememberMe: false
         },
     });
