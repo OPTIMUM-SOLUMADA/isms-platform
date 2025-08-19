@@ -41,6 +41,10 @@ import {
 import { documentStatusColors } from '@/constants/color';
 import { documentStatusIcons } from '@/constants/icon';
 import { documents } from '@/mocks/document';
+import { Link } from 'react-router-dom';
+
+
+export const NEW_DOCUMENT_PATH = '/documents/add';
 
 export default function DocumentRepositoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,10 +77,12 @@ export default function DocumentRepositoryPage() {
           <h1 className="text-3xl font-bold text-gray-900">Document Repository</h1>
           <p className="text-gray-600 mt-1">Manage your ISMS policies, procedures, and documentation</p>
         </div>
-        <Button className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Upload Document</span>
-        </Button>
+        <Link to={NEW_DOCUMENT_PATH} >
+          <Button className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>New Document</span>
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Cards */}

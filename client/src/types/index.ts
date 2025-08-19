@@ -33,17 +33,25 @@ export type ComplianceClause = {
 export type Document = {
     id: string;
     title: string;
-    type: string;
-    category: string;
-    version: string;
-    status: 'draft' | 'review' | 'approved' | 'expired';
-    owner: string;
-    reviewer: string;
-    lastModified: string;
-    nextReview: string;
-    iso27001Clause: string;
-    tags: string[];
-}
+    description?: string;
+    fileUrl?: string;
+    status: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
+    nextReviewDate?: string; // ISO string pour compatibilité API/JSON
+    reviewFrequency?: number; // en mois
+    owner?: {
+        id: string;
+        name?: string;                // si le modèle User a un champ name
+    };
+    category?: {
+        id: string;
+        name?: string;                // si le modèle Category a un champ name
+    };
+    versions?: any[];                 // à préciser si tu veux typer DocumentVersion
+    reviews?: any[];                  // idem pour DocumentReview
+    approvals?: any[];                // idem pour DocumentApproval
+    notifications?: any[];            // idem pour Notification
+    auditlogs?: any[];                // idem pour AuditLog
+};
 
 export type ReviewItem = {
     id: string;
