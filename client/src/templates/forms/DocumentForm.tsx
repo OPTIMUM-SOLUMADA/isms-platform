@@ -19,6 +19,9 @@ import ErrorCodeField from "@/components/ErrorCodeField";
 import i18n from "@/i18n/config";
 import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Save } from "lucide-react";
 
 const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -53,6 +56,7 @@ export default function DocumentForm({
   error,
 }: DocumentFormProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(documentSchema),
@@ -94,7 +98,7 @@ export default function DocumentForm({
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto p-6 bg-white rounded-2xl space-y-6"
+        className="max-w-5xl mx-auto p-6 bg-white space-y-6"
       >
         {/* Title */}
         <FormField
@@ -103,13 +107,13 @@ export default function DocumentForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-medium">
-                {t("document.title")}
+                {t("document.forms.add.name.label")}
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="text"
-                  placeholder={t("document.title.placeholder")}
+                  placeholder={t("document.forms.add.name.placeholder")}
                   className="border rounded-lg px-3 py-2 w-full"
                 />
               </FormControl>
@@ -126,13 +130,13 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.description")}
+                  {t("document.forms.add.description.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.description.placeholder")}
+                    placeholder={t("document.forms.add.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -148,22 +152,22 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.status")}
+                  {t("document.forms.add.status.label")}
                 </FormLabel>
                 <FormControl>
                   <select
                     {...field}
                     className="w-full border rounded-lg px-3 py-2"
                   >
-                    <option value="DRAFT">{t("document.status.draft")}</option>
+                    <option value="DRAFT">{t("document.forms.add.status.draft")}</option>
                     <option value="IN_REVIEW">
-                      {t("document.status.review")}
+                      {t("document.forms.add.status.review")}
                     </option>
                     <option value="APPROVED">
-                      {t("document.status.approved")}
+                      {t("document.forms.add.status.approved")}
                     </option>
                     <option value="EXPIRED">
-                      {t("document.status.expired")}
+                      {t("document.forms.add.status.expired")}
                     </option>
                   </select>
                 </FormControl>
@@ -178,7 +182,7 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.nextReviewDate")}
+                  {t("document.forms.add.nextReviews.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -201,13 +205,13 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.reviewFrequency")}
+                  {t("document.forms.add.reviewFrequency.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="number"
-                    placeholder={t("document.reviewFrequency.placeholder")}
+                    placeholder={t("document.forms.add.reviewFrequency.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -223,13 +227,13 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.owner")}
+                  {t("document.forms.add.owner.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.owner.placeholder")}
+                    placeholder={t("document.forms.add.owner.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -245,13 +249,13 @@ export default function DocumentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.category")}
+                  {t("document.forms.add.category.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.category.placeholder")}
+                    placeholder={t("document.forms.add.category.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -268,7 +272,7 @@ export default function DocumentForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-medium">
-                {t("document.fileUrl")}
+                {t("document.forms.add.file.label")}
               </FormLabel>
               <div
                 {...getRootProps()}
@@ -281,13 +285,13 @@ export default function DocumentForm({
                 <input {...getInputProps()} />
                 {field.value ? (
                   <p className="text-sm text-green-600">
-                    {t("document.file.selected")}: {field.value}
+                    {t("document.forms.add.file.selected")}: {field.value}
                   </p>
                 ) : (
                   <p className="text-gray-500 text-sm">
                     {isDragActive
                       ? t("document.file.dropHere")
-                      : t("document.file.dragOrClick")}
+                      : t("document.forms.add.file.dragOrClick")}
                   </p>
                 )}
               </div>
@@ -298,15 +302,28 @@ export default function DocumentForm({
         {/* Error */}
         <ErrorCodeField code={error} />
 
-        {/* Submit */}
-        <LoadingButton
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold shadow-md transition"
-          isLoading={isPending || isSubmitting}
-          loadingText={t("document.form.actions.submit.loading")}
-        >
-          {t("document.form.actions.submit.label")}
-        </LoadingButton>
+        <div className="flex justify-end gap-4">
+          <Button
+            type="reset"
+            variant={"ghost"}
+            className="btn bg-gray-50"
+            onClick={() => navigate("/documents")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t("document.forms.add.actions.cancel.label")}
+          </Button>
+          {/* Submit */}
+          <LoadingButton
+            type="submit"
+            className="btn"
+            isLoading={isPending || isSubmitting}
+            loadingText={t("document.forms.add.actions.submit.loading")}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {t("document.forms.add.actions.submit.label")}
+          </LoadingButton>
+
+        </div>
       </form>
     </Form>
   );
