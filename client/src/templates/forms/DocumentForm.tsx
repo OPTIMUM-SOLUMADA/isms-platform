@@ -94,7 +94,7 @@ export default function DocumentForm({
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto p-6 bg-white rounded-2xl space-y-6"
+        className="max-w-5xl mx-auto p-6 bg-white space-y-6"
       >
         {/* Title */}
         <FormField
@@ -301,7 +301,7 @@ export default function DocumentForm({
         {/* Submit */}
         <LoadingButton
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold shadow-md transition"
+          className=" bg-green-600 hover:bg-green-700 text-white rounded-xl py-3 font-semibold shadow-md transition"
           isLoading={isPending || isSubmitting}
           loadingText={t("document.form.actions.submit.loading")}
         >
