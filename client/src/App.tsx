@@ -17,6 +17,9 @@ import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import { ProtectedRoute } from './components/routes/ProtectedRoute';
 import { PublicRoute } from './components/routes/PublicRoute';
 import "@/i18n/config";
+import { UserProvider } from "./contexts/UserContext";
+import { UserUIProvider } from "./contexts/ui/UserUIContext";
+import { DepartmentProvider } from "./contexts/DepartmentContext";
 
 
 const Loading = () => (
@@ -57,7 +60,11 @@ function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <Layout />
+            <DepartmentProvider>
+              <UserProvider>
+                <Layout />
+              </UserProvider>
+            </DepartmentProvider>
           </ProtectedRoute>
         }>
         <Route index element={<Navigate to="dashboard" replace />} />
@@ -97,7 +104,9 @@ function App() {
           path="users"
           element={
             <Suspense fallback={<Loading />}>
-              <UserManagementPage />
+              <UserUIProvider>
+                <UserManagementPage />
+              </UserUIProvider>
             </Suspense>
           }
         />
