@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Mail, Calendar, MoreHorizontal, Edit, Trash2, Users, UserPlus, Eye } from "lucide-react";
+import { Mail, MoreHorizontal, Edit, Trash2, Users, UserPlus, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
