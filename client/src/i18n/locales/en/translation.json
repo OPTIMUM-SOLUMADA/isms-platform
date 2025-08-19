@@ -51,5 +51,59 @@
                 }
             }
         }
+    },
+    "document": {
+    "title": "Document Management",
+    "subtitle": "Manage documents and their versions",
+    "forms": {
+        "add": {
+            "title": "Add a Document",
+            "name": {
+                "label": "Name",
+                "placeholder": "Document name"
+            },
+            "description": {
+                "label": "Description",
+                "placeholder": "Document description"
+            },
+            "status": {
+                "label": "Status",
+                "draft": "Draft",
+                "review": "In Review",
+                "approved": "Approved",
+                "expired": "Expired"
+            },
+            "nextReviews": {
+                "label": "Next Review"
+            },
+            "reviewFrequency": {
+                "label": "Review Frequency",
+                "placeholder": "Review frequency"
+            },
+            "owner": {
+                "label": "Owner",
+                "placeholder": "Owner's name"
+            },
+            "category": {
+                "label": "Category",
+                "placeholder": "Category name"
+            },
+            "file": {
+                "label": "File",
+                "selected": "File selected",
+                "dragOrClick": "Drag or click here to select a file"
+            },
+            "actions": {
+                "submit": {
+                    "label": "Add",
+                    "loading": "Adding..."
+                },
+                "cancel": {
+                    "label": "Cancel"
+                }
+            }
+        }
     }
+}
+
 }
