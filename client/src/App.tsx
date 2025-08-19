@@ -5,6 +5,7 @@ import Layout from '@/templates/layout/Layout';
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const DocumentRepositoryPage = lazy(() => import('@/pages/DocumentRepositoryPage'));
+const DocumentAddPage = lazy(() => import('@/pages/DocumentAddPage'));
 const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
@@ -81,6 +82,14 @@ function App() {
           element={
             <Suspense fallback={<Loading />}>
               <DocumentRepositoryPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="documents/add"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DocumentAddPage />
             </Suspense>
           }
         />

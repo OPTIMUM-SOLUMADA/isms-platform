@@ -18,8 +18,8 @@ function Layout() {
                     onMenuClick={() => setSidebarOpen(!sidebarOpen)}
                 />
 
-                <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 overflow-y-auto bg-gray-50 p-6  flex flex-col flex-grow ">
+                    <div className="max-w-7xl mx-auto flex flex-col flex-grow w-full h-full">
                         <Outlet />
                     </div>
                 </main>
