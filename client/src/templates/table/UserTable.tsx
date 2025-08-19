@@ -16,12 +16,55 @@ import { userRoleColors } from "@/constants/color";
 import type { RoleType, User } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
+import { DeleteDialog } from "@/components/DeleteDialog";
+
+interface UserActionsCell {
+    user: User;
+    onEdit?: (user: User) => Promise<void>;
+    onDelete?: (user: User) => Promise<boolean>;
+}
+
+const UserActionsCell = ({ user, onEdit, onDelete }: UserActionsCell) => {
+    const [open, setOpen] = React.useState(false);
+
+    const handleDelete = async () => {
+        if (onDelete) await onDelete(user);
+    };
+
+    return (
+        <>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEdit?.(user)}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit User
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete User
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DeleteDialog
+                entityName={user.name}
+                open={open}
+                onOpenChange={setOpen}
+                onConfirm={handleDelete}
+            />
+        </>
+    );
+};
 
 // UserTable component using the reusable DataTable
 interface UserTableProps {
     data: User[];
-    onEdit?: (user: User) => void;
-    onDelete?: (user: User) => void;
+    onEdit?: (user: User) => Promise<void>;
+    onDelete?: (user: User) => Promise<boolean>;
     onAddUser?: () => void;
 }
 
@@ -97,24 +140,11 @@ const Table = ({
             cell: ({ row }) => {
                 const user = row.original;
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit?.(user)}>
-                                <Edit className="mr-2 h-4 w-4" /> Edit User
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => onDelete?.(user)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete User
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <UserActionsCell
+                        user={user}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    />
                 );
             },
             enableSorting: false,

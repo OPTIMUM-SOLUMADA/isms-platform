@@ -197,5 +197,34 @@
                 "required": "Veuillez sélectionner un département"
             }
         }
+    },
+    "components": {
+        "deleteDialog": {
+            "title": "Supprimer {{entity}} ?",
+            "description": "Êtes-vous sûr de vouloir supprimer {{entity}} ? Cette action est irréversible.",
+            "actions": {
+                "confirm": {
+                    "label": "Supprimer",
+                    "loading": "Suppression en cours..."
+                },
+                "cancel": {
+                    "label": "Annuler"
+                }
+            }
+        },
+        "toast": {
+            "success": {
+                "title": "Succès",
+                "user": {
+                    "created": "Utilisateur créé avec succès",
+                    "updated": "Utilisateur mis à jour avec succès",
+                    "deleted": "Utilisateur supprimé avec succès"
+                }
+            },
+            "error": {
+                "title": "Erreur",
+                "description": "Une erreur s'est produite lors de {{action}}. Veuillez réessayer."
+            }
+        }
     }
 }

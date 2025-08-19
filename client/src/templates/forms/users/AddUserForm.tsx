@@ -30,6 +30,7 @@ const AddUserForm = ({
     onSubmit,
     departments = [],
     isPending = false,
+    onCancel,
     error
 }: AddUserFormProps) => {
 
@@ -164,6 +165,7 @@ const AddUserForm = ({
                     <Button
                         type="button"
                         variant="ghost"
+                        onClick={onCancel}
                     >
                         {t('user.forms.add.actions.cancel.label')}
                     </Button>

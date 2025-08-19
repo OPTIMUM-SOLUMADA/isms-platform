@@ -116,7 +116,7 @@ export class AuthController {
         } catch (err) {
             console.error(err);
             if (err instanceof jwt.TokenExpiredError) {
-                res.status(400).json({ error: "Reset token has expired" });
+                res.status(401).json({ error: "Reset token has expired" });
             } else if (err instanceof jwt.JsonWebTokenError) {
                 res.status(400).json({ error: "Invalid reset token" });
             } else {

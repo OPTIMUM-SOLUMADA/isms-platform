@@ -38,6 +38,14 @@ export class UserService {
         return prisma.user.update({
             where: { id },
             data,
+            include: {
+                department: true,
+                ownedDocuments: true,
+                documentReviews: true,
+                documentApprovals: true,
+                notifications: true,
+                auditLogs: true,
+            },
         });
     }
 
@@ -45,6 +53,12 @@ export class UserService {
         return prisma.user.update({
             where: { id },
             data: { isActive: false },
+        });
+    }
+
+    async delete(id: string) {
+        return prisma.user.delete({
+            where: { id },
         });
     }
 

@@ -3,7 +3,8 @@ import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiAxiosError } from "@/types/api";
 import { userService } from "@/services/userService";
-import { AddUserFormData } from "@/templates/forms/users/AddUserForm";
+import type { AddUserFormData } from "@/templates/forms/users/AddUserForm";
+import type { UpdateUserFormData } from "@/templates/forms/users/EditUserForm";
 
 // -----------------------------
 // Context Types
@@ -13,8 +14,8 @@ type UserContextType = {
     isLoading: boolean;
     fetchUsers: () => Promise<any>;
     createUser: (data: AddUserFormData) => Promise<boolean>;
-    updateUser: (id: string, data: Partial<User>) => Promise<void>;
-    deleteUser: (id: string) => Promise<void>;
+    updateUser: (data: UpdateUserFormData) => Promise<boolean>;
+    deleteUser: (id: string) => Promise<boolean>;
     selectedUser: User | null;
     setSelectedUser: (user: User) => void;
     // loading state
@@ -64,6 +65,31 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         },
     });
 
+    const updateUserMutation = useMutation<any, ApiAxiosError, UpdateUserFormData>({
+        mutationFn: async (data) => {
+            const { id, ...rest } = data;
+            return await userService.update(id, rest);
+        },
+        onSuccess: (res) => {
+            setUsers(prev => prev.map((user) => (
+                user.id === res.data.id ? ({ ...user, ...res.data }) : user))
+            );
+        },
+        onError: (err) => {
+            console.error(err);
+        },
+    });
+
+    const deleteUserMutation = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await userService.delete(id),
+        onSuccess: (res) => {
+            setUsers(prev => prev.filter(user => user.id !== res.data.id));
+        },
+        onError: (err) => {
+            console.error(err);
+        },
+    });
+
     const createUser = useCallback(
         async (data: AddUserFormData): Promise<boolean> => {
             try {
@@ -77,14 +103,29 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         [createUserMutation]
     );
 
+    const updateUser = useCallback(
+        async (data: UpdateUserFormData): Promise<boolean> => {
+            try {
+                await updateUserMutation.mutateAsync(data);
+                return true;
+            } catch (err) {
+                console.error(err);
+                return false;
+            }
+        },
+        [updateUserMutation]
+    );
 
-    const updateUser = useCallback(async (id: string, data: Partial<User>) => {
-        setUsers(prev => prev.map((user) => (user.id === id ? { ...user, ...data } : user)));
-    }, []);
 
-    const deleteUser = useCallback(async (id: string) => {
-        setUsers(prev => prev.filter(user => user.id !== id));
-    }, []);
+    const deleteUser = useCallback(async (id: string): Promise<boolean> => {
+        try {
+            await deleteUserMutation.mutateAsync({ id });
+            return true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }, [deleteUserMutation]);
 
     const setSelectedUser = useCallback((user: User) => {
         _setSelectedUser(user);
@@ -101,7 +142,25 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         selectedUser,
         isCreating: createUserMutation.isPending,
         createError: createUserMutation.error?.response?.data?.code ?? null,
-    }), [createUser, refetchUsers, isLoading, updateUser, deleteUser, users, selectedUser, setSelectedUser, createUserMutation.isPending, createUserMutation.error]);
+        isUpdating: updateUserMutation.isPending,
+        updateError: updateUserMutation.error?.response?.data?.code ?? null,
+        isDeleting: deleteUserMutation.isPending,
+        deleteError: deleteUserMutation.error?.response?.data?.code ?? null
+    }), [createUser,
+        refetchUsers,
+        isLoading,
+        updateUser,
+        deleteUser,
+        users,
+        selectedUser,
+        setSelectedUser,
+        createUserMutation.isPending,
+        createUserMutation.error,
+        updateUserMutation.isPending,
+        updateUserMutation.error,
+        deleteUserMutation.isPending,
+        deleteUserMutation.error
+    ]);
 
     return (
         <UserContext.Provider value={values}>
