@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';
 import UpdateUserForm from '@/templates/forms/users/EditUserForm';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -205,7 +206,8 @@ export default function UserManagementPage() {
       <Dialog open={isAddOpen} onOpenChange={closeAdd}>
         <DialogContent className='bg-gray-50'>
           <DialogHeader>
-            <DialogTitle>{t("Add new user")}</DialogTitle>
+            <DialogTitle>{t("user.forms.add.title")}</DialogTitle>
+            <DialogDescription>{t("user.forms.add.subtitle")}</DialogDescription>
           </DialogHeader>
           <AddUserForm
             departments={departments}
@@ -222,7 +224,8 @@ export default function UserManagementPage() {
         <Dialog open={isEditOpen} onOpenChange={closeEdit}>
           <DialogContent className='bg-gray-50'>
             <DialogHeader>
-              <DialogTitle>{t("Update user")}</DialogTitle>
+              <DialogTitle>{t("user.forms.update.title")}</DialogTitle>
+              <DialogDescription>{t("user.forms.update.subtitle")}</DialogDescription>
             </DialogHeader>
             <UpdateUserForm
               departments={departments}
