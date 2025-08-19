@@ -165,6 +165,60 @@
             }
         }
     },
+    "document": {
+    "title": "Gestion des documents",
+    "subtitle": "Gérer les documents et leurs versions",
+    "forms": {
+        "add": {
+            "title": "Ajouter un document",
+            "name": {
+                "label": "Nom",
+                "placeholder": "Nom du document"
+            },
+            "description": {
+                "label": "Description",
+                "placeholder": "Description du document"
+            },
+            "status": {
+                "label": "Statut",
+                "draft": "Brouillon",
+                "review": "En révision",
+                "approved": "Approuvé",
+                "expired": "Expiré"
+            },
+            "nextReviews": {
+                "label": "Prochaine révision"
+            },
+            "reviewFrequency": {
+                "label": "Fréquence de révision",
+                "placeholder": "Fréquence de révision"
+            },
+            "owner": {
+                "label": "Propriétaire",
+                "placeholder": "Nom du propriétaire"
+            },
+            "category": {
+                "label": "Catégorie",
+                "placeholder": "Nom de la catégorie"
+            },
+            "file": {
+                "label": "Fichier",
+                "selected": "Fichier sélectionné",
+                "dragOrClick": "Glisser ou cliquer ici pour choisir un fichier"
+            },
+            "actions": {
+                "submit": {
+                    "label": "Ajouter",
+                    "loading": "Ajout en cours..."
+                },
+                "cancel": {
+                    "label": "Annuler"
+                }
+            }
+        }
+    }
+    },
+
     "errors": {
         "ERR_INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
         "ERR_SERVER_ERROR": "Une erreur inconnue s'est produite",
