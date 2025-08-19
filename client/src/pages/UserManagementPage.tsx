@@ -129,16 +129,16 @@ export default function UserManagementPage() {
   }, [deleteError, t, toast]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col flex-grow">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage user accounts, roles, and permissions</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t("user.title")}</h1>
+          <p className="text-gray-600 mt-1">{t("user.subtitle")}</p>
         </div>
         <Button onClick={openAdd} className="flex items-center space-x-2">
           <UserPlus className="h-4 w-4" />
-          <span>Add User</span>
+          <span>{t("user.actions.add.label")}</span>
         </Button>
       </div>
 
@@ -148,7 +148,7 @@ export default function UserManagementPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Users</p>
+                <p className="text-sm text-gray-600">{t("user.stats.total.title")}</p>
                 <p className="text-2xl font-bold">{users.length}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
@@ -161,7 +161,7 @@ export default function UserManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 capitalize">{role}s</p>
+                  <p className="text-sm text-gray-600">{t(`user.stats.${role.toLowerCase()}.title`)}</p>
                   <p className="text-2xl font-bold">{count}</p>
                 </div>
                 <Shield className="h-8 w-8 text-gray-400" />
@@ -177,7 +177,7 @@ export default function UserManagementPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <SearchInput
-                placeholder='Search by name, email or department'
+                placeholder={t("user.filters.search.placeholder")}
                 value={searchTerm}
                 onValueChange={setSearchTerm}
               />
@@ -188,10 +188,10 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="all">{t("user.filters.role.placeholder")}</SelectItem>
                   {roles.map((role, index) => (
                     <SelectItem key={index} value={role}>
-                      {role}
+                      {t(`user.role.${role.toLowerCase()}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -202,10 +202,10 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="all">{t("user.filters.status.placeholder")}</SelectItem>
                   {userStatus.map((status, index) => (
                     <SelectItem key={index} value={status}>
-                      {status}
+                      {t(`user.status.${status.toLowerCase()}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -216,7 +216,7 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="all">{t("user.filters.department.placeholder")}</SelectItem>
                   {departments.map((dept, index) => (
                     <SelectItem key={index} value={dept.id}>{dept.name}</SelectItem>
                   ))}

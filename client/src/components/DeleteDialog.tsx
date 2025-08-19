@@ -46,7 +46,10 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent
+                className="sm:max-w-[400px]"
+                onInteractOutside={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <div className="flex items-center gap-2">
                         <AlertCircle className="w-6 h-6 text-red-500" />
