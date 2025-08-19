@@ -49,7 +49,7 @@ model User {
   role         RoleType  @default(VIEWER)
   isActive     Boolean   @default(true)
   lastLogin    DateTime?
-  ssoId        String?   @unique
+  // ssoId        String?   @unique
   passwordHash String?
 
   departmentId String?     @db.ObjectId

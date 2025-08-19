@@ -59,18 +59,38 @@ export type ReviewItem = {
     startDate: string;
 }
 
+export enum RoleType {
+    ADMIN = "ADMIN",
+    // CONTRIBUTOR = "CONTRIBUTOR",
+    REVIEWER = "REVIEWER",
+    VIEWER = "VIEWER",
+}
+
 export type User = {
     id: string;
     name: string;
     email: string;
-    role: 'admin' | 'manager' | 'contributor' | 'reviewer' | 'viewer';
-    department: string;
-    status: 'active' | 'inactive' | 'pending';
-    lastActive: string;
-    joinedDate: string;
-    permissions: string[];
-    documents: number;
-    reviews: number;
+    role: RoleType;
+    isActive: boolean;
+    lastLogin?: string;
+    department: Department;
+    departmentId: string;
+
+    documents: any[];
+    reviews: any[];
+
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type Department = {
+    id: string;
+    name: string;
+    description: string;
+    members: User[];
+
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CustomFormProps<T> {

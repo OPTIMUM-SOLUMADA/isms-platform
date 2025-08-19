@@ -15,7 +15,9 @@ export const userCreateSchema = Joi.object({
         "string.empty": "Role is required",
         "any.only": "Invalid role"
     }),
-    departmentId: Joi.string().uuid().required().messages({
-        "string.empty": "Department is required",
-    }),
+    departmentId: Joi.string()
+        .pattern(/^[0-9a-fA-F]{24}$/)
+        .required().messages({
+            "string.empty": "Department is required",
+        }),
 });

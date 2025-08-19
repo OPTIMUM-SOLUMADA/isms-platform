@@ -3,7 +3,17 @@ import { Prisma } from "@prisma/client";
 
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
-        return prisma.user.create({ data });
+        return prisma.user.create({
+            data,
+            include: {
+                department: true,
+                ownedDocuments: true,
+                documentReviews: true,
+                documentApprovals: true,
+                notifications: true,
+                auditLogs: true,
+            }
+        });
     }
 
     async getUserById(id: string) {

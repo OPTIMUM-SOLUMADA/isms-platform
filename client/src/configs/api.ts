@@ -13,6 +13,7 @@ export const API_CONFIG = {
             VERIFY_RESET_TOKEN: '/auth/verify-reset-token',
         },
         USERS: '/users',
+        DEPARTMENTS: '/departments',
     },
 } as const;
 

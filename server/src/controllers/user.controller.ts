@@ -6,10 +6,22 @@ const service = new UserService();
 export class UserController {
     async create(req: Request, res: Response) {
         try {
+            // check if user email exists
+            const userExists = await service.findByEmail(req.body.email);
+            if (userExists) {
+                res.status(400).json({
+                    error: 'User already exists',
+                    code: 'ERR_USER_EXISTS'
+                });
+                return;
+            }
             const user = await service.createUser(req.body);
             res.status(201).json(user);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({
+                error: (err as Error).message,
+                code: "ERR_SERVER_ERROR"
+            });
         }
     }
 

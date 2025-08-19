@@ -91,6 +91,46 @@
             }
         }
     },
+    "user": {
+        "title": "Gestion des utilisateurs",
+        "subtitle": "Gerer les comptes des utilisateurs et roles",
+        "forms": {
+            "add": {
+                "title": "Ajouter un utilisateur",
+                "subtitle": "Ajouter un utilisateur",
+                "email": {
+                    "label": "Adresse email",
+                    "placeholder": "isms@example.com"
+                },
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom de l'utilisateur"
+                },
+                "role": {
+                    "label": "Role",
+                    "placeholder": "Role de l'utilisateur",
+                    "options": {
+                        "admin": "Administrateur",
+                        "viewer": "Visiteur",
+                        "reviewer": "Reviseur"
+                    }
+                },
+                "department": {
+                    "label": "Departement",
+                    "placeholder": "Departement de l'utilisateur"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Ajouter",
+                        "loading": "Ajout en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    }
+                }
+            }
+        }
+    },
     "errors": {
         "ERR_INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
         "ERR_SERVER_ERROR": "Une erreur inconnue s'est produite",
@@ -99,7 +139,8 @@
         "ERR_INVALID_REFRESH_TOKEN": "Token de rafraîchissement invalide",
         "ERR_INVALID_TOKEN": "Token invalide",
         "ERR_RESET_TOKEN_EXPIRED": "Le lien de réinitialisation du mot de passe a expiré",
-        "ERR_INVALID_RESET_TOKEN": "Le lien de réinitialisation du mot de passe est invalide"
+        "ERR_INVALID_RESET_TOKEN": "Le lien de réinitialisation du mot de passe est invalide",
+        "ERR_USER_EXISTS": "Un utilisateur avec cet email existe déjà. Veuillez en choisir un autre."
     },
     "zod": {
         "errors": {
@@ -114,6 +155,12 @@
             },
             "email": {
                 "email": "Veuillez entrer une adresse email valide"
+            },
+            "name": {
+                "required": "Ce champ est requis"
+            },
+            "department": {
+                "required": "Veuillez sélectionner un département"
             }
         }
     }
