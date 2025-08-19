@@ -97,7 +97,7 @@
         "forms": {
             "add": {
                 "title": "Ajouter un utilisateur",
-                "subtitle": "Ajouter un utilisateur",
+                "subtitle": "Remplissez les informations de l'utilisateur",
                 "email": {
                     "label": "Adresse email",
                     "placeholder": "isms@example.com"
@@ -123,6 +123,40 @@
                     "submit": {
                         "label": "Ajouter",
                         "loading": "Ajout en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    }
+                }
+            },
+            "update": {
+                "title": "Modifier un utilisateur",
+                "subtitle": "Modifier les informations de l'utilisateur",
+                "email": {
+                    "label": "Adresse email",
+                    "placeholder": "isms@example.com"
+                },
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom de l'utilisateur"
+                },
+                "role": {
+                    "label": "Role",
+                    "placeholder": "Role de l'utilisateur",
+                    "options": {
+                        "admin": "Administrateur",
+                        "viewer": "Visiteur",
+                        "reviewer": "Reviseur"
+                    }
+                },
+                "department": {
+                    "label": "Departement",
+                    "placeholder": "Departement de l'utilisateur"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
                     },
                     "cancel": {
                         "label": "Annuler"
