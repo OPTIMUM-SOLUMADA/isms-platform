@@ -43,11 +43,10 @@ export class AuthController {
                 .cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
                 .header('Authorization', `Bearer ${accessToken}`)
                 .json({
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        role: user.role
-                    }
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
                 });
         } catch (err) {
             console.error(err);
@@ -98,7 +97,7 @@ export class AuthController {
         try {
             const authHeader = req.headers['authorization'];
             if (!authHeader || !authHeader.startsWith("Bearer ")) {
-                res.status(401).json({ error: "No token provided or malformed header" });
+                res.status(400).json({ error: "No token provided or malformed header" });
                 return;
             }
 
@@ -117,9 +116,9 @@ export class AuthController {
         } catch (err) {
             console.error(err);
             if (err instanceof jwt.TokenExpiredError) {
-                res.status(401).json({ error: "Reset token has expired" });
+                res.status(400).json({ error: "Reset token has expired" });
             } else if (err instanceof jwt.JsonWebTokenError) {
-                res.status(401).json({ error: "Invalid reset token" });
+                res.status(400).json({ error: "Invalid reset token" });
             } else {
                 res.status(500).json({ error: "Server error verifying token" });
             }
@@ -257,12 +256,12 @@ export class AuthController {
         } catch (err) {
             console.error("Error verifying password reset token:", err);
             if (err instanceof jwt.TokenExpiredError) {
-                res.status(401).json({
+                res.status(400).json({
                     error: "Reset token has expired",
                     code: "ERR_RESET_TOKEN_EXPIRED"
                 });
             } else if (err instanceof jwt.JsonWebTokenError) {
-                res.status(401).json({
+                res.status(400).json({
                     error: "Invalid reset token",
                     code: "ERR_INVALID_RESET_TOKEN"
                 });

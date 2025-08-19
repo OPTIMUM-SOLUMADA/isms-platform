@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChangePassword } from '@/hooks/queries/useAuth';
 import { useTranslation } from 'react-i18next';
-import { OctagonAlert } from 'lucide-react';
+import { ArrowLeft, OctagonAlert } from 'lucide-react';
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
             .then(res => {
                 setEmail(res.data.email);
             }).catch(err => {
-                setTokenError(err.response.data.error);
+                setTokenError(err.response.data.code);
             });
 
     }, [token]);
@@ -61,14 +61,14 @@ export default function ResetPasswordPage() {
 
     if (tokenError) return (
         <AuthLayout>
-            <Card className="shadow-lg">
+            <Card className="shadow-lg bg-red-50 border-red-100">
                 <CardHeader className="space-y-1 pb-6">
-                    <CardTitle className="text-2xl flex items-center gap-2 justify-center font-semibold text-center text-gray-900 ">
+                    <CardTitle className="text-xl flex items-center text-red-500 gap-2 justify-center font-semibold text-center ">
                         <OctagonAlert className='text-red-600' />
                         {t('authentification.resetPassword.error.title')}
                     </CardTitle>
                     <CardDescription className="text-gray-600 text-center pt-4">
-                        {tokenError}
+                        {t(`errors.${tokenError}`)}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className='flex flex-col gap-3'>
@@ -77,6 +77,7 @@ export default function ResetPasswordPage() {
                         className='mx-auto'
                         onClick={() => navigate("/login")}
                     >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
                         {t('authentification.resetPassword.error.button.label')}
                     </Button>
                 </CardContent>
