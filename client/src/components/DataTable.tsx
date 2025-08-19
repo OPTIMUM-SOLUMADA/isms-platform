@@ -27,6 +27,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ArrowUpDown, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // ============================================================================
 // Reusable DataTable
@@ -65,6 +66,7 @@ export function DataTable<TData, TValue>({
     className,
     renderNoData
 }: DataTableProps<TData, TValue>) {
+    const { t } = useTranslation();
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -82,6 +84,7 @@ export function DataTable<TData, TValue>({
                             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                             aria-label="Select all"
                             className="translate-y-[2px]"
+                            title={t("components.table.selection.selectAll")}
                         />
                     ),
                     cell: ({ row }) => (
@@ -90,6 +93,7 @@ export function DataTable<TData, TValue>({
                             onCheckedChange={(value) => row.toggleSelected(!!value)}
                             aria-label="Select row"
                             className="translate-y-[2px]"
+                            title={t("components.table.selection.select")}
                         />
                     ),
                     enableSorting: false,
@@ -131,13 +135,13 @@ export function DataTable<TData, TValue>({
         : globalFilter;
 
     return (
-        <Card className={cn("w-full", className)}>
+        <Card className={cn("w-full flex flex-col", className)}>
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 {title && <CardTitle className="text-xl">{title}</CardTitle>}
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {enableSearch && (
                         <Input
-                            placeholder={searchableColumnId ? `Search ${searchableColumnId}...` : "Search..."}
+                            placeholder={searchableColumnId ? `Search ${searchableColumnId}...` : t("components.table.search.placeholder")}
                             value={searchValue}
                             onChange={(e) => onSearchChange(e.target.value)}
                             className="h-9 w-full sm:w-64"
@@ -154,17 +158,19 @@ export function DataTable<TData, TValue>({
                                 className="h-8"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Supprimer les {table.getFilteredSelectedRowModel().rows.length} sélectionnés
+                                {t("components.table.actions.deleteSelected.label", {
+                                    count: table.getFilteredSelectedRowModel().rows.length
+                                })}
                             </Button>
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="gap-2">
-                                    View <ChevronDown className="h-4 w-4" />
+                                    {t("components.table.actions.toggleColumns.placeholder")} <ChevronDown className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("components.table.actions.toggleColumns.label")}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 {table.getAllLeafColumns().map((column) => {
                                     // hide technical columns
@@ -176,7 +182,7 @@ export function DataTable<TData, TValue>({
                                             checked={column.getIsVisible()}
                                             onCheckedChange={(value) => column.toggleVisibility(!!value)}
                                         >
-                                            {column.id.replace(/_/g, " ")}
+                                            {column.columnDef.header as string}
                                         </DropdownMenuCheckboxItem>
                                     );
                                 })}
@@ -186,64 +192,68 @@ export function DataTable<TData, TValue>({
                 </div>
             </CardHeader>
 
-            <CardContent>
-                <div className="rounded-2xl border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <TableHead key={header.id} style={{ width: header.getSize() }}>
-                                            {header.isPlaceholder ? null : (
-                                                <div
-                                                    className={cn(
-                                                        header.column.getCanSort() && "cursor-pointer select-none",
-                                                        "flex items-center gap-1"
-                                                    )}
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                >
-                                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    {header.column.getCanSort() ? (
-                                                        <ArrowUpDown className="h-3.5 w-3.5 opacity-60" />
-                                                    ) : null}
-                                                </div>
-                                            )}
-                                        </TableHead>
-                                    ))}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+            <CardContent className="flex-1 flex flex-col flex-grow">
+                <div className="rounded-lg border overflow-hidden flex flex-col flex-grow">
+                    <div className="flex-grow overflow-auto rounded-lg">
+                        <Table className="w-full">
+                            <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => (
+                                            <TableHead key={header.id} style={{ width: header.getSize() }}>
+                                                {header.isPlaceholder ? null : (
+                                                    <div
+                                                        className={cn(
+                                                            header.column.getCanSort() && "cursor-pointer select-none",
+                                                            "flex items-center gap-1"
+                                                        )}
+                                                        onClick={header.column.getToggleSortingHandler()}
+                                                    >
+                                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                                        {header.column.getCanSort() ? (
+                                                            <ArrowUpDown className="h-3.5 w-3.5 opacity-60" />
+                                                        ) : null}
+                                                    </div>
+                                                )}
+                                            </TableHead>
                                         ))}
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={table.getAllLeafColumns().length} className="h-24 text-center">
-                                        {renderNoData ? renderNoData() : "No results."}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                ))}
+                            </TableHeader>
+                            <TableBody className="bg-muted/40">
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="bg-white">
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={table.getAllLeafColumns().length} className="h-full text-center ali">
+                                            {renderNoData ? renderNoData() : t("components.table.empty.title")}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
 
                 <div className="mt-4 flex items-center justify-between gap-2">
                     <div className="text-sm text-muted-foreground">
-                        {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-                        selected
+                        {t("components.table.selection.selected", {
+                            count: table.getFilteredSelectedRowModel().rows.length,
+                            total: table.getFilteredRowModel().rows.length,
+                        })}
                     </div>
                     <div className="space-x-2">
                         <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                            Previous
+                            {t("components.table.pagination.previous")}
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                            Next
+                            {t("components.table.pagination.next")}
                         </Button>
                     </div>
                 </div>

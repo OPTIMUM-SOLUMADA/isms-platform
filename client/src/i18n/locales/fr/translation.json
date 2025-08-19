@@ -94,6 +94,42 @@
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et roles",
+        "stats": {
+            "total": {
+                "title": "Total des utilisateurs",
+                "value": "{{count}} utilisateurs"   
+            },
+            "admin": {
+                "title": "Administrateurs",
+                "value": "{{count}} administrateurs"
+            },
+            "viewer": {
+                "title": "Visiteurs",
+                "value": "{{count}} visiteurs"
+            },
+            "reviewer": {
+                "title": "Reviseurs",
+                "value": "{{count}} reviseurs"
+            }
+        },
+        "filters": {
+            "search": {
+                "label": "Rechercher par nom ou email",
+                "placeholder": "Rechercher un utilisateur..."
+            },
+            "role": {
+                "label": "Filtrer par rôle",
+                "placeholder": "Tous les rôles"
+            },
+            "department": {
+                "label": "Filtrer par département",
+                "placeholder": "Tous les départements"
+            },
+            "status": {
+                "label": "Filtrer par statut",
+                "placeholder": "Tous les statuts"
+            }
+        },
         "forms": {
             "add": {
                 "title": "Ajouter un utilisateur",
@@ -121,8 +157,8 @@
                 },
                 "actions": {
                     "submit": {
-                        "label": "Ajouter",
-                        "loading": "Ajout en cours..."
+                        "label": "Enregistrer",
+                        "loading": "Enregistrement en cours..."
                     },
                     "cancel": {
                         "label": "Annuler"
@@ -163,6 +199,44 @@
                     }
                 }
             }
+        },
+        "table": {
+            "title": "Liste des utilisateurs",
+            "columns": {
+                "name": "Nom",
+                "email": "Email",
+                "role": "Rôle",
+                "department": "Departement",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "view": "Voir les détails"
+            },
+            "empty": {
+                "title": "Aucun utilisateur trouvé",
+                "message": "Essaiez de modifier les filtres ou d'ajouter un nouvel utilisateur.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter un utilisateur"
+                    }
+                }
+            }
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un nouvel utilisateur"
+            }
+        },
+        "role": {
+            "admin": "Administrateur",
+            "viewer": "Visiteur",
+            "reviewer": "Reviseur"
+        },
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif"
         }
     },
     "document": {
@@ -250,6 +324,68 @@
             "department": {
                 "required": "Veuillez sélectionner un département"
             }
+        }
+    },
+    "components": {
+        "deleteDialog": {
+            "title": "Supprimer {{entity}} ?",
+            "description": "Êtes-vous sûr de vouloir supprimer {{entity}} ? Cette action est irréversible.",
+            "actions": {
+                "confirm": {
+                    "label": "Supprimer",
+                    "loading": "Suppression en cours..."
+                },
+                "cancel": {
+                    "label": "Annuler"
+                }
+            }
+        },
+        "toast": {
+            "success": {
+                "title": "Succès",
+                "user": {
+                    "created": "Utilisateur créé avec succès",
+                    "updated": "Utilisateur mis à jour avec succès",
+                    "deleted": "Utilisateur supprimé avec succès"
+                }
+            },
+            "error": {
+                "title": "Erreur",
+                "description": "Une erreur s'est produite lors de {{action}}. Veuillez réessayer."
+            }
+        },
+        "table": {
+            "pagination": {
+                "label": "Page {{page}} sur {{totalPages}}",
+                "next": "Suivante",
+                "previous": "Précédente",
+                "first": "Première page",
+                "last": "Dernière page"
+            },
+            "search": {
+                "placeholder": "Rechercher...",
+                "noResults": "Aucun résultat trouvé"
+            },
+            "actions": {
+                "toggleColumns": {
+                    "label": "Afficher/Masquer les colonnes",
+                    "placeholder": "Afficher / Masquer"
+                },
+                "deleteSelected": {
+                    "label": "Supprimer les {{count}} éléments sélectionnés",
+                    "loading": "Suppression en cours..."
+                }
+            },
+            "empty": {
+                "title": "Aucun enregistrement trouvé"
+            },
+            "selection": {
+                "selectAll": "Sélectionner tout",
+                "select": "Sélectionner",
+                "deselectAll": "Désélectionner tout",
+                "selected": "{{count}} sur {{total}} éléments sélectionnés"
+            }
+
         }
     }
 }

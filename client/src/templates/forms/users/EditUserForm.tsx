@@ -14,6 +14,7 @@ import { LoadingButton } from '@/components/ui/loading-button';
 import ErrorCodeField from '@/components/ErrorCodeField';
 
 const updateUserSchema = z.object({
+    id: z.string(),
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
     email: cz.email(),
     role: z.enum(roles),
@@ -32,6 +33,7 @@ const UpdateUserForm = ({
     user,
     departments = [],
     isPending = false,
+    onCancel,
     error
 }: UpdateUserFormProps) => {
 
@@ -40,6 +42,7 @@ const UpdateUserForm = ({
     const form = useForm<UpdateUserFormData>({
         resolver: zodResolver(updateUserSchema),
         defaultValues: {
+            id: user.id,
             name: user.name,
             email: user.email,
             role: user.role,
@@ -154,7 +157,11 @@ const UpdateUserForm = ({
                     >
                         {t('user.forms.update.actions.submit.label')}
                     </LoadingButton>
-                    <Button type="button" variant="ghost">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={onCancel}
+                    >
                         {t('user.forms.update.actions.cancel.label')}
                     </Button>
                 </div>

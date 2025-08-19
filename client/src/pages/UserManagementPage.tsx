@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Users,
   UserPlus,
@@ -25,7 +25,7 @@ import { useUserUI } from '@/contexts/ui/UserUIContext';
 import { useTranslation } from 'react-i18next';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';
-import UpdateUserForm from '@/templates/forms/users/EditUserForm';
+import UpdateUserForm, { UpdateUserFormData } from '@/templates/forms/users/EditUserForm';
 import { DialogDescription } from '@radix-ui/react-dialog';
 
 export default function UserManagementPage() {
@@ -40,9 +40,13 @@ export default function UserManagementPage() {
   const {
     users,
     createUser,
+    updateUser,
     deleteUser,
     createError,
     isCreating,
+    isUpdating,
+    updateError,
+    deleteError,
     selectedUser,
     setSelectedUser
   } = useUser();
@@ -77,35 +81,64 @@ export default function UserManagementPage() {
     if (res) {
       closeAdd();
       toast({
-        title: "Success",
-        description: "User created successfully",
+        title: t("components.toast.success.title"),
+        description: t("components.toast.success.user.created"),
         variant: "success",
       })
     };
-  }, [createUser, closeAdd, toast]);
+  }, [createUser, closeAdd, toast, t]);
+
+
+  const handleUpdateUser = useCallback(async (user: UpdateUserFormData) => {
+    const res = await updateUser(user);
+    if (res) {
+      closeEdit();
+      toast({
+        title: t("components.toast.success.title"),
+        description: t("components.toast.success.user.updated"),
+        variant: "success",
+      })
+    };
+  }, [updateUser, closeEdit, toast, t]);
 
   const handleDeleteUser = useCallback(async (user: User) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      deleteUser(user.id);
+    const res = await deleteUser(user.id);
+    if (res) {
+      toast({
+        title: t("components.toast.success.title"),
+        description: t("components.toast.success.user.deleted"),
+        variant: "success",
+      });
     }
-  }, [deleteUser]);
+    return res;
+  }, [deleteUser, toast, t]);
 
   const handleOpenEditForm = useCallback(async (user: User) => {
     setSelectedUser(user);
     openEdit();
   }, [openEdit, setSelectedUser]);
 
+  useEffect(() => {
+    if (deleteError) {
+      toast({
+        title: t("components.toast.error.title"),
+        description: t(`errors.${deleteError}`),
+        variant: "destructive",
+      });
+    }
+  }, [deleteError, t, toast]);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col flex-grow">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage user accounts, roles, and permissions</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t("user.title")}</h1>
+          <p className="text-gray-600 mt-1">{t("user.subtitle")}</p>
         </div>
         <Button onClick={openAdd} className="flex items-center space-x-2">
           <UserPlus className="h-4 w-4" />
-          <span>Add User</span>
+          <span>{t("user.actions.add.label")}</span>
         </Button>
       </div>
 
@@ -115,7 +148,7 @@ export default function UserManagementPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Users</p>
+                <p className="text-sm text-gray-600">{t("user.stats.total.title")}</p>
                 <p className="text-2xl font-bold">{users.length}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
@@ -128,7 +161,7 @@ export default function UserManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 capitalize">{role}s</p>
+                  <p className="text-sm text-gray-600">{t(`user.stats.${role.toLowerCase()}.title`)}</p>
                   <p className="text-2xl font-bold">{count}</p>
                 </div>
                 <Shield className="h-8 w-8 text-gray-400" />
@@ -144,7 +177,7 @@ export default function UserManagementPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <SearchInput
-                placeholder='Search by name, email or department'
+                placeholder={t("user.filters.search.placeholder")}
                 value={searchTerm}
                 onValueChange={setSearchTerm}
               />
@@ -155,10 +188,10 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="all">{t("user.filters.role.placeholder")}</SelectItem>
                   {roles.map((role, index) => (
                     <SelectItem key={index} value={role}>
-                      {role}
+                      {t(`user.role.${role.toLowerCase()}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -169,10 +202,10 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="all">{t("user.filters.status.placeholder")}</SelectItem>
                   {userStatus.map((status, index) => (
                     <SelectItem key={index} value={status}>
-                      {status}
+                      {t(`user.status.${status.toLowerCase()}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -183,7 +216,7 @@ export default function UserManagementPage() {
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="all">{t("user.filters.department.placeholder")}</SelectItem>
                   {departments.map((dept, index) => (
                     <SelectItem key={index} value={dept.id}>{dept.name}</SelectItem>
                   ))}
@@ -229,10 +262,10 @@ export default function UserManagementPage() {
             </DialogHeader>
             <UpdateUserForm
               departments={departments}
-              onSubmit={handleAddUser}
-              onCancel={closeAdd}
-              isPending={isCreating}
-              error={createError}
+              onSubmit={handleUpdateUser}
+              onCancel={closeEdit}
+              isPending={isUpdating}
+              error={updateError}
               user={selectedUser}
             />
           </DialogContent>

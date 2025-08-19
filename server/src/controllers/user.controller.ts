@@ -56,6 +56,18 @@ export class UserController {
         }
     }
 
+    async delete(req: Request, res: Response) {
+        try {
+            const user = await service.delete(req.params.id!);
+            res.json(user);
+        } catch (err) {
+            res.status(400).json({
+                error: (err as Error).message,
+                code: "ERR_SERVER_ERROR"
+            });
+        }
+    }
+
     async list(req: Request, res: Response) {
         try {
             const filter: any = {};
