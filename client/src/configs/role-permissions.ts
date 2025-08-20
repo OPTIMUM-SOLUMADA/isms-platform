@@ -1,0 +1,70 @@
+import { RoleType, ActionPermission, AccessPermission } from "@/types/role";
+
+// Action Permissions are used for authorization
+export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
+    [RoleType.ADMIN]: [
+        "document.create",
+        "document.edit",
+        "document.delete",
+        "document.publish",
+        "document.assignOwner",
+        "document.approve",
+        "document.uploadVersion",
+        "user.manage",
+        "audit.view",
+        "dashboard.view",
+        "report.export",
+        "document.review",
+        "document.comment",
+        "document.acknowledge",
+        "document.search",
+    ],
+    [RoleType.CONTRIBUTOR]: [
+        "document.create",
+        "document.edit",
+        "document.uploadVersion",
+        "document.comment",
+        "document.search",
+    ],
+    [RoleType.REVIEWER]: [
+        "document.review",
+        "document.comment",
+        "document.approve",
+        "document.search",
+    ],
+    [RoleType.VIEWER]: [
+        "document.view",
+        "document.download",
+        "document.search",
+        "document.acknowledge",
+    ],
+};
+
+
+// Access Permissions are used for routing
+export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
+    [RoleType.ADMIN]: [
+        "dashboard.page.access",
+        "documents.page.access",
+        "reviews.page.access",
+        "compliance.page.access",
+        "users.page.access",
+        "audit.page.access"
+    ],
+    [RoleType.CONTRIBUTOR]: [
+        "dashboard.page.access",
+        "documents.page.access",
+        "reviews.page.access",
+        "compliance.page.access",
+        "audit.page.access"
+    ],
+    [RoleType.REVIEWER]: [
+        "documents.page.access",
+        "reviews.page.access",
+        "compliance.page.access"
+    ],
+    [RoleType.VIEWER]: [
+        "documents.page.access",
+        "compliance.page.access"
+    ],
+};
