@@ -331,6 +331,32 @@
             }
         }
     },
+    "unauthorized": {
+        "title": "Accès non autorisé",
+        "subtitle": "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+        "message": "Veuillez contacter l'administrateur si vous pensez que c'est une erreur.",
+        "actions": {
+            "goBack": {
+                "label": "Retourner à la page précédente"
+            },
+            "contactAdmin": {
+                "label": "Contacter l'administrateur"
+            }
+        }
+    },
+    "notFound": {
+        "title": "Page non trouvée",
+        "subtitle": "La page que vous recherchez n'existe pas.",
+        "message": "Vérifiez l'URL ou retournez à la page d'accueil.",
+        "actions": {
+            "goHome": {
+                "label": "Aller à la page d'accueil"
+            },
+            "contactSupport": {
+                "label": "Contacter le support"
+            }
+        }
+    },
     "errors": {
         "ERR_INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
         "ERR_SERVER_ERROR": "Une erreur inconnue s'est produite",
