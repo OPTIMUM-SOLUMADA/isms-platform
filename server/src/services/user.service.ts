@@ -66,7 +66,15 @@ export class UserService {
         return prisma.user.findMany({
             ...(filter ? { where: filter } : {}),
             include: {
-                department: true
+                department: {
+                    include: {
+                        members: true,
+                    },
+                },
+                documentReviews: true,
+                documentApprovals: true,
+                auditLogs: true,
+                ownedDocuments: true
             },
         });
     }

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useUser } from '@/contexts/UserContext';
 import AddUserForm, { AddUserFormData } from '@/templates/forms/users/AddUserForm';
 import { UserTable } from '@/templates/table/UserTable';
@@ -26,7 +26,6 @@ import { useTranslation } from 'react-i18next';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';
 import UpdateUserForm, { UpdateUserFormData } from '@/templates/forms/users/EditUserForm';
-import { DialogDescription } from '@radix-ui/react-dialog';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -127,6 +126,14 @@ export default function UserManagementPage() {
       });
     }
   }, [deleteError, t, toast]);
+
+  const handleOpenView = useCallback((user: User) => {
+    setSelectedUser(user);
+  }, [setSelectedUser]);
+
+  const handleOpenMessage = useCallback((user: User) => {
+    window.open(`mailto:${user.email}`)
+  }, []);
 
   return (
     <div className="space-y-6 flex flex-col flex-grow">
@@ -233,6 +240,8 @@ export default function UserManagementPage() {
         onEdit={handleOpenEditForm}
         onDelete={handleDeleteUser}
         onAddUser={openAdd}
+        onView={handleOpenView}
+        onMessage={handleOpenMessage}
       />
 
       {/* Modal to add user */}

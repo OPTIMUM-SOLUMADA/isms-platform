@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
+import { UserAvatar } from '@/components/user-avatar';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -85,13 +86,17 @@ export function Header({ onMenuClick }: HeaderProps) {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
-                  <div className="h-8 w-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="hidden md:block text-left">
-                    <div className="font-medium text-sm text-gray-900">{user.name}</div>
-                    <div className="text-xs text-gray-500">{user.role}</div>
+                <Button variant="ghost" className="space-x-2 hover:bg-gray-100 h-fit">
+                  <div className="flex items-center p-1">
+                    <UserAvatar
+                      id={user.id}
+                      name={user.name}
+                      className="my-0.5"
+                    />
+                    <div className="hidden md:block text-left">
+                      <div className="font-medium text-sm text-gray-900">{user.name}</div>
+                      <div className="text-xs text-gray-500">{user.role}</div>
+                    </div>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
