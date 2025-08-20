@@ -24,6 +24,7 @@ const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
 const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage'));
+const UserProfilePage = lazy(() => import('@/pages/UserProfilePage'));
 
 
 const Loading = () => (
@@ -111,7 +112,7 @@ const routeConfig: AppRoute[] = [
                     },
                     {
                         path: "view/:id",
-                        element: <p>view user detail</p>
+                        element: <UserProfilePage />
                     }
                 ],
             },

@@ -27,6 +27,8 @@ import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';
 import UpdateUserForm, { UpdateUserFormData } from '@/templates/forms/users/EditUserForm';
 import WithTitle from '@/templates/layout/WithTitle';
+import { usePermissions } from '@/hooks/use-permissions';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -34,6 +36,9 @@ export default function UserManagementPage() {
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDepartment, setFilterDepartment] = useState('all');
+
+  const navigate = useNavigate();
+  const { hasActionPermission } = usePermissions();
 
   const { toast } = useToast();
 
@@ -129,11 +134,11 @@ export default function UserManagementPage() {
   }, [deleteError, t, toast]);
 
   const handleOpenView = useCallback((user: User) => {
-    setSelectedUser(user);
-  }, [setSelectedUser]);
+    navigate(`view/${user.id}`, { state: { user } });
+  }, [navigate]);
 
   const handleOpenMessage = useCallback((user: User) => {
-    window.open(`mailto:${user.email}`)
+    window.open(`mailto:${user.email}`);
   }, []);
 
   return (
@@ -145,10 +150,12 @@ export default function UserManagementPage() {
             <h1 className="text-3xl font-bold text-gray-900">{t("user.title")}</h1>
             <p className="text-gray-600 mt-1">{t("user.subtitle")}</p>
           </div>
-          <Button onClick={openAdd} className="flex items-center space-x-2">
-            <UserPlus className="h-4 w-4" />
-            <span>{t("user.actions.add.label")}</span>
-          </Button>
+          {hasActionPermission("user.create") && (
+            <Button onClick={openAdd} className="flex items-center space-x-2">
+              <UserPlus className="h-4 w-4" />
+              <span>{t("user.actions.add.label")}</span>
+            </Button>
+          )}
         </div>
 
         {/* Stats Cards */}

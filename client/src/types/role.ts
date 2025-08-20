@@ -21,7 +21,10 @@ export type ActionPermission =
     | "dashboard.access"  // can open dashboard page
     | "audit.access"      // can open audit page
     | "view.access"       // can open view page
-    | "user.manage"
+    | "user.create"
+    | "user.read"
+    | "user.update"
+    | "user.delete"
     | "audit.view"
     | "dashboard.view"
     | "report.export"
