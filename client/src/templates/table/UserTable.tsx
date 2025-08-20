@@ -18,6 +18,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
+import { UserHoverCard } from "../hovercard/UserHoverCard";
+import DepartmentHoverCard from "../hovercard/DepartmentHoverCard";
+import You from "@/components/You";
 
 interface UserActionsCell {
     user: User;
@@ -72,13 +75,17 @@ interface UserTableProps {
     onEdit?: (user: User) => Promise<void>;
     onDelete?: (user: User) => Promise<boolean>;
     onAddUser?: () => void;
+    onView?: (user: User) => void;
+    onMessage?: (user: User) => void;
 }
 
 const Table = ({
     data,
     onEdit,
     onDelete,
-    onAddUser
+    onAddUser,
+    onView,
+    onMessage
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
@@ -91,16 +98,24 @@ const Table = ({
             cell: ({ row }) => {
                 const user = row.original;
                 return (
-                    <div className="flex items-center space-x-3">
-                        <UserAvatar name={user.name} />
-                        <div>
-                            <div className="font-medium">{user.name} {currentUser?.id === user.id && '(Vous)'}</div>
-                            <div className="text-sm text-gray-500 flex items-center">
-                                <Mail className="h-3 w-3 mr-1" />
-                                {user.email}
+                    <UserHoverCard
+                        user={user}
+                        currentUserId={currentUser?.id}
+                        onViewDetails={onView}
+                        onEdit={onEdit}
+                        onMessage={onMessage}
+                    >
+                        <div className="flex items-center space-x-3">
+                            <UserAvatar id={user.id} name={user.name} />
+                            <div>
+                                <div className="font-medium">{user.name} {currentUser?.id === user.id && <You />}</div>
+                                <div className="text-xs text-gray-500 flex items-center">
+                                    <Mail className="h-3 w-3 mr-1" />
+                                    {user.email}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </UserHoverCard>
                 );
             },
         },
@@ -117,7 +132,7 @@ const Table = ({
         {
             accessorKey: "department",
             header: t("user.table.columns.department"),
-            cell: ({ row }) => <span className="text-sm">{row.original.department.name}</span>,
+            cell: ({ row }) => <DepartmentHoverCard department={row.original.department} />
         },
         // {
         //     accessorKey: "lastLogin",
@@ -158,7 +173,7 @@ const Table = ({
             enableSorting: false,
             enableHiding: false,
         },
-    ], [onEdit, onDelete, currentUser, t]);
+    ], [onEdit, onDelete, onMessage, onView, currentUser, t]);
 
     return (
         <DataTable
