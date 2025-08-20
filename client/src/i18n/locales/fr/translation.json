@@ -91,6 +91,47 @@
             }
         }
     },
+    "dashboard": {
+        "title": "Tableau de bord",
+        "subtitle": "Bienvenue dans le portail ISMS",
+        "stats": {
+            "totalUsers": {
+                "title": "Utilisateurs totaux",
+                "value": "{{count}} utilisateurs"
+            },
+            "activeUsers": {
+                "title": "Utilisateurs actifs",
+                "value": "{{count}} actifs"
+            },
+            "documents": {
+                "title": "Documents",
+                "value": "{{count}} documents"
+            },
+            "departments": {
+                "title": "Départements",
+                "value": "{{count}} départements"
+            }
+        },
+        "actions": {
+            "viewUsers": {
+                "label": "Voir les utilisateurs"
+            },
+            "viewDocuments": {
+                "label": "Voir les documents"
+            },
+            "viewDepartments": {
+                "label": "Voir les départements"
+            }
+        }
+    },
+    "review": {
+        "title": "Révisions des documents",
+        "subtitle": "Gérer les révisions des documents"
+    },
+    "compliance": {
+        "title": "Conformité",
+        "subtitle": ""
+    },
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et roles",
@@ -261,6 +302,9 @@
     "document": {
         "title": "Gestion des documents",
         "subtitle": "Gérer les documents et leurs versions",
+        "add": {
+            "title": "Ajouter un nouveau document"
+        },
         "forms": {
             "add": {
                 "title": "Ajouter un document",
