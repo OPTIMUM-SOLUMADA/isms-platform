@@ -9,6 +9,7 @@ import { userRoleColors } from "@/constants/color";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import You from "@/components/You";
+import { usePermissions } from "@/hooks/use-permissions";
 
 
 interface UserHoverCardProps {
@@ -29,6 +30,7 @@ export function UserHoverCard({
     onEdit
 }: UserHoverCardProps) {
     const { t } = useTranslation();
+    const { hasActionPermission } = usePermissions();
 
     return (
         <HoverCard>
@@ -65,15 +67,17 @@ export function UserHoverCard({
                 </div>
                 {/* Actions */}
                 <div className="mt-3 flex gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onViewDetails?.(user)}
-                        className="flex items-center gap-1 normal-case"
-                    >
-                        <Eye className="h-4 w-4" />
-                        {t("user.hovercard.actions.view.label")}
-                    </Button>
+                    {hasActionPermission("user.read") && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onViewDetails?.(user)}
+                            className="flex items-center gap-1 normal-case"
+                        >
+                            <Eye className="h-4 w-4" />
+                            {t("user.hovercard.actions.view.label")}
+                        </Button>
+                    )}
                     <Button
                         variant="outline"
                         size="sm"
@@ -83,15 +87,17 @@ export function UserHoverCard({
                         <MessageSquare className="h-4 w-4" />
                         {t("user.hovercard.actions.contact.label")}
                     </Button>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => onEdit?.(user)}
-                        className="flex items-center gap-1 normal-case"
-                    >
-                        <Pencil className="h-4 w-4" />
-                        {t("user.hovercard.actions.edit.label")}
-                    </Button>
+                    {hasActionPermission("user.update") && (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => onEdit?.(user)}
+                            className="flex items-center gap-1 normal-case"
+                        >
+                            <Pencil className="h-4 w-4" />
+                            {t("user.hovercard.actions.edit.label")}
+                        </Button>
+                    )}
                 </div>
             </HoverCardContent>
         </HoverCard>

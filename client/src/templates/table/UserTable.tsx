@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
 import DepartmentHoverCard from "../hovercard/DepartmentHoverCard";
 import You from "@/components/You";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface UserActionsCell {
     user: User;
@@ -32,6 +33,7 @@ interface UserActionsCell {
 const UserActionsCell = ({ user, onEdit, onDelete, onView }: UserActionsCell) => {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
+    const { hasActionPermission, hasActionPermissions } = usePermissions();
 
     const handleDelete = async () => {
         if (onDelete) await onDelete(user);
@@ -41,21 +43,26 @@ const UserActionsCell = ({ user, onEdit, onDelete, onView }: UserActionsCell) =>
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" disabled={!hasActionPermissions(["user.read", "user.update", "user.delete"])}>
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onView?.(user)}>
-                        <Eye className="mr-2 h-4 w-4" /> {t("user.table.actions.view")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit?.(user)}>
-                        <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
-                    </DropdownMenuItem>
+                    {hasActionPermission("user.read") && (
+                        <DropdownMenuItem onClick={() => onView?.(user)}>
+                            <Eye className="mr-2 h-4 w-4" /> {t("user.table.actions.view")}
+                        </DropdownMenuItem>
+                    )}
+                    {hasActionPermission("user.update") && (
+                        <DropdownMenuItem onClick={() => onEdit?.(user)}>
+                            <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
+                        </DropdownMenuItem>
+                    )}
+                    {hasActionPermission("user.delete") && (
+                        <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
+                            <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -134,29 +141,6 @@ const Table = ({
             header: t("user.table.columns.department"),
             cell: ({ row }) => <DepartmentHoverCard department={row.original.department} />
         },
-        // {
-        //     accessorKey: "lastLogin",
-        //     header: "Last login",
-        //     cell: ({ row }) => {
-        //         const lastLogin = row.getValue<string>("lastLogin");
-        //         return lastLogin ? (
-        //             <div className="flex items-center text-gray-600 text-sm">
-        //                 <Calendar className="h-3 w-3 mr-1" />
-        //                 {new Date(lastLogin).toLocaleDateString()}
-        //             </div>
-        //         ) : null;
-        //     },
-        // },
-        // {
-        //     accessorKey: "documents",
-        //     header: "Documents",
-        //     cell: ({ row }) => <span className="font-medium text-center block">{row.getValue("documents")}</span>,
-        // },
-        // {
-        //     accessorKey: "reviews",
-        //     header: "Reviews",
-        //     cell: ({ row }) => <span className="font-medium text-center block">{row.getValue("reviews")}</span>,
-        // },
         {
             id: "actions",
             header: t("user.table.columns.actions"),
@@ -167,6 +151,7 @@ const Table = ({
                         user={user}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onView={onView}
                     />
                 );
             },

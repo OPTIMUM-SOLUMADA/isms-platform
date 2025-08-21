@@ -16,6 +16,10 @@ export const usePermissions = () => {
         , [actionPermissions]
     );
 
+    const hasActionPermissions = useCallback((permissions: ActionPermission[]) => {
+        return permissions.every(permission => actionPermissions.includes(permission));
+    }, [actionPermissions]);
+
     const accessPermissions = useMemo(() => {
         if (!user) return [];
         return roleAccessPermissions[user.role] || [];
@@ -26,8 +30,12 @@ export const usePermissions = () => {
         , [accessPermissions]
     );
 
+    const hasAccessPermissions = useCallback((permissions: AccessPermission[]) => {
+        return permissions.every(permission => accessPermissions.includes(permission));
+    }, [accessPermissions]);
+
     return {
-        actionPermissions, hasActionPermission,
-        accessPermissions, hasAccessPermission
+        actionPermissions, hasActionPermission, hasActionPermissions,
+        accessPermissions, hasAccessPermission, hasAccessPermissions
     };
 };
