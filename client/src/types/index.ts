@@ -38,20 +38,78 @@ export type Document = {
     status: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
     nextReviewDate?: string; // ISO string pour compatibilité API/JSON
     reviewFrequency?: number; // en mois
-    owner?: {
-        id: string;
-        name?: string;                // si le modèle User a un champ name
-    };
-    category?: {
-        id: string;
-        name?: string;                // si le modèle Category a un champ name
-    };
-    versions?: any[];                 // à préciser si tu veux typer DocumentVersion
-    reviews?: any[];                  // idem pour DocumentReview
-    approvals?: any[];                // idem pour DocumentApproval
-    notifications?: any[];            // idem pour Notification
-    auditlogs?: any[];                // idem pour AuditLog
+    owner?: User;
+    ownerId?: string;
+    category?: Category;
+    categoryId?: string;
+    versions?: DocumentVersion[];                 // à préciser si tu veux typer DocumentVersion
+    reviews?: DocumentReview[];                  // idem pour DocumentReview
+    approvals?: DocumentApproval[];                // idem pour DocumentApproval
+    notifications?: Notification[];            // idem pour Notification
+    auditlogs?: AuditLog[];     // idem pour AuditLog
 };
+
+export type DocumentVersion = {
+  id :           string  ;
+  documentId:    string;
+  versionNumber: number;
+  comment? :      string | null;
+  createdAt :    Date;
+  isCurrent  :   boolean; // optional: flag the latest version
+
+  document : Document;
+  approvals?: DocumentApproval[]
+    
+}
+
+export type DocumentReview = {
+  id: string;
+  documentId: string;
+  reviewerId: string;
+  comment?: string | null;
+  isApproved?: boolean | null;
+  isCompleted: boolean;
+  reviewDate?: Date | null;
+
+  // Relations
+  document?: Document;
+  reviewer?: User;
+};
+
+export type DocumentApproval = {
+  id: string;
+  documentId: string;
+  approverId: string;
+  versionId: string;
+  approvedAt: Date;
+
+  // Relations
+  document?: Document;
+  version?: DocumentVersion;
+  approver?: User;
+};
+
+export type AuditLog = {
+  id: string;
+  userId?: string | null;
+  eventType: AuditEventType;
+  documentId?: string | null;
+  details?: Record<string, any> | null; // Json en Prisma => Record<string, any>
+  timestamp: Date;
+
+  // Relations
+  user?: User | null;
+  document?: Document | null;
+};
+export type AuditEventType =
+  | "DOCUMENT_UPLOAD"
+  | "DOCUMENT_UPDATE"
+  | "DOCUMENT_VERSION_CREATED"
+  | "DOCUMENT_STATUS_CHANGE"
+  | "DOCUMENT_REVIEW_SUBMITTED"
+  | "USER_ROLE_CHANGE"
+  | "ACCESS_LOG"
+  | "EXPORT_LOGS";
 
 export type ReviewItem = {
     id: string;
@@ -89,6 +147,14 @@ export type User = {
 
     createdAt: string;
     updatedAt: string;
+}
+
+export type Category = {
+    id: string;
+    name: string;
+    description: string;
+    isoClauseNumber: string;
+    documents: Document[];
 }
 
 export type Department = {
