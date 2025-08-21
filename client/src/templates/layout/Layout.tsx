@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 function Layout() {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useLocalStorage('sidebar-open', true);
 
     return (
         <div className="h-screen bg-gray-100 flex">
