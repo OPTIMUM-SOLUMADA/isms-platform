@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
 import departmentRoutes from './routes/department.routes';
+// import documentRoutes from './routes/document.routes';
 import userRoutes from './routes/user.routes';
 import { env } from './configs/env';
 
@@ -26,6 +27,7 @@ app.set('trust proxy', true);
 app.use('/auth', authRoutes);
 app.use('/departments', departmentRoutes);
 app.use('/users', userRoutes);
+// app.use('/documents', documentRoutes)
 
 
 export default app;

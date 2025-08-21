@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
 
 const documentSchema = cz.z.object({
+  id: z.string().nonempty(i18n.t("zod.errors.required")), // 🔹 Ajout
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   fileUrl: z.string().url().optional(),
@@ -31,19 +32,11 @@ const documentSchema = cz.z.object({
   nextReviewDate: z.string().optional(), // ou z.date() si tu veux
   reviewFrequency: z.number().int().positive().optional(),
 
-  owner: z
-    .object({
-      id: z.string().nonempty(i18n.t("zod.errors.required")),
-      name: z.string().optional(),
-    })
-    .optional(),
+  owner: z.string().nonempty(i18n.t("zod.errors.required")),
+  ownerId: z.string().nonempty(i18n.t("zod.errors.required")),
 
-  category: z
-    .object({
-      id: z.string().nonempty(i18n.t("zod.errors.required")),
-      name: z.string().optional(),
-    })
-    .optional(),
+  category: z.string().nonempty(i18n.t("zod.errors.required")),
+  categoryId: z.string().nonempty(i18n.t("zod.errors.required")),
 });
 
 export type DocumentFormData = z.infer<typeof documentSchema>;
@@ -61,14 +54,13 @@ export default function DocumentForm({
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
+      id: "", // 🔹 Ajout
       title: "",
       description: "",
       fileUrl: "",
       status: "DRAFT",
       nextReviewDate: "",
-      reviewFrequency: undefined,
-      owner: { id: "" },
-      category: { id: "" },
+      reviewFrequency: undefined
     },
   });
 
