@@ -18,6 +18,9 @@ export default {
       },
       colors: {
         theme: 'hsl(var(--theme))',
+        "theme-1": 'hsl(var(--theme-1))',
+        "theme-2": 'hsl(var(--theme-2))',
+        "theme-2-muted": 'hsl(var(--theme-2-muted))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

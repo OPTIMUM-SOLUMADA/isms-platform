@@ -7,7 +7,7 @@ function Layout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className="h-screen bg-gray-50 flex">
+        <div className="h-screen bg-gray-100 flex">
             <Sidebar
                 isOpen={sidebarOpen}
                 setIsOpen={setSidebarOpen}
@@ -18,7 +18,7 @@ function Layout() {
                     onMenuClick={() => setSidebarOpen(!sidebarOpen)}
                 />
 
-                <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6  flex flex-col flex-grow ">
+                <main className="flex-1 overflow-y-auto  p-6  flex flex-col flex-grow ">
                     <div className="max-w-7xl mx-auto flex flex-col flex-grow w-full h-full">
                         <Outlet />
                     </div>
