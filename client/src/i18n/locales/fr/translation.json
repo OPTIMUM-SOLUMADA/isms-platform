@@ -495,5 +495,51 @@
             }
 
         }
+    },
+    "navigation": {
+        "dashboard": {
+            "label": "Tableau de bord",
+            "description": "Vue d'ensemble et indicateurs clés"
+        },
+        "documents": {
+            "label": "Documents",
+            "description": "Référentiel des politiques et procédures"
+        },
+        "reviews": {
+            "label": "Revues",
+            "description": "Gestion des processus de validation"
+        },
+        "compliance": {
+            "label": "Conformité",
+            "description": "Suivi de l'état de conformité ISO 27001"
+        },
+        "users": {
+            "label": "Utilisateurs",
+            "description": "Gestion des rôles et des accès"
+        },
+        "auditLog": {
+            "label": "Journal d'audit",
+            "description": "Suivi et traçabilité des modifications"
+        }
+    },
+    "header": {
+        "search": {
+            "placeholder": "Rechercher dans le portail..."
+        },
+        "profile": {
+            "title": "Mon profil",
+            "viewProfile": "Voir le profil",
+            "settings": "Paramètres",
+            "logout": "Se déconnecter"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "empty": "Aucune notification",
+            "markAllAsRead": "Tout marquer comme lu"
+        }
+    },
+    "sidebar": {
+        "title": "ISMS Solumada",
+        "logout": "Se déconnecter"
     }
 }

@@ -45,6 +45,9 @@ a:hover {
 
 @layer base {
   :root {
+    --theme-1: 124 40% 41%;
+    --theme-2: 231 44% 36%;
+    --theme-2-muted: 231 35% 44%;
     --theme: 124 32% 45%;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;

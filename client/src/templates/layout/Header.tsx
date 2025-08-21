@@ -1,6 +1,5 @@
-import { Bell, Menu, Search, User, Settings, LogOut } from 'lucide-react';
+import { Bell, Menu, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -12,6 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserAvatar } from '@/components/user-avatar';
+import { useTranslation } from 'react-i18next';
+import { profileMenuItems } from '@/constants/header';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -19,7 +21,9 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
 
+  const { t } = useTranslation();
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const signOut = async () => {
     await logout();
@@ -27,26 +31,17 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header className="bg-white border-b border-gray-200 h-16">
-      <div className="h-full px-6 flex items-center justify-between">
+      <div className="h-full px-5 flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={onMenuClick}
-            className="lg:hidden hover:bg-gray-100"
+            className="hover:bg-gray-100 lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </Button>
-
-          <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search documents, policies..."
-              className="pl-10 w-80 bg-white border-gray-200 focus:border-green-500"
-            />
-          </div>
         </div>
 
         {/* Right side */}
@@ -65,7 +60,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("header.notifications.title")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="flex-col items-start py-3">
                 <div className="font-medium">Security Policy Review Due</div>
@@ -87,7 +82,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="space-x-2 hover:bg-gray-100 h-fit">
-                  <div className="flex items-center p-1">
+                  <div className="flex items-center p-1 gap-2">
                     <UserAvatar
                       id={user.id}
                       name={user.name}
@@ -101,20 +96,18 @@ export function Header({ onMenuClick }: HeaderProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("header.profile.title")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
+                {profileMenuItems.map((item, index) => (
+                  <DropdownMenuItem key={index} onClick={() => navigate(item.path)}>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {t(item.labelKey)}
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  {t("header.profile.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
