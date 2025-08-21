@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { ToastProvider } from './components/ui/toast.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
+import { TooltipProvider } from './components/ui/tooltip.tsx';
 
 const queryClient = new QueryClient();
 
@@ -16,7 +17,9 @@ createRoot(document.getElementById('root')!).render(
       <ToastProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <App />
+            <TooltipProvider>
+              <App />
+            </TooltipProvider>
           </AuthProvider>
         </QueryClientProvider>
         <Toaster />
