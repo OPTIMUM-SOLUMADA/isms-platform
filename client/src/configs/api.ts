@@ -14,6 +14,9 @@ export const API_CONFIG = {
         },
         USERS: '/users',
         DEPARTMENTS: '/departments',
+        DOCUMENTS: '/documents',
+        ISO_CLAUSES: '/iso-clauses',
+        DOCUMENT_CATEGORIES: '/document-categories',
     },
 } as const;
 
