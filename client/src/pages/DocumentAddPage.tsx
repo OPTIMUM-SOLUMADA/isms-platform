@@ -1,29 +1,24 @@
 
 import { Card, CardContent } from '@/components/ui/card';
-import DocumentForm from '@/templates/forms/DocumentForm';
+import DocumentForm, { DocumentFormData } from '@/templates/forms/DocumentForm';
 import { useNavigate } from 'react-router-dom';
 import { Document } from '@/types';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
+import { useISOClause } from '@/contexts/ISOClauseContext';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
   // const [documentList, setDocumentList] = useState(documents);
   const { t } = useTranslation();
+  const { clauses } = useISOClause();
 
 
-  const saveDocument = (newDocument: Document) => {
+  const saveDocument = (newDocument: DocumentFormData) => {
     console.log("Saving document:", newDocument);
     navigate("/documents");
-    
-    // setDocumentList((prev) => {
-    //   const exists = prev.some(d => d.id === newDocument.id);
-    //   if (exists) {
-    //     return prev.map(d => d.id === newDocument.id ? newDocument : d);
-    //   }
-    //   return [...prev, newDocument];
-    // })
   }
+
   return (
     <WithTitle title={t("document.add.title")}>
       <div className="space-y-6 flex-grow flex flex-col">
@@ -33,7 +28,7 @@ export default function DocumentAddPage() {
             <h1 className="text-3xl font-bold text-gray-900">Document Repository</h1>
             <p className="text-gray-600 mt-1">Manage your ISMS policies, procedures, and documentation</p>
           </div>
-        </div> 
+        </div>
 
         {/* Documents Add */}
         <Card className='flex-grow'>
@@ -41,6 +36,7 @@ export default function DocumentAddPage() {
             <DocumentForm
               onSubmit={saveDocument}
               onCancel={() => navigate("/documents")}
+              isoClauses={clauses}
             // error={errorCode}
             />
           </CardContent>

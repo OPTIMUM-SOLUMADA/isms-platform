@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
-import { CustomFormProps } from "@/types";
+import { CustomFormProps, ISOClause } from "@/types";
 import {
   Form,
   FormControl,
@@ -17,18 +17,24 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import { useTranslation } from "react-i18next";
 import ErrorCodeField from "@/components/ErrorCodeField";
 import i18n from "@/i18n/config";
-import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
+import FileUpload from "@/components/file-upload";
+import { formatBytes } from "@/hooks/use-file-upload";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { documentStatus } from "@/constants/document";
+import { Textarea } from "@/components/ui/textarea";
+
+const maxFileSize = 20 * 1024 * 1024;
 
 const documentSchema = cz.z.object({
-  id: z.string().nonempty(i18n.t("zod.errors.required")), // 🔹 Ajout
+  id: z.string().nonempty(i18n.t("zod.errors.required")),
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   fileUrl: z.string().url().optional(),
   status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
+
   nextReviewDate: z.string().optional(), // ou z.date() si tu veux
   reviewFrequency: z.number().int().positive().optional(),
 
@@ -37,16 +43,32 @@ const documentSchema = cz.z.object({
 
   category: z.string().nonempty(i18n.t("zod.errors.required")),
   categoryId: z.string().nonempty(i18n.t("zod.errors.required")),
+
+  department: z.string().nonempty(i18n.t("zod.errors.required")),
+
+  isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
+  isoClauseId: z.string().nonempty(i18n.t("zod.errors.required")),
+
+  files: z
+    .array(z.custom<File>())
+    .min(1, "Please select at least one file")
+    .refine((files) => files.every((file) => file.size <= maxFileSize), {
+      message: "File size must be less than 5MB",
+      path: ["files"],
+    }),
 });
 
 export type DocumentFormData = z.infer<typeof documentSchema>;
 
-type DocumentFormProps = CustomFormProps<DocumentFormData>;
+interface DocumentFormProps extends CustomFormProps<DocumentFormData> {
+  isoClauses: ISOClause[];
+}
 
 export default function DocumentForm({
   isPending = false,
   onSubmit,
   error,
+  isoClauses
 }: DocumentFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -54,7 +76,7 @@ export default function DocumentForm({
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
-      id: "", // 🔹 Ajout
+      id: "",
       title: "",
       description: "",
       fileUrl: "",
@@ -66,25 +88,9 @@ export default function DocumentForm({
 
   const {
     handleSubmit,
-    setValue,
     formState: { isSubmitting },
   } = form;
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles && acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-        const url = URL.createObjectURL(file);
-        setValue("fileUrl", url, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "application/pdf": [".pdf"], "image/*": [] }, // exemple: PDF + images
-  });
 
   return (
     <Form {...form}>
@@ -114,23 +120,51 @@ export default function DocumentForm({
           )}
         />
 
+        {/* Description */}
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-medium">
+                {t("document.forms.add.description.label")}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  placeholder={t("document.forms.add.description.placeholder")}
+                  className="border rounded-lg px-3 py-2 w-full"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Description */}
+
+          {/* Category ID */}
           <FormField
             control={form.control}
-            name="description"
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.description.label")}
+                  {t("document.forms.add.category.label")}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder={t("document.forms.add.description.placeholder")}
-                    className="border rounded-lg px-3 py-2 w-full"
-                  />
+                  <Select {...field}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('document.forms.add.category.placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(documentStatus).map(([status, index]) => (
+                        <SelectItem key={index} value={status}>
+                          {t(`document.forms.add.status.${status.toLowerCase()}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -147,41 +181,46 @@ export default function DocumentForm({
                   {t("document.forms.add.status.label")}
                 </FormLabel>
                 <FormControl>
-                  <select
-                    {...field}
-                    className="w-full border rounded-lg px-3 py-2"
-                  >
-                    <option value="DRAFT">{t("document.forms.add.status.draft")}</option>
-                    <option value="IN_REVIEW">
-                      {t("document.forms.add.status.review")}
-                    </option>
-                    <option value="APPROVED">
-                      {t("document.forms.add.status.approved")}
-                    </option>
-                    <option value="EXPIRED">
-                      {t("document.forms.add.status.expired")}
-                    </option>
-                  </select>
+                  <Select {...field}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('document.forms.add.status.placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(documentStatus).map(([status, index]) => (
+                        <SelectItem key={index} value={status}>
+                          {t(`common.document.status.${status.toLowerCase()}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* Next Review Date */}
+
+          {/* Status */}
           <FormField
             control={form.control}
-            name="nextReviewDate"
+            name="isoClause"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.nextReviews.label")}
+                  {t("document.forms.add.status.label")}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="date"
-                    className="border rounded-lg px-3 py-2 w-full"
-                  />
+                  <Select {...field}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('document.forms.add.status.placeholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {isoClauses.map((item, index) => (
+                        <SelectItem key={index} value={item.id}>
+                          {item.code} - {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -215,7 +254,7 @@ export default function DocumentForm({
           {/* Owner ID */}
           <FormField
             control={form.control}
-            name="owner.id"
+            name="owner"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
@@ -234,63 +273,34 @@ export default function DocumentForm({
             )}
           />
 
-          {/* Category ID */}
-          <FormField
-            control={form.control}
-            name="category.id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-medium">
-                  {t("document.forms.add.category.label")}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder={t("document.forms.add.category.placeholder")}
-                    className="border rounded-lg px-3 py-2 w-full"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         {/* File URL */}
         <FormField
           control={form.control}
-          name="fileUrl"
-          render={({ field }) => (
+          name="files"
+          render={() => (
             <FormItem>
               <FormLabel className="font-medium">
                 {t("document.forms.add.file.label")}
               </FormLabel>
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${
-                  isDragActive
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-300"
-                }`}
-              >
-                <input {...getInputProps()} />
-                {field.value ? (
-                  <p className="text-sm text-green-600">
-                    {t("document.forms.add.file.selected")}: {field.value}
-                  </p>
-                ) : (
-                  <p className="text-gray-500 text-sm">
-                    {isDragActive
-                      ? t("document.file.dropHere")
-                      : t("document.forms.add.file.dragOrClick")}
-                  </p>
-                )}
-              </div>
+              <FormControl>
+                <FileUpload
+                  title={t("components.fileUpload.title.singular")}
+                  description={t("components.fileUpload.dragAndDrop")}
+                  maxSizeDescription={t("components.fileUpload.maxSize", {
+                    size: formatBytes(maxFileSize),
+                  })}
+                  onFileUpload={(files) => {
+                    form.setValue("files", files);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         {/* Error */}
         <ErrorCodeField code={error} />
 
