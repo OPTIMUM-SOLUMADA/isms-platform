@@ -53,12 +53,12 @@ export class DocumentController {
         }
     }
 
-    initialize = async (req: Request, res: Response) => {
-        try {
-            const documents = await service.init();
-            res.json(documents);
-        } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
-        }
-    };
+    // initialize = async (req: Request, res: Response) => {
+    //     try {
+    //         const documents = await service.init();
+    //         res.json(documents);
+    //     } catch (err) {
+    //         res.status(400).json({ error: (err as Error).message });
+    //     }
+    // };
 }

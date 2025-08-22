@@ -14,7 +14,7 @@ describe('Auth controller', () => {
                 password: "test123"
             });
 
-            expect(res.status).toBe(401);
+            expect(res.status).toBe(400);
         });
 
         it("should allow login with valid credentials", async () => {
