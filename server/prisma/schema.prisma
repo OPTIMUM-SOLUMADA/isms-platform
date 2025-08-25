@@ -78,14 +78,17 @@ model User {
 // DOCUMENTS MANAGEMENT AND POLITICS
 // ===========================================================================================
 
-model Category {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  name            String     @unique
-  description     String?
-  isoClauseNumber String?
-  documents       Document[]
+model DocumentType {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  description String?
+  // isoClauseNumber String?
+  documents   Document[]
 
-  @@map("categories")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("document_types")
 }
 
 enum DocumentStatus {
@@ -113,7 +116,7 @@ model Document {
 
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   owner         User               @relation("DocumentOwner", fields: [ownerId], references: [id])
-  category      Category?          @relation(fields: [categoryId], references: [id])
+  type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
   reviews       DocumentReview[]
   approvals     DocumentApproval[]
