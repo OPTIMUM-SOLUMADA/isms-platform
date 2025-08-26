@@ -30,23 +30,33 @@ export type ComplianceClause = {
   priority: 'high' | 'medium' | 'low';
 }
 
+type DocumentStatus = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
+
 export type Document = {
   id: string;
   title: string;
-  description?: string;
-  fileUrl?: string;
-  status: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
-  nextReviewDate?: string; // ISO string pour compatibilité API/JSON
-  reviewFrequency?: number; // en mois
-  owner?: User;
-  ownerId?: string;
-  category?: Category;
-  categoryId?: string;
-  versions?: DocumentVersion[];                 // à préciser si tu veux typer DocumentVersion
-  reviews?: DocumentReview[];                  // idem pour DocumentReview
-  approvals?: DocumentApproval[];                // idem pour DocumentApproval
-  notifications?: Notification[];            // idem pour Notification
-  auditlogs?: AuditLog[];     // idem pour AuditLog
+  description?: string | null;
+  fileUrl?: string | null;
+  status: DocumentStatus;
+  nextReviewDate?: string | null;
+  reviewFrequency?: number | null;
+  isoClauseId: string;
+
+  ownerId: string;
+  categoryId: string;
+
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  isoClause: ISOClause;
+  owner: User;
+  type: DocumentType;
+  versions: DocumentVersion[];
+  reviews: DocumentReview[];
+  approvals: DocumentApproval[];
+  notifications: Notification[];
+  auditlogs: AuditLog[];
 };
 
 export type DocumentType = {

@@ -306,6 +306,50 @@
             "title": "Nouveau document",
             "subtitle": "Ajouter un nouveau document au référentiel"
         },
+        "stats": {
+            "total": {
+                "title": "Total des documents",
+                "value": "{{count}} documents"   
+            },
+            "draft": {
+                "title": "Brouillons",
+                "value": "{{count}} brouillons"
+            },
+            "inReview": {
+                "title": "En révision",
+                "value": "{{count}} en révision"
+            },
+            "approved": {
+                "title": "Approuvés",
+                "value": "{{count}} approuvés"
+            },
+            "expired": {
+                "title": "Expirés",
+                "value": "{{count}} expirés"
+            }
+        },
+        "filter" : {
+            "search": {
+                "label": "Rechercher par nom, propriétaire ou clause ISO",
+                "placeholder": "Rechercher un document..."
+            },
+            "status": {
+                "label": "Filtrer par statut",
+                "placeholder": "Tous les statuts"
+            },
+            "type": {
+                "label": "Filtrer par type",
+                "placeholder": "Tous les types"
+            },
+            "owner": {
+                "label": "Filtrer par propriétaire",
+                "placeholder": "Tous les propriétaires"
+            },
+            "isoClause": {
+                "label": "Filtrer par clause ISO",
+                "placeholder": "Toutes les clauses ISO"
+            }
+        },
         "forms": {
             "add": {
                 "title": "Ajouter un document",
@@ -342,6 +386,10 @@
                     "label": "Reviseur(s)",
                     "placeholder": "Séléctionner des reviseurs"
                 },
+                "department": {
+                    "label": "Département",
+                    "placeholder": "Séléctionner un département"
+                },
                 "isoClause": {
                     "label": "Clause ISO",
                     "placeholder": "Séléctionner une clause ISO"
@@ -358,6 +406,36 @@
                     },
                     "cancel": {
                         "label": "Annuler"
+                    }
+                }
+            }
+        },
+        "table": {
+            "title": "Liste des documents",
+            "columns": {
+                "name": "Nom",
+                "type": "Type",
+                "isoClause": "Clause ISO / Control",
+                "status": "Statut",
+                "owner": "Propriétaire",
+                "version": "Version",
+                "nextReview": "Prochaine révision",
+                "reviewDue": "Date de révision",
+                "reviewFrequency": "Fréquence de révision",
+                "lastUpdated": "Dernière mise à jour",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "view": "Voir les détails"
+            },
+            "empty": {
+                "title": "Aucun document trouvé",
+                "message": "Essaiez de modifier les filtres ou d'ajouter un nouveau document.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter un document"
                     }
                 }
             }
@@ -592,6 +670,14 @@
                 "in_review": "En révision",
                 "approved": "Approuvé",
                 "expired": "Expiré"
+            }
+        },
+        "form": {
+            "add": {
+                "stay": "Rester sur cette page après l'enregistrement"
+            },
+            "edit": {
+                "stay": "Rester sur cette page après la modification"
             }
         }
     }

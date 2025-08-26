@@ -1,22 +1,15 @@
-import {  useState } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   Search,
-  // Download,
-  // Edit,
-  // Eye,
   Plus,
   Clock,
   CheckCircle,
-  AlertTriangle,
-  // ChevronDown,
-  // Calendar,
-  // User,
+  AlertTriangle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -24,188 +17,206 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  // TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-// import { 
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from '@/components/ui/dropdown-menu';
-// import { documentStatusColors } from '@/constants/color';
-// import { documentStatusIcons } from '@/constants/icon';
-import { documents } from '@/mocks/document';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { DocumentTable } from '@/templates/table/DocumentTable';
+import { useTranslation } from 'react-i18next';
+import { documentStatus } from '@/constants/document';
+import { useDocumentType } from '@/contexts/DocumentTypeContext';
+import { useISOClause } from '@/contexts/ISOClauseContext';
+import { useDocument } from '@/contexts/DocumentContext';
+import WithTitle from '@/templates/layout/WithTitle';
+import { useUser } from '@/contexts/UserContext';
+import { UserAvatar } from '@/components/user-avatar';
 
 
 export const NEW_DOCUMENT_PATH = '/documents/add';
 
 export default function DocumentRepositoryPage() {
+
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const { types } = useDocumentType();
+  const { clauses } = useISOClause();
+  const { documents } = useDocument();
+  const { users } = useUser();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterOwner, setFilterOwner] = useState('all');
   const [filterType, setFilterType] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterClause, setFilterClause] = useState('all');
 
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || doc.status === filterStatus;
+    const matchesType = filterType === 'all' || doc.categoryId === filterType;
+    const matchesClause = filterClause === 'all' || doc.isoClauseId === filterClause;
+    return matchesSearch && matchesStatus && matchesType && matchesClause;
+  });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Document Repository</h1>
-          <p className="text-gray-600 mt-1">Manage your ISMS policies, procedures, and documentation</p>
-        </div>
-        <Link to={NEW_DOCUMENT_PATH} >
-          <Button className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>New Document</span>
-          </Button>
-        </Link>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Documents</p>
-                <p className="text-2xl font-bold">{documents.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Approved</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {/* {documents.filter(d => d.status === 'approved').length} */}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">In Review</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {/* {documents.filter(d => d.status === 'review').length} */}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Expired</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {/* {documents.filter(d => d.status === 'expired').length} */}
-                </p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search documents, owners, or tags..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="review">In Review</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Policy">Policy</SelectItem>
-                  <SelectItem value="Procedure">Procedure</SelectItem>
-                  <SelectItem value="Plan">Plan</SelectItem>
-                  <SelectItem value="Guide">Guide</SelectItem>
-                  <SelectItem value="Framework">Framework</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Security Governance">Security Governance</SelectItem>
-                  <SelectItem value="Access Management">Access Management</SelectItem>
-                  <SelectItem value="Incident Management">Incident Management</SelectItem>
-                  <SelectItem value="Risk Management">Risk Management</SelectItem>
-                  <SelectItem value="Data Protection">Data Protection</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <WithTitle title={t("document.title")}>
+      <div className="space-y-6 flex flex-col flex-grow">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{t("document.title")}</h1>
+            <p className="text-gray-600 mt-1">{t("document.subtitle")}</p>
           </div>
-        </CardContent>
-      </Card>
+          <Link to={NEW_DOCUMENT_PATH} >
+            <Button className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>{t("document.add.title")}</span>
+            </Button>
+          </Link>
+        </div>
 
-      {/* Documents Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Document</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Last Modified</TableHead>
-                <TableHead>Next Review</TableHead>
-                <TableHead>ISO Clause</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-theme-2">{t("document.stats.total.title")}</p>
+                  <p className="text-2xl font-bold">{documents.length}</p>
+                </div>
+                <FileText className="h-8 w-8 text-theme-2" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{t("document.stats.approved.title")}</p>
+                  <p className="text-2xl font-bold text-theme">
+                    {documents.filter(d => d.status === documentStatus.APPROVED).length}
+                  </p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-theme" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{t("document.stats.inReview.title")}</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {documents.filter(d => d.status === documentStatus.IN_REVIEW).length}
+                  </p>
+                </div>
+                <Clock className="h-8 w-8 text-yellow-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{t("document.stats.expired.title")}</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {documents.filter(d => d.status === documentStatus.EXPIRED).length}
+                  </p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-    </div>
+        {/* Filters */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search documents, owners, or tags..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Select value={filterOwner} onValueChange={setFilterOwner}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder={t("document.filter.owner.title")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("document.filter.owner.placeholder")}</SelectItem>
+                    {users.map((user, index) => (
+                      <SelectItem key={index} value={user.id}>
+                        <div className='flex items-center gap-2'>
+                          <UserAvatar
+                            id={user.id}
+                            name={user.name}
+                            className="size-6"
+                          />
+                          <span>{user.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder={t("document.filter.status.title")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("document.filter.status.placeholder")}</SelectItem>
+                    {Object.entries(documentStatus).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>
+                        {t(`common.document.status.${value.toLowerCase()}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterType} onValueChange={setFilterType}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder={t('document.filter.type.title')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('document.filter.type.placeholder')}</SelectItem>
+                    {types.map((item, index) => (
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterClause} onValueChange={setFilterClause}>
+                  <SelectTrigger className="w-full sm:w-48">
+                    <SelectValue placeholder={t('document.filter.isoClause.title')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('document.filter.isoClause.placeholder')}</SelectItem>
+                    {clauses.map((item, index) => (
+                      <SelectItem key={index} value={item.id}>
+                        {item.code} - {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Documents Table */}
+        <Card className='flex-grow flex flex-col'>
+          <DocumentTable
+            data={filteredDocuments}
+            onCreateNewDocument={() => navigate(NEW_DOCUMENT_PATH)}
+          />
+        </Card>
+      </div>
+    </WithTitle>
   );
 }
