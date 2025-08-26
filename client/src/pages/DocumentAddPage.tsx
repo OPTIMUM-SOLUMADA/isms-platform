@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
-import AddDocumentForm, { type AddDocumentFormData } from '@/templates/forms/documents/AddDocumentForm';
+import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@/templates/forms/documents/AddDocumentForm';
 import { useNavigate } from 'react-router-dom';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,9 @@ import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useUser } from '@/contexts/UserContext';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useDepartment } from '@/contexts/DepartmentContext';
+import { useDocument } from '@/contexts/DocumentContext';
+import { useCallback, useRef } from 'react';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -16,16 +19,22 @@ export default function DocumentAddPage() {
   const { clauses } = useISOClause();
   const { types } = useDocumentType();
   const { users } = useUser();
+  const { departments } = useDepartment();
+  const { create, isCreating } = useDocument();
 
+  const formRef = useRef<AddDocumentFormRef>(null);
 
-  const saveDocument = (newDocument: AddDocumentFormData) => {
-    console.log("Saving document:", newDocument);
-    navigate("/documents");
-  }
+  const saveDocument = useCallback(async (newDocument: AddDocumentFormData) => {
+    await create(newDocument);
+    const form = formRef.current;
+    if (!form) return;
+    form.resetForm();
+    if (!form.isStay()) navigate("/documents");
+  }, [create, navigate]);
 
   return (
     <WithTitle title={t("document.add.title")}>
-      <div className="space-y-6 flex-grow flex flex-col">
+      <div className="space-y-6 flex-grow flex flex-col pb-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Button
@@ -49,10 +58,13 @@ export default function DocumentAddPage() {
           </CardHeader>
           <CardContent>
             <AddDocumentForm
+              ref={formRef}
               isoClauses={clauses}
               types={types}
               users={users}
+              departments={departments}
               onSubmit={saveDocument}
+              isPending={isCreating}
             />
           </CardContent>
         </Card>

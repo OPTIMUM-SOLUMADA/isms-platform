@@ -9,7 +9,19 @@ export class DocumentService {
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
-        return prisma.document.create({ data });
+        return prisma.document.create({
+            data,
+            include: {
+                approvals: true,
+                auditlogs: true,
+                department: true,
+                isoClause: true,
+                owner: true,
+                reviews: true,
+                versions: true,
+                type: true,
+            }
+        });
     }
 
     async getDocumentById(id: string) {
@@ -17,15 +29,6 @@ export class DocumentService {
             where: { id }
         });
     }
-
-    // async getDocumentByName(name: string) {
-    //     return prisma.document.findUnique({
-    //         where: { name },
-    //         include: {
-    //             members: true,
-    //         },
-    //     });
-    // }
 
     async updateDocument(id: string, data: Prisma.DocumentUpdateInput) {
         return prisma.document.update({
@@ -39,34 +42,17 @@ export class DocumentService {
     }
 
     async listDocuments() {
-        return prisma.document.findMany({});
+        return prisma.document.findMany({
+            include: {
+                approvals: true,
+                auditlogs: true,
+                department: true,
+                isoClause: true,
+                owner: true,
+                reviews: true,
+                versions: true,
+                type: true,
+            }
+        });
     }
-
-    // async init() {
-    //     // Add default Documents if not exists
-    //     const Documents = [
-    //         { name: "IT", description: "Information Technology" },
-    //         { name: "DEV", description: "Development" },
-    //         { name: "HR", description: "Human Resources" },
-    //         { name: "ROP", description: "Responsable Operations" },
-    //         { name: "Internal Audit", description: "Internal Audit" },
-    //         { name: "Legal", description: "Legal" },
-    //     ];
-
-    //     const results: Document[] = [];
-
-    //     for (const Document of Documents) {
-    //         const existing = await this.getDocumentByName(Document.name);
-
-    //         if (!existing) {
-    //             console.log(`Creating Document: ${Document.name}`);
-    //             const created = await this.createDocument({
-    //                 ...Document,
-    //             });
-    //             results.push(created);
-    //         }
-    //     }
-
-    //     return results;
-    // }
 }

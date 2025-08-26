@@ -17,6 +17,7 @@ import NotFoundPage from "@/pages/404";
 import { AccessPermission } from "@/types/role";
 import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
+import { DocumentProvider } from "@/contexts/DocumentContext";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -58,7 +59,9 @@ const routeConfig: AppRoute[] = [
                     <UserProvider>
                         <DocumentTypeProvider>
                             <ISOClauseProvider>
-                                <Layout />
+                                <DocumentProvider>
+                                    <Layout />
+                                </DocumentProvider>
                             </ISOClauseProvider>
                         </DocumentTypeProvider>
                     </UserProvider>

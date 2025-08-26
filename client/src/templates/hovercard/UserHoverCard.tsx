@@ -34,7 +34,7 @@ export function UserHoverCard({
 
     return (
         <HoverCard>
-            <HoverCardTrigger asChild>
+            <HoverCardTrigger asChild className="hover:cursor-default group">
                 {children ?? (
                     <span className="cursor-pointer font-medium text-primary hover:underline">
                         {user.name}

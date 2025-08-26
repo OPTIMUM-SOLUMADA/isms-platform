@@ -12,13 +12,17 @@ interface FileUploadProps {
   title?: string;
   description?: string;
   maxSizeDescription?: string;
+  value?: File[]
 }
+
+
 export default function FileUpload({
   onFileUpload,
   maxSize = 50 * 1024 * 1024,
   title,
   description,
-  maxSizeDescription
+  maxSizeDescription,
+  value = []
 }: FileUploadProps) {
 
   const [
@@ -34,11 +38,19 @@ export default function FileUpload({
     },
   ] = useFileUpload({
     maxSize,
-    initialFiles: [],
+    initialFiles: [
+      ...value.map(file => ({
+        id: file.name,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: URL.createObjectURL(file)
+      }))
+    ],
     onFilesChange: (files) => onFileUpload?.(files.map((f) => f.file) as File[])
   })
 
-  const file = files[0]
+  const file = files[0];
 
   return (
     <div className="flex flex-col gap-2">

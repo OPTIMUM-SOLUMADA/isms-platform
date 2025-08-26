@@ -82,6 +82,10 @@ a:hover {
     @apply border-border;
   }
 
+  html {
+    @apply overflow-hidden;
+  }
+
   body {
     background-image: var(--bits-gradients-checkoutIridescentBgLight);
     @apply text-foreground min-h-screen;

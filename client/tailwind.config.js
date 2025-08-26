@@ -11,6 +11,9 @@ export default {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        "8xl": "88rem",
+      },
       fontSize: {
         "xxs": "0.65rem",
       },
