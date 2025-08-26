@@ -42,6 +42,7 @@ interface AppRoute {
     children?: AppRoute[];
     wrapper?: React.ReactNode;
 }
+
 const routeConfig: AppRoute[] = [
     { path: "/login", element: <LoginPage />, type: "public" },
     { path: "/forgot-password", element: <ForgotPasswordPage />, type: "public" },

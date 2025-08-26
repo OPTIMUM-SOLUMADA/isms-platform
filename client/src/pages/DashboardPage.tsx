@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { complianceProgress, recentActivities, stats, upcomingDeadlines } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
 
 
 export default function DashboardPage() {
@@ -146,9 +148,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <Button className="flex flex-col items-center space-y-2 h-20">
-                <FileText className="h-6 w-6" />
-                <span className="text-xs">New Document</span>
+              <Button asChild className="flex flex-col items-center space-y-2 h-20">
+                <Link to = "/documents/add" className="flex flex-col items-center space-y-2 text-white hover:text-white no-underline">
+                  <FileText className="h-6 w-6" />
+                  <span className="text-xs">New Document</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
                 <Clock className="h-6 w-6" />
@@ -159,8 +163,10 @@ export default function DashboardPage() {
                 <span className="text-xs">Approve Policy</span>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <Users className="h-6 w-6" />
-                <span className="text-xs">Manage Users</span>
+                <Link to = "/users" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <Users className="h-6 w-6" />
+                  <span className="text-xs">Manage Users</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
                 <Shield className="h-6 w-6" />
