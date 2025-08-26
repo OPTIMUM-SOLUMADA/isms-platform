@@ -303,11 +303,13 @@
         "title": "Gestion des documents",
         "subtitle": "Gérer les documents et leurs versions",
         "add": {
-            "title": "Ajouter un nouveau document"
+            "title": "Nouveau document",
+            "subtitle": "Ajouter un nouveau document au référentiel"
         },
         "forms": {
             "add": {
                 "title": "Ajouter un document",
+                "subtitle": "Remplissez les informations du document",
                 "name": {
                     "label": "Nom",
                     "placeholder": "Nom du document"
@@ -332,9 +334,17 @@
                     "label": "Propriétaire",
                     "placeholder": "Nom du propriétaire"
                 },
-                "category": {
-                    "label": "Catégorie",
-                    "placeholder": "Séléctionner une catégorie"
+                "type": {
+                    "label": "Type du document",
+                    "placeholder": "Séléctionner un type"
+                },
+                "reviewer": {
+                    "label": "Reviseur(s)",
+                    "placeholder": "Séléctionner des reviseurs"
+                },
+                "isoClause": {
+                    "label": "Clause ISO",
+                    "placeholder": "Séléctionner une clause ISO"
                 },
                 "file": {
                     "label": "Fichier",
@@ -343,8 +353,8 @@
                 },
                 "actions": {
                     "submit": {
-                        "label": "Ajouter",
-                        "loading": "Ajout en cours..."
+                        "label": "Enregistrer",
+                        "loading": "Enregistrement en cours..."
                     },
                     "cancel": {
                         "label": "Annuler"
@@ -504,9 +514,28 @@
             "maxSize": "Taille maximale du fichier : <span>{{size}}</span>",
             "uploading": "Téléchargement en cours...",
             "uploaded": "{{count}} fichier(s) téléchargé(s)",
-            "error": {
+            "errors": {
                 "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : {{size}}",
-                "invalidFileType": "Type de fichier invalide. Types autorisés : {{types}}"
+                "invalidFileType": "Type de fichier invalide. Types autorisés : {{types}}",
+                "required": "Veuillez sélectionner un fichier à télécharger"
+            }
+        },
+        "lookup": {
+            "user": {
+                "label": "Utilisateur",
+                "placeholder": "Sélectionner un utilisateur",
+                "search": "Rechercher un utilisateur...",
+                "empty": "Aucun utilisateur trouvé.",
+                "addNew": "Ajouter un nouvel utilisateur"
+            }
+        },
+        "multiselect": {
+            "user": {
+                "label": "Utilisateurs",
+                "placeholder": "Sélectionner des utilisateurs",
+                "search": "Rechercher des utilisateurs...",
+                "empty": "Aucun utilisateur trouvé.",
+                "addNew": "Ajouter un nouvel utilisateur"
             }
         }
     },

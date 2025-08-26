@@ -6,17 +6,6 @@ import {
 } from "@/hooks/use-file-upload"
 import { Button } from "@/components/ui/button"
 
-// Create some dummy initial files
-const initialFiles = [
-  {
-    name: "document.pdf",
-    size: 1528737,
-    type: "application/pdf",
-    url: "https://picsum.photos/1000/800?grayscale&random=1",
-    id: "document.pdf-1744638436563-8u5xuls",
-  },
-]
-
 interface FileUploadProps {
   onFileUpload?: (files: File[]) => void;
   maxSize?: number;
@@ -45,7 +34,7 @@ export default function FileUpload({
     },
   ] = useFileUpload({
     maxSize,
-    initialFiles,
+    initialFiles: [],
     onFilesChange: (files) => onFileUpload?.(files.map((f) => f.file) as File[])
   })
 
@@ -62,7 +51,7 @@ export default function FileUpload({
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         data-dragging={isDragging || undefined}
-        className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors has-disabled:pointer-events-none has-disabled:opacity-50 has-[input:focus]:ring-[3px]"
+        className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed p-4 transition-colors has-disabled:pointer-events-none has-disabled:opacity-50 has-[input:focus]:ring-[3px]"
       >
         <input
           {...getInputProps()}
@@ -105,7 +94,7 @@ export default function FileUpload({
         <div className="space-y-2">
           <div
             key={file.id}
-            className="flex items-center justify-between gap-2 rounded-xl border px-4 py-2"
+            className="flex items-center justify-between gap-2 rounded-lg border px-4 py-2"
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <PaperclipIcon
