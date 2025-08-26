@@ -1,4 +1,21 @@
-import React, { useEffect, useState } from 'react';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
 import {
     User,
     Calendar,
@@ -13,9 +30,10 @@ import {
     Bell,
     FileText,
     Activity,
-    Clock, 
+    Clock,
     Settings,
     Award,
+    TrendingUp,
     CheckCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,55 +41,73 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useTranslation } from 'react-i18next';
-
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
-import { useParams } from 'react-router-dom';
-import { userService } from '@/services/userService';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import { roles } from '@/constants/role';
-import { depService } from '@/services/departmentService';
 
 interface UserData {
     id: string;
     name: string;
     email: string;
-    // phone: string;
-    department: {
-        id: string;
-        name: string;
-    };
+    phone: string;
+    department: string;
     role: string;
-    // location: string;
-    // joinedDate: string;
-    // lastActive: string;
-    lastLogin: string;
-    ownedDocuments: string;
-}
-interface Department {
-  id: string;
-  name: string;
+    location: string;
+    joinedDate: string;
+    lastActive: string;
+    permissions: string[];
+    documentsOwned: number;
+    reviewsCompleted: number;
+    recentActivity: {
+        id: string;
+        action: string;
+        document: string;
+        timestamp: string;
+    }[];
 }
 
+const userData: UserData = {
+    id: '1',
+    name: 'John Smith',
+    email: 'john.smith@company.com',
+    phone: '+1 (555) 123-4567',
+    department: 'Information Security',
+    role: 'ISMS Manager',
+    location: 'New York, NY',
+    joinedDate: '2023-01-15',
+    lastActive: '2025-01-12T14:30:00Z',
+    permissions: ['manage_all', 'approve_documents', 'manage_users', 'audit_access'],
+    documentsOwned: 45,
+    reviewsCompleted: 23,
+    recentActivity: [
+        {
+            id: '1',
+            action: 'Approved document',
+            document: 'Information Security Policy v2.1',
+            timestamp: '2025-01-12T14:30:00Z'
+        },
+        {
+            id: '2',
+            action: 'Created document',
+            document: 'Access Control Procedure v1.6',
+            timestamp: '2025-01-12T10:15:00Z'
+        },
+        {
+            id: '3',
+            action: 'Completed review',
+            document: 'Risk Assessment Framework',
+            timestamp: '2025-01-11T16:45:00Z'
+        }
+    ]
+};
+
 export default function UserProfilePage() {
-    const { id } = useParams<{ id: string }>();
-    const [userData, setUserData] = useState<UserData | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        role: "",
-        department: ""
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        location: userData.location
     });
-    const [departments, setDepartment] = useState<Department[]>([]);
 
     const [notifications, setNotifications] = useState({
         reviews: true,
@@ -79,41 +115,6 @@ export default function UserProfilePage() {
         updates: false,
         security: true
     });
-    
-    const { t } = useTranslation();
-
-    useEffect(() => {
-
-        async function fetchUser() {
-            try {
-                const res = await userService.getById(id!);
-                const data = res.data;
-                
-                setUserData(data);
-                setFormData({
-                    name : data.name || '',
-                    email: data.email || '',
-                    role: data.role || '',
-                    department: data.department.id || ''
-                })
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        }
-
-        async  function fetchDepartment() {
-            try {
-                const allDepart = await depService.list();
-                const depart = allDepart.data;  
-                setDepartment(depart);             
-            } catch (error) {
-                console.error('Error fetching department data:', error);
-            }
-        }
-        fetchUser()
-        fetchDepartment()
-
-    }, [id])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -123,53 +124,30 @@ export default function UserProfilePage() {
         }));
     };
 
-    const handleSave = async() => {
-        try {
-            if (!userData)  return;
-            const updateData = {
-                name: formData.name,
-                email: formData.email,
-                role: formData.role,
-                departmentId: formData.department
-            }
-
-            console.log("udp", updateData);
-            
-            await userService.update(id!, updateData);
-            // Mettre à jour les données locales
-            const updatedUser = await userService.getById(userData.id);
-            setUserData(updatedUser.data);
-            
-            setIsEditing(false);
-            
-            // Optionnel: Afficher un message de succès
-            console.log('Profil mis à jour avec succès');
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour du profil:', error);
-        }
+    const handleSave = () => {
+        console.log('Saving user data:', formData);
         setIsEditing(false);
-    }; 
+    };
 
     const handleCancel = () => {
-        if (!userData) return;
         setFormData({
-            name: userData?.name || '' ,
-            email: userData?.email || '',
-            role: userData?.role || '',
-            department: userData?.department?.id || ''
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            location: userData.location
         });
         setIsEditing(false);
     };
 
-    const getInitials = (name: string) => {        
+    const getInitials = (name: string) => {
         return name.split(' ').map(n => n[0]).join('');
     };
-    
+
     const formatTimestamp = (timestamp: string) => {
         return new Date(timestamp).toLocaleString();
     };
 
-    // const completionRate = Math.round((userData?.reviewsCompleted / (userData.reviewsCompleted + 5)) * 100);
+    const completionRate = Math.round((userData.reviewsCompleted / (userData.reviewsCompleted + 5)) * 100);
 
     return (
         <div className="space-y-6">
@@ -182,7 +160,7 @@ export default function UserProfilePage() {
                     <div className="relative">
                         <Avatar className="h-24 w-24 border-4 border-white/20">
                             <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
-                                {getInitials(userData?.name || '')}
+                                {getInitials(userData.name)}
                             </AvatarFallback>
                         </Avatar>
                         <Button
@@ -194,38 +172,45 @@ export default function UserProfilePage() {
                     </div>
 
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold mb-2">{userData?.name || ''}</h1>
+                        <h1 className="text-3xl font-bold mb-2">{userData.name}</h1>
                         <div className="flex flex-wrap items-center gap-4 mb-4">
                             <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-                                {userData?.role || ''}
+                                {userData.role}
                             </Badge>
                             <div className="flex items-center text-blue-100">
                                 <Building className="h-4 w-4 mr-1" />
-                                {userData?.department?.name || ''}
+                                {userData.department}
                             </div>
                             <div className="flex items-center text-blue-100">
                                 <MapPin className="h-4 w-4 mr-1" />
-                                {userData?.email || ''}
+                                {userData.location}
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                            <div className="bg-white/10 rounded-lg p-5 backdrop-blur-sm">
+                            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
                                 <div className="flex items-center justify-between mb-2">
                                     <FileText className="h-6 w-6 text-blue-200" />
-                                    <span className="text-2xl font-bold">{userData?.ownedDocuments}</span>
+                                    <span className="text-2xl font-bold">{userData.documentsOwned}</span>
                                 </div>
                                 <p className="text-blue-100 text-sm">Documents Owned</p>
                             </div>
 
-                            <div className="bg-white/10 rounded-lg p-5 backdrop-blur-sm">
+                            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
                                 <div className="flex items-center justify-between mb-2">
                                     <CheckCircle className="h-6 w-6 text-green-300" />
-                                    {/* <span className="text-2xl font-bold">{userData?.reviewsCompleted}</span> */}
+                                    <span className="text-2xl font-bold">{userData.reviewsCompleted}</span>
                                 </div>
                                 <p className="text-blue-100 text-sm">Reviews Completed</p>
                             </div>
 
+                            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                                <div className="flex items-center justify-between mb-2">
+                                    <TrendingUp className="h-6 w-6 text-yellow-300" />
+                                    <span className="text-2xl font-bold">{completionRate}%</span>
+                                </div>
+                                <p className="text-blue-100 text-sm">Completion Rate</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -281,52 +266,32 @@ export default function UserProfilePage() {
                                         name="email"
                                         type="email"
                                         value={formData.email}
-                                        // onChange={handleInputChange}
+                                        onChange={handleInputChange}
                                         disabled={!isEditing}
                                         className={!isEditing ? "bg-gray-50" : ""}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="role" className="text-sm font-medium text-gray-700">Role</Label>
-                                    <Select
-                                        value={formData.role}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, role: value }))
-                                        }
+                                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number</Label>
+                                    <Input
+                                        id="phone"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
                                         disabled={!isEditing}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('user.forms.update.department.placeholder')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {roles.map((role, index) => (
-                                                <SelectItem key={index} value={role}>
-                                                    {t(`user.forms.update.role.options.${role.toLowerCase()}`)}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                        className={!isEditing ? "bg-gray-50" : ""}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="department" className="text-sm font-medium text-gray-700">Department</Label>
-                                    <Select
-                                        value={formData.department}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, department: value }))
-                                        }
+                                    <Label htmlFor="location" className="text-sm font-medium text-gray-700">Location</Label>
+                                    <Input
+                                        id="location"
+                                        name="location"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
                                         disabled={!isEditing}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('user.forms.update.department.placeholder')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {departments.map((department) => (
-                                                <SelectItem key={department.id} value={department.id}>
-                                                    {department.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                        className={!isEditing ? "bg-gray-50" : ""}
+                                    />
                                 </div>
                             </div>
 
@@ -336,14 +301,14 @@ export default function UserProfilePage() {
                                         <Calendar className="h-5 w-5 text-gray-400" />
                                         <div>
                                             <p className="text-sm font-medium text-gray-700">Joined</p>
-                                            {/* <p className="text-sm text-gray-600">{new Date(userData?.joinedDate || '').toLocaleDateString()}</p> */}
+                                            <p className="text-sm text-gray-600">{new Date(userData.joinedDate).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3">
                                         <Clock className="h-5 w-5 text-gray-400" />
                                         <div>
                                             <p className="text-sm font-medium text-gray-700">Last Active</p>
-                                            <p className="text-sm text-gray-600">{formatTimestamp(userData?.lastLogin || '')}</p>
+                                            <p className="text-sm text-gray-600">{formatTimestamp(userData.lastActive)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -360,8 +325,8 @@ export default function UserProfilePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
-                            {/* <div className="space-y-4">
-                                {userData?.recentActivity.map((activity, index) => (
+                            <div className="space-y-4">
+                                {userData.recentActivity.map((activity, index) => (
                                     <div key={activity.id} className="flex items-start space-x-4">
                                         <div className={`w-3 h-3 rounded-full mt-2 ${index === 0 ? 'bg-green-500' :
                                             index === 1 ? 'bg-blue-500' : 'bg-gray-400'
@@ -375,7 +340,7 @@ export default function UserProfilePage() {
                                         </div>
                                     </div>
                                 ))}
-                            </div> */}
+                            </div>
                             <Button variant="outline" className="w-full mt-4">
                                 <FileText className="h-4 w-4 mr-2" />
                                 View Full Activity Log
@@ -394,9 +359,9 @@ export default function UserProfilePage() {
                                 <span>Permissions</span>
                             </CardTitle>
                         </CardHeader>
-                        {/* <CardContent className="p-6">
+                        <CardContent className="p-6">
                             <div className="space-y-3">
-                                {userData?.permissions.map((permission) => (
+                                {userData.permissions.map((permission) => (
                                     <div key={permission} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
                                         <span className="text-sm font-medium text-purple-900 capitalize">
                                             {permission.replace('_', ' ')}
@@ -407,7 +372,7 @@ export default function UserProfilePage() {
                                     </div>
                                 ))}
                             </div>
-                        </CardContent> */}
+                        </CardContent>
                     </Card>
 
                     {/* Notification Settings */}
@@ -497,6 +462,3 @@ export default function UserProfilePage() {
         </div>
     );
 }
-
-
-
