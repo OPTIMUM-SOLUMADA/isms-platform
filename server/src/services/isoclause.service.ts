@@ -1,0 +1,79 @@
+import prisma from "@/database/prisma"; // adjust path to your prisma client
+import { ISOClause, Prisma } from "@prisma/client";
+
+export class ISOClauseService {
+    async create(data: Prisma.ISOClauseCreateInput): Promise<ISOClause> {
+        return prisma.iSOClause.create({
+            data,
+        });
+    }
+
+    async findAll(): Promise<ISOClause[]> {
+        return prisma.iSOClause.findMany({
+            include: { documents: true },
+            orderBy: { createdAt: "desc" },
+        });
+    }
+
+    async findByCode(code: string): Promise<ISOClause | null> {
+        return prisma.iSOClause.findUnique({
+            where: { code },
+            include: { documents: true },
+        });
+    }
+
+    async findById(id: string): Promise<ISOClause | null> {
+        return prisma.iSOClause.findUnique({
+            where: { id },
+            include: { documents: true },
+        });
+    }
+
+    async update(id: string, data: Prisma.ISOClauseUpdateInput): Promise<ISOClause> {
+        return prisma.iSOClause.update({
+            where: { id },
+            data,
+        });
+    }
+
+    async delete(id: string): Promise<ISOClause> {
+        return prisma.iSOClause.delete({
+            where: { id },
+        });
+    }
+
+    async init() {
+        const isoClausesList = [
+            { code: 'A.5', title: 'Information Security Policies', description: 'Management direction and support for information security' },
+            { code: 'A.6', title: 'Organization of Information Security', description: 'Internal organization and mobile devices' },
+            { code: 'A.7', title: 'Human Resource Security', description: 'Prior to employment, during employment and termination' },
+            { code: 'A.8', title: 'Asset Management', description: 'Responsibility for assets and information classification' },
+            { code: 'A.9', title: 'Access Control', description: 'Business requirements and user access management' },
+            { code: 'A.10', title: 'Cryptography', description: 'Cryptographic controls' },
+            { code: 'A.11', title: 'Physical and Environmental Security', description: 'Secure areas and equipment protection' },
+            { code: 'A.12', title: 'Operations Security', description: 'Operational procedures and responsibilities' },
+            { code: 'A.13', title: 'Communications Security', description: 'Network security management and information transfer' },
+            { code: 'A.14', title: 'System Acquisition, Development and Maintenance', description: 'Security requirements and secure development' },
+            { code: 'A.15', title: 'Supplier Relationships', description: 'Information security in supplier relationships' },
+            { code: 'A.16', title: 'Information Security Incident Management', description: 'Management of information security incidents' },
+            { code: 'A.17', title: 'Information Security Aspects of Business Continuity Management', description: 'Information security continuity' },
+            { code: 'A.18', title: 'Compliance', description: 'Compliance with legal requirements and information security review' },
+        ];
+
+        const result: ISOClause[] = [];
+
+        for (const isoClause of isoClausesList) {
+            const existing = await this.findByCode(isoClause.code);
+            if (!existing) {
+                const created = await this.create({
+                    code: isoClause.code,
+                    name: isoClause.title,
+                    description: isoClause.description
+                });
+                result.push(created);
+            }
+        }
+
+        return result;
+    }
+}

@@ -15,6 +15,7 @@ import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import AccessPermissionRoute from "@/components/routes/AccessPermissionRoute";
 import NotFoundPage from "@/pages/404";
 import { AccessPermission } from "@/types/role";
+import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -54,7 +55,9 @@ const routeConfig: AppRoute[] = [
             <ProtectedRoute>
                 <DepartmentProvider>
                     <UserProvider>
-                        <Layout />
+                        <ISOClauseProvider>
+                            <Layout />
+                        </ISOClauseProvider>
                     </UserProvider>
                 </DepartmentProvider>
             </ProtectedRoute>

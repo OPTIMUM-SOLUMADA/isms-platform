@@ -1,65 +1,65 @@
 
 export type AuditEntry = {
-    id: string;
-    timestamp: string;
-    user: string;
-    action: string;
-    resource: string;
-    resourceType: 'document' | 'user' | 'system' | 'review' | 'policy';
-    status: 'success' | 'warning' | 'error';
-    ipAddress: string;
-    userAgent: string;
-    details: string;
-    changes?: {
-        field: string;
-        oldValue: string;
-        newValue: string;
-    }[];
+  id: string;
+  timestamp: string;
+  user: string;
+  action: string;
+  resource: string;
+  resourceType: 'document' | 'user' | 'system' | 'review' | 'policy';
+  status: 'success' | 'warning' | 'error';
+  ipAddress: string;
+  userAgent: string;
+  details: string;
+  changes?: {
+    field: string;
+    oldValue: string;
+    newValue: string;
+  }[];
 }
 
 export type ComplianceClause = {
-    id: string;
-    clause: string;
-    title: string;
-    progress: number;
-    status: 'compliant' | 'partial' | 'non-compliant' | 'not-started';
-    documents: number;
-    lastReviewed: string;
-    nextReview: string;
-    owner: string;
-    priority: 'high' | 'medium' | 'low';
+  id: string;
+  clause: string;
+  title: string;
+  progress: number;
+  status: 'compliant' | 'partial' | 'non-compliant' | 'not-started';
+  documents: number;
+  lastReviewed: string;
+  nextReview: string;
+  owner: string;
+  priority: 'high' | 'medium' | 'low';
 }
 
 export type Document = {
-    id: string;
-    title: string;
-    description?: string;
-    fileUrl?: string;
-    status: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
-    nextReviewDate?: string; // ISO string pour compatibilité API/JSON
-    reviewFrequency?: number; // en mois
-    owner?: User;
-    ownerId?: string;
-    category?: Category;
-    categoryId?: string;
-    versions?: DocumentVersion[];                 // à préciser si tu veux typer DocumentVersion
-    reviews?: DocumentReview[];                  // idem pour DocumentReview
-    approvals?: DocumentApproval[];                // idem pour DocumentApproval
-    notifications?: Notification[];            // idem pour Notification
-    auditlogs?: AuditLog[];     // idem pour AuditLog
+  id: string;
+  title: string;
+  description?: string;
+  fileUrl?: string;
+  status: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
+  nextReviewDate?: string; // ISO string pour compatibilité API/JSON
+  reviewFrequency?: number; // en mois
+  owner?: User;
+  ownerId?: string;
+  category?: Category;
+  categoryId?: string;
+  versions?: DocumentVersion[];                 // à préciser si tu veux typer DocumentVersion
+  reviews?: DocumentReview[];                  // idem pour DocumentReview
+  approvals?: DocumentApproval[];                // idem pour DocumentApproval
+  notifications?: Notification[];            // idem pour Notification
+  auditlogs?: AuditLog[];     // idem pour AuditLog
 };
 
 export type DocumentVersion = {
-  id :           string  ;
-  documentId:    string;
+  id: string;
+  documentId: string;
   versionNumber: number;
-  comment? :      string | null;
-  createdAt :    Date;
-  isCurrent  :   boolean; // optional: flag the latest version
+  comment?: string | null;
+  createdAt: Date;
+  isCurrent: boolean; // optional: flag the latest version
 
-  document : Document;
+  document: Document;
   approvals?: DocumentApproval[]
-    
+
 }
 
 export type DocumentReview = {
@@ -112,64 +112,75 @@ export type AuditEventType =
   | "EXPORT_LOGS";
 
 export type ReviewItem = {
-    id: string;
-    document: string;
-    type: string;
-    stage: 'pending' | 'in-review' | 'approved' | 'rejected';
-    assignee: string;
-    reviewer: string;
-    dueDate: string;
-    priority: 'high' | 'medium' | 'low';
-    comments: number;
-    progress: number;
-    startDate: string;
+  id: string;
+  document: string;
+  type: string;
+  stage: 'pending' | 'in-review' | 'approved' | 'rejected';
+  assignee: string;
+  reviewer: string;
+  dueDate: string;
+  priority: 'high' | 'medium' | 'low';
+  comments: number;
+  progress: number;
+  startDate: string;
 }
 
 export enum RoleType {
-    ADMIN = "ADMIN",
-    // CONTRIBUTOR = "CONTRIBUTOR",
-    REVIEWER = "REVIEWER",
-    VIEWER = "VIEWER",
+  ADMIN = "ADMIN",
+  // CONTRIBUTOR = "CONTRIBUTOR",
+  REVIEWER = "REVIEWER",
+  VIEWER = "VIEWER",
 }
 
 export type User = {
-    id: string;
-    name: string;
-    email: string;
-    role: RoleType;
-    isActive: boolean;
-    lastLogin?: string;
-    department: Department;
-    departmentId: string;
+  id: string;
+  name: string;
+  email: string;
+  role: RoleType;
+  isActive: boolean;
+  lastLogin?: string;
+  department: Department;
+  departmentId: string;
 
-    documents: any[];
-    reviews: any[];
+  documents: any[];
+  reviews: any[];
 
-    createdAt: string;
-    updatedAt: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type Category = {
-    id: string;
-    name: string;
-    description: string;
-    isoClauseNumber: string;
-    documents: Document[];
+  id: string;
+  name: string;
+  description: string;
+  isoClauseNumber: string;
+  documents: Document[];
 }
 
 export type Department = {
-    id: string;
-    name: string;
-    description: string;
-    members: User[];
+  id: string;
+  name: string;
+  description: string;
+  members: User[];
 
-    createdAt: string;
-    updatedAt: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CustomFormProps<T> {
-    onCancel?: () => void;
-    onSubmit: (data: T) => void;
-    isPending?: boolean;
-    error?: string | null;
+  onCancel?: () => void;
+  onSubmit: (data: T) => void;
+  isPending?: boolean;
+  error?: string | null;
+}
+
+export interface ISOClause {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+
+  documents: Document[];
+  createdAt: string;
+  updatedAt: string;
 }

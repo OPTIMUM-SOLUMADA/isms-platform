@@ -318,10 +318,8 @@
                 },
                 "status": {
                     "label": "Statut",
-                    "draft": "Brouillon",
-                    "review": "En révision",
-                    "approved": "Approuvé",
-                    "expired": "Expiré"
+                    "placeholder": "Statut du document"
+                    
                 },
                 "nextReviews": {
                     "label": "Prochaine révision"
@@ -336,7 +334,7 @@
                 },
                 "category": {
                     "label": "Catégorie",
-                    "placeholder": "Nom de la catégorie"
+                    "placeholder": "Séléctionner une catégorie"
                 },
                 "file": {
                     "label": "Fichier",
@@ -431,7 +429,8 @@
             },
             "department": {
                 "required": "Veuillez sélectionner un département"
-            }
+            },
+            "required": "Ce champ est requis"
         }
     },
     "components": {
@@ -494,6 +493,21 @@
                 "selected": "{{count}} sur {{total}} éléments sélectionnés"
             }
 
+        },
+        "fileUpload": {
+            "title": {
+                "plural": "Importer des fichiers",
+                "singular": "Importer un fichier"
+            },
+            "dragAndDrop": "Glisser-déposer les fichiers ici ou",
+            "browseFiles": "Parcourir les fichiers",
+            "maxSize": "Taille maximale du fichier : <span>{{size}}</span>",
+            "uploading": "Téléchargement en cours...",
+            "uploaded": "{{count}} fichier(s) téléchargé(s)",
+            "error": {
+                "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : {{size}}",
+                "invalidFileType": "Type de fichier invalide. Types autorisés : {{types}}"
+            }
         }
     },
     "navigation": {
@@ -541,5 +555,15 @@
     "sidebar": {
         "title": "ISMS Solumada",
         "logout": "Se déconnecter"
+    },
+    "common": {
+        "document": {
+            "status": {
+                "draft": "Brouillon",
+                "in_review": "En révision",
+                "approved": "Approuvé",
+                "expired": "Expiré"
+            }
+        }
     }
 }
