@@ -49,6 +49,16 @@ export type Document = {
   auditlogs?: AuditLog[];     // idem pour AuditLog
 };
 
+export type DocumentType = {
+  id: string;
+  name: string;
+  description: string;
+  // isoClauseNumber: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type DocumentVersion = {
   id: string;
   documentId: string;

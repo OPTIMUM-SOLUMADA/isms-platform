@@ -7,6 +7,7 @@ import departmentRoutes from './routes/department.routes';
 import documentRoutes from './routes/document.routes';
 import userRoutes from './routes/user.routes';
 import isoClauseRoutes from './routes/isoclause.route';
+import documentTypeRoutes from './routes/documenttype.routes';
 import { env } from './configs/env';
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/departments', departmentRoutes);
 app.use('/users', userRoutes);
 app.use('/documents', documentRoutes);
 app.use('/iso-clauses', isoClauseRoutes);
+app.use('/document-types', documentTypeRoutes);
 
 
 export default app;

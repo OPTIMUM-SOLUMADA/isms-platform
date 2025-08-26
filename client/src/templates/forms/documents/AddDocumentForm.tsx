@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
-import { CustomFormProps, ISOClause } from "@/types";
+import { RoleType, type CustomFormProps, type DocumentType, type ISOClause, type User } from "@/types";
 import {
   Form,
   FormControl,
@@ -25,8 +25,10 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
+import UserLookup from "@/templates/lookup/UserLookup";
+import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 
-const maxFileSize = 20 * 1024 * 1024;
+const maxFileSize = 0.5 * 1024 * 1024;
 
 const documentSchema = cz.z.object({
   id: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -38,52 +40,65 @@ const documentSchema = cz.z.object({
   nextReviewDate: z.string().optional(), // ou z.date() si tu veux
   reviewFrequency: z.number().int().positive().optional(),
 
-  owner: z.string().nonempty(i18n.t("zod.errors.required")),
-  ownerId: z.string().nonempty(i18n.t("zod.errors.required")),
+  owner: z.string().nonempty(i18n.t("zod.errors.required")).min(1, i18n.t("zod.errors.required")),
 
-  category: z.string().nonempty(i18n.t("zod.errors.required")),
-  categoryId: z.string().nonempty(i18n.t("zod.errors.required")),
+  type: z.string().nonempty(i18n.t("zod.errors.required")),
 
   department: z.string().nonempty(i18n.t("zod.errors.required")),
 
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  isoClauseId: z.string().nonempty(i18n.t("zod.errors.required")),
+
+  reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
 
   files: z
     .array(z.custom<File>())
-    .min(1, "Please select at least one file")
+    .min(1, { message: i18n.t("components.fileUpload.errors.required") })
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
-      message: "File size must be less than 5MB",
-      path: ["files"],
+      message: i18n.t("components.fileUpload.errors.fileTooLarge", {
+        size: formatBytes(maxFileSize),
+      }),
     }),
+
 });
 
-export type DocumentFormData = z.infer<typeof documentSchema>;
+export type AddDocumentFormData = z.infer<typeof documentSchema>;
 
-interface DocumentFormProps extends CustomFormProps<DocumentFormData> {
+interface AddDocumentFormProps extends CustomFormProps<AddDocumentFormData> {
   isoClauses: ISOClause[];
+  types: DocumentType[];
+  users: User[];
 }
 
-export default function DocumentForm({
+export default function AddDocumentForm({
   isPending = false,
   onSubmit,
   error,
-  isoClauses
-}: DocumentFormProps) {
+  isoClauses = [],
+  types = [],
+  users = []
+}: AddDocumentFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const form = useForm<DocumentFormData>({
+  const form = useForm<AddDocumentFormData>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
       id: "",
-      title: "",
-      description: "",
+      title: "ISO Document Test 007",
+      description: "Ce document est un test",
       fileUrl: "",
-      status: "DRAFT",
+      status: documentStatus.DRAFT,
       nextReviewDate: "",
-      reviewFrequency: undefined
+      owner: "",
+      isoClause: "",
+      reviewers: [],
+      reviewFrequency: undefined,
+      files: [],
+      type: "",
+      department: "",
     },
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   const {
@@ -96,13 +111,13 @@ export default function DocumentForm({
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-5xl mx-auto p-6 bg-white space-y-6"
+        className="space-y-4"
       >
         {/* Title */}
         <FormField
           control={form.control}
           name="title"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel className="font-medium">
                 {t("document.forms.add.name.label")}
@@ -113,6 +128,7 @@ export default function DocumentForm({
                   type="text"
                   placeholder={t("document.forms.add.name.placeholder")}
                   className="border rounded-lg px-3 py-2 w-full"
+                  hasError={!!fieldState.error}
                 />
               </FormControl>
               <FormMessage />
@@ -143,24 +159,28 @@ export default function DocumentForm({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-          {/* Category ID */}
+          {/* Types ID */}
           <FormField
             control={form.control}
-            name="category"
-            render={({ field }) => (
+            name="type"
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.category.label")}
+                  {t("document.forms.add.type.label")}
                 </FormLabel>
                 <FormControl>
-                  <Select {...field}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('document.forms.add.category.placeholder')} />
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger hasError={!!fieldState.error}>
+                      <SelectValue placeholder={t('document.forms.add.type.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(documentStatus).map(([status, index]) => (
-                        <SelectItem key={index} value={status}>
-                          {t(`document.forms.add.status.${status.toLowerCase()}`)}
+                      {types.map((item, index) => (
+                        <SelectItem key={index} value={item.id}>
+                          {item.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -175,14 +195,18 @@ export default function DocumentForm({
           <FormField
             control={form.control}
             name="status"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
                   {t("document.forms.add.status.label")}
                 </FormLabel>
                 <FormControl>
-                  <Select {...field}>
-                    <SelectTrigger>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger hasError={!!fieldState.error}>
                       <SelectValue placeholder={t('document.forms.add.status.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -203,15 +227,19 @@ export default function DocumentForm({
           <FormField
             control={form.control}
             name="isoClause"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.status.label")}
+                  {t("document.forms.add.isoClause.label")}
                 </FormLabel>
                 <FormControl>
-                  <Select {...field}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('document.forms.add.status.placeholder')} />
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger hasError={!!fieldState.error}>
+                      <SelectValue placeholder={t('document.forms.add.isoClause.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {isoClauses.map((item, index) => (
@@ -229,21 +257,22 @@ export default function DocumentForm({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Review Frequency */}
+
+          {/* Owner */}
           <FormField
             control={form.control}
-            name="reviewFrequency"
-            render={({ field }) => (
+            name="owner"
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.reviewFrequency.label")}
+                  {t("document.forms.add.owner.label")}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder={t("document.forms.add.reviewFrequency.placeholder")}
-                    className="border rounded-lg px-3 py-2 w-full"
+                  <UserLookup
+                    data={users}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    hasError={!!fieldState.error}
                   />
                 </FormControl>
                 <FormMessage />
@@ -251,21 +280,21 @@ export default function DocumentForm({
             )}
           />
 
-          {/* Owner ID */}
+          {/* Reviewers */}
           <FormField
             control={form.control}
-            name="owner"
-            render={({ field }) => (
-              <FormItem>
+            name="reviewers"
+            render={({ field, fieldState }) => (
+              <FormItem className="col-span-2">
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.owner.label")}
+                  {t("document.forms.add.reviewer.label")}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder={t("document.forms.add.owner.placeholder")}
-                    className="border rounded-lg px-3 py-2 w-full"
+                  <UserMultiSelect
+                    data={users.filter(user => user.role !== RoleType.VIEWER)}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    hasError={!!fieldState.error}
                   />
                 </FormControl>
                 <FormMessage />
