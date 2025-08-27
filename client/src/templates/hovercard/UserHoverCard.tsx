@@ -66,39 +66,41 @@ export function UserHoverCard({
                     </div>
                 </div>
                 {/* Actions */}
-                <div className="mt-3 flex gap-2">
-                    {hasActionPermission("user.read") && (
+                {currentUserId !== user.id && (
+                    <div className="mt-3 flex gap-2">
+                        {hasActionPermission("user.read") && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onViewDetails?.(user)}
+                                className="flex items-center gap-1 normal-case"
+                            >
+                                <Eye className="h-4 w-4" />
+                                {t("user.hovercard.actions.view.label")}
+                            </Button>
+                        )}
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onViewDetails?.(user)}
+                            onClick={() => onMessage?.(user)}
                             className="flex items-center gap-1 normal-case"
                         >
-                            <Eye className="h-4 w-4" />
-                            {t("user.hovercard.actions.view.label")}
+                            <MessageSquare className="h-4 w-4" />
+                            {t("user.hovercard.actions.contact.label")}
                         </Button>
-                    )}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onMessage?.(user)}
-                        className="flex items-center gap-1 normal-case"
-                    >
-                        <MessageSquare className="h-4 w-4" />
-                        {t("user.hovercard.actions.contact.label")}
-                    </Button>
-                    {hasActionPermission("user.update") && (
-                        <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => onEdit?.(user)}
-                            className="flex items-center gap-1 normal-case"
-                        >
-                            <Pencil className="h-4 w-4" />
-                            {t("user.hovercard.actions.edit.label")}
-                        </Button>
-                    )}
-                </div>
+                        {hasActionPermission("user.update") && (
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => onEdit?.(user)}
+                                className="flex items-center gap-1 normal-case"
+                            >
+                                <Pencil className="h-4 w-4" />
+                                {t("user.hovercard.actions.edit.label")}
+                            </Button>
+                        )}
+                    </div>
+                )}
             </HoverCardContent>
         </HoverCard>
     )

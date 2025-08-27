@@ -18,6 +18,9 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { UserAvatar } from "@/components/user-avatar";
 import You from "@/components/You";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
+import { useDocument } from "@/contexts/DocumentContext";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -26,13 +29,14 @@ interface DocumentActionsCell {
     onView?: (user: Document) => void;
 }
 
-const DocumentActionsCell = ({ doc, onEdit, onDelete, onView }: DocumentActionsCell) => {
+const DocumentActionsCell = ({ doc, onEdit, onView }: DocumentActionsCell) => {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
+    const { deleteDocument } = useDocument();
 
     const handleDelete = async () => {
-        if (onDelete) await onDelete(doc);
+        await deleteDocument({ id: doc.id });
     };
 
     return (
@@ -78,14 +82,17 @@ interface UserTableProps {
     onEdit?: (user: Document) => Promise<void>;
     onDelete?: (user: Document) => Promise<boolean>;
     onCreateNewDocument: () => void;
+    isLoading?: boolean;
 }
 
 const Table = ({
     data,
-    onCreateNewDocument
+    onCreateNewDocument,
+    isLoading = false,
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
+    const navigate = useNavigate();
 
     // Define columns for UserTable
     const columns: ColumnDef<Document>[] = useMemo(() => [
@@ -97,12 +104,16 @@ const Table = ({
             cell: ({ row }) => {
                 const doc = row.original;
                 return (
-                    <div className="flex items-center gap-3">
+                    <button
+                        type="button"
+                        className="flex items-center gap-3 hover:text-theme-2 hover:cursor-pointer"
+                        onClick={() => navigate(`/document/view/${doc.id}`)}
+                    >
                         <FileSpreadsheet className="size-6 flex-shrink-0 text-theme" />
                         <div className="text-sm flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
                         </div>
-                    </div>
+                    </button>
                 );
             },
         },
@@ -155,7 +166,13 @@ const Table = ({
             enableSorting: true,
             header: t("document.table.columns.version"),
             cell: ({ row }) => {
-                return <span>{row.original.versions.join(', ')}</span>;
+                const currentVersion = row.original.versions?.find(v => v.isCurrent);
+
+                return currentVersion ? (
+                    <Badge variant="outline">{currentVersion.version}</Badge>
+                ) : (
+                    <>-</>
+                )
             },
         },
         {
@@ -180,7 +197,7 @@ const Table = ({
             enableSorting: false,
             enableHiding: false,
         },
-    ], [t]);
+    ], [t, currentUser]);
 
     return (
         <DataTable
@@ -189,6 +206,7 @@ const Table = ({
             data={data}
             searchableColumnId="name"
             enableRowSelection
+            isLoading={isLoading}
             renderNoData={() => (
                 <Card className="shadow-none flex-grow">
                     <CardContent className="p-12 text-center">

@@ -14,7 +14,12 @@ interface DocumentContextType {
     refetchDocuments: () => Promise<any>;
     // create
     create: (data: AddDocumentFormData) => Promise<any>;
-    isCreating: boolean
+    isCreating: boolean;
+    isCreated: boolean;
+    // delete
+    deleteDocument: (payload: { id: string }) => Promise<any>;
+    isDeleting: boolean;
+    isDeleted: boolean;
 }
 
 // Create context
@@ -46,7 +51,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [data]);
 
-    const { mutateAsync: create, isPending: isCreating } = useMutation<Document, ApiAxiosError, AddDocumentFormData>({
+    const { mutateAsync: createDocument, isPending: isCreating, isSuccess: isCreated } = useMutation<Document, ApiAxiosError, AddDocumentFormData>({
         mutationFn: async (data) => {
             // create form data
             const formData = new FormData();
@@ -79,6 +84,27 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
+    // Delete document
+    const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted } = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await documentService.delete(id),
+        onSuccess: (data) => {
+            toast({
+                title: "Document supprimé",
+                description: "Le document a bien été supprimé.",
+                variant: "success",
+            });
+            setDocuments(prev => prev.filter(document => document.id !== data.id));
+        },
+        onError: (err) => {
+            console.error(err.response?.data);
+            toast({
+                title: "Erreur",
+                description: "Une erreur est survenue lors de la suppression du document.",
+                variant: "destructive",
+            })
+        }
+    })
+
     return (
         <DocumentContext.Provider
             value={{
@@ -86,8 +112,12 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 loading: isLoading,
                 error: isError ? error.message : null,
                 refetchDocuments: refetch,
-                create,
-                isCreating
+                create: createDocument,
+                isCreating,
+                isCreated,
+                deleteDocument,
+                isDeleting,
+                isDeleted
             }}
         >
             {children}

@@ -7,11 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useUser } from '@/contexts/UserContext';
-import { ChevronLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
+import BackButton from '@/components/BackButton';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -37,14 +36,7 @@ export default function DocumentAddPage() {
       <div className="space-y-6 flex-grow flex flex-col pb-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate(-1)}
-            className='aspect-square'
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+          <BackButton />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{t("document.add.title")}</h1>
             <p className="text-gray-600 mt-1">{t("document.add.subtitle")}</p>

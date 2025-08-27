@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ArrowUpDown, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import TableSkeletonRow from "./TableSkeletonRow";
 
 // ============================================================================
 // Reusable DataTable
@@ -52,6 +53,7 @@ export type DataTableProps<TData, TValue> = {
     title?: string;
     renderNoData?: () => React.ReactNode;
     renderSelectionHeader?: (selectedIds: string[]) => React.ReactNode;
+    isLoading?: boolean;
 
 };
 
@@ -64,6 +66,7 @@ export function DataTable<TData, TValue>({
     enableRowSelection = false,
     enableSearch = false,
     className,
+    isLoading = false,
     renderNoData
 }: DataTableProps<TData, TValue>) {
     const { t } = useTranslation();
@@ -221,20 +224,26 @@ export function DataTable<TData, TValue>({
                                 ))}
                             </TableHeader>
                             <TableBody className="bg-muted/40">
-                                {table.getRowModel().rows?.length ? (
-                                    table.getRowModel().rows.map((row) => (
-                                        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="bg-white">
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                                            ))}
-                                        </TableRow>
+                                {isLoading ? (
+                                    Array.from({ length: 8 }).map((_, idx) => (
+                                        <TableSkeletonRow key={idx} headers={table.getHeaderGroups()[0].headers} />
                                     ))
                                 ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={table.getAllLeafColumns().length} className="h-full text-center ali">
-                                            {renderNoData ? renderNoData() : t("components.table.empty.title")}
-                                        </TableCell>
-                                    </TableRow>
+                                    table.getRowModel().rows?.length ? (
+                                        table.getRowModel().rows.map((row) => (
+                                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="bg-white">
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={table.getAllLeafColumns().length} className="h-full text-center ali">
+                                                {renderNoData ? renderNoData() : t("components.table.empty.title")}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
                                 )}
                             </TableBody>
                         </Table>

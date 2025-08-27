@@ -20,7 +20,7 @@ const NotFoundPage = ({
         <WithTitle title={t("notFound.title")}>
             <div className={cn('flex-grow flex flex-col gap-4 items-center justify-center', fullPage && "min-h-screen")}>
                 <img
-                    src="./404.png"
+                    src="/404.png"
                     alt="404"
                     className="w-[204px]"
                 />

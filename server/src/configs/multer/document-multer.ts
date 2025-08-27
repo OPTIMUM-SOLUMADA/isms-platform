@@ -3,21 +3,24 @@ import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
 
+export const DOCUMENT_UPLOAD_PATH = path.join(process.cwd(), "uploads", "documents");
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, "..", "..", "uploads", "documents");
         // Create folder if it doesn't exist
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
+        if (!fs.existsSync(DOCUMENT_UPLOAD_PATH)) {
+            fs.mkdirSync(DOCUMENT_UPLOAD_PATH, { recursive: true });
         }
 
-        cb(null, uploadPath);
+        cb(null, DOCUMENT_UPLOAD_PATH);
     },
     filename: (req, file, cb) => {
+        const [name] = file.originalname.split(".");
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, "doc-" + uniqueSuffix + path.extname(file.originalname));
+        cb(null, `${name}-${uniqueSuffix}${path.extname(file.originalname)}`);
     },
 });
+
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     const allowed = ["application/pdf", "application/msword"];

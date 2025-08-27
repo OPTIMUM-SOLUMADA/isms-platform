@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import { DocumentService } from '@/services/document.service';
+import { createVersion } from '@/utils/version';
+import { FileService } from '@/services/file.service';
+import { DOCUMENT_UPLOAD_PATH } from '@/configs/multer/document-multer';
 
 const service = new DocumentService();
 
@@ -28,7 +31,14 @@ export class DocumentController {
                 ...(department && { department: { connect: { id: department } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 reviewersId: reviewers.split(','),
-                fileUrl: fileUrl
+                fileUrl: fileUrl,
+                // create document version
+                versions: {
+                    create: {
+                        version: createVersion(1, 0), // 1.0
+                        isCurrent: true,
+                    }
+                }
             });
 
             res.status(201).json(document);
@@ -62,8 +72,11 @@ export class DocumentController {
 
     async delete(req: Request, res: Response) {
         try {
-            await service.deleteDocument(req.params.id!);
-            res.status(204).send();
+            const deleted = await service.deleteDocument(req.params.id!);
+            // Delete file
+            await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, deleted.fileUrl!);
+
+            res.status(204).json(deleted);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }
@@ -77,13 +90,4 @@ export class DocumentController {
             res.status(400).json({ error: (err as Error).message });
         }
     }
-
-    // initialize = async (req: Request, res: Response) => {
-    //     try {
-    //         const documents = await service.init();
-    //         res.json(documents);
-    //     } catch (err) {
-    //         res.status(400).json({ error: (err as Error).message });
-    //     }
-    // };
 }

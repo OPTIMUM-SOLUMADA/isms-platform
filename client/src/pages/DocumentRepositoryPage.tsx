@@ -38,7 +38,7 @@ export default function DocumentRepositoryPage() {
 
   const { types } = useDocumentType();
   const { clauses } = useISOClause();
-  const { documents } = useDocument();
+  const { documents, loading } = useDocument();
   const { users } = useUser();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -214,6 +214,7 @@ export default function DocumentRepositoryPage() {
           <DocumentTable
             data={filteredDocuments}
             onCreateNewDocument={() => navigate(NEW_DOCUMENT_PATH)}
+            isLoading={loading}
           />
         </Card>
       </div>

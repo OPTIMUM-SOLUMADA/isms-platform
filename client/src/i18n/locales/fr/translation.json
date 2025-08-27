@@ -406,6 +406,25 @@
                     },
                     "cancel": {
                         "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Effacer"
+                    }
+                }
+            },
+            "edit": {
+                "title": "Modifier le document",
+                "subtitle": "Modifier les informations du document",
+                "actions": {
+                    "submit": {
+                        "label": "Enregistrer",
+                        "loading": "Enregistrement en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Effacer"
                     }
                 }
             }

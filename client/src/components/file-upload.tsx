@@ -5,6 +5,7 @@ import {
   useFileUpload,
 } from "@/hooks/use-file-upload"
 import { Button } from "@/components/ui/button"
+import { useEffect } from "react";
 
 interface FileUploadProps {
   onFileUpload?: (files: File[]) => void;
@@ -48,9 +49,16 @@ export default function FileUpload({
       }))
     ],
     onFilesChange: (files) => onFileUpload?.(files.map((f) => f.file) as File[])
-  })
+  });
 
   const file = files[0];
+
+  useEffect(() => {
+    if (!file) return;
+    if (value.length === 0) {
+      removeFile(file.id);
+    }
+  }, [value, file, removeFile]);
 
   return (
     <div className="flex flex-col gap-2">

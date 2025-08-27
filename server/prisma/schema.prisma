@@ -147,17 +147,17 @@ model ISOClause {
 }
 
 model DocumentVersion {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  documentId    String   @db.ObjectId
-  versionNumber Int
-  comment       String?
-  createdAt     DateTime @default(now())
-  isCurrent     Boolean  @default(false) // optional: flag the latest version
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId String   @db.ObjectId
+  version    String
+  comment    String?
+  createdAt  DateTime @default(now())
+  isCurrent  Boolean  @default(false) // optional: flag the latest version
 
   document  Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   approvals DocumentApproval[]
 
-  @@index([documentId, versionNumber])
+  @@index([documentId, version])
   @@map("document_versions")
 }
 
