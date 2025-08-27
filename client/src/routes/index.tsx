@@ -21,6 +21,8 @@ import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const DocumentRepositoryPage = lazy(() => import('@/pages/DocumentRepositoryPage'));
 const DocumentAddPage = lazy(() => import('@/pages/DocumentAddPage'));
+const DocumentDetail = lazy(() => import('@/pages/DocumentDetailPage'))
+
 const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
@@ -84,6 +86,7 @@ const routeConfig: AppRoute[] = [
                 children: [
                     { index: true, element: <DocumentRepositoryPage /> },
                     { path: "add", element: <DocumentAddPage /> },
+                    { path: "detail/:id", element: <DocumentDetail /> }
                 ],
             },
 
