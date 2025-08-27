@@ -16,7 +16,7 @@ export const API_CONFIG = {
         DEPARTMENTS: '/departments',
         DOCUMENTS: '/documents',
         ISO_CLAUSES: '/iso-clauses',
-        DOCUMENT_CATEGORIES: '/document-categories',
+        DOCUMENT_TYPES: '/document-types',
     },
 } as const;
 

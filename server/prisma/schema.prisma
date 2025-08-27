@@ -26,8 +26,9 @@ model Department {
   // manager   User[]   @relation("ManagedDepartment")
   members User[] @relation("DepartmentMembers")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  documents Document[] @relation("DepartmentDocuments")
 
   @@map("departments")
 }
@@ -78,14 +79,17 @@ model User {
 // DOCUMENTS MANAGEMENT AND POLITICS
 // ===========================================================================================
 
-model Category {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  name            String     @unique
-  description     String?
-  isoClauseNumber String?
-  documents       Document[]
+model DocumentType {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  description String?
+  // isoClauseNumber String?
+  documents   Document[]
 
-  @@map("categories")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("document_types")
 }
 
 enum DocumentStatus {
@@ -105,15 +109,19 @@ model Document {
   reviewFrequency Int? // Ajouté : Fréquence en mois (e.g. 12 pour annuel)
   isoClauseId     String         @db.ObjectId
 
-  ownerId    String  @db.ObjectId
-  categoryId String? @db.ObjectId
+  reviewersId String[] @db.ObjectId
+
+  departmentId String  @db.ObjectId
+  ownerId      String  @db.ObjectId
+  categoryId   String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  department    Department?        @relation("DepartmentDocuments", fields: [departmentId], references: [id], onDelete: Restrict)
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   owner         User               @relation("DocumentOwner", fields: [ownerId], references: [id])
-  category      Category?          @relation(fields: [categoryId], references: [id])
+  type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
   reviews       DocumentReview[]
   approvals     DocumentApproval[]

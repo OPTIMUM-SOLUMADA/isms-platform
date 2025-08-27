@@ -46,6 +46,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         queryKey: ['users'],
         queryFn: async () => await userService.list(),
         refetchInterval: 15000,
+        staleTime: 1000 * 60,
     });
 
     useEffect(() => {

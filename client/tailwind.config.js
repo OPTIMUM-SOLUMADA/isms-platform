@@ -11,6 +11,12 @@ export default {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        "8xl": "88rem",
+      },
+      fontSize: {
+        "xxs": "0.65rem",
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
@@ -101,6 +107,12 @@ export default {
         },
         ".btn-block": {
           "@apply !w-full": {},
+        },
+        ".input": {
+          "@apply flex w-full rounded-lg border border-input focus:border-theme-2/30 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-2/20 focus:ring-theme-2/20 disabled:cursor-not-allowed disabled:opacity-50": {}
+        },
+        ".has-error": {
+          "@apply !border-red-500/50 focus:!border-red-500/70 focus:!ring-red-500/30": {}
         },
       })
     })

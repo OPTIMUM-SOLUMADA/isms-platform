@@ -303,11 +303,57 @@
         "title": "Gestion des documents",
         "subtitle": "Gérer les documents et leurs versions",
         "add": {
-            "title": "Ajouter un nouveau document"
+            "title": "Nouveau document",
+            "subtitle": "Ajouter un nouveau document au référentiel"
+        },
+        "stats": {
+            "total": {
+                "title": "Total des documents",
+                "value": "{{count}} documents"   
+            },
+            "draft": {
+                "title": "Brouillons",
+                "value": "{{count}} brouillons"
+            },
+            "inReview": {
+                "title": "En révision",
+                "value": "{{count}} en révision"
+            },
+            "approved": {
+                "title": "Approuvés",
+                "value": "{{count}} approuvés"
+            },
+            "expired": {
+                "title": "Expirés",
+                "value": "{{count}} expirés"
+            }
+        },
+        "filter" : {
+            "search": {
+                "label": "Rechercher par nom, propriétaire ou clause ISO",
+                "placeholder": "Rechercher un document..."
+            },
+            "status": {
+                "label": "Filtrer par statut",
+                "placeholder": "Tous les statuts"
+            },
+            "type": {
+                "label": "Filtrer par type",
+                "placeholder": "Tous les types"
+            },
+            "owner": {
+                "label": "Filtrer par propriétaire",
+                "placeholder": "Tous les propriétaires"
+            },
+            "isoClause": {
+                "label": "Filtrer par clause ISO",
+                "placeholder": "Toutes les clauses ISO"
+            }
         },
         "forms": {
             "add": {
                 "title": "Ajouter un document",
+                "subtitle": "Remplissez les informations du document",
                 "name": {
                     "label": "Nom",
                     "placeholder": "Nom du document"
@@ -332,9 +378,21 @@
                     "label": "Propriétaire",
                     "placeholder": "Nom du propriétaire"
                 },
-                "category": {
-                    "label": "Catégorie",
-                    "placeholder": "Séléctionner une catégorie"
+                "type": {
+                    "label": "Type du document",
+                    "placeholder": "Séléctionner un type"
+                },
+                "reviewer": {
+                    "label": "Reviseur(s)",
+                    "placeholder": "Séléctionner des reviseurs"
+                },
+                "department": {
+                    "label": "Département",
+                    "placeholder": "Séléctionner un département"
+                },
+                "isoClause": {
+                    "label": "Clause ISO",
+                    "placeholder": "Séléctionner une clause ISO"
                 },
                 "file": {
                     "label": "Fichier",
@@ -343,11 +401,41 @@
                 },
                 "actions": {
                     "submit": {
-                        "label": "Ajouter",
-                        "loading": "Ajout en cours..."
+                        "label": "Enregistrer",
+                        "loading": "Enregistrement en cours..."
                     },
                     "cancel": {
                         "label": "Annuler"
+                    }
+                }
+            }
+        },
+        "table": {
+            "title": "Liste des documents",
+            "columns": {
+                "name": "Nom",
+                "type": "Type",
+                "isoClause": "Clause ISO / Control",
+                "status": "Statut",
+                "owner": "Propriétaire",
+                "version": "Version",
+                "nextReview": "Prochaine révision",
+                "reviewDue": "Date de révision",
+                "reviewFrequency": "Fréquence de révision",
+                "lastUpdated": "Dernière mise à jour",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "view": "Voir les détails"
+            },
+            "empty": {
+                "title": "Aucun document trouvé",
+                "message": "Essaiez de modifier les filtres ou d'ajouter un nouveau document.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter un document"
                     }
                 }
             }
@@ -504,9 +592,28 @@
             "maxSize": "Taille maximale du fichier : <span>{{size}}</span>",
             "uploading": "Téléchargement en cours...",
             "uploaded": "{{count}} fichier(s) téléchargé(s)",
-            "error": {
+            "errors": {
                 "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : {{size}}",
-                "invalidFileType": "Type de fichier invalide. Types autorisés : {{types}}"
+                "invalidFileType": "Type de fichier invalide. Types autorisés : {{types}}",
+                "required": "Veuillez sélectionner un fichier à télécharger"
+            }
+        },
+        "lookup": {
+            "user": {
+                "label": "Utilisateur",
+                "placeholder": "Sélectionner un utilisateur",
+                "search": "Rechercher un utilisateur...",
+                "empty": "Aucun utilisateur trouvé.",
+                "addNew": "Ajouter un nouvel utilisateur"
+            }
+        },
+        "multiselect": {
+            "user": {
+                "label": "Utilisateurs",
+                "placeholder": "Sélectionner des utilisateurs",
+                "search": "Rechercher des utilisateurs...",
+                "empty": "Aucun utilisateur trouvé.",
+                "addNew": "Ajouter un nouvel utilisateur"
             }
         }
     },
@@ -563,6 +670,14 @@
                 "in_review": "En révision",
                 "approved": "Approuvé",
                 "expired": "Expiré"
+            }
+        },
+        "form": {
+            "add": {
+                "stay": "Rester sur cette page après l'enregistrement"
+            },
+            "edit": {
+                "stay": "Rester sur cette page après la modification"
             }
         }
     }
