@@ -19,6 +19,7 @@ interface UserHoverCardProps {
     onViewDetails?: (user: User) => void;
     onMessage?: (user: User) => void;
     onEdit?: (user: User) => void;
+    className?: string;
 }
 
 export function UserHoverCard({
@@ -27,25 +28,27 @@ export function UserHoverCard({
     children,
     onViewDetails,
     onMessage,
-    onEdit
+    onEdit,
+    className
 }: UserHoverCardProps) {
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();
 
     return (
         <HoverCard>
-            <HoverCardTrigger asChild className="hover:cursor-default group">
+            <HoverCardTrigger asChild className={cn("hover:cursor-default group", className)}>
                 {children ?? (
-                    <span className="cursor-pointer font-medium text-primary hover:underline">
+                    <div className="flex items-center gap-1 cursor-pointer font-medium text-primary hover:text-theme-2 bg-theme-2-muted/10 px-1 rounded hover:underline">
+                        <UserAvatar className="size-4" id={user.id} name={user.name} />
                         {user.name}
-                    </span>
+                    </div>
                 )}
             </HoverCardTrigger>
             <HoverCardContent className="w-full">
                 <div className="flex items-start space-x-3">
                     <UserAvatar id={user.id} name={user.name} />
                     <div className="space-y-1">
-                        <div className="font-medium">
+                        <div className="font-medium text-left">
                             {user.name} {currentUserId === user.id && (
                                 <You />
                             )}

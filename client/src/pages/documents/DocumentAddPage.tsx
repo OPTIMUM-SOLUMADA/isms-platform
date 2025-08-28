@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@/templates/forms/documents/AddDocumentForm';
 import { useNavigate } from 'react-router-dom';
 import WithTitle from '@/templates/layout/WithTitle';
@@ -44,11 +44,11 @@ export default function DocumentAddPage() {
         </div>
 
         {/* Documents Add */}
-        <Card className='flex-grow px-20'>
-          <CardHeader>
-            <CardDescription>{t("document.forms.add.subtitle")}</CardDescription>
+        <Card className='flex-grow lg:px-20'>
+          <CardHeader className='border-b'>
+            <CardTitle className='text-lg font-medium'>{t("document.add.form.title")}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className='pt-4'>
             <AddDocumentForm
               ref={formRef}
               isoClauses={clauses}

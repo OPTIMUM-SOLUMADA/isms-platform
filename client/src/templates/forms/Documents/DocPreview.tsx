@@ -1,9 +1,9 @@
 
 
 export default function DocPreview() {
-  const pdfUrl = "http://localhost:5173/sample.pdf"; 
-    
-    return (
+  const pdfUrl = "http://localhost:5173/sample.pdf";
+
+  return (
     <div className="h-[80vh] w-full">
       <h3 className="text-lg font-semibold mb-2">Document Preview</h3>
       <iframe
@@ -12,5 +12,5 @@ export default function DocPreview() {
         title="PDF Preview"
       />
     </div>
-    )
+  )
 } 

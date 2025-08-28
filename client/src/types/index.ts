@@ -41,6 +41,7 @@ export type Document = {
   nextReviewDate?: string | null;
   reviewFrequency?: number | null;
   isoClauseId: string;
+  departmentId: string;
 
   reviewersId: string[];
 

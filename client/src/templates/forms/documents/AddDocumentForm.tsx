@@ -20,7 +20,6 @@ import i18n from "@/i18n/config";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RotateCcw, Save } from "lucide-react";
-import FileUpload from "@/components/file-upload";
 import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
@@ -32,6 +31,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
+import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -138,13 +138,13 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.name.label")}
+                  {t("document.add.form.fields.name.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.forms.add.name.placeholder")}
+                    placeholder={t("document.add.form.name.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                     hasError={!!fieldState.error}
                   />
@@ -161,12 +161,12 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.description.label")}
+                  {t("document.add.form.fields.description.label")}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder={t("document.forms.add.description.placeholder")}
+                    placeholder={t("document.add.form.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -184,7 +184,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.type.label")}
+                    {t("document.add.form.fields.type.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -193,7 +193,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.add.type.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.type.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {types.map((item, index) => (
@@ -216,7 +216,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.status.label")}
+                    {t("document.add.form.fields.status.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -225,7 +225,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.add.status.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.status.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.entries(documentStatus).map(([status, index]) => (
@@ -248,7 +248,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.department.label")}
+                    {t("document.add.form.fields.department.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -257,7 +257,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.add.department.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.department.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {departments.map((item, index) => (
@@ -280,7 +280,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.isoClause.label")}
+                    {t("document.add.form.fields.isoClause.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -289,7 +289,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.add.isoClause.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.isoClause.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {isoClauses.map((item, index) => (
@@ -315,7 +315,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.owner.label")}
+                    {t("document.add.form.fields.owner.label")}
                   </FormLabel>
                   <FormControl>
                     <UserLookup
@@ -337,7 +337,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.forms.add.reviewer.label")}
+                    {t("document.add.form.fields.reviewer.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -361,19 +361,12 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.add.file.label")}
+                  {t("document.add.form.fields.file.label")}
                 </FormLabel>
                 <FormControl>
-                  <FileUpload
-                    title={t("components.fileUpload.title.singular")}
-                    description={t("components.fileUpload.dragAndDrop")}
-                    maxSizeDescription={t("components.fileUpload.maxSize", {
-                      size: formatBytes(maxFileSize),
-                    })}
+                  <DocumentFileUpload
                     value={field.value}
-                    onFileUpload={(files) => {
-                      field.onChange(files);
-                    }}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -384,13 +377,13 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
           {/* Error */}
           <ErrorCodeField code={error} />
 
-          <div className="flex justify-between gap-4 border-t py-4">
+          <div className="flex flex-wrap justify-between gap-4 border-t py-4">
 
             <div className="flex items-center gap-3">
               <Checkbox id="terms" checked={stay} onCheckedChange={(val) => setStay(!!val)} />
               <Label htmlFor="terms">{t("common.form.add.stay")}</Label>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center flex-wrap">
               <Button
                 type="reset"
                 variant={"ghost"}
@@ -398,7 +391,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 onClick={() => navigate("/documents")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t("document.forms.add.actions.cancel.label")}
+                {t("document.add.form.actions.cancel.label")}
               </Button>
               <Button
                 type="reset"
@@ -407,17 +400,17 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 onClick={() => form.reset()}
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                {t("document.forms.add.actions.reset.label")}
+                {t("document.add.form.actions.reset.label")}
               </Button>
               {/* Submit */}
               <LoadingButton
                 type="submit"
                 className="btn"
                 isLoading={isPending || isSubmitting}
-                loadingText={t("document.forms.add.actions.submit.loading")}
+                loadingText={t("document.add.form.actions.submit.loading")}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {t("document.forms.add.actions.submit.label")}
+                {t("document.add.form.actions.submit.label")}
               </LoadingButton>
             </div>
 

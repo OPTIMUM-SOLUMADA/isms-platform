@@ -23,7 +23,19 @@ const storage = multer.diskStorage({
 
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-    const allowed = ["application/pdf", "application/msword"];
+    const allowed = [
+        "application/pdf",
+
+        // Word
+        "application/msword", // .doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+        "application/vnd.oasis.opendocument.text", // .odt
+
+        // Excel
+        "application/vnd.ms-excel", // .xls
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    ];
+
     if (allowed.includes(file.mimetype)) {
         cb(null, true);
     } else {

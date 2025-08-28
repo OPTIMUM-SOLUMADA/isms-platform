@@ -46,7 +46,6 @@ const documentSchema = cz.z.object({
   reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
-    .min(1, { message: i18n.t("components.fileUpload.errors.required") })
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
       message: i18n.t("components.fileUpload.errors.fileTooLarge", {
         size: formatBytes(maxFileSize),
@@ -100,8 +99,8 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         isoClause: doc.isoClauseId,
         reviewers: doc.reviewersId,
         files: [],
-        type: "",
-        department: "",
+        type: doc.categoryId,
+        department: doc.departmentId,
       },
       mode: "onChange",
     });
@@ -132,13 +131,13 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.edit.name.label")}
+                  {t("document.add.form.fields.name.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.forms.edit.name.placeholder")}
+                    placeholder={t("document.add.form.fields.name.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                     hasError={!!fieldState.error}
                   />
@@ -155,12 +154,12 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.edit.description.label")}
+                  {t("document.add.form.fields.description.label")}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder={t("document.forms.edit.description.placeholder")}
+                    placeholder={t("document.add.form.fields.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -178,7 +177,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.type.label")}
+                    {t("document.add.form.fields.type.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -187,7 +186,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.edit.type.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.type.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {types.map((item, index) => (
@@ -210,7 +209,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.status.label")}
+                    {t("document.add.form.fields.status.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -219,7 +218,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.edit.status.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.status.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.entries(documentStatus).map(([status, index]) => (
@@ -242,7 +241,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.department.label")}
+                    {t("document.add.form.fields.department.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -251,7 +250,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.edit.department.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.department.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {departments.map((item, index) => (
@@ -274,7 +273,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.isoClause.label")}
+                    {t("document.add.form.fields.isoClause.label")}
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -283,7 +282,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                       defaultValue={field.value}
                     >
                       <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.forms.edit.isoClause.placeholder')} />
+                        <SelectValue placeholder={t('document.add.form.fields.isoClause.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {isoClauses.map((item, index) => (
@@ -309,7 +308,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.owner.label")}
+                    {t("document.add.form.fields.owner.label")}
                   </FormLabel>
                   <FormControl>
                     <UserLookup
@@ -331,7 +330,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.forms.edit.reviewer.label")}
+                    {t("document.add.form.fields.reviewer.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -355,7 +354,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.forms.edit.file.label")}
+                  {t("document.add.form.fields.file.label")}
                 </FormLabel>
                 <FormControl>
                   <FileUpload
@@ -392,7 +391,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 onClick={() => navigate("/documents")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t("document.forms.edit.actions.cancel.label")}
+                {t("document.edit.form.actions.cancel.label")}
               </Button>
               <Button
                 type="reset"
@@ -401,17 +400,17 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 onClick={() => form.reset()}
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                {t("document.forms.edit.actions.reset.label")}
+                {t("document.edit.form.actions.reset.label")}
               </Button>
               {/* Submit */}
               <LoadingButton
                 type="submit"
                 className="btn"
                 isLoading={isPending || isSubmitting}
-                loadingText={t("document.forms.edit.actions.submit.loading")}
+                loadingText={t("document.edit.form.actions.submit.loading")}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {t("document.forms.edit.actions.submit.label")}
+                {t("document.edit.form.actions.submit.label")}
               </LoadingButton>
             </div>
 

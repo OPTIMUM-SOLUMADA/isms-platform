@@ -1,10 +1,12 @@
-import { createContext, useContext, ReactNode, useEffect, useState } from "react";
+import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import type { Document } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
 import { AddDocumentFormData } from "@/templates/forms/documents/AddDocumentForm";
 import { useToast } from "@/hooks/use-toast";
+import { EditDocumentFormData } from "@/templates/forms/documents/EditDocumentForm";
+import { useTranslation } from "react-i18next";
 
 // Define shape of context
 interface DocumentContextType {
@@ -20,15 +22,77 @@ interface DocumentContextType {
     deleteDocument: (payload: { id: string }) => Promise<any>;
     isDeleting: boolean;
     isDeleted: boolean;
+
+    // update
+    updateDocument: (payload: { id: string, data: EditDocumentFormData }) => Promise<any>;
+    isUpdating: boolean;
+    isUpdated: boolean;
+
+    // document to edit
+    currentDocument: Document | null;
+    setCurrentDocument: (document: Document) => void;
+
+    // get document by id
+    document: Document | null;
+    getDocument: (payload: { id: string }) => Promise<any>;
+    // pagination
+    page: number;
+    setPage: (page: number) => void;
+    limit: number;
+    setLimit: (limit: number) => void;
+
+    // stats
+    stats: DocumentStats | null;
 }
 
 // Create context
 const DocumentContext = createContext<DocumentContextType | undefined>(undefined);
 
+type DocumentsResponse = {
+    data: Document[],
+    total: number;
+    page: number;
+    totalPages: number;
+}
+
+type DocumentStats = {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    inReview: number;
+    draft: number;
+};
+
 // Provider
 export const DocumentProvider = ({ children }: { children: ReactNode }) => {
+    const [page, _setPage] = useState(1);
+    const [limit, _setLimit] = useState(50);
     const [documents, setDocuments] = useState<Document[]>([]);
+    const [currentDocument, _setCurrentDocument] = useState<Document | null>(null);
     const { toast } = useToast();
+    const { t } = useTranslation();
+
+    const setCurrentDocument = useCallback((document: Document) => {
+        _setCurrentDocument(document);
+    }, []);
+
+    const setPage = useCallback((page: number) => {
+        _setPage(page);
+    }, []);
+
+    const setLimit = useCallback((limit: number) => {
+        _setLimit(limit);
+    }, []);
+
+
+    // mutation to get document by id using param
+    const { data: document, mutateAsync: getDocument } = useMutation<Document, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => {
+            const res = await documentService.getById(id);
+            return res.data;
+        },
+    });
 
     const {
         data,
@@ -36,10 +100,20 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         isError,
         error,
         refetch,
-    } = useQuery<Document[], Error>({
-        queryKey: ["documents"],
+    } = useQuery<DocumentsResponse, Error>({
+        queryKey: ["documents", page, limit],
         queryFn: async () => {
-            const res = await documentService.list();
+            const res = await documentService.list({ page, limit });
+            return res.data;
+        },
+        staleTime: 1000 * 120, // cache data for 2 mins
+    });
+
+    // get document stats
+    const { data: stats } = useQuery<DocumentStats, Error>({
+        queryKey: ["documentStats"],
+        queryFn: async () => {
+            const res = await documentService.getStats();
             return res.data;
         },
         staleTime: 1000 * 60, // cache data for 1 min
@@ -47,7 +121,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (data) {
-            setDocuments(data);
+            setDocuments(data.data);
         }
     }, [data]);
 
@@ -68,8 +142,8 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         },
         onSuccess: (data) => {
             toast({
-                title: "Document ajouté",
-                description: "Le document a bien été ajouté.",
+                title: t("document.add.toast.success.title"),
+                description: t("document.add.toast.success.description"),
                 variant: "success",
             });
             setDocuments(prev => [...prev, data]);
@@ -77,29 +151,62 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         onError: (err) => {
             console.error(err.response?.data);
             toast({
-                title: "Erreur",
-                description: "Une erreur est survenue lors de l'ajout du document.",
+                title: t("document.add.toast.error.title"),
+                description: t("document.add.toast.error.description"),
                 variant: "destructive",
             })
         }
     });
 
-    // Delete document
-    const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted } = useMutation<any, ApiAxiosError, { id: string }>({
-        mutationFn: async ({ id }) => await documentService.delete(id),
+    // Update document
+    const { mutateAsync: updateDocument, isPending: isUpdating, isSuccess: isUpdated } = useMutation<any, ApiAxiosError, { id: string, data: EditDocumentFormData }>({
+        mutationFn: async ({ id, data }) => {
+            const formData = new FormData();
+            const { files, ...rest } = data;
+            // add file to form data
+            if (files) formData.append("document", files[0]);
+            // add rest fields to form data
+            Object.entries(rest).forEach(([key, value]) => {
+                formData.append(key, value.toString());
+            });
+
+            const res = await documentService.update(id, formData);
+            return res.data;
+        },
         onSuccess: (data) => {
             toast({
-                title: "Document supprimé",
-                description: "Le document a bien été supprimé.",
+                title: t("document.edit.toast.success.title"),
+                description: t("document.edit.toast.success.description"),
                 variant: "success",
             });
-            setDocuments(prev => prev.filter(document => document.id !== data.id));
+            setDocuments(prev => prev.map(document => document.id === data.id ? data : document));
         },
         onError: (err) => {
             console.error(err.response?.data);
             toast({
-                title: "Erreur",
-                description: "Une erreur est survenue lors de la suppression du document.",
+                title: t("document.edit.toast.error.title"),
+                description: t("document.edit.toast.error.description"),
+                variant: "destructive",
+            })
+        }
+    })
+
+    // Delete document
+    const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted } = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await documentService.delete(id),
+        onSuccess: (_, { id }) => {
+            toast({
+                title: t("document.delete.toast.success.title"),
+                description: t("document.delete.toast.success.description"),
+                variant: "success",
+            });
+            setDocuments(prev => prev.filter(document => document.id !== id));
+        },
+        onError: (err) => {
+            console.error(err.response?.data);
+            toast({
+                title: t("document.delete.toast.error.title"),
+                description: t("document.delete.toast.error.description"),
                 variant: "destructive",
             })
         }
@@ -117,7 +224,19 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 isCreated,
                 deleteDocument,
                 isDeleting,
-                isDeleted
+                isDeleted,
+                currentDocument,
+                setCurrentDocument: setCurrentDocument,
+                document: document ?? null,
+                getDocument,
+                updateDocument,
+                isUpdating,
+                isUpdated,
+                page,
+                limit,
+                setLimit,
+                setPage,
+                stats: stats ?? null
             }}
         >
             {children}

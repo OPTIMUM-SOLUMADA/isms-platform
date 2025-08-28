@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Edit, Trash2, Users, Eye, FilePlus, FileSpreadsheet } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Users, Eye, FilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -16,27 +16,32 @@ import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "@/hooks/use-permissions";
 import { UserAvatar } from "@/components/user-avatar";
-import You from "@/components/You";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
 import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { getFileIconByName } from "@/lib/icon";
 
 interface DocumentActionsCell {
     doc: Document;
-    onEdit?: (user: Document) => Promise<void>;
     onDelete?: (user: Document) => Promise<boolean>;
     onView?: (user: Document) => void;
 }
 
-const DocumentActionsCell = ({ doc, onEdit, onView }: DocumentActionsCell) => {
+const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
-    const { deleteDocument } = useDocument();
+    const { deleteDocument, setCurrentDocument } = useDocument();
+    const navigate = useNavigate();
 
     const handleDelete = async () => {
         await deleteDocument({ id: doc.id });
+    };
+
+    const handleOpenEdit = async () => {
+        setCurrentDocument(doc);
+        navigate(`edit/${doc.id}`);
     };
 
     return (
@@ -54,7 +59,7 @@ const DocumentActionsCell = ({ doc, onEdit, onView }: DocumentActionsCell) => {
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.update") && (
-                        <DropdownMenuItem onClick={() => onEdit?.(doc)}>
+                        <DropdownMenuItem onClick={handleOpenEdit}>
                             <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
                         </DropdownMenuItem>
                     )}
@@ -81,6 +86,7 @@ interface UserTableProps {
     data: Document[];
     onEdit?: (user: Document) => Promise<void>;
     onDelete?: (user: Document) => Promise<boolean>;
+    onView?: (user: Document) => void;
     onCreateNewDocument: () => void;
     isLoading?: boolean;
 }
@@ -88,11 +94,11 @@ interface UserTableProps {
 const Table = ({
     data,
     onCreateNewDocument,
+    onView,
     isLoading = false,
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
-    const navigate = useNavigate();
 
     // Define columns for UserTable
     const columns: ColumnDef<Document>[] = useMemo(() => [
@@ -101,40 +107,32 @@ const Table = ({
             enableSorting: true,
             header: t("document.table.columns.name"),
             enableHiding: false,
+            size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
+                const user = row.original.owner;
                 return (
                     <button
                         type="button"
-                        className="flex items-center gap-3 hover:text-theme-2 hover:cursor-pointer"
-                        onClick={() => navigate(`/document/view/${doc.id}`)}
+                        className="flex items-center gap-3 hover:text-theme-2 hover:cursor-pointer relative group"
+                        onClick={() => onView?.(doc)}
                     >
-                        <FileSpreadsheet className="size-6 flex-shrink-0 text-theme" />
+                        {/* <FileSpreadsheet className="size-6 flex-shrink-0 text-theme group-hover:text-theme-2" /> */}
+                        {getFileIconByName(doc.fileUrl!)}
                         <div className="text-sm flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
                         </div>
+                        <UserHoverCard
+                            user={user}
+                            currentUserId={currentUser?.id}
+                            className="absolute -bottom-1 -left-1"
+                        >
+                            <div className="flex items-center gap-2 group-hover:border-red-300">
+                                <UserAvatar className="size-4" id={user.id} name={user.name} />
+                            </div>
+                        </UserHoverCard>
                     </button>
                 );
-            },
-        },
-        {
-            accessorKey: "owner",
-            enableSorting: true,
-            header: t("document.table.columns.owner"),
-            cell: ({ row }) => {
-                const user = row.original.owner;
-                return (
-                    <UserHoverCard
-                        user={user}
-                        currentUserId={currentUser?.id}>
-                        <div className="flex items-center gap-2 group-hover:bg-red-300">
-                            <UserAvatar className="size-6" id={user.id} name={user.name} />
-                            <div className="font-medium ">
-                                {user.name} {currentUser?.id === user.id && <You />}
-                            </div>
-                        </div>
-                    </UserHoverCard>
-                )
             },
         },
         {
@@ -148,9 +146,10 @@ const Table = ({
         {
             accessorKey: "isoClause",
             enableSorting: true,
+            size: 180,
             header: t("document.table.columns.isoClause"),
             cell: ({ row }) => {
-                return <span>{row.original.isoClause.name}</span>;
+                return <span>{row.original.isoClause.code}</span>;
             },
         },
         {
@@ -164,6 +163,7 @@ const Table = ({
         {
             accessorKey: "version",
             enableSorting: true,
+            size: 30,
             header: t("document.table.columns.version"),
             cell: ({ row }) => {
                 const currentVersion = row.original.versions?.find(v => v.isCurrent);
@@ -185,19 +185,21 @@ const Table = ({
         },
         {
             id: "actions",
+            enableSorting: false,
+            size: 40,
             header: t("document.table.columns.actions"),
             cell: ({ row }) => {
                 const doc = row.original;
                 return (
                     <DocumentActionsCell
                         doc={doc}
+                        onView={onView}
                     />
                 );
             },
-            enableSorting: false,
             enableHiding: false,
         },
-    ], [t, currentUser]);
+    ], [t, currentUser, onView]);
 
     return (
         <DataTable

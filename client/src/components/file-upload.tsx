@@ -53,12 +53,13 @@ export default function FileUpload({
 
   const file = files[0];
 
-  useEffect(() => {
-    if (!file) return;
-    if (value.length === 0) {
-      removeFile(file.id);
-    }
-  }, [value, file, removeFile]);
+  // useEffect(() => {
+  //   if (!file) return;
+  //   if (value.length === 0) {
+  //     removeFile(file.id);
+  //     console.log("file removed")
+  //   }
+  // }, [value, file, removeFile]);
 
   return (
     <div className="flex flex-col gap-2">

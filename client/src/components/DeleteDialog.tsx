@@ -15,28 +15,27 @@ import { LoadingButton } from "./ui/loading-button";
 
 interface DeleteDialogProps {
     entityName: string; // e.g., "User", "Post"
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
     onConfirm: () => Promise<void> | void;
     trigger?: React.ReactNode; // optional trigger button
 }
 
-export const DeleteDialog: React.FC<DeleteDialogProps> = ({
-    entityName,
-    onConfirm,
-    trigger,
-    open,
-    onOpenChange,
-}) => {
+export const DeleteDialog: React.FC<DeleteDialogProps & {
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}> = ({ entityName, onConfirm, trigger, open: controlledOpen, onOpenChange }) => {
     const { t } = useTranslation();
     const [loading, setLoading] = React.useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+
+    const open = controlledOpen ?? uncontrolledOpen;
+    const setOpen = onOpenChange ?? setUncontrolledOpen;
 
     const handleConfirm = async () => {
         try {
             setLoading(true);
             await onConfirm();
             setLoading(false);
-            onOpenChange?.(false);
+            setOpen(false);
         } catch (err) {
             console.error(err);
             setLoading(false);
@@ -44,23 +43,22 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent
-                className="sm:max-w-[400px]"
-                onInteractOutside={(e) => e.preventDefault()}
-            >
+            <DialogContent onInteractOutside={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <div className="flex items-center gap-2">
                         <AlertCircle className="w-6 h-6 text-red-500" />
-                        <DialogTitle>{t("components.deleteDialog.title", { entity: entityName })}</DialogTitle>
+                        <DialogTitle>
+                            {t("components.deleteDialog.title", { entity: entityName })}
+                        </DialogTitle>
                     </div>
                     <DialogDescription>
                         {t("components.deleteDialog.description", { entity: entityName })}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="flex justify-end gap-2">
-                    <Button variant="ghost" onClick={() => onOpenChange?.(false)}>
+                    <Button variant="ghost" onClick={() => setOpen(false)}>
                         {t("components.deleteDialog.actions.cancel.label")}
                     </Button>
                     <LoadingButton

@@ -63,9 +63,48 @@ export class DocumentController {
 
     async update(req: Request, res: Response) {
         try {
-            const updated = await service.updateDocument(req.params.id!, req.body);
-            res.json(updated);
+            const { id: documentId } = req.params;
+            const {
+                title,
+                description,
+                status,
+                owner,
+                type,
+                department,
+                isoClause,
+                reviewers,
+            } = req.body;
+
+            // find document
+            const document = await service.getDocumentById(documentId!);
+
+            if (!document) {
+                res.status(404).json({ error: 'Document not found', code: 'ERR_DOCUMENT_NOT_FOUND' });
+                return;
+            }
+
+            const fileUrl = req.file ? req.file.filename : undefined;
+
+            const updatedDocument = await service.updateDocument(documentId!, {
+                ...(title && { title }),
+                ...(description && { description }),
+                ...(status && { status }),
+                ...(owner && { owner: { connect: { id: owner } } }),
+                ...(type && { type: { connect: { id: type } } }),
+                ...(department && { department: { connect: { id: department } } }),
+                ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                ...(reviewers && { reviewersId: reviewers.split(',') }),
+                ...(fileUrl && { fileUrl }),
+            });
+
+            if (fileUrl) {
+                // Delete old file
+                await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
+            }
+
+            res.json(updatedDocument);
         } catch (err) {
+            console.log(err)
             res.status(400).json({ error: (err as Error).message });
         }
     }
@@ -84,8 +123,24 @@ export class DocumentController {
 
     async list(req: Request, res: Response) {
         try {
-            const documents = await service.listDocuments();
+            const { limit = "50", page = "1" } = req.query;
+
+            console.log(req.query)
+
+            const documents = await service.listDocuments({
+                limit: parseInt(limit as string),
+                page: parseInt(page as string)
+            });
             res.json(documents);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async getStatistics(req: Request, res: Response) {
+        try {
+            const statistics = await service.getDocumentStats();
+            res.json(statistics);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }
