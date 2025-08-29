@@ -33,24 +33,24 @@ app.post(
 
 describe("Document routes", () => {
   it("should create a document", async () => {
-    
+
     prisma.document.create.mockResolvedValue(document); // ✅ mock création
 
     const res = await request(app).post("/documents").send({
-        title: "My Policy",
-        description: "Test policy",
-        ownerId: "user123",
-        categoryId: null,
+      title: "My Policy",
+      description: "Test policy",
+      ownerId: "user123",
+      categoryId: null,
     });
 
     expect(res.status).toBe(201);
   });
 
   it("should create a document with a file upload", async () => {
-    const filePath = path.join(__dirname, "test-file.pdf");    
+    const filePath = path.join(__dirname, "test-file.pdf");
 
     prisma.document.create.mockResolvedValue(document);
- 
+
     const res = await request(app)
       .post("/documents")
       .field("title", "Doc with file")
@@ -68,7 +68,7 @@ describe("Document routes", () => {
   });
 
   it("should return 404 for unknown id", async () => {
-    prisma.document.findUnique.mockResolvedValue(null); 
+    prisma.document.findUnique.mockResolvedValue(null);
     const res = await request(app).get("/documents/invalid-id-123");
     expect(res.status).toBe(404);
   });
@@ -93,14 +93,14 @@ describe("Document routes", () => {
 
   it("should list documents", async () => {
     const docs = [
-        { ...document, id: "doc1", title: "Doc 1" },
-        { ...document, id: "doc2", title: "Doc 2" },
+      { ...document, id: "doc1", title: "Doc 1" },
+      { ...document, id: "doc2", title: "Doc 2" },
     ];
 
     prisma.document.findMany.mockResolvedValue(docs); // ✅ mock du service
 
     const res = await request(app).get("/documents");
-    
+
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBe(2);
