@@ -10,22 +10,28 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
 
-# Install dependencies (postinstall will run prisma generate)
+# Install all dependencies (postinstall will run prisma generate)
 RUN npm install --legacy-peer-deps
 
-# Copy rest of source files
-COPY tsconfig.json ./
+# Copy TypeScript config and source code
+COPY tsconfig.json ./ 
 COPY src ./src
 
 # Compile TypeScript
 RUN npm run build
+
+# Rewrite @/... aliases to relative paths in build (tsc-alias)
+RUN npx tsc-alias
+
+# Generate Prisma client inside builder
+RUN npx prisma generate
 
 # -----------------------------
 # 2. Production runtime stage
 # -----------------------------
 FROM node:22-bullseye-slim
 
-# Install LibreOffice + poppler + fonts (for Excel -> PDF -> PNG conversion)
+# Install LibreOffice + poppler + fonts
 RUN apt-get update && \
     apt-get install -y libreoffice poppler-utils fonts-liberation fonts-noto && \
     rm -rf /var/lib/apt/lists/*
@@ -33,16 +39,18 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
-# Copy compiled JS + production deps
+# Copy build output, production dependencies, and prisma folder
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package*.json ./
-COPY prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
 
-# Install only production dependencies
-RUN npm install --only=production --legacy-peer-deps --ignore-scripts
+# Install only production dependencies (scripts already run in builder)
+# Optional: you can skip this if node_modules copied from builder
+# RUN npm install --only=production --legacy-peer-deps
 
 # Expose app port
 EXPOSE 8080
 
 # Run compiled JS
-CMD ["npm", "start"]
+CMD ["node", "build/server.js"]

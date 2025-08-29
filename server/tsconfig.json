@@ -5,7 +5,7 @@
     "outDir": "build",
 
     // Environment Settings
-    "module": "nodenext",
+    "module": "commonjs",
     "target": "esnext",
     // For nodejs:
     "lib": ["esnext"],
