@@ -2,7 +2,7 @@ import type { User, Department } from "@/types";
 import { RoleType } from "@/types"; // <-- pas import type
 
 // Departments mock
-const departments: Department[] = [
+export const departments: Department[] = [
   { id: "d1", name: "Information Security", description: "", members: [], createdAt: "2023-01-01", updatedAt: "2023-01-01" },
   { id: "d2", name: "Risk Management", description: "", members: [], createdAt: "2023-01-01", updatedAt: "2023-01-01" },
   { id: "d3", name: "IT Operations", description: "", members: [], createdAt: "2023-01-01", updatedAt: "2023-01-01" },
