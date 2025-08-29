@@ -23,40 +23,32 @@ import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDocument } from "@/contexts/DocumentContext";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { UserHoverCard } from "@/templates/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
-import LoadingSplash from "@/components/loading";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useUser } from "@/contexts/UserContext";
 import { DeleteDialog } from "@/components/DeleteDialog";
+import { Document } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { documentService } from "@/services/documentService";
+import { ApiAxiosError } from "@/types/api";
+import { cn } from "@/lib/utils";
 
 const tabs = [
   {
     id: "preview",
     label: "document.view.tabs.preview",
     icon: FileText,
-    content: <DocPreview />
+    content: (document: Document) => <DocPreview filename={document.fileUrl!} />
   },
   {
     id: "notification",
     label: "document.view.tabs.changeLogs",
     icon: Clock,
-    content: <Notification />
+    content: (document: Document) => <Notification />
   },
-  // {
-  //   id: "documentApproval",
-  //   label: "document.view.tabs.",
-  //   icon: History,
-  //   content: <DocumentApproval />
-  // },
-  // {
-  //   id: "auditLog",
-  //   label: "AuditLog",
-  //   icon: Link,
-  //   content: <AuditLog />
-  // },
 ];
 
 export default function DocumentDetailPage() {
@@ -66,14 +58,13 @@ export default function DocumentDetailPage() {
 
   const params = useParams();
 
-  const { document, getDocument, deleteDocument } = useDocument();
+  const { deleteDocument } = useDocument();
   const { user } = useAuth();
   const { users } = useUser();
   const { hasActionPermission } = usePermissions();
 
-  useEffect(() => {
-    getDocument({ id: params.id! });
-  }, [params.id, getDocument]);
+  // get document by id
+  const { data: document, isLoading, isError, error } = useGetDocument(params.id);
 
   const handleDelete = useCallback(async () => {
     await deleteDocument({ id: document!.id });
@@ -81,8 +72,11 @@ export default function DocumentDetailPage() {
   }, [navigate, deleteDocument, document]);
 
 
-  if (!document) return <LoadingSplash />;
+  if (isLoading) return <>Loading...</>;
 
+  if (isError) return <p>{error instanceof Error ? error.message : "Something went wrong while fetching the document."}</p>;
+
+  if (!document) return <p>Document not found.</p>;
 
   return (
     <WithTitle title={document.title}>
@@ -186,7 +180,7 @@ export default function DocumentDetailPage() {
         <Tabs
           orientation="vertical"
           defaultValue={tabs[0].id}
-          className="w-full flex flex-row items-start gap-4 justify-center"
+          className="w-full flex flex-row items-start gap-6 justify-center flex-grow"
         >
           {/* Sidebar Tabs */}
           <TabsList className="shrink-0 grid grid-cols-1 min-w-28 p-0 bg-background gap-2">
@@ -201,14 +195,14 @@ export default function DocumentDetailPage() {
             })}
           </TabsList>
 
-          <Card className="flex items-center justify-center w-full p-2">
+          <Card className="flex items-center justify-center w-full h-full p-2 flex-grow flex-col">
             {tabs.map((tab) => (
               <TabsContent
                 key={tab.id}
                 value={tab.id}
-                className="w-full"
+                className={cn("w-full flex-grow flex flex-col", tab.id === tabs[0].id ? "flex" : "hidden")}
               >
-                {tab.content}
+                {tab.content(document)}
               </TabsContent>
             ))}
           </Card>
@@ -218,3 +212,18 @@ export default function DocumentDetailPage() {
     </WithTitle>
   );
 }
+
+
+
+export const useGetDocument = (id: string | undefined) => {
+  return useQuery<Document, ApiAxiosError>({
+    queryKey: ["document", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Document ID is required");
+      const res = await documentService.getById(id);
+      return res.data;
+    },
+    enabled: !!id, // only fetch if id exists
+    staleTime: 1000 * 60 * 5, // optional: cache 5 minutes
+  });
+};

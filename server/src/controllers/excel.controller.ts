@@ -18,8 +18,6 @@ export class ExcelController {
                 "uploads"
             );
 
-            console.log(imagePath);
-
             res.sendFile(imagePath);
         } catch (err) {
             console.error(err);

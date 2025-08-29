@@ -189,7 +189,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "destructive",
             })
         }
-    })
+    });
 
     // Delete document
     const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted } = useMutation<any, ApiAxiosError, { id: string }>({
@@ -210,7 +210,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "destructive",
             })
         }
-    })
+    });
 
     return (
         <DocumentContext.Provider

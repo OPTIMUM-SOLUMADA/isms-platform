@@ -20,7 +20,6 @@ import i18n from "@/i18n/config";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RotateCcw, Save } from "lucide-react";
-import FileUpload from "@/components/file-upload";
 import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
@@ -32,6 +31,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
+import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -357,16 +357,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                   {t("document.add.form.fields.file.label")}
                 </FormLabel>
                 <FormControl>
-                  <FileUpload
-                    title={t("components.fileUpload.title.singular")}
-                    description={t("components.fileUpload.dragAndDrop")}
-                    maxSizeDescription={t("components.fileUpload.maxSize", {
-                      size: formatBytes(maxFileSize),
-                    })}
+                  <DocumentFileUpload
                     value={field.value}
-                    onFileUpload={(files) => {
-                      field.onChange(files);
-                    }}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
