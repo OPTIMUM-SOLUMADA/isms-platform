@@ -133,17 +133,24 @@ export type AuditEventType =
 
 export type ReviewItem = {
   id: string;
-  document: string;
+  documentId: string;
+  document: Document;
+  reviewerId: string;
+  reviewer : User;
   type: string;
   stage: 'pending' | 'in-review' | 'approved' | 'rejected';
   assignee: string;
-  reviewer: string;
   dueDate: string;
   priority: 'high' | 'medium' | 'low';
-  comments: number;
+  comment: string;
   progress: number;
   startDate: string;
+  isApproved: boolean;
+  isCompleted:  boolean;
+  reviewDate:  Date;
+
 }
+
 
 export enum RoleType {
   ADMIN = "ADMIN",

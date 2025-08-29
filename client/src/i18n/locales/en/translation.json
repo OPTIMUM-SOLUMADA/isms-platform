@@ -103,6 +103,28 @@
                 }
             }
         }
+    },
+    "review": {
+        "title": "Review Workflow",
+        "subtitle": "Manage document review processes and approvals",
+        "button": {
+            "buttonNewReview": "Start new review",
+            "viewDoc": "View Document",
+            "addComment": "Add comment"
+        },
+        "pending": "Pending",
+        "pendingReview": "Pending Review",
+        "inProgress": "In Progress",
+        "approved": "Approved",
+        "overdue": "Overdue",
+        "completed": "Terminé",
+        "search": "Search documents, assignees, or reviewers...", 
+        "all": "Tous",
+        "rejected": "Rejected",
+        "inReview": "In Review",
+        "reviewer": "Reviewer",
+        "due": "Due",
+        "comment": "Comment"
     }
 }
 

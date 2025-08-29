@@ -126,7 +126,25 @@
     },
     "review": {
         "title": "Révisions des documents",
-        "subtitle": "Gérer les révisions des documents"
+        "subtitle": "Gérer les révisions des documents",
+        "button": {
+            "buttonNewReview": "nouvelle évaluation",
+            "viewDoc": "Afficher le document",
+            "addComment": "Ajouter un commentaire"
+        },
+        "pending": "En attente",
+        "pendingReview": "En attente de révision",
+        "inProgress": "En cours",
+        "approved": "Approuvé",
+        "completed": "Terminé",
+        "overdue": "En retard",
+        "search": "Rechercher des documents, des cessionnaires ou des réviseurs...",
+        "all": "Tous",
+        "rejected": "Rejeté",
+        "inReview": "En revue",
+        "reviewer": "Evaluateur",
+        "due": "à",
+        "comment": "Commentaire"
     },
     "compliance": {
         "title": "Conformité",
