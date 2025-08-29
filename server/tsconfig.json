@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": ".",
-    "outDir": "./build",
+    "rootDir": "src",
+    "outDir": "build",
 
     // Environment Settings
-    "module": "nodenext",
+    "module": "commonjs",
     "target": "esnext",
     // For nodejs:
     "lib": ["esnext"],
@@ -32,7 +32,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "paths": {
       "@/*": ["*"]
     }
@@ -41,6 +41,6 @@
     "transpileOnly": true,
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["src", "**/*.test.ts", "src/__tests__", "jest.setup.ts", "jest.config.ts"],
-  "exclude": ["node_modules", "build"]
+  "include": ["src"],
+  "exclude": ["node_modules", "build", "tests", "jest.setup.ts", "jest.config.ts"]
 }

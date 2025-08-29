@@ -21,9 +21,10 @@ import { DocumentProvider } from "@/contexts/DocumentContext";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
-const DocumentRepositoryPage = lazy(() => import('@/pages/DocumentRepositoryPage'));
-const DocumentAddPage = lazy(() => import('@/pages/DocumentAddPage'));
-const DocumentDetail = lazy(() => import('@/pages/DocumentDetailPage'))
+const DocumentRepositoryPage = lazy(() => import('@/pages/documents/DocumentRepositoryPage'));
+const DocumentAddPage = lazy(() => import('@/pages/documents/DocumentAddPage'));
+const DocumentEditPage = lazy(() => import('@/pages/documents/DocumentEditPage'));
+const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage'))
 
 const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
@@ -92,7 +93,8 @@ const routeConfig: AppRoute[] = [
                 children: [
                     { index: true, element: <DocumentRepositoryPage /> },
                     { path: "add", element: <DocumentAddPage /> },
-                    { path: "detail/:id", element: <DocumentDetail /> }
+                    { path: "edit/:id", element: <DocumentEditPage /> },
+                    { path: "view/:id", element: <DocumentDetail /> }
                 ],
             },
 

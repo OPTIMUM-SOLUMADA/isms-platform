@@ -1,8 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src", "jest.setup.ts", "**/*.test.ts", "**/*.test.tsx"],
-  "exclude": ["node_modules", "build"],
   "compilerOptions": {
-    "types": ["node", "jest"]
-  }
+    "types": ["jest", "node"]
+  },
+  "include": ["tests/**/*.ts", "src/**/*.ts", "jest.config.ts", "jest.setup.ts"]
 }

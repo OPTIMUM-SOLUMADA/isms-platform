@@ -14,9 +14,11 @@ export const API_CONFIG = {
         },
         USERS: '/users',
         DEPARTMENTS: '/departments',
-        DOCUMENTS: '/documents',
+        DOCUMENTS: "/documents",
+        DOCUMENTS_STATS: "/documents/statistics",
         ISO_CLAUSES: '/iso-clauses',
         DOCUMENT_TYPES: '/document-types',
+        EXCEL_IMAGE: '/excel/image',
     },
 } as const;
 

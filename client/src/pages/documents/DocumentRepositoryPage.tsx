@@ -38,7 +38,7 @@ export default function DocumentRepositoryPage() {
 
   const { types } = useDocumentType();
   const { clauses } = useISOClause();
-  const { documents } = useDocument();
+  const { documents, loading, stats } = useDocument();
   const { users } = useUser();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,7 +52,8 @@ export default function DocumentRepositoryPage() {
     const matchesStatus = filterStatus === 'all' || doc.status === filterStatus;
     const matchesType = filterType === 'all' || doc.categoryId === filterType;
     const matchesClause = filterClause === 'all' || doc.isoClauseId === filterClause;
-    return matchesSearch && matchesStatus && matchesType && matchesClause;
+    const matchesOwner = filterOwner === 'all' || doc.ownerId === filterOwner;
+    return matchesSearch && matchesStatus && matchesType && matchesClause && matchesOwner;
   });
 
   return (
@@ -79,7 +80,7 @@ export default function DocumentRepositoryPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-theme-2">{t("document.stats.total.title")}</p>
-                  <p className="text-2xl font-bold">{documents.length}</p>
+                  <p className="text-2xl font-bold">{stats?.total || 0}</p>
                 </div>
                 <FileText className="h-8 w-8 text-theme-2" />
               </div>
@@ -91,7 +92,7 @@ export default function DocumentRepositoryPage() {
                 <div>
                   <p className="text-sm text-gray-600">{t("document.stats.approved.title")}</p>
                   <p className="text-2xl font-bold text-theme">
-                    {documents.filter(d => d.status === documentStatus.APPROVED).length}
+                    {stats?.approved || 0}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-theme" />
@@ -104,7 +105,7 @@ export default function DocumentRepositoryPage() {
                 <div>
                   <p className="text-sm text-gray-600">{t("document.stats.inReview.title")}</p>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {documents.filter(d => d.status === documentStatus.IN_REVIEW).length}
+                    {stats?.inReview || 0}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-600" />
@@ -115,9 +116,9 @@ export default function DocumentRepositoryPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t("document.stats.expired.title")}</p>
+                  <p className="text-sm text-gray-600">{t("document.stats.draft.title")}</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {documents.filter(d => d.status === documentStatus.EXPIRED).length}
+                    {stats?.draft || 0}
                   </p>
                 </div>
                 <AlertTriangle className="h-8 w-8 text-red-600" />
@@ -214,6 +215,8 @@ export default function DocumentRepositoryPage() {
           <DocumentTable
             data={filteredDocuments}
             onCreateNewDocument={() => navigate(NEW_DOCUMENT_PATH)}
+            onView={(doc) => navigate(`view/${doc.id}`)}
+            isLoading={loading}
           />
         </Card>
       </div>

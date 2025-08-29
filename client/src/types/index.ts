@@ -41,6 +41,9 @@ export type Document = {
   nextReviewDate?: string | null;
   reviewFrequency?: number | null;
   isoClauseId: string;
+  departmentId: string;
+
+  reviewersId: string[];
 
   ownerId: string;
   categoryId: string;
@@ -72,7 +75,7 @@ export type DocumentType = {
 export type DocumentVersion = {
   id: string;
   documentId: string;
-  versionNumber: number;
+  version: string;
   comment?: string | null;
   createdAt: Date;
   isCurrent: boolean; // optional: flag the latest version
