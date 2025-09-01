@@ -11,12 +11,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import UserLookup from "@/templates/lookup/UserLookup"
-import i18n from "@/i18n/config"
-import { Document, User } from "@/types"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import UserLookup from "@/templates/lookup/UserLookup";
+import i18n from "@/i18n/config";
+import { Document, User } from "@/types";
 import DocumentLookup from "@/templates/lookup/DocumentLookup";
 
 
@@ -47,8 +47,6 @@ export default function ReviewForm({documents, users, onSubmit }:  ReviewFormPro
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     onSubmit(data)
   }
-
-  console.log("doc", documents);
   
   return (
     <Form {...form}>

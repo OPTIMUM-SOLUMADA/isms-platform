@@ -125,8 +125,6 @@ export class DocumentController {
         try {
             const { limit = "50", page = "1" } = req.query;
 
-            console.log(req.query)
-
             const documents = await service.listDocuments({
                 limit: parseInt(limit as string),
                 page: parseInt(page as string)
