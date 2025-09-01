@@ -72,8 +72,11 @@ export class DocumentController {
     async list(req: Request, res: Response) {
         try {
             const documents = await service.listDocuments();
+            console.log("dddd", documents);
+            
             res.json(documents);
         } catch (err) {
+            console.log("err", err);
             res.status(400).json({ error: (err as Error).message });
         }
     }

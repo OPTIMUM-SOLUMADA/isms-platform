@@ -8,6 +8,7 @@ import documentRoutes from './routes/document.routes';
 import userRoutes from './routes/user.routes';
 import isoClauseRoutes from './routes/isoclause.route';
 import documentTypeRoutes from './routes/documenttype.routes';
+import documentReviewRoutes from './routes/documentreview.routes'
 import { env } from './configs/env';
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/users', userRoutes);
 app.use('/documents', documentRoutes);
 app.use('/iso-clauses', isoClauseRoutes);
 app.use('/document-types', documentTypeRoutes);
+app.use('/document-reviews', documentReviewRoutes);
 
 
 export default app;
