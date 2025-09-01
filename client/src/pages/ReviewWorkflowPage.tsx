@@ -13,31 +13,35 @@ import { Button } from "@/components/ui/button";
 // import { Badge } from '@/components/ui/badge';
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { reviewStageIcons } from "@/constants/icon";
 import { reviewItems } from "@/mocks/review";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import ReviewForm from "@/templates/forms/Review/ReviewForm";
+import { useUser } from '@/contexts/UserContext';
+import { useDocument } from "@/contexts/DocumentContext"
 
 
 export default function ReviewWorkflowPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterPriority, setFilterPriority] = useState("all");
+  const [filterPriority] = useState("all");
   const { t } = useTranslation()
+  const [open, setOpen] = useState(false);
+  const { users } = useUser();
+  const { documents } = useDocument();
 
-const workflowStages = [
-  { id: "pending", label: "review.pendingReview", color: "gray" },
-  { id: "in-review", label: "review.inProgress", color: "blue" },
-  { id: "approved", label: "review.completed", color: "green" },
-  { id: "rejected", label: "review.overdue", color: "red" },
-];
+  const workflowStages = [
+    { id: "pending", label: "review.pendingReview", color: "gray" },
+    { id: "in-review", label: "review.inProgress", color: "blue" },
+    { id: "approved", label: "review.completed", color: "green" },
+    { id: "rejected", label: "review.overdue", color: "red" },
+  ];
+
+  console.log("users", documents);
+  
+
   const filteredItems = reviewItems.filter((item) => {
     const matchesSearch =
       item.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -71,6 +75,11 @@ const workflowStages = [
   //   return diffDays;
   // };
 
+  const handleCreateReview = (data: any) => {
+    console.log("Nouvell", data);
+    setOpen(false);
+    
+  }
   return (
     <WithTitle>
       <div className="space-y-6">
@@ -84,12 +93,27 @@ const workflowStages = [
               { t('review.subtitle')}
             </p>
           </div>
-          <Button className="flex items-center space-x-2">
+          {/* <Button open={open} onOpenChange={setOpen} className="flex items-center space-x-2">
             <GitBranch className="h-4 w-4" />
             <span>
               { t('review.button.buttonNewReview')}
               </span>
-          </Button>
+          </Button>  */}
+          {/* ----------- Modal Trigger ---------- */}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center space-x-2">
+                <GitBranch className="h-4 w-4" />
+                <span>{t("review.button.buttonNewReview")}</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("review.form.newReview")}</DialogTitle>
+              </DialogHeader>
+              <ReviewForm documents={documents} users={users} onSubmit={handleCreateReview} />
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Stats Cards */}

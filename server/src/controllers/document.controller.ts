@@ -133,6 +133,7 @@ export class DocumentController {
             });
             res.json(documents);
         } catch (err) {
+            console.log("err", err);
             res.status(400).json({ error: (err as Error).message });
         }
     }
