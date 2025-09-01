@@ -40,10 +40,7 @@ export default function DocumentLookup({
   const selectedDocument = useMemo(
     () => data.find((doc) => doc.id === value),
     [value, data]
-  );
-
-  console.log("sele", selectedDocument);
-  
+  );  
 
   const { t } = useTranslation();
 
@@ -73,7 +70,7 @@ export default function DocumentLookup({
                 </div>
               ) : (
                 <span className="text-muted-foreground">
-                  {t("components.lookup.document.placeholder")}
+                  {t("review.form.documentReviewPlaceholder")}
                 </span>
               )}
             </span>
@@ -89,10 +86,10 @@ export default function DocumentLookup({
           align="start"
         >
           <Command>
-            <CommandInput placeholder={t("components.lookup.document.search")} />
+            <CommandInput placeholder={t("review.searchPlaceholder")} />
             <CommandList>
               <CommandEmpty>
-                {t("components.lookup.document.empty")}
+                {t("review.documentEmpty")}
               </CommandEmpty>
               <CommandGroup className="max-h-52 overflow-y-auto">
                 {data.map((doc) => (
@@ -138,7 +135,7 @@ export default function DocumentLookup({
                     className="opacity-60 mr-2"
                     aria-hidden="true"
                   />
-                  {t("components.lookup.document.addNew")}
+                  {t("document.add.title")}
                 </Button>
               </CommandGroup>
             </CommandList>

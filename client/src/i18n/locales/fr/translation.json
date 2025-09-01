@@ -140,6 +140,8 @@
         "completed": "Terminé",
         "overdue": "En retard",
         "search": "Rechercher des documents, des cessionnaires ou des réviseurs...",
+        "searchPlaceholder": "Rechercher un document",
+        "documentEmpty": "Aucun document trouvé",
         "all": "Tous",
         "rejected": "Rejeté",
         "inReview": "En revue",

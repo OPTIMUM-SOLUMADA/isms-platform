@@ -27,7 +27,7 @@ export default function ReviewWorkflowPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPriority] = useState("all");
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { users } = useUser();
   const { documents } = useDocument();
@@ -37,10 +37,7 @@ export default function ReviewWorkflowPage() {
     { id: "in-review", label: "review.inProgress", color: "blue" },
     { id: "approved", label: "review.completed", color: "green" },
     { id: "rejected", label: "review.overdue", color: "red" },
-  ];
-
-  console.log("users", documents);
-  
+  ];  
 
   const filteredItems = reviewItems.filter((item) => {
     const matchesSearch =
@@ -93,12 +90,7 @@ export default function ReviewWorkflowPage() {
               { t('review.subtitle')}
             </p>
           </div>
-          {/* <Button open={open} onOpenChange={setOpen} className="flex items-center space-x-2">
-            <GitBranch className="h-4 w-4" />
-            <span>
-              { t('review.button.buttonNewReview')}
-              </span>
-          </Button>  */}
+
           {/* ----------- Modal Trigger ---------- */}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

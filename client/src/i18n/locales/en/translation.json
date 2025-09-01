@@ -120,6 +120,8 @@
         "overdue": "Overdue",
         "completed": "Terminé",
         "search": "Search documents, assignees, or reviewers...", 
+        "searchPlaceholder": "Search a document",
+        "documentEmpty": "No documents found",
         "all": "Tous",
         "rejected": "Rejected",
         "inReview": "In Review",

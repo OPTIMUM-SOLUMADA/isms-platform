@@ -36,14 +36,11 @@ export default function UserLookup({
     onValueChange,
     hasError = false
 }: UserLookupProps) {
-    const id = useId()
+
+    const id = useId();
     const [open, setOpen] = useState<boolean>(false);
-
     const selectedUser = useMemo(() => data.find((user) => user.id === value), [value, data]);
-
     const { t } = useTranslation();
-
-    console.log("hasError", hasError);
 
     return (
         <div className="*:not-first:mt-2">
