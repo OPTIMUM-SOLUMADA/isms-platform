@@ -338,7 +338,121 @@
         "subtitle": "Gérer les documents et leurs versions",
         "add": {
             "title": "Nouveau document",
-            "subtitle": "Ajouter un nouveau document au référentiel"
+            "subtitle": "Ajouter un nouveau document au référentiel",
+            "form": {
+                "title": "Remplissez les informations du document",
+                "fields": {
+                    "name": {
+                        "label": "Nom",
+                        "placeholder": "Nom du document"
+                    },
+                    "description": {
+                        "label": "Description",
+                        "placeholder": "Description du document"
+                    },
+                    "status": {
+                        "label": "Statut",
+                        "placeholder": "Statut du document"
+                        
+                    },
+                    "nextReviews": {
+                        "label": "Prochaine révision"
+                    },
+                    "reviewFrequency": {
+                        "label": "Fréquence de révision",
+                        "placeholder": "Fréquence de révision"
+                        },
+                    "owner": {
+                        "label": "Propriétaire",
+                        "placeholder": "Nom du propriétaire"
+                    },
+                    "type": {
+                        "label": "Type du document",
+                        "placeholder": "Séléctionner un type"
+                    },
+                    "reviewer": {
+                        "label": "Reviseur(s)",
+                        "placeholder": "Séléctionner des reviseurs"
+                    },
+                    "department": {
+                        "label": "Département",
+                        "placeholder": "Séléctionner un département"
+                    },
+                    "isoClause": {
+                        "label": "Clause ISO",
+                        "placeholder": "Séléctionner une clause ISO"
+                    },
+                    "file": {
+                        "label": "Fichier",
+                        "selected": "Fichier sélectionné",
+                        "dragOrClick": "Glisser ou cliquer ici pour choisir un fichier"
+                    }
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Enregistrer",
+                        "loading": "Enregistrement en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Effacer"
+                    }
+                }
+            },
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été ajouté avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de l'ajout du document. Veuillez réessayer."
+                }
+            }
+        },
+        "edit": {
+            "title": "Modifier le document",
+            "subtitle": "Modifier les informations du document",
+            "form": {
+                "title": "Mettez à jour les informations du document",
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                }
+            },
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été modifié avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la modification du document. Veuillez réessayer."
+                }
+            },
+            "notFound": "Document non trouvé"
+        },
+        "delete": {
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été supprimé avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la suppression du document. Veuillez réessayer."
+                }
+            }
         },
         "stats": {
             "total": {
@@ -384,66 +498,6 @@
                 "placeholder": "Toutes les clauses ISO"
             }
         },
-        "forms": {
-            "add": {
-                "title": "Ajouter un document",
-                "subtitle": "Remplissez les informations du document",
-                "name": {
-                    "label": "Nom",
-                    "placeholder": "Nom du document"
-                },
-                "description": {
-                    "label": "Description",
-                    "placeholder": "Description du document"
-                },
-                "status": {
-                    "label": "Statut",
-                    "placeholder": "Statut du document"
-                    
-                },
-                "nextReviews": {
-                    "label": "Prochaine révision"
-                },
-                "reviewFrequency": {
-                    "label": "Fréquence de révision",
-                    "placeholder": "Fréquence de révision"
-                },
-                "owner": {
-                    "label": "Propriétaire",
-                    "placeholder": "Nom du propriétaire"
-                },
-                "type": {
-                    "label": "Type du document",
-                    "placeholder": "Séléctionner un type"
-                },
-                "reviewer": {
-                    "label": "Reviseur(s)",
-                    "placeholder": "Séléctionner des reviseurs"
-                },
-                "department": {
-                    "label": "Département",
-                    "placeholder": "Séléctionner un département"
-                },
-                "isoClause": {
-                    "label": "Clause ISO",
-                    "placeholder": "Séléctionner une clause ISO"
-                },
-                "file": {
-                    "label": "Fichier",
-                    "selected": "Fichier sélectionné",
-                    "dragOrClick": "Glisser ou cliquer ici pour choisir un fichier"
-                },
-                "actions": {
-                    "submit": {
-                        "label": "Enregistrer",
-                        "loading": "Enregistrement en cours..."
-                    },
-                    "cancel": {
-                        "label": "Annuler"
-                    }
-                }
-            }
-        },
         "table": {
             "title": "Liste des documents",
             "columns": {
@@ -471,6 +525,46 @@
                     "add": {
                         "label": "Ajouter un document"
                     }
+                }
+            }
+        },
+        "view": {
+            "title": "Détails du document: {{name}}",
+            "subtitle": "Description du document",
+            "detail": {
+                "title": "Informations sur le document",
+                "name": "Nom",
+                "description": "Description",
+                "type": "Type",
+                "isoClause": "Clause ISO / Control",
+                "status": "Statut",
+                "owner": "Propriétaire",
+                "version": "Version",
+                "nextReview": "Prochaine révision",
+                "reviewDue": "Date de révision",
+                "reviewFrequency": "Fréquence de révision",
+                "lastUpdated": "Dernière mise à jour",
+                "createdBy": "Créé par",
+                "createdAt": "Créé le",
+                "reviewers": "Reviseurs",
+                "department": "Département"
+            },
+            "tabs": {
+                "preview": "Aperçu du fichier",
+                "changeLogs": "Journal des modifications"
+            },
+            "actions": {
+                "edit": {
+                    "label": "Modifier"
+                },
+                "delete": {
+                    "label": "Supprimer"
+                },
+                "download": {
+                    "label": "Télécharger le fichier"
+                },
+                "assignReviewer": {
+                    "label": "Assigner un reviseur"
                 }
             }
         }
@@ -648,6 +742,14 @@
                 "search": "Rechercher des utilisateurs...",
                 "empty": "Aucun utilisateur trouvé.",
                 "addNew": "Ajouter un nouvel utilisateur"
+            }
+        },
+        "document": {
+            "fileupload": {
+                "title": "Glissez-déposez vos documents ici",
+                "description": "Ou cliquez pour parcourir (max {{maxFiles}} fichiers, jusqu'à {{maxSize}} MB chacun)",
+                "browse": "Parcourir les fichiers",
+                "fileRejected": "Le fichier \"{{name}}\" a été rejeté"
             }
         }
     },
