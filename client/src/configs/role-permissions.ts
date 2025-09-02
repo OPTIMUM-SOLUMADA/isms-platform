@@ -10,6 +10,7 @@ export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
         "document.assignOwner",
         "document.approve",
         "document.uploadVersion",
+        "document.download",
         "user.create",
         "user.read",
         "user.update",
@@ -28,12 +29,14 @@ export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
         "document.uploadVersion",
         "document.comment",
         "document.search",
+        "document.download",
     ],
     [RoleType.REVIEWER]: [
         "document.review",
         "document.comment",
         "document.approve",
         "document.search",
+        "document.download",
     ],
     [RoleType.VIEWER]: [
         "document.view",

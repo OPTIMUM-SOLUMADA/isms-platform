@@ -16,6 +16,7 @@ export const API_CONFIG = {
         DEPARTMENTS: '/departments',
         DOCUMENTS: "/documents",
         DOCUMENTS_STATS: "/documents/statistics",
+        DOCUMENTS_DOWNLOAD: "/documents/download",
         ISO_CLAUSES: '/iso-clauses',
         DOCUMENT_TYPES: '/document-types',
         EXCEL_IMAGE: '/excel/image',

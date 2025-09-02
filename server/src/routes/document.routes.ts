@@ -13,6 +13,6 @@ router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', uploadSingleDocument, controller.update.bind(controller));
 router.delete('/:id', controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
-// router.post('/initialize', controller.initialize);
+router.get('/download/:id', controller.download.bind(controller));
 
 export default router;

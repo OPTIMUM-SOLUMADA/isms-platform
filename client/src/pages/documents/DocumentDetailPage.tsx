@@ -9,11 +9,12 @@ import {
   Calendar,
   RefreshCw,
   FileText,
-  Clock
+  Clock,
+  Download
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/forms/documents/DocPreview";
+import DocPreview from "@/templates/forms/documents/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
 import Notification from "@/templates/forms/documents/Notification";
@@ -35,6 +36,9 @@ import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
 import { cn } from "@/lib/utils";
+import { LoadingButton } from "@/components/ui/loading-button";
+import DocumentDetailSkeleton from "@/components/loading/DocumentDetailSkeleton";
+import ErrorDisplay from "@/components/ErrorDisplay";
 
 const tabs = [
   {
@@ -58,7 +62,7 @@ export default function DocumentDetailPage() {
 
   const params = useParams();
 
-  const { deleteDocument } = useDocument();
+  const { deleteDocument, download, isDownloading } = useDocument();
   const { user } = useAuth();
   const { users } = useUser();
   const { hasActionPermission } = usePermissions();
@@ -72,9 +76,11 @@ export default function DocumentDetailPage() {
   }, [navigate, deleteDocument, document]);
 
 
-  if (isLoading) return <>Loading...</>;
+  if (isLoading) return <DocumentDetailSkeleton />;
 
-  if (isError) return <p>{error instanceof Error ? error.message : "Something went wrong while fetching the document."}</p>;
+  if (isError) return (
+    <ErrorDisplay />
+  )
 
   if (!document) return <p>Document not found.</p>;
 
@@ -145,7 +151,7 @@ export default function DocumentDetailPage() {
                 <BadgeCheck className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.status")}:</span>
                 <Badge className={`${documentStatusColors[document.status.toLowerCase()]}`}>
-                  {document.status}
+                  {t(`common.document.status.${document.status.toLowerCase()}`)}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
@@ -196,6 +202,20 @@ export default function DocumentDetailPage() {
           </TabsList>
 
           <Card className="flex items-center justify-center w-full h-full p-2 flex-grow flex-col">
+            <div className="w-full flex items-center justify-end">
+              {hasActionPermission("document.download") && (
+                <LoadingButton
+                  type="button"
+                  variant="ghost"
+                  onClick={() => download({ id: document.id })}
+                  isLoading={isDownloading}
+                  loadingText={t("document.view.actions.download.loading")}
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  {t("document.view.actions.download.label")}
+                </LoadingButton>
+              )}
+            </div>
             {tabs.map((tab) => (
               <TabsContent
                 key={tab.id}

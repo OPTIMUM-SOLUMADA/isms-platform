@@ -43,6 +43,10 @@ interface DocumentContextType {
 
     // stats
     stats: DocumentStats | null;
+
+    // download
+    download: (payload: { id: string, name?: string }) => Promise<any>;
+    isDownloading: boolean;
 }
 
 // Create context
@@ -212,6 +216,30 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
+    const { mutateAsync: downloadDocument, isPending: isDownloading } = useMutation<any, ApiAxiosError, { id: string, name?: string }>({
+        mutationFn: async ({ id }) => await documentService.download(id),
+        onSuccess: (res) => {
+            console.log(res.headers);
+            // get file
+            const url = URL.createObjectURL(res.data);
+            // Extract filename from Content-Disposition header
+            const disposition = res.headers["content-disposition"];
+            let filename = "downloaded-file";
+            if (disposition && disposition.includes("filename=")) {
+                filename = disposition.split("filename=")[1].trim().replace(/["']/g, "");
+            }
+
+            const link = window.document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            window.document.body.appendChild(link);
+            link.click();
+            window.document.body.removeChild(link);
+
+            URL.revokeObjectURL(url);
+        }
+    });
+
     return (
         <DocumentContext.Provider
             value={{
@@ -236,7 +264,9 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 limit,
                 setLimit,
                 setPage,
-                stats: stats ?? null
+                stats: stats ?? null,
+                download: downloadDocument,
+                isDownloading
             }}
         >
             {children}

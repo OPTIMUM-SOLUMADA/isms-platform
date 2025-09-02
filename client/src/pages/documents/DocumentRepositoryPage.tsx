@@ -63,7 +63,7 @@ export default function DocumentRepositoryPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{t("document.title")}</h1>
-            <p className="text-gray-600 mt-1">{t("document.subtitle")}</p>
+            <p className="text-muted-foreground mt-1">{t("document.subtitle")}</p>
           </div>
           <Link to={NEW_DOCUMENT_PATH} >
             <Button className="flex items-center space-x-2">
@@ -79,8 +79,8 @@ export default function DocumentRepositoryPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-theme-2">{t("document.stats.total.title")}</p>
-                  <p className="text-2xl font-bold">{stats?.total || 0}</p>
+                  <p className="text-sm text-muted-foreground">{t("document.stats.total.title")}</p>
+                  <p className="text-2xl font-bold text-theme-2">{stats?.total || 0}</p>
                 </div>
                 <FileText className="h-8 w-8 text-theme-2" />
               </div>
@@ -90,7 +90,7 @@ export default function DocumentRepositoryPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t("document.stats.approved.title")}</p>
+                  <p className="text-sm text-muted-foreground">{t("document.stats.approved.title")}</p>
                   <p className="text-2xl font-bold text-theme">
                     {stats?.approved || 0}
                   </p>
@@ -103,7 +103,7 @@ export default function DocumentRepositoryPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t("document.stats.inReview.title")}</p>
+                  <p className="text-sm text-muted-foreground">{t("document.stats.inReview.title")}</p>
                   <p className="text-2xl font-bold text-yellow-600">
                     {stats?.inReview || 0}
                   </p>
@@ -116,12 +116,12 @@ export default function DocumentRepositoryPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t("document.stats.draft.title")}</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-sm text-muted-foreground">{t("document.stats.draft.title")}</p>
+                  <p className="text-2xl font-bold text-theme-danger">
                     {stats?.draft || 0}
                   </p>
                 </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+                <AlertTriangle className="h-8 w-8 text-theme-danger" />
               </div>
             </CardContent>
           </Card>
@@ -135,7 +135,7 @@ export default function DocumentRepositoryPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Search documents, owners, or tags..."
+                    placeholder={t("document.filter.search.placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"

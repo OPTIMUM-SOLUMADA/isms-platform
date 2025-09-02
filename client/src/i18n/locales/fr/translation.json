@@ -545,7 +545,8 @@
                     "label": "Supprimer"
                 },
                 "download": {
-                    "label": "Télécharger le fichier"
+                    "label": "Télécharger le fichier",
+                    "loading": "Téléchargement..."
                 },
                 "assignReviewer": {
                     "label": "Assigner un reviseur"
@@ -799,6 +800,10 @@
             "edit": {
                 "stay": "Rester sur cette page après la modification"
             }
+        },
+        "error": {
+            "tryAgain": "Essayer de nouveau",
+            "somethingWentWrong": "Quelque chose s'est mal passé"
         }
     }
 }
