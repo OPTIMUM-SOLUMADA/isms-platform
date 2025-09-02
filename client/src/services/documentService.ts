@@ -4,6 +4,7 @@ import axios from "@/lib/axios";
 
 const url = API_CONFIG.ENDPOINTS.DOCUMENTS;
 const statsUrl = API_CONFIG.ENDPOINTS.DOCUMENTS_STATS;
+const downloadUrl = API_CONFIG.ENDPOINTS.DOCUMENTS_DOWNLOAD;
 
 type Params = {
     page?: number;
@@ -25,4 +26,7 @@ export const documentService = {
         }
     }),
     delete: async (id: string) => axios.delete(`${url}/${id}`),
-}
+    download: async (id: string) => axios.get(`${downloadUrl}/${id}`, {
+        responseType: "blob"
+    }),
+};

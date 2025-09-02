@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { DocumentService } from '@/services/document.service';
 import { createVersion } from '@/utils/version';
 import { FileService } from '@/services/file.service';
-import { DOCUMENT_UPLOAD_PATH } from '@/configs/multer/document-multer';
+import path from 'path';
+import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 
 const service = new DocumentService();
 
@@ -140,6 +141,25 @@ export class DocumentController {
         try {
             const statistics = await service.getDocumentStats();
             res.json(statistics);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async download(req: Request, res: Response) {
+        try {
+            const document = await service.getDocumentById(req.params.id!);
+            if (!document) {
+                res.status(404).json({ error: 'Document not found' });
+            } else {
+                const filePath = path.join(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
+                // Extract the extension from the original file
+                const ext = path.extname(document.fileUrl!);
+
+                const filename = `${document.title} ${document.versions.find(v => v.isCurrent)?.version}${ext}`;
+
+                res.download(filePath, filename);
+            }
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }

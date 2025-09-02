@@ -7,6 +7,5 @@ const url = API_CONFIG.ENDPOINTS.EXCEL_IMAGE;
 export const excelImageService = {
     get: async (filename: string) => axios.get(url, {
         params: { filename },
-        responseType: "blob",
     }),
 }

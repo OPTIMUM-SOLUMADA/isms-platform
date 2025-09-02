@@ -11,4 +11,12 @@ export class FileUtils {
         this.ensureDirExists(dir);
         return dir;
     }
+
+    static deleteFile(...filePath: string[]) {
+        try {
+            fs.unlinkSync(path.join(...filePath));
+        } catch (err) {
+            console.error(err);
+        }
+    }
 }

@@ -21,6 +21,8 @@ import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { getFileIconByName } from "@/lib/icon";
+import { cn } from "@/lib/utils";
+import { documentStatusColors } from "@/constants/color";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -149,7 +151,7 @@ const Table = ({
             size: 180,
             header: t("document.table.columns.isoClause"),
             cell: ({ row }) => {
-                return <span>{row.original.isoClause.code}</span>;
+                return <span className="w-full text-center">{row.original.isoClause.code}</span>;
             },
         },
         {
@@ -157,7 +159,9 @@ const Table = ({
             enableSorting: true,
             header: t("document.table.columns.status"),
             cell: ({ row }) => {
-                return <span>{row.original.status}</span>;
+                return <span className={cn("px-1 py-0.5 rounded", documentStatusColors[row.original.status.toLowerCase()])}>
+                    {t(`common.document.status.${row.original.status.toLowerCase()}`)}
+                </span>;
             },
         },
         {

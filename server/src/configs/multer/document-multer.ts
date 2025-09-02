@@ -2,8 +2,7 @@ import { Request } from "express";
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
-
-export const DOCUMENT_UPLOAD_PATH = path.join(process.cwd(), "uploads", "documents");
+import { DOCUMENT_UPLOAD_PATH } from "../upload";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
