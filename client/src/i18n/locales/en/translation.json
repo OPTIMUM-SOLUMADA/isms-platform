@@ -110,7 +110,8 @@
         "button": {
             "buttonNewReview": "Start new review",
             "viewDoc": "View Document",
-            "addComment": "Add comment"
+            "addComment": "Add comment",
+            "assignReview": "Assign Review"
         },
         "pending": "Pending",
         "pendingReview": "Pending Review",
@@ -119,12 +120,29 @@
         "overdue": "Overdue",
         "completed": "Terminé",
         "search": "Search documents, assignees, or reviewers...", 
+        "searchPlaceholder": "Search a document",
+        "documentEmpty": "No documents found",
         "all": "Tous",
         "rejected": "Rejected",
         "inReview": "In Review",
         "reviewer": "Reviewer",
         "due": "Due",
-        "comment": "Comment"
+        "comment": "Comment",
+        "form": {
+            "title": "Assign document review",
+            "documentReview": "Document to Review",
+            "selectDoc": "Select document for review",
+            "dueDate": "Due Date",
+            "comment": "Comment",
+            "assigneReviewer": "Assign Reviewer",
+            "reviewerPlaceholder": "Add Reviewer",
+            "errorMessage": "Please complete all fields"
+        },
+        "errors": {
+            "document": "Select a document",
+            "reviewer": "Select a reviewer",
+            "date": "Choose a date"
+        }
     }
 }
 

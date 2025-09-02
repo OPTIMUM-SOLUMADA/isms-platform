@@ -130,7 +130,8 @@
         "button": {
             "buttonNewReview": "nouvelle évaluation",
             "viewDoc": "Afficher le document",
-            "addComment": "Ajouter un commentaire"
+            "addComment": "Ajouter un commentaire",
+            "assignReview": "Attribuer une révision"
         },
         "pending": "En attente",
         "pendingReview": "En attente de révision",
@@ -139,12 +140,29 @@
         "completed": "Terminé",
         "overdue": "En retard",
         "search": "Rechercher des documents, des cessionnaires ou des réviseurs...",
+        "searchPlaceholder": "Rechercher un document",
+        "documentEmpty": "Aucun document trouvé",
         "all": "Tous",
         "rejected": "Rejeté",
         "inReview": "En revue",
         "reviewer": "Evaluateur",
-        "due": "à",
-        "comment": "Commentaire"
+        "due": "à", 
+        "comment": "Commentaire",
+        "form": {
+            "newReview": "Assigner la révision du document", 
+            "documentReview": "Document à examiner", 
+            "documentReviewPlaceholder": "Sélectionner le document à examiner", 
+            "dueDate": "Date d'échéance", 
+            "comment": "Commentaire",
+            "assigneReviewer": "Assigner l'evaluateur",
+            "reviewerPlaceholder": "Ajouter un evaluateur",
+            "errorMessage": "Veuillez remplir tous les champs"
+        },
+        "errors": {
+            "document": "Veuillez séléctionner un document",
+            "reviewer": "Veuillez Séléctionner un évaluateur",
+            "date": "choisir une date"
+        }
     },
     "compliance": {
         "title": "Conformité",

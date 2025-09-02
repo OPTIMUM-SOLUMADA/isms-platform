@@ -126,14 +126,13 @@ export class DocumentController {
         try {
             const { limit = "50", page = "1" } = req.query;
 
-            console.log(req.query)
-
             const documents = await service.listDocuments({
                 limit: parseInt(limit as string),
                 page: parseInt(page as string)
             });
             res.json(documents);
         } catch (err) {
+            console.log("err", err);
             res.status(400).json({ error: (err as Error).message });
         }
     }

@@ -8,6 +8,7 @@ import documentRoutes from './routes/document.routes';
 import userRoutes from './routes/user.routes';
 import isoClauseRoutes from './routes/isoclause.route';
 import documentTypeRoutes from './routes/documenttype.routes';
+import documentReviewRoutes from './routes/documentreview.routes'
 import excelRoutes from './routes/excel.routes';
 import { env } from './configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from './configs/upload';
@@ -39,6 +40,7 @@ app.use('/users', userRoutes);
 app.use('/documents', documentRoutes);
 app.use('/iso-clauses', isoClauseRoutes);
 app.use('/document-types', documentTypeRoutes);
+app.use('/document-reviews', documentReviewRoutes);
 app.use('/excel', excelRoutes);
 
 
