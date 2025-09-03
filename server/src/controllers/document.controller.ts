@@ -151,4 +151,13 @@ export class DocumentController {
             res.status(400).json({ error: (err as Error).message });
         }
     }
+
+    async publish(req: Request, res: Response) {
+        try {
+            const document = await service.publishDocument(req.params.id!);
+            res.json(document);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
 }

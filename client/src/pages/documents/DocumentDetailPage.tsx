@@ -10,14 +10,15 @@ import {
   RefreshCw,
   FileText,
   Clock,
-  Download
+  Download,
+  Rocket
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/forms/documents/DocumentPreview";
+import DocPreview from "@/templates/tabs/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
-import Notification from "@/templates/forms/documents/Notification";
+import Notification from "@/templates/tabs/Notification";
 import { documentStatusColors } from "@/constants/color";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WithTitle from "@/templates/layout/WithTitle";
@@ -39,6 +40,9 @@ import { cn } from "@/lib/utils";
 import { LoadingButton } from "@/components/ui/loading-button";
 import DocumentDetailSkeleton from "@/components/loading/DocumentDetailSkeleton";
 import ErrorDisplay from "@/components/ErrorDisplay";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { documentStatus } from "@/constants/document";
+import PublishDocument from "@/templates/documents/actions/PublishDocument";
 
 const tabs = [
   {
@@ -51,7 +55,7 @@ const tabs = [
     id: "notification",
     label: "document.view.tabs.changeLogs",
     icon: Clock,
-    content: (document: Document) => <Notification />
+    content: (document: Document) => <Notification documentId={document.id} />
   },
 ];
 
@@ -66,9 +70,10 @@ export default function DocumentDetailPage() {
   const { user } = useAuth();
   const { users } = useUser();
   const { hasActionPermission } = usePermissions();
+  const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
 
   // get document by id
-  const { data: document, isLoading, isError, error } = useGetDocument(params.id);
+  const { data: document, isLoading, isError } = useGetDocument(params.id);
 
   const handleDelete = useCallback(async () => {
     await deleteDocument({ id: document!.id });
@@ -98,6 +103,12 @@ export default function DocumentDetailPage() {
           </div>
 
           <div className="flex gap-2">
+            {document.status === documentStatus.APPROVED && (
+              <PublishDocument documentId={document.id} >
+                <Rocket className="h-4 w-4 mr-1" />
+                {t("document.view.actions.publish.label")}
+              </PublishDocument>
+            )}
             {hasActionPermission("document.edit") && (
               <Button variant="outline" onClick={() => navigate(`/documents/edit/${document.id}`)}>
                 <Pencil className="h-4 w-4 mr-1" />
@@ -185,7 +196,8 @@ export default function DocumentDetailPage() {
         {/* Main Layout: sidebar + content */}
         <Tabs
           orientation="vertical"
-          defaultValue={tabs[0].id}
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
           className="w-full flex flex-row items-start gap-6 justify-center flex-grow"
         >
           {/* Sidebar Tabs */}

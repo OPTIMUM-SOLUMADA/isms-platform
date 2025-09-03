@@ -47,6 +47,10 @@ interface DocumentContextType {
     // download
     download: (payload: { id: string, name?: string }) => Promise<any>;
     isDownloading: boolean;
+
+    // publish
+    publish: (payload: { id: string }) => Promise<any>;
+    isPublishing: boolean;
 }
 
 // Create context
@@ -240,6 +244,27 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
+    // Publish document
+    const { mutateAsync: publishDocument, isPending: isPublishing } = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await documentService.publish(id),
+        onSuccess: (res, { id }) => {
+            toast({
+                title: t("document.publish.toast.success.title"),
+                description: t("document.publish.toast.success.description"),
+                variant: "success",
+            });
+            setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
+        },
+        onError: (err) => {
+            console.error(err.response?.data);
+            toast({
+                title: t("document.publish.toast.error.title"),
+                description: t("document.publish.toast.error.description"),
+                variant: "destructive",
+            })
+        }
+    })
+
     return (
         <DocumentContext.Provider
             value={{
@@ -266,7 +291,9 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 setPage,
                 stats: stats ?? null,
                 download: downloadDocument,
-                isDownloading
+                isDownloading,
+                publish: publishDocument,
+                isPublishing
             }}
         >
             {children}

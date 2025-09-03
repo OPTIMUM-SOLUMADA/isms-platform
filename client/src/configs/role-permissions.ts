@@ -3,6 +3,7 @@ import { RoleType, ActionPermission, AccessPermission } from "@/types/role";
 // Action Permissions are used for authorization
 export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
     [RoleType.ADMIN]: [
+        "document.view",
         "document.create",
         "document.edit",
         "document.delete",

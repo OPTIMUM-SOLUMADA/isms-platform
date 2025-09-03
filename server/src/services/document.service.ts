@@ -111,4 +111,22 @@ export class DocumentService {
             expired,
         };
     }
+
+    // publish document
+    async publishDocument(id: string) {
+        return prisma.document.update({
+            where: { id },
+            data: { status: 'PUBLISHED' },
+            include: {
+                approvals: true,
+                auditlogs: true,
+                department: true,
+                isoClause: true,
+                owner: true,
+                reviews: true,
+                versions: true,
+                type: true,
+            },
+        });
+    }
 }

@@ -23,6 +23,9 @@ import { useNavigate } from "react-router-dom";
 import { getFileIconByName } from "@/lib/icon";
 import { cn } from "@/lib/utils";
 import { documentStatusColors } from "@/constants/color";
+import DownloadDocument from "../documents/actions/DownloadDocument";
+import PublishDocument from "../documents/actions/PublishDocument";
+import { documentStatus } from "@/constants/document";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -168,12 +171,14 @@ const Table = ({
             accessorKey: "version",
             enableSorting: true,
             size: 30,
-            header: t("document.table.columns.version"),
+            header: () => <span className="block text-center w-full">{t("document.table.columns.version")}</span>,
             cell: ({ row }) => {
                 const currentVersion = row.original.versions?.find(v => v.isCurrent);
 
                 return currentVersion ? (
-                    <Badge variant="outline">{currentVersion.version}</Badge>
+                    <div className="w-full flex">
+                        <Badge variant="outline" className="mx-auto">{currentVersion.version}</Badge>
+                    </div>
                 ) : (
                     <>-</>
                 )
@@ -191,14 +196,26 @@ const Table = ({
             id: "actions",
             enableSorting: false,
             size: 40,
-            header: t("document.table.columns.actions"),
+            header: () => <span className="block text-center w-full">{t("document.table.columns.actions")}</span>,
             cell: ({ row }) => {
                 const doc = row.original;
                 return (
-                    <DocumentActionsCell
-                        doc={doc}
-                        onView={onView}
-                    />
+                    <div className="flex items-center gap-2">
+                        {/* Download */}
+                        <DownloadDocument documentId={doc.id} />
+                        {/* Publish */}
+                        <PublishDocument
+                            documentId={doc.id}
+                            className="normal-case"
+                            disabled={doc.status !== documentStatus.APPROVED}
+                        >
+                            {t("document.table.actions.publish")}
+                        </PublishDocument>
+                        <DocumentActionsCell
+                            doc={doc}
+                            onView={onView}
+                        />
+                    </div>
                 );
             },
             enableHiding: false,
