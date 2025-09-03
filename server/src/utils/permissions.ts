@@ -1,5 +1,5 @@
-import { RoleType, Permission } from "../types/roles";
-import rolePermissionsMap from "../configs/role-permissions";
+import { RoleType, Permission } from '@/types/roles';
+import rolePermissionsMap from '@/configs/role-permissions';
 
 /**
  * Check if the user's role includes the required permission

@@ -1,6 +1,6 @@
-import { Department, Prisma } from "@prisma/client";
-import prisma from "@/database/prisma";
-import { UserService } from "./user.service";
+import { Department, Prisma } from '@prisma/client';
+import prisma from '@/database/prisma';
+import { UserService } from './user.service';
 
 export class DepartmentService {
     protected userService: UserService;
@@ -52,12 +52,12 @@ export class DepartmentService {
     async init() {
         // Add default departments if not exists
         const departments = [
-            { name: "IT", description: "Information Technology" },
-            { name: "DEV", description: "Development" },
-            { name: "HR", description: "Human Resources" },
-            { name: "ROP", description: "Responsable Operations" },
-            { name: "Internal Audit", description: "Internal Audit" },
-            { name: "Legal", description: "Legal" },
+            { name: 'IT', description: 'Information Technology' },
+            { name: 'DEV', description: 'Development' },
+            { name: 'HR', description: 'Human Resources' },
+            { name: 'ROP', description: 'Responsable Operations' },
+            { name: 'Internal Audit', description: 'Internal Audit' },
+            { name: 'Legal', description: 'Legal' },
         ];
 
         const results: Department[] = [];

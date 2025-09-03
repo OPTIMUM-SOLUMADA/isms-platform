@@ -1,4 +1,4 @@
-import ExcelJS from "exceljs";
+import ExcelJS from 'exceljs';
 
 export class ExcelUtils {
     async readWorkbook(filePath: string): Promise<ExcelJS.Workbook> {

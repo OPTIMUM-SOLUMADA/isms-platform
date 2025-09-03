@@ -7,7 +7,12 @@ import { uploadSingleDocument } from '@/middlewares/upload-document';
 const router = express.Router();
 const controller = new DocumentController();
 
-router.post('/', validate(documentCreateSchema), uploadSingleDocument, controller.create.bind(controller));
+router.post(
+    '/',
+    validate(documentCreateSchema),
+    uploadSingleDocument,
+    controller.create.bind(controller),
+);
 router.get('/statistics', controller.getStatistics.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', uploadSingleDocument, controller.update.bind(controller));

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Space, ViewPort } from "react-zoomable-ui";
+import { Space } from "react-zoomable-ui";
 import { excelImageService } from "@/services/excelImageService";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "../ui/skeleton";
@@ -46,19 +46,6 @@ export const ExcelViewer: React.FC<ZoomableIframeProps> = ({
         }
     };
 
-    // Wait for HTML content to be ready
-    const onCreateSpace = (viewport: ViewPort) => {
-
-        // Calculate center of the iframe content in world coordinates
-        const centerX = 0;
-        const centerY = 0;
-
-        // Set zoom factor
-        const zoom = 0.8;
-
-        viewport.camera.recenter(centerX, centerY, zoom);
-    };
-
     return (
         <div
             className="grow overflow-hidden w-full relative border min-h-[400px] flex justify-center items-center"
@@ -68,7 +55,6 @@ export const ExcelViewer: React.FC<ZoomableIframeProps> = ({
             ) : (
                 <Space
                     style={{ width: "100%", height: "100%" }}
-                    onCreate={onCreateSpace}
                     className="bg-gray-900/70"
                 >
                     <iframe
@@ -77,7 +63,7 @@ export const ExcelViewer: React.FC<ZoomableIframeProps> = ({
                         onLoad={onLoad}
                         height={height}
                         width={width}
-                        className="border-none block absolute pointer-events-none shadow-lg bg-white"
+                        className="border-none block absolute pointer-events-none shadow-lg bg-white overflow-hidden"
                         scrolling="no"
                     />
                 </Space>

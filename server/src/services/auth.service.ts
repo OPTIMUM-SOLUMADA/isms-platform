@@ -15,7 +15,7 @@ export class AuthService {
         await this.userService.updateUser(user.id, { lastLogin: new Date() });
 
         return user;
-    }
+    };
 
     /**
      * Change user's password securely
@@ -23,5 +23,5 @@ export class AuthService {
     changePassword = async (userId: string, newPassword: string) => {
         const passwordHash = await hashPassword(newPassword);
         return this.userService.updateUser(userId, { passwordHash });
-    }
+    };
 }

@@ -1,0 +1,6 @@
+node_modules
+build
+.git
+eslint.config.mjs
+jest.config.js
+jest.setup.ts

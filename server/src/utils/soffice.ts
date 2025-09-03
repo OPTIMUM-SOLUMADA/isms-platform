@@ -1,5 +1,5 @@
-import { exec } from "child_process";
-import * as path from "path";
+import { exec } from 'child_process';
+import * as path from 'path';
 
 export class SofficeUtils {
     async convertToHtml(filePath: string): Promise<string> {
@@ -12,10 +12,10 @@ export class SofficeUtils {
                     if (error) {
                         reject(stderr || error.message);
                     } else {
-                        const htmlFile = filePath.replace(/\.(xlsx|xls)$/i, ".html");
+                        const htmlFile = filePath.replace(/\.(xlsx|xls)$/i, '.html');
                         resolve(htmlFile);
                     }
-                }
+                },
             );
         });
     }

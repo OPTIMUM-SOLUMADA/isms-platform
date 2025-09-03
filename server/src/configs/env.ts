@@ -1,52 +1,56 @@
-import dotenv from "dotenv";
-import path from "path";
-import { z } from "zod";
+import dotenv from 'dotenv';
+import path from 'path';
+import { z } from 'zod';
 
 // Load environment variables from .env
 dotenv.config({
-    path: path.resolve(__dirname, "../..", ".env"),
+    path: path.resolve(__dirname, '../..', '.env'),
 });
 
 export const envSchema = z.object({
-    PORT: z
-        .number()
-        .default(8000),
-    NODE_ENV: z
-        .enum(["development", "production", "test"])
-        .default("development"),
+    PORT: z.number().default(8000),
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     // Database
     DATABASE_URL: z.string().url(),
 
     // Password Hashing
     BCRYPT_SALT_ROUNDS: z
         .string()
-        .transform(val => parseInt(val))
-        .refine(val => !isNaN(val) && val > 0, {
-            message: "BCRYPT_SALT_ROUNDS must be a positive number",
+        .transform((val) => parseInt(val))
+        .refine((val) => !isNaN(val) && val > 0, {
+            message: 'BCRYPT_SALT_ROUNDS must be a positive number',
         })
         .default(12),
 
     // CORS
-    CORS_ORIGIN: z.string().default("*"),
+    CORS_ORIGIN: z.string().default('*'),
 
     // Session (optional, if you mix JWT with sessions for some flows)
     SESSION_SECRET: z.string().min(16).optional(),
 
     // JWT
-    JWT_ACCESS_SECRET: z.string().min(10, "JWT_ACCESS_SECRET must be at least 10 characters for security"),
-    JWT_ACCESS_EXPIRES_IN: z.string().default("1h"),
-    JWT_REFRESH_SECRET: z.string().min(10, "JWT_REFRESH_SECRET must be at least 10 characters for security"),
-    JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+    JWT_ACCESS_SECRET: z
+        .string()
+        .min(10, 'JWT_ACCESS_SECRET must be at least 10 characters for security'),
+    JWT_ACCESS_EXPIRES_IN: z.string().default('1h'),
+    JWT_REFRESH_SECRET: z
+        .string()
+        .min(10, 'JWT_REFRESH_SECRET must be at least 10 characters for security'),
+    JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
     JWT_ISSUER: z.string().default(''),
 
-    JWT_RESET_EXPIRES_IN: z.string().default("1h"),
+    JWT_RESET_EXPIRES_IN: z.string().default('1h'),
 
     // Optional Email Config (if you want password reset)
     SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.string().transform(val => parseInt(val)).optional().default(587),
+    SMTP_PORT: z
+        .string()
+        .transform((val) => parseInt(val))
+        .optional()
+        .default(587),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
-    SMTP_SECURE: z.string().optional().default("false"),
+    SMTP_SECURE: z.string().optional().default('false'),
 });
 
 const envServer = envSchema.safeParse({
