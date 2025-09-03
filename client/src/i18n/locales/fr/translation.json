@@ -456,6 +456,18 @@
                 }
             }
         },
+        "publish": {
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été publié avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la publication du document. Veuillez réessayer."
+                }
+            }
+        },
         "stats": {
             "total": {
                 "title": "Total des documents",
@@ -518,7 +530,9 @@
             "actions": {
                 "edit": "Modifier",
                 "delete": "Supprimer",
-                "view": "Voir les détails"
+                "view": "Voir les détails",
+                "publish": "Publier",
+                "download": "Télécharger"
             },
             "empty": {
                 "title": "Aucun document trouvé",
@@ -568,7 +582,18 @@
                 },
                 "assignReviewer": {
                     "label": "Assigner un reviseur"
+                },
+                "publish": {
+                    "label": "Publier ce document"
                 }
+            }
+        },
+        "actions": {
+            "publish": {
+                "label": "Publier un document"
+            },
+            "download": {
+                "label": "Télécharger le document"
             }
         }
     },

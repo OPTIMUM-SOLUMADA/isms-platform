@@ -98,6 +98,7 @@ enum DocumentStatus {
   IN_REVIEW
   APPROVED
   EXPIRED
+  PUBLISHED
 }
 
 model Document {

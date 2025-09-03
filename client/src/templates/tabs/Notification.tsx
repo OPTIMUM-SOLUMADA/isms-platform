@@ -42,7 +42,12 @@ const items = [
   },
 ]
 
-export default function Notification() {
+interface NotificationProps {
+  documentId: string
+}
+
+export default function Notification({ documentId }: NotificationProps) {
+  console.log(documentId);
   return (
     <Timeline defaultValue={3}>
       {items.map((item) => (

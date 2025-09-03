@@ -19,5 +19,7 @@ router.put('/:id', uploadSingleDocument, controller.update.bind(controller));
 router.delete('/:id', controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
 router.get('/download/:id', controller.download.bind(controller));
+// publish document
+router.put('/publish/:id', controller.publish.bind(controller));
 
 export default router;

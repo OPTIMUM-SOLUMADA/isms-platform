@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Button, ButtonProps } from "@/components/ui/button";
+import { LoaderCircle } from "lucide-react";
 
 interface LoadingButtonProps extends ButtonProps {
     isLoading?: boolean;
@@ -16,9 +17,9 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
                 {...props}
             >
                 {isLoading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>{loadingText}</span>
+                    <div className="flex items-center justify-center gap-2">
+                        <LoaderCircle className="w-4 h-4 animate-spin" />
+                        {loadingText && <span>{loadingText}</span>}
                     </div>
                 ) : (
                     text || children
