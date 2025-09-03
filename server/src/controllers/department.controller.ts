@@ -28,11 +28,11 @@ export class DepartmentController {
 
     async update(req: Request, res: Response) {
         try {
-            console.log("req", req.body);
-            
+            console.log('req', req.body);
+
             const updated = await service.updateDepartment(req.params.id!, req.body);
-            console.log("updat", updated);
-            
+            console.log('updat', updated);
+
             res.json(updated);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });

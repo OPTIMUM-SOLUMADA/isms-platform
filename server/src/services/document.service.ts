@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
-import prisma from "@/database/prisma";
-import { UserService } from "./user.service";
+import { Prisma } from '@prisma/client';
+import prisma from '@/database/prisma';
+import { UserService } from './user.service';
 
 export class DocumentService {
     protected userService: UserService;
@@ -53,7 +53,7 @@ export class DocumentService {
                 reviews: true,
                 versions: true,
                 type: true,
-            }
+            },
         });
     }
 
@@ -61,10 +61,7 @@ export class DocumentService {
         return prisma.document.delete({ where: { id } });
     }
 
-    async listDocuments({
-        page = 1, limit = 50
-    }: { page: number, limit: number }) {
-
+    async listDocuments({ page = 1, limit = 50 }: { page: number; limit: number }) {
         const skip = (page - 1) * limit;
 
         const [items, total] = await prisma.$transaction([
@@ -72,7 +69,7 @@ export class DocumentService {
                 skip,
                 take: limit,
                 orderBy: {
-                    updatedAt: "desc"
+                    updatedAt: 'desc',
                 },
                 include: {
                     approvals: true,
@@ -83,16 +80,16 @@ export class DocumentService {
                     reviews: true,
                     versions: true,
                     type: true,
-                }
+                },
             }),
-            prisma.document.count()
+            prisma.document.count(),
         ]);
 
         return {
             data: items,
             total,
             page,
-            totalPages: Math.ceil(total / limit)
+            totalPages: Math.ceil(total / limit),
         };
     }
 
@@ -100,10 +97,10 @@ export class DocumentService {
     async getDocumentStats() {
         const [total, draft, inReview, approved, expired] = await prisma.$transaction([
             prisma.document.count(),
-            prisma.document.count({ where: { status: "DRAFT" } }),
-            prisma.document.count({ where: { status: "IN_REVIEW" } }),
-            prisma.document.count({ where: { status: "APPROVED" } }),
-            prisma.document.count({ where: { status: "EXPIRED" } }),
+            prisma.document.count({ where: { status: 'DRAFT' } }),
+            prisma.document.count({ where: { status: 'IN_REVIEW' } }),
+            prisma.document.count({ where: { status: 'APPROVED' } }),
+            prisma.document.count({ where: { status: 'EXPIRED' } }),
         ]);
 
         return {
@@ -111,7 +108,7 @@ export class DocumentService {
             draft,
             inReview,
             approved,
-            expired
+            expired,
         };
     }
 }

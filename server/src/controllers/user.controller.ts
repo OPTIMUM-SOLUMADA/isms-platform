@@ -11,7 +11,7 @@ export class UserController {
             if (userExists) {
                 res.status(400).json({
                     error: 'User already exists',
-                    code: 'ERR_USER_EXISTS'
+                    code: 'ERR_USER_EXISTS',
                 });
                 return;
             }
@@ -20,7 +20,7 @@ export class UserController {
         } catch (err) {
             res.status(500).json({
                 error: (err as Error).message,
-                code: "ERR_SERVER_ERROR"
+                code: 'ERR_SERVER_ERROR',
             });
         }
     }
@@ -63,7 +63,7 @@ export class UserController {
         } catch (err) {
             res.status(400).json({
                 error: (err as Error).message,
-                code: "ERR_SERVER_ERROR"
+                code: 'ERR_SERVER_ERROR',
             });
         }
     }

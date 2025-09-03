@@ -1,5 +1,5 @@
-import prisma from "@/database/prisma";
-import { Prisma } from "@prisma/client";
+import prisma from '@/database/prisma';
+import { Prisma } from '@prisma/client';
 
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
@@ -12,7 +12,7 @@ export class UserService {
                 documentApprovals: true,
                 notifications: true,
                 auditLogs: true,
-            }
+            },
         });
     }
 
@@ -74,7 +74,7 @@ export class UserService {
                 documentReviews: true,
                 documentApprovals: true,
                 auditLogs: true,
-                ownedDocuments: true
+                ownedDocuments: true,
             },
         });
     }

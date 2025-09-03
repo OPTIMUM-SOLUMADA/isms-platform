@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { ISOClauseService } from "@/services/isoclause.service";
+import { Request, Response } from 'express';
+import { ISOClauseService } from '@/services/isoclause.service';
 
 const service = new ISOClauseService();
 
@@ -26,7 +26,7 @@ export class ISOClauseController {
     async findById(req: Request, res: Response) {
         try {
             const clause = await service.findById(req.params.id!);
-            if (!clause) return res.status(404).json({ error: "Clause not found" });
+            if (!clause) return res.status(404).json({ error: 'Clause not found' });
             return res.json(clause);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });

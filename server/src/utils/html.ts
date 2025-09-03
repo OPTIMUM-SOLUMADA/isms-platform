@@ -1,8 +1,8 @@
-import fs from "fs";
-import { minify } from "html-minifier-terser";
+import fs from 'fs';
+import { minify } from 'html-minifier-terser';
 
 export async function minifyHtml(filePath: string) {
-    const rawHtml = fs.readFileSync(filePath, "utf-8");
+    const rawHtml = fs.readFileSync(filePath, 'utf-8');
 
     const result = await minify(rawHtml, {
         collapseWhitespace: true,
@@ -12,7 +12,6 @@ export async function minifyHtml(filePath: string) {
         minifyCSS: true,
         minifyJS: true,
     });
-
 
     return result;
 }
