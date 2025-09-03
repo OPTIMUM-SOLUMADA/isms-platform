@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --watch",
     "build": "tsc && tsc-alias",
     "build:app": "rimraf build && tsc",
     "start": "node build/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
     "postinstall": "prisma generate",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "lint-staged": {
     "src/**/*.{ts,js}": [
