@@ -30,7 +30,6 @@ import { UserHoverCard } from "@/templates/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
-import { useUser } from "@/contexts/UserContext";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { Document } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -68,7 +67,6 @@ export default function DocumentDetailPage() {
 
   const { deleteDocument, download, isDownloading } = useDocument();
   const { user } = useAuth();
-  const { users } = useUser();
   const { hasActionPermission } = usePermissions();
   const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
 
@@ -140,22 +138,19 @@ export default function DocumentDetailPage() {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.owner")}:</span>
-                <UserHoverCard user={document.owner} currentUserId={user?.id} />
+                <div className="flex items-center gap-1">
+                  {document.owners.map((o, index) => (
+                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
+                  ))}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.reviewers")}:</span>
                 <div className="flex items-center gap-1">
-                  {document.reviewersId.map((userId) => {
-                    const fuser = users.find((u) => u.id === userId);
-                    return fuser ? (
-                      <UserHoverCard
-                        key={userId}
-                        user={fuser}
-                        currentUserId={user?.id}
-                      />
-                    ) : null;
-                  })}
+                  {document.reviewers.map((o, index) => (
+                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
+                  ))}
                 </div>
               </div>
               <div className="flex items-center gap-2">

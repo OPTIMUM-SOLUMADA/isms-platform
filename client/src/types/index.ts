@@ -1,12 +1,11 @@
-
 export type AuditEntry = {
   id: string;
   timestamp: string;
   user: string;
   action: string;
   resource: string;
-  resourceType: 'document' | 'user' | 'system' | 'review' | 'policy';
-  status: 'success' | 'warning' | 'error';
+  resourceType: "document" | "user" | "system" | "review" | "policy";
+  status: "success" | "warning" | "error";
   ipAddress: string;
   userAgent: string;
   details: string;
@@ -15,22 +14,22 @@ export type AuditEntry = {
     oldValue: string;
     newValue: string;
   }[];
-}
+};
 
 export type ComplianceClause = {
   id: string;
   clause: string;
   title: string;
   progress: number;
-  status: 'compliant' | 'partial' | 'non-compliant' | 'not-started';
+  status: "compliant" | "partial" | "non-compliant" | "not-started";
   documents: number;
   lastReviewed: string;
   nextReview: string;
   owner: string;
-  priority: 'high' | 'medium' | 'low';
-}
+  priority: "high" | "medium" | "low";
+};
 
-type DocumentStatus = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'EXPIRED';
+type DocumentStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "EXPIRED";
 
 export type Document = {
   id: string;
@@ -53,7 +52,8 @@ export type Document = {
 
   // Relations
   isoClause: ISOClause;
-  owner: User;
+  owners: [{ user: User }];
+  reviewers: [{ user: User }];
   type: DocumentType;
   versions: DocumentVersion[];
   reviews: DocumentReview[];
@@ -70,7 +70,7 @@ export type DocumentType = {
 
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type DocumentVersion = {
   id: string;
@@ -81,9 +81,8 @@ export type DocumentVersion = {
   isCurrent: boolean; // optional: flag the latest version
 
   document: Document;
-  approvals?: DocumentApproval[]
-
-}
+  approvals?: DocumentApproval[];
+};
 
 export type DocumentReview = {
   id: string;
@@ -139,21 +138,19 @@ export type ReviewItem = {
   documentId: string;
   document: Document;
   reviewerId: string;
-  reviewer : User;
+  reviewer: User;
   type: string;
-  stage: 'pending' | 'in-review' | 'approved' | 'rejected';
+  stage: "pending" | "in-review" | "approved" | "rejected";
   assignee: string;
   dueDate: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: "high" | "medium" | "low";
   comment: string;
   progress: number;
   startDate: string;
   isApproved: boolean;
-  isCompleted:  boolean;
-  reviewDate:  Date;
-
-}
-
+  isCompleted: boolean;
+  reviewDate: Date;
+};
 
 export enum RoleType {
   ADMIN = "ADMIN",
@@ -177,7 +174,7 @@ export type User = {
 
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type Category = {
   id: string;
@@ -185,7 +182,7 @@ export type Category = {
   description: string;
   isoClauseNumber: string;
   documents: Document[];
-}
+};
 
 export type Department = {
   id: string;
@@ -195,7 +192,7 @@ export type Department = {
 
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export interface CustomFormProps<T> {
   onCancel?: () => void;

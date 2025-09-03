@@ -115,7 +115,7 @@ const Table = ({
             size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
-                const user = row.original.owner;
+                const users = row.original.owners?.map((o) => o.user);
                 return (
                     <button
                         type="button"
@@ -127,15 +127,25 @@ const Table = ({
                         <div className="text-sm flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
                         </div>
-                        <UserHoverCard
-                            user={user}
-                            currentUserId={currentUser?.id}
-                            className="absolute -bottom-1 -left-1"
-                        >
-                            <div className="flex items-center gap-2 group-hover:border-red-300">
-                                <UserAvatar className="size-4" id={user.id} name={user.name} />
-                            </div>
-                        </UserHoverCard>
+                        <div className="absolute -bottom-2 -left-2 flex items-center -space-x-2">
+                            {users.slice(0, 2).map((user) => (
+                                <UserHoverCard
+                                    user={user}
+                                    currentUserId={currentUser?.id}
+                                    className=""
+                                >
+                                    <div className="flex items-center gap-2 group-hover:border-red-300">
+                                        <UserAvatar className="size-4" id={user.id} name={user.name} />
+                                    </div>
+                                </UserHoverCard>
+                            ))}
+
+                            {users.length > 2 && (
+                                <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
+                                    +{users.length - 2}
+                                </div>
+                            )}
+                        </div>
                     </button>
                 );
             },

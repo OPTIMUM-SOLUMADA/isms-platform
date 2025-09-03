@@ -1,11 +1,14 @@
 import { Prisma } from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
+import { DocumentOwnerService } from './documentowner.service';
 
 export class DocumentService {
     protected userService: UserService;
+    protected documentOwnerService: DocumentOwnerService;
     constructor() {
         this.userService = new UserService();
+        this.documentOwnerService = new DocumentOwnerService();
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
@@ -16,11 +19,66 @@ export class DocumentService {
                 auditlogs: true,
                 department: true,
                 isoClause: true,
-                owner: true,
                 reviews: true,
                 versions: true,
                 type: true,
+                owners: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
+                reviewers: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
             },
+        });
+    }
+    async createDocumentWithOwnersAndReviewers(
+        data: Prisma.DocumentCreateInput,
+        ownerIds: string[],
+        reviewerIds: string[],
+    ) {
+        return prisma.$transaction(async (tx) => {
+            const doc = await tx.document.create({ data });
+            const ownersData = ownerIds.map((userId) => ({ documentId: doc.id, userId }));
+            const reviewersData = reviewerIds.map((userId) => ({ documentId: doc.id, userId }));
+            // create reviewers
+            await tx.documentReviewer.createMany({ data: reviewersData });
+            // create owners
+            await tx.documentOwner.createMany({ data: ownersData });
+            // return document
+            return tx.document.findUnique({
+                where: { id: doc.id },
+                include: {
+                    owners: { include: { user: true } },
+                    reviewers: { include: { user: true } },
+                    approvals: true,
+                    auditlogs: true,
+                    department: true,
+                    isoClause: true,
+                    reviews: true,
+                    versions: true,
+                    type: true,
+                },
+            });
         });
     }
 
@@ -32,10 +90,35 @@ export class DocumentService {
                 auditlogs: true,
                 department: true,
                 isoClause: true,
-                owner: true,
                 reviews: true,
                 versions: true,
                 type: true,
+                owners: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
+                reviewers: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
             },
         });
     }
@@ -49,10 +132,35 @@ export class DocumentService {
                 auditlogs: true,
                 department: true,
                 isoClause: true,
-                owner: true,
                 reviews: true,
                 versions: true,
                 type: true,
+                owners: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
+                reviewers: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
             },
         });
     }
@@ -76,10 +184,35 @@ export class DocumentService {
                     auditlogs: true,
                     department: true,
                     isoClause: true,
-                    owner: true,
                     reviews: true,
                     versions: true,
                     type: true,
+                    owners: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                    role: true,
+                                    createdAt: true,
+                                },
+                            },
+                        },
+                    },
+                    reviewers: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                    role: true,
+                                    createdAt: true,
+                                },
+                            },
+                        },
+                    },
                 },
             }),
             prisma.document.count(),
@@ -122,10 +255,35 @@ export class DocumentService {
                 auditlogs: true,
                 department: true,
                 isoClause: true,
-                owner: true,
                 reviews: true,
                 versions: true,
                 type: true,
+                owners: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
+                reviewers: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
             },
         });
     }

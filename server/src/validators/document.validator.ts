@@ -19,9 +19,9 @@ export const documentCreateSchema = Joi.object({
 
     reviewFrequency: Joi.number().integer().positive().optional(),
 
-    owner: Joi.string().min(1).required().messages({
-        'string.empty': 'Owner is required',
-        'any.required': 'Owner is required',
+    owners: Joi.array().items(Joi.string()).min(1).required().messages({
+        'string.empty': 'Owners is required',
+        'any.required': 'Owners is required',
     }),
 
     type: Joi.string().min(1).required().messages({

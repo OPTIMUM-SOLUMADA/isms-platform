@@ -10,29 +10,32 @@ const service = new DocumentService();
 export class DocumentController {
     async create(req: Request, res: Response) {
         try {
-            const { title, description, status, owner, type, department, isoClause, reviewers } =
+            const { title, description, status, type, department, isoClause, reviewers, owners } =
                 req.body;
 
             const fileUrl = req.file ? req.file.filename : null;
 
-            const document = await service.createDocument({
-                title,
-                description,
-                status,
-                ...(owner && { owner: { connect: { id: owner } } }),
-                ...(type && { type: { connect: { id: type } } }),
-                ...(department && { department: { connect: { id: department } } }),
-                ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
-                reviewersId: reviewers.split(','),
-                fileUrl: fileUrl,
-                // create document version
-                versions: {
-                    create: {
-                        version: createVersion(1, 0), // 1.0
-                        isCurrent: true,
+            const document = await service.createDocumentWithOwnersAndReviewers(
+                {
+                    title,
+                    description,
+                    status,
+                    ...(type && { type: { connect: { id: type } } }),
+                    ...(department && { department: { connect: { id: department } } }),
+                    ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                    reviewersId: reviewers.split(','),
+                    fileUrl: fileUrl,
+                    // create document version
+                    versions: {
+                        create: {
+                            version: createVersion(1, 0), // 1.0
+                            isCurrent: true,
+                        },
                     },
                 },
-            });
+                owners.split(','),
+                reviewers.split(','),
+            );
 
             res.status(201).json(document);
         } catch (err) {
@@ -105,6 +108,7 @@ export class DocumentController {
 
             res.status(204).json(deleted);
         } catch (err) {
+            console.log(err);
             res.status(400).json({ error: (err as Error).message });
         }
     }
