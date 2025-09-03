@@ -7,7 +7,6 @@ export class UserService {
             data,
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
@@ -21,7 +20,6 @@ export class UserService {
             where: { id },
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
@@ -40,7 +38,6 @@ export class UserService {
             data,
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
@@ -74,7 +71,6 @@ export class UserService {
                 documentReviews: true,
                 documentApprovals: true,
                 auditLogs: true,
-                ownedDocuments: true,
             },
         });
     }

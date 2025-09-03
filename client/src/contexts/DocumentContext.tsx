@@ -3,9 +3,9 @@ import type { Document } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
-import { AddDocumentFormData } from "@/templates/forms/documents/AddDocumentForm";
+import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm";
 import { useToast } from "@/hooks/use-toast";
-import { EditDocumentFormData } from "@/templates/forms/documents/EditDocumentForm";
+import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
 import { useTranslation } from "react-i18next";
 
 // Define shape of context

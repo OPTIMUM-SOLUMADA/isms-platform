@@ -24,7 +24,7 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
-import UserLookup from "@/templates/lookup/UserLookup";
+// import UserLookup from "@/templates/lookup/UserLookup";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,7 +43,7 @@ const documentSchema = cz.z.object({
   // nextReviewDate: z.string().optional(), // ou z.date() si tu veux
   // reviewFrequency: z.number().int().positive().optional(),
 
-  owner: z.string().nonempty(i18n.t("zod.errors.required")).min(1, i18n.t("zod.errors.required")),
+  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
 
   type: z.string().nonempty(i18n.t("zod.errors.required")),
 
@@ -102,7 +102,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         title: "ISO Document Test 007",
         description: "Ce document est un test",
         status: documentStatus.DRAFT,
-        owner: "",
+        owners: [],
         isoClause: "",
         reviewers: [],
         files: [],
@@ -306,20 +306,20 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owner"
+              name="owners"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
                     {t("document.add.form.fields.owner.label")}
                   </FormLabel>
                   <FormControl>
-                    <UserLookup
-                      data={users}
+                    <UserMultiSelect
+                      data={users.filter(user => user.role !== RoleType.VIEWER)}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -335,7 +335,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               control={form.control}
               name="reviewers"
               render={({ field, fieldState }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormLabel className="font-medium">
                     {t("document.add.form.fields.reviewer.label")}
                   </FormLabel>
