@@ -8,6 +8,7 @@ export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
         "document.edit",
         "document.delete",
         "document.publish",
+        "document.unpublish",
         "document.assignOwner",
         "document.approve",
         "document.uploadVersion",
@@ -31,6 +32,8 @@ export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
         "document.comment",
         "document.search",
         "document.download",
+        "document.publish",
+        "document.unpublish",
     ],
     [RoleType.REVIEWER]: [
         "document.review",

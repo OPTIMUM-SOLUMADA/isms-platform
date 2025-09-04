@@ -4,32 +4,32 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { PropsWithChildren, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 
-interface PublishDocumentProps extends PropsWithChildren {
+interface UnpublishDocumentProps extends PropsWithChildren {
     className?: string;
     documentId: string
     loadingText?: string;
     disabled?: boolean;
     onSuccess?: () => void
 }
-const PublishDocument = ({
+const UnpublishDocument = ({
     children,
     className,
     documentId,
     loadingText = "",
     disabled = false,
     onSuccess
-}: PublishDocumentProps) => {
-    const { publish } = useDocument();
+}: UnpublishDocumentProps) => {
+    const { unpublish } = useDocument();
     const { hasActionPermission } = usePermissions();
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
-    if (!hasActionPermission('document.publish')) return null;
+    if (!hasActionPermission('document.unpublish')) return null;
 
     const handleClick = async () => {
         try {
             setLoading(true);
-            await publish({ id: documentId });
+            await unpublish({ id: documentId });
             onSuccess?.();
         } finally {
             setLoading(false);
@@ -40,8 +40,9 @@ const PublishDocument = ({
         <LoadingButton
             isLoading={loading}
             loadingText={loadingText}
+            variant="outline-primary"
             onClick={handleClick}
-            title={t("document.actions.publish.label")}
+            title={t("document.actions.unpublish.label")}
             className={className}
             disabled={disabled}
         >
@@ -50,4 +51,4 @@ const PublishDocument = ({
     )
 }
 
-export default PublishDocument
+export default UnpublishDocument

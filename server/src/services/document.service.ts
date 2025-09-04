@@ -6,49 +6,51 @@ import { DocumentOwnerService } from './documentowner.service';
 export class DocumentService {
     protected userService: UserService;
     protected documentOwnerService: DocumentOwnerService;
+    protected documentInclude: Prisma.DocumentInclude;
     constructor() {
         this.userService = new UserService();
         this.documentOwnerService = new DocumentOwnerService();
+        this.documentInclude = {
+            approvals: true,
+            auditlogs: true,
+            department: true,
+            isoClause: true,
+            reviews: true,
+            versions: true,
+            type: true,
+            owners: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                            createdAt: true,
+                        },
+                    },
+                },
+            },
+            reviewers: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                            createdAt: true,
+                        },
+                    },
+                },
+            },
+        };
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
         return prisma.document.create({
             data,
-            include: {
-                approvals: true,
-                auditlogs: true,
-                department: true,
-                isoClause: true,
-                reviews: true,
-                versions: true,
-                type: true,
-                owners: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-                reviewers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-            },
+            include: this.documentInclude,
         });
     }
     async createDocumentWithOwnersAndReviewers(
@@ -67,17 +69,48 @@ export class DocumentService {
             // return document
             return tx.document.findUnique({
                 where: { id: doc.id },
-                include: {
-                    owners: { include: { user: true } },
-                    reviewers: { include: { user: true } },
-                    approvals: true,
-                    auditlogs: true,
-                    department: true,
-                    isoClause: true,
-                    reviews: true,
-                    versions: true,
-                    type: true,
-                },
+                include: this.documentInclude,
+            });
+        });
+    }
+
+    async updateDocumentWithOwnersAndReviewers(
+        id: string,
+        data: Prisma.DocumentUpdateInput,
+        ownerIds: string[],
+        reviewerIds: string[],
+    ) {
+        return prisma.$transaction(async (tx) => {
+            // Update the document fields
+            const doc = await tx.document.update({
+                where: { id },
+                data,
+            });
+
+            // Replace owners (delete old, insert new)
+            await tx.documentOwner.deleteMany({ where: { documentId: id } });
+            const ownersData = ownerIds.map((userId) => ({
+                documentId: id,
+                userId,
+            }));
+            if (ownersData.length) {
+                await tx.documentOwner.createMany({ data: ownersData });
+            }
+
+            // Remove reviewers (delete old, insert new)
+            await tx.documentReviewer.deleteMany({ where: { documentId: id } });
+            const reviewersData = reviewerIds.map((userId) => ({
+                documentId: id,
+                userId,
+            }));
+            if (reviewersData.length) {
+                await tx.documentReviewer.createMany({ data: reviewersData });
+            }
+
+            // Return the updated document with owners
+            return tx.document.findUnique({
+                where: { id: doc.id },
+                include: this.documentInclude,
             });
         });
     }
@@ -85,41 +118,7 @@ export class DocumentService {
     async getDocumentById(id: string) {
         return prisma.document.findUnique({
             where: { id },
-            include: {
-                approvals: true,
-                auditlogs: true,
-                department: true,
-                isoClause: true,
-                reviews: true,
-                versions: true,
-                type: true,
-                owners: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-                reviewers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-            },
+            include: this.documentInclude,
         });
     }
 
@@ -127,41 +126,7 @@ export class DocumentService {
         return prisma.document.update({
             where: { id },
             data,
-            include: {
-                approvals: true,
-                auditlogs: true,
-                department: true,
-                isoClause: true,
-                reviews: true,
-                versions: true,
-                type: true,
-                owners: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-                reviewers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-            },
+            include: this.documentInclude,
         });
     }
 
@@ -179,41 +144,7 @@ export class DocumentService {
                 orderBy: {
                     updatedAt: 'desc',
                 },
-                include: {
-                    approvals: true,
-                    auditlogs: true,
-                    department: true,
-                    isoClause: true,
-                    reviews: true,
-                    versions: true,
-                    type: true,
-                    owners: {
-                        include: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    email: true,
-                                    role: true,
-                                    createdAt: true,
-                                },
-                            },
-                        },
-                    },
-                    reviewers: {
-                        include: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    email: true,
-                                    role: true,
-                                    createdAt: true,
-                                },
-                            },
-                        },
-                    },
-                },
+                include: this.documentInclude,
             }),
             prisma.document.count(),
         ]);
@@ -249,42 +180,23 @@ export class DocumentService {
     async publishDocument(id: string) {
         return prisma.document.update({
             where: { id },
-            data: { status: 'PUBLISHED' },
-            include: {
-                approvals: true,
-                auditlogs: true,
-                department: true,
-                isoClause: true,
-                reviews: true,
-                versions: true,
-                type: true,
-                owners: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
-                reviewers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                role: true,
-                                createdAt: true,
-                            },
-                        },
-                    },
-                },
+            data: {
+                published: true,
+                publicationDate: new Date(),
             },
+            include: this.documentInclude,
+        });
+    }
+
+    // unpublish document
+    async unpublishDocument(id: string) {
+        return prisma.document.update({
+            where: { id },
+            data: {
+                published: false,
+                publicationDate: null,
+            },
+            include: this.documentInclude,
         });
     }
 }

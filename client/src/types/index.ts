@@ -41,10 +41,10 @@ export type Document = {
   reviewFrequency?: number | null;
   isoClauseId: string;
   departmentId: string;
-
+  published: boolean;
+  publicationDate?: string | null;
   reviewersId: string[];
 
-  ownerId: string;
   categoryId: string;
 
   createdAt: string;

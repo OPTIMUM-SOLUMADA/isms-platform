@@ -26,6 +26,7 @@ import { documentStatusColors } from "@/constants/color";
 import DownloadDocument from "../documents/actions/DownloadDocument";
 import PublishDocument from "../documents/actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
+import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -212,15 +213,26 @@ const Table = ({
                 return (
                     <div className="flex items-center gap-2">
                         {/* Download */}
-                        <DownloadDocument documentId={doc.id} />
-                        {/* Publish */}
-                        <PublishDocument
+                        <DownloadDocument
                             documentId={doc.id}
-                            className="normal-case"
-                            disabled={doc.status !== documentStatus.APPROVED}
-                        >
-                            {t("document.table.actions.publish")}
-                        </PublishDocument>
+                        />
+                        {/* Publish */}
+                        {!doc.published ? (
+                            <PublishDocument
+                                documentId={doc.id}
+                                className="normal-case w-28"
+                                disabled={doc.status !== documentStatus.APPROVED}
+                            >
+                                {t("document.table.actions.publish")}
+                            </PublishDocument>
+                        ) : (
+                            <UnpublishDocument
+                                documentId={doc.id}
+                                className="normal-case w-28"
+                            >
+                                {t("document.table.actions.unpublish")}
+                            </UnpublishDocument>
+                        )}
                         <DocumentActionsCell
                             doc={doc}
                             onView={onView}

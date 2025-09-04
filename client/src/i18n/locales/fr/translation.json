@@ -364,16 +364,16 @@
                         "label": "Fréquence de révision",
                         "placeholder": "Fréquence de révision"
                         },
-                    "owner": {
-                        "label": "Propriétaire",
+                    "owners": {
+                        "label": "Propriétaires",
                         "placeholder": "Nom du propriétaire"
                     },
                     "type": {
                         "label": "Type du document",
                         "placeholder": "Séléctionner un type"
                     },
-                    "reviewer": {
-                        "label": "Reviseur(s)",
+                    "reviewers": {
+                        "label": "Reviseurs",
                         "placeholder": "Séléctionner des reviseurs"
                     },
                     "department": {
@@ -468,6 +468,18 @@
                 }
             }
         },
+        "unpublish": {
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été dépublié avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la dépublication du document. Veuillez réessayer."
+                }
+            }
+        },
         "stats": {
             "total": {
                 "title": "Total des documents",
@@ -532,6 +544,7 @@
                 "delete": "Supprimer",
                 "view": "Voir les détails",
                 "publish": "Publier",
+                "unpublish": "Dépublier",
                 "download": "Télécharger"
             },
             "empty": {
@@ -585,12 +598,18 @@
                 },
                 "publish": {
                     "label": "Publier ce document"
+                },
+                "unpublish": {
+                    "label": "Dépublier ce document"
                 }
             }
         },
         "actions": {
             "publish": {
                 "label": "Publier un document"
+            },
+            "unpublish": {
+                "label": "Dépublier un document"
             },
             "download": {
                 "label": "Télécharger le document"

@@ -23,7 +23,6 @@ export class DocumentController {
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
-                    reviewersId: reviewers.split(','),
                     fileUrl: fileUrl,
                     // create document version
                     versions: {
@@ -60,7 +59,7 @@ export class DocumentController {
     async update(req: Request, res: Response) {
         try {
             const { id: documentId } = req.params;
-            const { title, description, status, owner, type, department, isoClause, reviewers } =
+            const { title, description, status, owners, type, department, isoClause, reviewers } =
                 req.body;
 
             // find document
@@ -76,17 +75,20 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : undefined;
 
-            const updatedDocument = await service.updateDocument(documentId!, {
-                ...(title && { title }),
-                ...(description && { description }),
-                ...(status && { status }),
-                ...(owner && { owner: { connect: { id: owner } } }),
-                ...(type && { type: { connect: { id: type } } }),
-                ...(department && { department: { connect: { id: department } } }),
-                ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
-                ...(reviewers && { reviewersId: reviewers.split(',') }),
-                ...(fileUrl && { fileUrl }),
-            });
+            const updatedDocument = await service.updateDocumentWithOwnersAndReviewers(
+                documentId!,
+                {
+                    ...(title && { title }),
+                    ...(description && { description }),
+                    ...(status && { status }),
+                    ...(type && { type: { connect: { id: type } } }),
+                    ...(department && { department: { connect: { id: department } } }),
+                    ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                    ...(fileUrl && { fileUrl }),
+                },
+                owners.split(','),
+                reviewers.split(','),
+            );
 
             if (fileUrl) {
                 // Delete old file
@@ -159,6 +161,15 @@ export class DocumentController {
     async publish(req: Request, res: Response) {
         try {
             const document = await service.publishDocument(req.params.id!);
+            res.json(document);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async unpublish(req: Request, res: Response) {
+        try {
+            const document = await service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });

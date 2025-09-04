@@ -28,4 +28,5 @@ export const documentService = {
         responseType: "blob"
     }),
     publish: async (id: string) => axios.put(docApi.PUBLISH(id)),
+    unpublish: async (id: string) => axios.put(docApi.UNPUBLISH(id)),
 };
