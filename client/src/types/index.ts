@@ -1,3 +1,5 @@
+import { Frequency } from "@/constants/frequency";
+
 export type AuditEntry = {
   id: string;
   timestamp: string;
@@ -38,7 +40,7 @@ export type Document = {
   fileUrl?: string | null;
   status: DocumentStatus;
   nextReviewDate?: string | null;
-  reviewFrequency?: number | null;
+  reviewFrequency?: Frequency | null;
   isoClauseId: string;
   departmentId: string;
   published: boolean;

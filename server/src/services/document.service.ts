@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, ReviewFrequency } from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 import { DocumentOwnerService } from './documentowner.service';
@@ -53,13 +53,19 @@ export class DocumentService {
             include: this.documentInclude,
         });
     }
+
     async createDocumentWithOwnersAndReviewers(
         data: Prisma.DocumentCreateInput,
         ownerIds: string[],
         reviewerIds: string[],
     ) {
         return prisma.$transaction(async (tx) => {
-            const doc = await tx.document.create({ data });
+            const doc = await tx.document.create({
+                data: {
+                    ...data,
+                    nextReviewDate: this.calculateNextReviewDate(new Date(), data.reviewFrequency!),
+                },
+            });
             const ownersData = ownerIds.map((userId) => ({ documentId: doc.id, userId }));
             const reviewersData = reviewerIds.map((userId) => ({ documentId: doc.id, userId }));
             // create reviewers
@@ -84,7 +90,15 @@ export class DocumentService {
             // Update the document fields
             const doc = await tx.document.update({
                 where: { id },
-                data,
+                data: {
+                    ...data,
+                    ...(data.reviewFrequency && {
+                        nextReviewDate: this.calculateNextReviewDate(
+                            new Date(),
+                            data.reviewFrequency! as ReviewFrequency,
+                        ),
+                    }),
+                },
             });
 
             // Replace owners (delete old, insert new)
@@ -198,5 +212,40 @@ export class DocumentService {
             },
             include: this.documentInclude,
         });
+    }
+
+    // calculate next review date vbased on frequency (DAILY, WEEKLY, ETC)
+    calculateNextReviewDate(startDate: Date, frequency: ReviewFrequency): Date | null {
+        const nextDate = new Date(startDate);
+
+        switch (frequency) {
+            case 'DAILY':
+                nextDate.setDate(nextDate.getDate() + 1);
+                break;
+            case 'WEEKLY':
+                nextDate.setDate(nextDate.getDate() + 7);
+                break;
+            case 'MONTHLY':
+                nextDate.setMonth(nextDate.getMonth() + 1);
+                break;
+            case 'QUARTERLY':
+                nextDate.setMonth(nextDate.getMonth() + 3);
+                break;
+            case 'SEMI_ANNUAL':
+                nextDate.setMonth(nextDate.getMonth() + 6);
+                break;
+            case 'YEARLY':
+                nextDate.setFullYear(nextDate.getFullYear() + 1);
+                break;
+            case 'BIENNIAL':
+                nextDate.setFullYear(nextDate.getFullYear() + 2);
+                break;
+            case 'AS_NEEDED':
+                return null;
+            default:
+                return null;
+        }
+
+        return nextDate;
     }
 }

@@ -101,15 +101,26 @@ enum DocumentStatus {
   EXPIRED
 }
 
+enum ReviewFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+  YEARLY
+  BIENNIAL
+  AS_NEEDED
+}
+
 model Document {
-  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
   title           String
   description     String?
   fileUrl         String?
-  status          DocumentStatus @default(DRAFT)
-  nextReviewDate  DateTime? // Essentiel pour les alertes de révision
-  reviewFrequency Int? // Ajouté : Fréquence en mois (e.g. 12 pour annuel)
-  isoClauseId     String         @db.ObjectId
+  status          DocumentStatus   @default(DRAFT)
+  nextReviewDate  DateTime?
+  reviewFrequency ReviewFrequency?
+  isoClauseId     String           @db.ObjectId
 
   published       Boolean   @default(false)
   publicationDate DateTime?
@@ -177,6 +188,7 @@ model DocumentVersion {
   comment    String?
   createdAt  DateTime @default(now())
   isCurrent  Boolean  @default(false) // optional: flag the latest version
+  fileUrl    String?
 
   document  Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   approvals DocumentApproval[]

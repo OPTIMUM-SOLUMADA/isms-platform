@@ -1,4 +1,7 @@
+import { ReviewFrequency } from '@prisma/client';
 import Joi from 'joi';
+
+const reviewFrequencyValues = Object.values(ReviewFrequency);
 
 export const documentCreateSchema = Joi.object({
     title: Joi.string().required().messages({
@@ -17,7 +20,9 @@ export const documentCreateSchema = Joi.object({
 
     nextReviewDate: Joi.date().iso().optional(),
 
-    reviewFrequency: Joi.number().integer().positive().optional(),
+    reviewFrequency: Joi.string()
+        .valid(...reviewFrequencyValues)
+        .optional(),
 
     owners: Joi.array().items(Joi.string()).min(1).required().messages({
         'string.empty': 'Owners is required',

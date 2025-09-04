@@ -52,7 +52,7 @@ export default function DocumentRepositoryPage() {
     const matchesStatus = filterStatus === 'all' || doc.status === filterStatus;
     const matchesType = filterType === 'all' || doc.categoryId === filterType;
     const matchesClause = filterClause === 'all' || doc.isoClauseId === filterClause;
-    const matchesOwner = filterOwner === 'all' || doc.ownerId === filterOwner;
+    const matchesOwner = filterOwner === 'all' || doc.owners.some(owner => owner.user.id === filterOwner);
     return matchesSearch && matchesStatus && matchesType && matchesClause && matchesOwner;
   });
 

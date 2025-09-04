@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Edit, Trash2, Users, Eye, FilePlus } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Eye, FilePlus, Files } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -27,6 +27,7 @@ import DownloadDocument from "../documents/actions/DownloadDocument";
 import PublishDocument from "../documents/actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
+import { formatDate } from "@/lib/date";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -70,7 +71,7 @@ const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
+                        <DropdownMenuItem className="text-theme-danger" onClick={() => setOpen(true)}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}
@@ -198,9 +199,14 @@ const Table = ({
         {
             accessorKey: "reviewDue",
             enableSorting: true,
-            header: t("document.table.columns.reviewDue"),
+            header: () => <span className="w-full text-center">{t("document.table.columns.reviewDue")}</span>,
             cell: ({ row }) => {
-                return <span>{row.original.nextReviewDate}</span>;
+                const date = row.original.nextReviewDate;
+                return date ? (
+                    <span className="text-center block">
+                        {formatDate(date)}
+                    </span>
+                ) : null;
             },
         },
         {
@@ -255,7 +261,7 @@ const Table = ({
             renderNoData={() => (
                 <Card className="shadow-none flex-grow">
                     <CardContent className="p-12 text-center">
-                        <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <Files className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">{t("document.table.empty.title")}</h3>
                         <p className="text-gray-500 mb-4">{t("document.table.empty.message")}</p>
                         <Button onClick={onCreateNewDocument}>

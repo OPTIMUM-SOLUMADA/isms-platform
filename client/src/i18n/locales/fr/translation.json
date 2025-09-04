@@ -363,7 +363,21 @@
                     "reviewFrequency": {
                         "label": "Fréquence de révision",
                         "placeholder": "Fréquence de révision"
-                        },
+                    },
+                    "reviewFrequencyUnit": {
+                        "label": "Unité de fréquence",
+                        "placeholder": "Sélectionner une unité",
+                        "options": {
+                            "daily": "Quotidien",
+                            "weekly": "Hebdomadaire",
+                            "monthly": "Mensuel",
+                            "quarterly": "Trimestriel",
+                            "semi_annual": "Semestriel",
+                            "yearly": "Annuel",
+                            "biennial": "Biennal",
+                            "as_needed": "Selon les besoins"
+                        }
+                    },
                     "owners": {
                         "label": "Propriétaires",
                         "placeholder": "Nom du propriétaire"
