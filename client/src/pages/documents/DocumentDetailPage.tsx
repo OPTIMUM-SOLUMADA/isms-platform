@@ -11,7 +11,8 @@ import {
   FileText,
   Clock,
   Download,
-  Rocket
+  Rocket,
+  Archive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
@@ -42,6 +43,7 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
+import UnpublishDocument from "@/templates/documents/actions/UnPublishDocument";
 
 const tabs = [
   {
@@ -71,7 +73,12 @@ export default function DocumentDetailPage() {
   const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
 
   // get document by id
-  const { data: document, isLoading, isError } = useGetDocument(params.id);
+  const {
+    data: document,
+    isLoading,
+    isError,
+    refetch
+  } = useGetDocument(params.id);
 
   const handleDelete = useCallback(async () => {
     await deleteDocument({ id: document!.id });
@@ -101,18 +108,32 @@ export default function DocumentDetailPage() {
           </div>
 
           <div className="flex gap-2">
-            {document.status === documentStatus.APPROVED && (
-              <PublishDocument documentId={document.id} >
+            {document.published ? (
+              <UnpublishDocument
+                documentId={document.id}
+                onSuccess={refetch}
+              >
+                <Archive className="h-4 w-4 mr-1" />
+                {t("document.view.actions.unpublish.label")}
+              </UnpublishDocument>
+            ) : (
+              <PublishDocument
+                documentId={document.id}
+                disabled={document.status !== documentStatus.APPROVED}
+                onSuccess={refetch}
+              >
                 <Rocket className="h-4 w-4 mr-1" />
                 {t("document.view.actions.publish.label")}
               </PublishDocument>
             )}
+
             {hasActionPermission("document.edit") && (
               <Button variant="outline" onClick={() => navigate(`/documents/edit/${document.id}`)}>
                 <Pencil className="h-4 w-4 mr-1" />
                 {t("document.view.actions.edit.label")}
               </Button>
             )}
+
             {hasActionPermission("document.delete") && (
               <DeleteDialog
                 entityName={document.title}

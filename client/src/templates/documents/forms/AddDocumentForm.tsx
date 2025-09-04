@@ -315,7 +315,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owner.label")}
+                    {t("document.add.form.fields.owners.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -337,7 +337,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewer.label")}
+                    {t("document.add.form.fields.reviewers.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect

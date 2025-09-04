@@ -99,7 +99,6 @@ enum DocumentStatus {
   IN_REVIEW
   APPROVED
   EXPIRED
-  PUBLISHED
 }
 
 model Document {
@@ -112,7 +111,8 @@ model Document {
   reviewFrequency Int? // Ajouté : Fréquence en mois (e.g. 12 pour annuel)
   isoClauseId     String         @db.ObjectId
 
-  reviewersId String[] @db.ObjectId
+  published       Boolean   @default(false)
+  publicationDate DateTime?
 
   departmentId String  @db.ObjectId
   categoryId   String? @db.ObjectId

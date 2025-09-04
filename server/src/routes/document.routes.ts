@@ -21,5 +21,7 @@ router.get('/', controller.list.bind(controller));
 router.get('/download/:id', controller.download.bind(controller));
 // publish document
 router.put('/publish/:id', controller.publish.bind(controller));
+// unpublish document
+router.put('/unpublish/:id', controller.unpublish.bind(controller));
 
 export default router;

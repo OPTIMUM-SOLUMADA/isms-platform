@@ -24,7 +24,6 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
-import UserLookup from "@/templates/lookup/UserLookup";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,7 +38,7 @@ const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
-  owner: z.string().nonempty(i18n.t("zod.errors.required")).min(1, i18n.t("zod.errors.required")),
+  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -95,7 +94,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         title: doc.title,
         description: doc.description!,
         status: doc.status,
-        owner: doc.ownerId,
+        owners: doc.owners.map(owner => owner.user.id),
         isoClause: doc.isoClauseId,
         reviewers: doc.reviewersId,
         files: [],
@@ -299,20 +298,20 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owner"
+              name="owners"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owner.label")}
+                    {t("document.add.form.fields.owners.label")}
                   </FormLabel>
                   <FormControl>
-                    <UserLookup
-                      data={users}
+                    <UserMultiSelect
+                      data={users.filter(user => user.role !== RoleType.VIEWER)}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -328,9 +327,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               control={form.control}
               name="reviewers"
               render={({ field, fieldState }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewer.label")}
+                    {t("document.add.form.fields.reviewers.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
