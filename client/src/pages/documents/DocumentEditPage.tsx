@@ -7,14 +7,16 @@ import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useUser } from '@/contexts/UserContext';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
 import EditDocumentForm, { EditDocumentFormData, EditDocumentFormRef } from '@/templates/documents/forms/EditDocumentForm';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useGetDocument } from './DocumentDetailPage';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
-    const { getDocument, document, updateDocument, isUpdating } = useDocument();
+    const { updateDocument, isUpdating } = useDocument();
     const { clauses } = useISOClause();
     const { types } = useDocumentType();
     const { users } = useUser();
@@ -23,24 +25,31 @@ export default function DocumentEditPage() {
 
     const params = useParams();
 
-    useEffect(() => {
-        getDocument({ id: params.id! });
-    }, [params.id, getDocument]);
+    const { data: doc, isLoading, isError } = useGetDocument(params.id);
 
     const formRef = useRef<EditDocumentFormRef>(null);
 
     const handleUpdateDocument = useCallback(async (newDocument: EditDocumentFormData) => {
-        if (!document) return;
+        if (!doc) return;
         const form = formRef.current;
         if (!form) return;
         await updateDocument({
-            id: document.id,
+            id: doc.id,
             data: newDocument
         });
         if (!form.isStay())
             navigate("/documents");
         form.resetForm();
-    }, [updateDocument, document, navigate]);
+    }, [updateDocument, doc, navigate]);
+
+
+    if (isLoading) return <>Loading...</>;
+
+    if (isError) return (
+        <ErrorDisplay />
+    )
+
+    if (!doc) return <p>Document not found.</p>;
 
 
     return (
@@ -64,7 +73,7 @@ export default function DocumentEditPage() {
                             </CardHeader>
                             <CardContent className='pt-4'>
                                 <EditDocumentForm
-                                    doc={document}
+                                    doc={doc}
                                     ref={formRef}
                                     isoClauses={clauses}
                                     types={types}

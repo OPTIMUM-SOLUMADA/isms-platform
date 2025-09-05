@@ -4,3 +4,10 @@ export const documentStatus = {
     APPROVED: "APPROVED",
     EXPIRED: "EXPIRED"
 } as const;
+
+export const DocumentStatuses = Object.values(documentStatus) as [
+    typeof documentStatus.DRAFT,
+    typeof documentStatus.IN_REVIEW,
+    typeof documentStatus.APPROVED,
+    typeof documentStatus.EXPIRED
+];

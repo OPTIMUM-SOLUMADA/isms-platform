@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RotateCcw, Save } from "lucide-react";
 import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { documentStatus } from "@/constants/document";
+import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 // import UserLookup from "@/templates/lookup/UserLookup";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
@@ -32,27 +32,20 @@ import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
+import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
 const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
-  status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
-
-  // nextReviewDate: z.string().optional(), // ou z.date() si tu veux
-  // reviewFrequency: z.number().int().positive().optional(),
-
+  status: z.enum(DocumentStatuses),
+  reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
-
   type: z.string().nonempty(i18n.t("zod.errors.required")),
-
   department: z.string().nonempty(i18n.t("zod.errors.required")),
-
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-
   reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
-
   files: z
     .array(z.custom<File>())
     .min(1, { message: i18n.t("components.fileUpload.errors.required") })
@@ -61,7 +54,6 @@ const documentSchema = cz.z.object({
         size: formatBytes(maxFileSize),
       }),
     }),
-
 });
 
 export type AddDocumentFormData = z.infer<typeof documentSchema>;
@@ -99,8 +91,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),
       defaultValues: {
-        title: "ISO Document Test 007",
-        description: "Ce document est un test",
+        title: "",
+        description: "",
         status: documentStatus.DRAFT,
         owners: [],
         isoClause: "",
@@ -108,6 +100,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         files: [],
         type: "",
         department: "",
+        reviewFrequency: Frequencies.DAILY,
       },
       mode: "onChange",
     });
@@ -144,7 +137,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.add.form.name.placeholder")}
+                    placeholder={t("document.add.form.fields.name.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                     hasError={!!fieldState.error}
                   />
@@ -166,7 +159,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder={t("document.add.form.description.placeholder")}
+                    placeholder={t("document.add.form.fields.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -299,6 +292,38 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="reviewFrequency"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.reviewFrequency.label")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FrequenciesUnits.map((item, index) => (
+                            <SelectItem key={index} value={item}>
+                              {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

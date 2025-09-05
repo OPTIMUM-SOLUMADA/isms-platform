@@ -74,6 +74,7 @@ type DocumentStats = {
     rejected: number;
     inReview: number;
     draft: number;
+    expired: number;
 };
 
 // Provider

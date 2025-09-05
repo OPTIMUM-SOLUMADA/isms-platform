@@ -9,10 +9,16 @@ export class ISOClauseService {
     }
 
     async findAll(): Promise<ISOClause[]> {
-        return prisma.iSOClause.findMany({
-            include: { documents: true },
-            orderBy: { createdAt: 'desc' },
+        const clauses = await prisma.iSOClause.findMany();
+
+        const isoClausesList = clauses.sort((a, b) => {
+            // take the part after the dot and convert to number
+            const aNum = parseInt(a.code.split('.')[1]!, 10);
+            const bNum = parseInt(b.code.split('.')[1]!, 10);
+            return aNum - bNum;
         });
+
+        return isoClausesList;
     }
 
     async findByCode(code: string): Promise<ISOClause | null> {

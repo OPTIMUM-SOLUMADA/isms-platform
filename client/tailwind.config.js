@@ -28,6 +28,7 @@ export default {
         "theme-2": 'hsl(var(--theme-2))',
         "theme-2-muted": 'hsl(var(--theme-2-muted))',
         "theme-danger": 'hsl(var(--theme-danger))',
+        "theme-warning": 'hsl(var(--theme-warning))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

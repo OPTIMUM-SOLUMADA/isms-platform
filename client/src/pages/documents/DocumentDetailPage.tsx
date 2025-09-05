@@ -43,7 +43,7 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
-import UnpublishDocument from "@/templates/documents/actions/UnPublishDocument";
+import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 
 const tabs = [
   {

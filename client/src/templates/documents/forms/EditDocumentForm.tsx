@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RotateCcw, Save } from "lucide-react";
 import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { documentStatus } from "@/constants/document";
+import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
@@ -31,13 +31,15 @@ import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
+import { FrequenciesUnits } from "@/constants/frequency";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
 const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
-  status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
+  status: z.enum(DocumentStatuses),
+  reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -96,10 +98,11 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         status: doc.status,
         owners: doc.owners.map(owner => owner.user.id),
         isoClause: doc.isoClauseId,
-        reviewers: doc.reviewersId,
+        reviewers: doc.reviewers.map(reviewer => reviewer.user.id),
         files: [],
         type: doc.categoryId,
         department: doc.departmentId,
+        reviewFrequency: doc.reviewFrequency!,
       },
       mode: "onChange",
     });
@@ -291,6 +294,38 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="reviewFrequency"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.reviewFrequency.label")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FrequenciesUnits.map((item, index) => (
+                            <SelectItem key={index} value={item}>
+                              {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -10,8 +10,19 @@ const service = new DocumentService();
 export class DocumentController {
     async create(req: Request, res: Response) {
         try {
-            const { title, description, status, type, department, isoClause, reviewers, owners } =
-                req.body;
+            const {
+                title,
+                description,
+                status,
+                type,
+                department,
+                isoClause,
+                reviewers,
+                owners,
+                reviewFrequency,
+            } = req.body;
+
+            console.log(req.body);
 
             const fileUrl = req.file ? req.file.filename : null;
 
@@ -20,6 +31,7 @@ export class DocumentController {
                     title,
                     description,
                     status,
+                    reviewFrequency,
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
@@ -29,6 +41,7 @@ export class DocumentController {
                         create: {
                             version: createVersion(1, 0), // 1.0
                             isCurrent: true,
+                            fileUrl: fileUrl,
                         },
                     },
                 },
@@ -38,6 +51,8 @@ export class DocumentController {
 
             res.status(201).json(document);
         } catch (err) {
+            const fileUrl = req.file ? req.file.filename : null;
+            if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
             console.log(err);
             res.status(400).json({ error: (err as Error).message });
         }
@@ -59,8 +74,17 @@ export class DocumentController {
     async update(req: Request, res: Response) {
         try {
             const { id: documentId } = req.params;
-            const { title, description, status, owners, type, department, isoClause, reviewers } =
-                req.body;
+            const {
+                title,
+                description,
+                status,
+                owners,
+                type,
+                department,
+                isoClause,
+                reviewers,
+                reviewFrequency,
+            } = req.body;
 
             // find document
             const document = await service.getDocumentById(documentId!);
@@ -81,6 +105,7 @@ export class DocumentController {
                     ...(title && { title }),
                     ...(description && { description }),
                     ...(status && { status }),
+                    ...(reviewFrequency && { reviewFrequency }),
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),

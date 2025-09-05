@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Edit, Trash2, Users, Eye, FilePlus } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Eye, FilePlus, Files } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -15,8 +15,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "@/hooks/use-permissions";
-import { UserAvatar } from "@/components/user-avatar";
-import { UserHoverCard } from "../hovercard/UserHoverCard";
+// import { UserAvatar } from "@/components/user-avatar";
+// import { UserHoverCard } from "../hovercard/UserHoverCard";
 import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +27,7 @@ import DownloadDocument from "../documents/actions/DownloadDocument";
 import PublishDocument from "../documents/actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
+import { formatDate } from "@/lib/date";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -70,7 +71,7 @@ const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
+                        <DropdownMenuItem className="text-theme-danger" onClick={() => setOpen(true)}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}
@@ -116,41 +117,50 @@ const Table = ({
             size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
-                const users = row.original.owners?.map((o) => o.user);
                 return (
                     <button
                         type="button"
-                        className="flex items-center gap-3 hover:text-theme-2 hover:cursor-pointer relative group"
+                        className="flex items-center gap-1 hover:text-theme-2 hover:cursor-pointer relative group"
                         onClick={() => onView?.(doc)}
                     >
-                        {/* <FileSpreadsheet className="size-6 flex-shrink-0 text-theme group-hover:text-theme-2" /> */}
                         {getFileIconByName(doc.fileUrl!)}
-                        <div className="text-sm flex items-center line-clamp-1 whitespace-nowrap">
+                        <div className="text-sm ml-1 flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
-                        </div>
-                        <div className="absolute -bottom-2 -left-2 flex items-center -space-x-2">
-                            {users.slice(0, 2).map((user) => (
-                                <UserHoverCard
-                                    user={user}
-                                    currentUserId={currentUser?.id}
-                                    className=""
-                                >
-                                    <div className="flex items-center gap-2 group-hover:border-red-300">
-                                        <UserAvatar className="size-4" id={user.id} name={user.name} />
-                                    </div>
-                                </UserHoverCard>
-                            ))}
-
-                            {users.length > 2 && (
-                                <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
-                                    +{users.length - 2}
-                                </div>
-                            )}
                         </div>
                     </button>
                 );
             },
         },
+        // {
+        //     accessorKey: "owner",
+        //     enableSorting: true,
+        //     header: t("document.table.columns.owner"),
+        //     size: 20,
+        //     cell: ({ row }) => {
+        //         const users = row.original.owners?.map((o) => o.user);
+        //         return (
+        //             <div className=" flex items-center justify-center -space-x-2">
+        //                 {users.slice(0, 2).map((user) => (
+        //                     <UserHoverCard
+        //                         user={user}
+        //                         currentUserId={currentUser?.id}
+        //                         className=""
+        //                     >
+        //                         <div className="flex items-center gap-2 group-hover:border-red-300">
+        //                             <UserAvatar className="size-6" id={user.id} name={user.name} />
+        //                         </div>
+        //                     </UserHoverCard>
+        //                 ))}
+
+        //                 {users.length > 2 && (
+        //                     <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
+        //                         +{users.length - 2}
+        //                     </div>
+        //                 )}
+        //             </div>
+        //         );
+        //     },
+        // },
         {
             accessorKey: "type",
             enableSorting: true,
@@ -198,9 +208,14 @@ const Table = ({
         {
             accessorKey: "reviewDue",
             enableSorting: true,
-            header: t("document.table.columns.reviewDue"),
+            header: () => <span className="w-full text-center">{t("document.table.columns.reviewDue")}</span>,
             cell: ({ row }) => {
-                return <span>{row.original.nextReviewDate}</span>;
+                const date = row.original.nextReviewDate;
+                return date ? (
+                    <span className="text-center block">
+                        {formatDate(date)}
+                    </span>
+                ) : null;
             },
         },
         {
@@ -255,7 +270,7 @@ const Table = ({
             renderNoData={() => (
                 <Card className="shadow-none flex-grow">
                     <CardContent className="p-12 text-center">
-                        <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <Files className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">{t("document.table.empty.title")}</h3>
                         <p className="text-gray-500 mb-4">{t("document.table.empty.message")}</p>
                         <Button onClick={onCreateNewDocument}>
