@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   GitBranch,
   User,
@@ -14,16 +14,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { reviewStageIcons } from "@/constants/icon";
-import { reviewItems } from "@/mocks/review";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import ReviewForm from "@/templates/forms/reviews/ReviewForm";
-import { useUser } from '@/contexts/UserContext';
-import { useDocument } from "@/contexts/DocumentContext"
-
+import { useUser } from "@/contexts/UserContext";
+import { useDocument } from "@/contexts/DocumentContext";
+// import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
+import { useToast } from "@/hooks/use-toast";
+import { useViewer } from "@/contexts/DocumentReviewContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ReviewWorkflowPage() {
+
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPriority] = useState("all");
@@ -32,17 +42,43 @@ export default function ReviewWorkflowPage() {
   const { users } = useUser();
   const { documents } = useDocument();
 
+  const { toast } = useToast();
+  const { viewers, createViewer } = useViewer();
+
+  console.log("view", viewers);
+
   const workflowStages = [
-    { id: "pending", label: "review.pendingReview", color: "gray" },
-    { id: "in-review", label: "review.inProgress", color: "blue" },
-    { id: "approved", label: "review.completed", color: "green" },
-    { id: "rejected", label: "review.overdue", color: "red" },
+    { id: "PENDING", label: "review.pendingReview", color: "gray" },
+    { id: "IN_REVIEW", label: "review.inProgress", color: "blue" },
+    { id: "APPROVED", label: "review.completed", color: "green" },
+    { id: "EXPIRED", label: "review.overdue", color: "red" },
   ];
 
-  const filteredItems = reviewItems.filter((item) => {
+  // Avant ton filter
+  const viewersWithExtra = viewers.map((item) => {
+    let stage: string;
+
+    if (!item.isCompleted) {
+      stage = "IN_REVIEW"; // pas encore fini
+    } else if (item.isApproved) {
+      stage = "APPROVED"; // terminé + approuvé
+    } else {
+      stage = "EXPIRED"; // terminé + rejeté
+    }
+
+    // tu peux mettre une logique métier pour priority
+    const priority = "normal"; // ou "high", "low" selon tes règles
+
+    return {
+      ...item,
+      stage,
+      priority,
+    };
+  });
+
+  const filteredItems = viewersWithExtra.filter((item) => {
     const matchesSearch =
       item.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.assignee.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.reviewer.name.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesTab = activeTab === "all" || item.stage === activeTab;
@@ -52,10 +88,28 @@ export default function ReviewWorkflowPage() {
     return matchesSearch && matchesTab && matchesPriority;
   });
 
+  console.log("filter", filteredItems);
+
   const getStageIcon = (stage: string) => {
     const Icon = reviewStageIcons[stage as keyof typeof reviewStageIcons];
     return Icon;
   };
+
+  const handleCreateReview = useCallback(
+    async (newReview: any) => {
+      const res = await createViewer(newReview);
+
+      if (res) {
+        toast({
+          title: t("components.toast.success.title"),
+          description: t("components.toast.success.document.created"),
+          variant: "success",
+        });
+        setOpen(false);
+      }
+    },
+    [createViewer, setOpen, toast, t]
+  );
 
   // const getInitials = (name: string) => {
   //   return name
@@ -72,11 +126,6 @@ export default function ReviewWorkflowPage() {
   //   return diffDays;
   // };
 
-  const handleCreateReview = (data: any) => {
-    console.log("Nouvell", data);
-    setOpen(false);
-
-  }
   return (
     <WithTitle>
       <div className="space-y-6">
@@ -84,11 +133,9 @@ export default function ReviewWorkflowPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {t('review.title')}
+              {t("review.title")}
             </h1>
-            <p className="text-gray-600 mt-1">
-              {t('review.subtitle')}
-            </p>
+            <p className="text-gray-600 mt-1">{t("review.subtitle")}</p>
           </div>
 
           {/* ----------- Modal Trigger ---------- */}
@@ -103,7 +150,11 @@ export default function ReviewWorkflowPage() {
               <DialogHeader>
                 <DialogTitle>{t("review.form.newReview")}</DialogTitle>
               </DialogHeader>
-              <ReviewForm documents={documents} users={users} onSubmit={handleCreateReview} />
+              <ReviewForm
+                documents={documents}
+                users={users}
+                onSubmit={handleCreateReview}
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -111,8 +162,8 @@ export default function ReviewWorkflowPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {workflowStages.map((stage) => {
-            const count = reviewItems.filter(
-              (item) => item.stage === stage.id
+            const count = viewers.filter(
+              (item) => item.status === stage.id
             ).length;
             const Icon = getStageIcon(stage.id);
 
@@ -161,23 +212,23 @@ export default function ReviewWorkflowPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">
-                  {t("review.all")} ({reviewItems.length})
+                  {t("review.all")} ({viewers.length})
                 </TabsTrigger>
-                <TabsTrigger value="pending">
+                {/* <TabsTrigger value="pending">
                   {t("review.pending")} (
-                  {reviewItems.filter((i) => i.stage === "pending").length})
-                </TabsTrigger>
+                  {viewers.filter((i) => i.status === "pending").length})
+                </TabsTrigger> */}
                 <TabsTrigger value="in-review">
                   {t("review.inReview")} (
-                  {reviewItems.filter((i) => i.stage === "in-review").length})
+                  {viewers.filter((i) => i.status === "IN_REVIEW").length})
                 </TabsTrigger>
                 <TabsTrigger value="approved">
                   {t("review.approved")} (
-                  {reviewItems.filter((i) => i.stage === "approved").length})
+                  {viewers.filter((i) => i.status === "APPROVED").length})
                 </TabsTrigger>
                 <TabsTrigger value="rejected">
                   {t("review.rejected")} (
-                  {reviewItems.filter((i) => i.stage === "rejected").length})
+                  {viewers.filter((i) => i.status === "EXPIRED").length})
                 </TabsTrigger>
               </TabsList>
               <div className="mt-6">
@@ -204,18 +255,22 @@ export default function ReviewWorkflowPage() {
                             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-3">
                               <div className="flex items-center space-x-1">
                                 <User className="h-4 w-4" />
-                                <span>{t("review.reviewer")}: {item.reviewer.name}</span>
+                                <span>
+                                  {t("review.reviewer")}: {item.reviewer.name}
+                                </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <Calendar className="h-4 w-4" />
                                 <span>
                                   {t("review.due")}:{" "}
-                                  {new Date(item.dueDate).toLocaleDateString()}
+                                  {new Date(
+                                    item.reviewDate
+                                  ).toLocaleDateString()}
                                 </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <FileText className="h-4 w-4" />
-                                <span>Version: 8.2</span>
+                                <span>{ item.document.versions[0].version }</span>
                               </div>
                             </div>
 
@@ -234,7 +289,7 @@ export default function ReviewWorkflowPage() {
                             {/* ISO Clause */}
                             <div>
                               <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
-                                A.9 - Access Control
+                                { item.document.isoClause.code } - { item.document.isoClause.name }
                               </span>
                             </div>
                           </div>
@@ -242,15 +297,17 @@ export default function ReviewWorkflowPage() {
                           {/* -------- Right Side -------- */}
                           <div className="flex flex-col items-stretch space-y-2 w-40">
                             <Button className="h-50 " disabled>
-                              {item.stage === "in-review"
+                              {item.status === "IN_REVIEW"
                                 ? t("review.inProgress")
-                                : item.stage === "approved"
-                                  ? t("review.approved")
-                                  : item.stage === "rejected"
-                                    ? t("review.rejected")
-                                    : t("review.pending")}
+                                  : item.status === "APPROVED"
+                                ? t("review.approved")
+                                  : item.status === "EXPIRED"
+                                ? t("review.rejected")
+                                  : t("review.pending")}
                             </Button>
-                            <Button variant="outline" className="h-55">
+                            <Button variant="outline" 
+                              className="h-55" 
+                              onClick={() => navigate(`/documents/view/${item.documentId}`)}>
                               <Eye className="h-4 w-4 mr-1" />
                               View Document
                             </Button>

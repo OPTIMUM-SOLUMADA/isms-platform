@@ -52,7 +52,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     useEffect(() => {
         if (usersResponse) {
             setUsers(usersResponse.data);
-            setIsLoading(false);
+             setIsLoading(false);
         }
     }, [usersResponse]);
 

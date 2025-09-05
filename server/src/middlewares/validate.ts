@@ -16,5 +16,6 @@ export const validate =
         }
 
         req[property] = value;
+        
         return next();
     };

@@ -142,7 +142,7 @@ export type ReviewItem = {
   reviewerId: string;
   reviewer: User;
   type: string;
-  stage: "pending" | "in-review" | "approved" | "rejected";
+  status: DocumentStatus;
   assignee: string;
   dueDate: string;
   priority: "high" | "medium" | "low";

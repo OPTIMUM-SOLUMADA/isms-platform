@@ -17,6 +17,7 @@ export const API_CONFIG = {
         DOCUMENTS: {
             BASE: "/documents",
             STATS: "/documents/statistics",
+            REVIEWS: '/document-reviews',
             GET: (id: string | number) => `/documents/${id}`,
             DOWNLOAD: (id: string | number) => `/documents/download/${id}`,
             PUBLISH: (id: string | number) => `/documents/publish/${id}`,
