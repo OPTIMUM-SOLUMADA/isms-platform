@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { DocumentTypeController } from '@/controllers/documenttype.controller';
+// import { DocumentTypeController } from '@/controllers/documenttype.controller';
 import { documentTypeCreateSchema } from '@/validators/documenttype.validator'; //documentTypeUpdateSchema
 import { validate } from '@/middlewares/validate';
+import { DocumentReviewController } from '@/controllers/documentreview.controller';
 
 const router = Router();
-const controller = new DocumentTypeController();
+const controller = new DocumentReviewController();
 
 router.post('/', validate(documentTypeCreateSchema), controller.create.bind(controller));
 // router.post("/initialize", controller.initialize.bind(controller));

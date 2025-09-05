@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   GitBranch,
   User,
@@ -21,6 +21,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import ReviewForm from "@/templates/forms/reviews/ReviewForm";
 import { useUser } from '@/contexts/UserContext';
 import { useDocument } from "@/contexts/DocumentContext"
+// import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
+import { useToast } from "@/hooks/use-toast";
+import { useViewer }  from "@/contexts/DocumentReviewContext";
 
 
 export default function ReviewWorkflowPage() {
@@ -32,12 +35,20 @@ export default function ReviewWorkflowPage() {
   const { users } = useUser();
   const { documents } = useDocument();
 
+  const { toast } = useToast();
+  const {
+    viewers,
+    createViewer 
+  } = useViewer();
+
   const workflowStages = [
     { id: "pending", label: "review.pendingReview", color: "gray" },
     { id: "in-review", label: "review.inProgress", color: "blue" },
     { id: "approved", label: "review.completed", color: "green" },
     { id: "rejected", label: "review.overdue", color: "red" },
   ];
+
+
 
   const filteredItems = reviewItems.filter((item) => {
     const matchesSearch =
@@ -56,6 +67,24 @@ export default function ReviewWorkflowPage() {
     const Icon = reviewStageIcons[stage as keyof typeof reviewStageIcons];
     return Icon;
   };
+ 
+  const handleCreateReview = useCallback(async (newReview: any) => {
+    console.log("newViwer", newReview);
+    
+    const res = await createViewer(newReview);
+    console.log("res === ", res);
+    
+    if (res) {
+      toast({
+        title: t("components.toast.success.title"),
+        description: t("components.toast.success.document.created"),
+        variant: "success",
+      })
+      setOpen(false);
+    };
+
+  }, [createViewer, setOpen, toast, t]);
+
 
   // const getInitials = (name: string) => {
   //   return name
@@ -72,11 +101,6 @@ export default function ReviewWorkflowPage() {
   //   return diffDays;
   // };
 
-  const handleCreateReview = (data: any) => {
-    console.log("Nouvell", data);
-    setOpen(false);
-
-  }
   return (
     <WithTitle>
       <div className="space-y-6">
