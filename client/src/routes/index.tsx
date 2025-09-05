@@ -18,6 +18,7 @@ import { AccessPermission } from "@/types/role";
 import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
 import { DocumentProvider } from "@/contexts/DocumentContext";
+import { ViewerProvider } from "@/contexts/DocumentReviewContext";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -63,7 +64,9 @@ const routeConfig: AppRoute[] = [
                         <DocumentTypeProvider>
                             <ISOClauseProvider>
                                 <DocumentProvider>
-                                    <Layout />
+                                    <ViewerProvider>
+                                        <Layout />
+                                    </ViewerProvider>
                                 </DocumentProvider>
                             </ISOClauseProvider>
                         </DocumentTypeProvider>

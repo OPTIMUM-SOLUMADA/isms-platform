@@ -672,6 +672,11 @@
                     "created": "Utilisateur créé avec succès",
                     "updated": "Utilisateur mis à jour avec succès",
                     "deleted": "Utilisateur supprimé avec succès"
+                },
+                "document": {
+                    "created": "Révision créé avec succès",
+                    "updated": "Révision mis à jour avec succès",
+                    "deleted": "Révision supprimé avec succès"
                 }
             },
             "error": {

@@ -29,7 +29,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(cookieParser());
-app.set('trust proxy', true);
+app.set('trust proxy', true); 
 
 // Routes
 app.use('/auth', authRoutes);

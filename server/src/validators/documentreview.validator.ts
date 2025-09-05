@@ -1,15 +1,18 @@
 import Joi from "joi";
 
-export const documentTypeCreateSchema = Joi.object({
-    name: Joi.string().trim().required().messages({
-        "string.empty": "Name is required",
+export const documentReviewCreateSchema = Joi.object({
+    document: Joi.string().trim().required().messages({
+        "string.empty": "Document is required",
     }),
-    description: Joi.string().optional().default(""),
+    reviewer: Joi.string().optional().default(""),
+    dueDate: Joi.date().iso().optional(),
+
 });
 
-export const documentTypeUpdateSchema = Joi.object({
-    name: Joi.string().trim().optional().messages({
-        "string.empty": "Name is required",
+export const documentReviewUpdateSchema = Joi.object({
+    document: Joi.string().trim().optional().messages({
+        "string.empty": "Document is required",
     }),
-    description: Joi.string().optional().default(""),
+    reviewer: Joi.string().optional().default(""),
+    dueDate: Joi.date().iso().optional(),
 });

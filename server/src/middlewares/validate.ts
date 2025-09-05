@@ -10,10 +10,17 @@ export const validate = (schema: ObjectSchema, property: "body" | "query" | "par
 
         if (error) {
             return res.status(400).json({
-                errors: error.details.map((err) => err.message)
+                errors: error.details.map((err) => 
+                    {
+                        err.message
+                        console.log("error", error);}
+            )
+                
             });
         }
 
         req[property] = value;
+        console.log("velal", value);
+        
         return next();
     };
