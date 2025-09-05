@@ -149,13 +149,17 @@ export class AuthController {
                 passwordResetToken: resetToken,
             });
 
+            const template = await EmailTemplate.resetPassword({
+                orgName: env.ORG_NAME,
+                year: new Date().getFullYear().toString(),
+                userName: user.name!,
+                resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`,
+            });
+
             await emailService.sendMail({
                 to: user.email!,
                 subject: 'Reset Password',
-                html: EmailTemplate.resetPassword({
-                    username: user.name!,
-                    resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`,
-                }),
+                html: template,
             });
 
             res.status(200).json({ message: 'Password reset email sent' });

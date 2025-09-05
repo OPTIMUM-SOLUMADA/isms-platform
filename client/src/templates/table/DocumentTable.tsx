@@ -130,8 +130,9 @@ const Table = ({
                         </div>
 
                         <div className="absolute -bottom-2 flex items-center justify-center -space-x-2">
-                            {users.slice(0, 2).map((user) => (
+                            {users.slice(0, 2).map((user, index) => (
                                 <UserHoverCard
+                                    key={index}
                                     user={user}
                                     currentUserId={currentUser?.id}
                                     className=""

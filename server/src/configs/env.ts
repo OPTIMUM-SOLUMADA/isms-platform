@@ -51,6 +51,8 @@ export const envSchema = z.object({
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_SECURE: z.string().optional().default('false'),
+
+    ORG_NAME: z.string().optional().default('ISMS Solumada'),
 });
 
 const envServer = envSchema.safeParse({
@@ -71,6 +73,7 @@ const envServer = envSchema.safeParse({
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_SECURE: process.env.SMTP_SECURE,
+    ORG_NAME: process.env.ORG_NAME,
 });
 
 if (!envServer.success) {

@@ -1,0 +1,251 @@
+<!--
+  ISMS Review Reminder — Responsive Email Template (single-file)
+  Notes:
+  - Use simple, inline CSS for broad email client support (Gmail/Outlook).
+  - Replace placeholders like {{reviewerName}}, {{documentTitle}}, {{dueDate}}, {{category}}, {{statusPill}}, {{reviewLink}}, {{viewDocLink}}, {{orgName}}.
+  - The primary brand color can be swapped by changing --brand.
+-->
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+    <title>Review Reminder</title>
+    <!--[if mso]>
+  <xml>
+    <o:OfficeDocumentSettings>
+      <o:AllowPNG/>
+      <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+  </xml>
+  <![endif]-->
+    <style>
+        :root {
+            color-scheme: light dark;
+            supported-color-schemes: light dark;
+        }
+
+        /* Some clients respect <style> when inline is also used */
+        @media (prefers-color-scheme: dark) {
+            .bg-body {
+                background-color: #0f172a !important;
+            }
+
+            .bg-card {
+                background-color: #111827 !important;
+            }
+
+            .txt {
+                color: #6e738f !important;
+            }
+
+            .muted {
+                color: #9ca3af !important;
+            }
+
+            .divider {
+                border-color: #1f2937 !important;
+            }
+
+            .brand {
+                color: #a5b4fc !important;
+            }
+
+            .pill {
+                background-color: #1f2937 !important;
+                color: #e5e7eb !important;
+            }
+        }
+
+        @media only screen and (max-width:600px) {
+            .container {
+                width: 100% !important;
+            }
+
+            .px {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+            }
+
+            .stack {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .text-center-sm {
+                text-align: center !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-body" style="margin:0; padding:0; background:#f6f7fb;">
+    <center role="article" aria-roledescription="email" lang="en" style="width:100%; background:#f6f7fb;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%"
+            style="background:#f6f7fb;">
+            <tr>
+                <td align="center" style="padding:32px 12px;">
+                    <!-- Card -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="640" class="container"
+                        style="width:640px; max-width:640px; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+                        <!-- Header Bar -->
+                        <tr>
+                            <td class="px"
+                                style="padding:20px 28px; background:linear-gradient(135deg, #344085, #4A5698); color:#ffffff;">
+                                <table role="presentation" width="100%">
+                                    <tr>
+                                        <td class="text-center-sm"
+                                            style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:20px; font-weight:700; letter-spacing:0.2px;">
+                                            {{orgName}} ISMS</td>
+                                        <td align="right" class="text-center-sm"
+                                            style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; opacity:0.9;">
+                                            Automated Review Reminder</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Title -->
+                        <tr>
+                            <td class="px" style="padding:28px;">
+                                <table role="presentation" width="100%">
+                                    <tr>
+                                        <td>
+                                            <div class="txt"
+                                                style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:24px; font-weight:700; color:#111827;">
+                                                Hi {{reviewerName}}, your review is needed</div>
+                                            <div class="muted"
+                                                style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:14px; color:#6b7280; margin-top:6px;">
+                                                Please review the policy below by <strong
+                                                    style="color:#111827;">{{dueDate}}</strong>.</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Policy Card -->
+                        <tr>
+                            <td class="px" style="padding:0 28px 8px 28px;">
+                                <table role="presentation" width="100%"
+                                    style="border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+                                    <tr>
+                                        <td style="padding:18px 20px; background:#f9fafb;">
+                                            <span class="pill"
+                                                style="display:inline-block; font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; font-weight:600; letter-spacing:0.3px; color:#4338ca; background:#eef2ff; border-radius:999px; padding:6px 10px; text-transform:uppercase;">{{statusPill}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:18px 20px 8px 20px;">
+                                            <div class="txt"
+                                                style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:18px; font-weight:700; color:#111827;">
+                                                {{documentTitle}}</div>
+                                            <div class="muted"
+                                                style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:13px; color:#6b7280; margin-top:4px;">
+                                                Category: {{category}}</div>
+                                            <div class="muted"
+                                                style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:13px; color:#6b7280; margin-top:4px;">
+                                                Owner: <a href="mailto:{{ownerEmail}}" target="_blank"
+                                                    style="color:#6b7280;">{{ownerName}}</a></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px 20px 18px 20px;">
+                                            <table role="presentation" width="100%">
+                                                <tr>
+                                                    <td class="stack"
+                                                        style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:13px; color:#374151; line-height:1.6;">
+                                                        <strong>What to do</strong>
+                                                        <ul style="margin:8px 0 0 20px; padding:0;">
+                                                            <li>Open the policy and read the latest version.</li>
+                                                            <li>Approve or request changes with a short comment.</li>
+                                                            <li>Complete before <strong>{{dueDate}}</strong>.</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="stack" align="right" style="white-space:nowrap;">
+                                                        <!-- Bullet meta -->
+                                                        <table role="presentation" align="right">
+                                                            <tr>
+                                                                <td
+                                                                    style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#6b7280; padding:3px 0;">
+                                                                    Assigned to</td>
+                                                                <td
+                                                                    style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#111827; padding:3px 0; font-weight:600; padding-left:10px;">
+                                                                    {{reviewerName}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td
+                                                                    style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#6b7280; padding:3px 0;">
+                                                                    Due date</td>
+                                                                <td
+                                                                    style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#111827; padding:3px 0; font-weight:600; padding-left:10px;">
+                                                                    {{dueDate}}</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- CTA Buttons -->
+                        <tr>
+                            <td class="px" align="center" style="padding:22px 28px 8px 28px;">
+                                <!--[if mso]>
+                  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{reviewLink}}" style="height:44px;v-text-anchor:middle;width:240px;" arcsize="50%" stroke="f" fillcolor="#4f46e5">
+                    <w:anchorlock/>
+                    <center style="color:#ffffff;font-family:Segoe UI, Roboto, Arial, sans-serif;font-size:15px;font-weight:700;">Open Review Task</center>
+                  </v:roundrect>
+                <![endif]-->
+                                <a href="{{reviewLink}}" target="_blank"
+                                    style="background:#3E9243; border-radius:999px; display:inline-block; font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:15px; font-weight:700; line-height:44px; text-align:center; text-decoration:none; width:240px; -webkit-text-size-adjust:none; mso-hide:all; color:#ffffff;">Open
+                                    Review Task</a>
+                                <div style="height:12px;"></div>
+                                <a href="{{viewDocLink}}" target="_blank"
+                                    style="display:inline-block; font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:13px; text-decoration:none; line-height:1; padding:10px 14px; border-radius:999px; border:1px solid #e5e7eb; color:#111827;">View
+                                    Policy</a>
+                            </td>
+                        </tr>
+
+                        <!-- Helpful footer -->
+                        <tr>
+                            <td class="px" style="padding:24px 28px 8px 28px;">
+                                <table role="presentation" width="100%" style="border-top:1px solid #e5e7eb;"
+                                    class="divider">
+                                    <tr>
+                                        <td style="height:0; line-height:0; font-size:0;">&nbsp;</td>
+                                    </tr>
+                                </table>
+                                <table role="presentation" width="100%" style="margin-top:14px;">
+                                    <tr>
+                                        <td class="muted"
+                                            style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#6b7280;">
+                                            If you believe this reminder is a mistake, you can snooze it for 7 days or
+                                            mark as not applicable in the review screen.
+                                        </td>
+                                        <td align="right" class="text-center-sm"
+                                            style="font-family:Segoe UI, Roboto, Arial, sans-serif; font-size:12px; color:#6b7280; white-space:nowrap;">
+                                            © {{year}} {{orgName}} — ISMS
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <!-- /Card -->
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+
+</html>
