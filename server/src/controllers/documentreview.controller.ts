@@ -21,7 +21,6 @@ export class DocumentReviewController {
     async findAll(_req: Request, res: Response) {
         try {
             const types = await service.findAll();
-            console.log('type', types);
             return res.json(types);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
