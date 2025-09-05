@@ -27,6 +27,7 @@ import { useDocument } from '@/contexts/DocumentContext';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useUser } from '@/contexts/UserContext';
 import { UserAvatar } from '@/components/user-avatar';
+import { StatCard } from '@/templates/documents/card/StatCard';
 
 
 export const NEW_DOCUMENT_PATH = '/documents/add';
@@ -56,6 +57,39 @@ export default function DocumentRepositoryPage() {
     return matchesSearch && matchesStatus && matchesType && matchesClause && matchesOwner;
   });
 
+  const statItems = [
+    {
+      title: t("document.stats.total.title"),
+      value: stats?.total || 0,
+      icon: <FileText className="h-8 w-8 text-primary" />,
+      valueClassName: "text-primary",
+    },
+    {
+      title: t("document.stats.approved.title"),
+      value: stats?.approved || 0,
+      icon: <CheckCircle className="h-8 w-8 text-theme" />,
+      valueClassName: "text-theme",
+    },
+    {
+      title: t("document.stats.inReview.title"),
+      value: stats?.inReview || 0,
+      icon: <Clock className="h-8 w-8 text-theme-2-muted" />,
+      valueClassName: "text-theme-2-muted",
+    },
+    {
+      title: t("document.stats.draft.title"),
+      value: stats?.draft || 0,
+      icon: <Clock className="h-8 w-8 text-muted-foreground" />,
+      valueClassName: "text-muted-foreground",
+    },
+    {
+      title: t("document.stats.expired.title"),
+      value: stats?.expired || 0,
+      icon: <AlertTriangle className="h-8 w-8 text-theme-danger" />,
+      valueClassName: "text-theme-danger",
+    },
+  ];
+
   return (
     <WithTitle title={t("document.title")}>
       <div className="space-y-6 flex flex-col flex-grow">
@@ -74,57 +108,16 @@ export default function DocumentRepositoryPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t("document.stats.total.title")}</p>
-                  <p className="text-2xl font-bold text-theme-2">{stats?.total || 0}</p>
-                </div>
-                <FileText className="h-8 w-8 text-theme-2" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t("document.stats.approved.title")}</p>
-                  <p className="text-2xl font-bold text-theme">
-                    {stats?.approved || 0}
-                  </p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-theme" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t("document.stats.inReview.title")}</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {stats?.inReview || 0}
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t("document.stats.draft.title")}</p>
-                  <p className="text-2xl font-bold text-theme-danger">
-                    {stats?.draft || 0}
-                  </p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-theme-danger" />
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {statItems.map((item, index) => (
+            <StatCard
+              key={index}
+              title={item.title}
+              value={item.value}
+              icon={item.icon}
+              valueClassName={item.valueClassName}
+            />
+          ))}
         </div>
 
         {/* Filters */}
