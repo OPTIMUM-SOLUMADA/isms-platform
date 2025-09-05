@@ -3,6 +3,7 @@ import { DocumentController } from '@/controllers/document.controller';
 import { validate } from '@/middlewares/validate';
 import { documentCreateSchema } from '@/validators/document.validator';
 import { uploadSingleDocument } from '@/middlewares/upload-document';
+import { EmailTemplate } from '@/configs/email-template';
 
 const router = express.Router();
 const controller = new DocumentController();
@@ -23,5 +24,9 @@ router.get('/download/:id', controller.download.bind(controller));
 router.put('/publish/:id', controller.publish.bind(controller));
 // unpublish document
 router.put('/unpublish/:id', controller.unpublish.bind(controller));
+
+EmailTemplate.test({
+    username: 'John Doe',
+}).then((res) => console.log(res));
 
 export default router;

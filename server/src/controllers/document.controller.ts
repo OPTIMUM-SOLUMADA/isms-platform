@@ -4,10 +4,17 @@ import { createVersion } from '@/utils/version';
 import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
-
-const service = new DocumentService();
+import { DocumentReviewService } from '@/services/documentreview.service';
 
 export class DocumentController {
+    private service: DocumentService;
+    private reviewService: DocumentReviewService;
+
+    constructor() {
+        this.service = new DocumentService();
+        this.reviewService = new DocumentReviewService();
+    }
+
     async create(req: Request, res: Response) {
         try {
             const {
@@ -26,7 +33,7 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : null;
 
-            const document = await service.createDocumentWithOwnersAndReviewers(
+            const createdDoc = await this.service.createDocumentWithOwnersAndReviewers(
                 {
                     title,
                     description,
@@ -49,7 +56,15 @@ export class DocumentController {
                 reviewers.split(','),
             );
 
-            res.status(201).json(document);
+            // Assign reviews to reviewers
+            if (createdDoc && createdDoc.reviewers.length > 0) {
+                await this.reviewService.assignReviewersToDocument(
+                    createdDoc.id,
+                    reviewers.split(','),
+                );
+            }
+
+            res.status(201).json(createdDoc);
         } catch (err) {
             const fileUrl = req.file ? req.file.filename : null;
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
@@ -60,7 +75,7 @@ export class DocumentController {
 
     async getById(req: Request, res: Response) {
         try {
-            const document = await service.getDocumentById(req.params.id!);
+            const document = await this.service.getDocumentById(req.params.id!);
             if (!document) {
                 res.status(404).json({ error: 'Document not found' });
             } else {
@@ -87,7 +102,7 @@ export class DocumentController {
             } = req.body;
 
             // find document
-            const document = await service.getDocumentById(documentId!);
+            const document = await this.service.getDocumentById(documentId!);
 
             if (!document) {
                 res.status(404).json({
@@ -99,7 +114,7 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : undefined;
 
-            const updatedDocument = await service.updateDocumentWithOwnersAndReviewers(
+            const updatedDocument = await this.service.updateDocumentWithOwnersAndReviewers(
                 documentId!,
                 {
                     ...(title && { title }),
@@ -129,7 +144,7 @@ export class DocumentController {
 
     async delete(req: Request, res: Response) {
         try {
-            const deleted = await service.deleteDocument(req.params.id!);
+            const deleted = await this.service.deleteDocument(req.params.id!);
             // Delete file
             await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, deleted.fileUrl!);
 
@@ -144,7 +159,7 @@ export class DocumentController {
         try {
             const { limit = '50', page = '1' } = req.query;
 
-            const documents = await service.listDocuments({
+            const documents = await this.service.listDocuments({
                 limit: parseInt(limit as string),
                 page: parseInt(page as string),
             });
@@ -157,7 +172,7 @@ export class DocumentController {
 
     async getStatistics(req: Request, res: Response) {
         try {
-            const statistics = await service.getDocumentStats();
+            const statistics = await this.service.getDocumentStats();
             res.json(statistics);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
@@ -166,7 +181,7 @@ export class DocumentController {
 
     async download(req: Request, res: Response) {
         try {
-            const document = await service.getDocumentById(req.params.id!);
+            const document = await this.service.getDocumentById(req.params.id!);
             if (!document) {
                 res.status(404).json({ error: 'Document not found' });
             } else {
@@ -185,7 +200,7 @@ export class DocumentController {
 
     async publish(req: Request, res: Response) {
         try {
-            const document = await service.publishDocument(req.params.id!);
+            const document = await this.service.publishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
@@ -194,7 +209,7 @@ export class DocumentController {
 
     async unpublish(req: Request, res: Response) {
         try {
-            const document = await service.unpublishDocument(req.params.id!);
+            const document = await this.service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });

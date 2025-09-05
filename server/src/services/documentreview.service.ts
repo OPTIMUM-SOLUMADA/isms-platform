@@ -79,4 +79,13 @@ export class DocumentReviewService {
 
     //     return result;
     // }
+
+    async assignReviewersToDocument(documentId: string, reviewerIds: string[]) {
+        return prisma.documentReview.createMany({
+            data: reviewerIds.map((reviewerId) => ({
+                documentId: documentId,
+                reviewerId: reviewerId,
+            })),
+        });
+    }
 }
