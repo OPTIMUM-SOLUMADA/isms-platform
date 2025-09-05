@@ -9,14 +9,17 @@ import {
   Calendar,
   RefreshCw,
   FileText,
-  Clock
+  Clock,
+  Download,
+  Rocket,
+  Archive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/forms/documents/DocPreview";
+import DocPreview from "@/templates/tabs/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
-import Notification from "@/templates/forms/documents/Notification";
+import Notification from "@/templates/tabs/Notification";
 import { documentStatusColors } from "@/constants/color";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WithTitle from "@/templates/layout/WithTitle";
@@ -28,13 +31,19 @@ import { UserHoverCard } from "@/templates/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
-import { useUser } from "@/contexts/UserContext";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { Document } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
 import { cn } from "@/lib/utils";
+import { LoadingButton } from "@/components/ui/loading-button";
+import DocumentDetailSkeleton from "@/components/loading/DocumentDetailSkeleton";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { documentStatus } from "@/constants/document";
+import PublishDocument from "@/templates/documents/actions/PublishDocument";
+import UnpublishDocument from "@/templates/documents/actions/UnPublishDocument";
 
 const tabs = [
   {
@@ -47,7 +56,7 @@ const tabs = [
     id: "notification",
     label: "document.view.tabs.changeLogs",
     icon: Clock,
-    content: (document: Document) => <Notification />
+    content: (document: Document) => <Notification documentId={document.id} />
   },
 ];
 
@@ -58,13 +67,18 @@ export default function DocumentDetailPage() {
 
   const params = useParams();
 
-  const { deleteDocument } = useDocument();
+  const { deleteDocument, download, isDownloading } = useDocument();
   const { user } = useAuth();
-  const { users } = useUser();
   const { hasActionPermission } = usePermissions();
+  const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
 
   // get document by id
-  const { data: document, isLoading, isError, error } = useGetDocument(params.id);
+  const {
+    data: document,
+    isLoading,
+    isError,
+    refetch
+  } = useGetDocument(params.id);
 
   const handleDelete = useCallback(async () => {
     await deleteDocument({ id: document!.id });
@@ -72,9 +86,11 @@ export default function DocumentDetailPage() {
   }, [navigate, deleteDocument, document]);
 
 
-  if (isLoading) return <>Loading...</>;
+  if (isLoading) return <DocumentDetailSkeleton />;
 
-  if (isError) return <p>{error instanceof Error ? error.message : "Something went wrong while fetching the document."}</p>;
+  if (isError) return (
+    <ErrorDisplay />
+  )
 
   if (!document) return <p>Document not found.</p>;
 
@@ -92,12 +108,32 @@ export default function DocumentDetailPage() {
           </div>
 
           <div className="flex gap-2">
+            {document.published ? (
+              <UnpublishDocument
+                documentId={document.id}
+                onSuccess={refetch}
+              >
+                <Archive className="h-4 w-4 mr-1" />
+                {t("document.view.actions.unpublish.label")}
+              </UnpublishDocument>
+            ) : (
+              <PublishDocument
+                documentId={document.id}
+                disabled={document.status !== documentStatus.APPROVED}
+                onSuccess={refetch}
+              >
+                <Rocket className="h-4 w-4 mr-1" />
+                {t("document.view.actions.publish.label")}
+              </PublishDocument>
+            )}
+
             {hasActionPermission("document.edit") && (
               <Button variant="outline" onClick={() => navigate(`/documents/edit/${document.id}`)}>
                 <Pencil className="h-4 w-4 mr-1" />
                 {t("document.view.actions.edit.label")}
               </Button>
             )}
+
             {hasActionPermission("document.delete") && (
               <DeleteDialog
                 entityName={document.title}
@@ -123,29 +159,26 @@ export default function DocumentDetailPage() {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.owner")}:</span>
-                <UserHoverCard user={document.owner} currentUserId={user?.id} />
+                <div className="flex items-center gap-1">
+                  {document.owners.map((o, index) => (
+                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
+                  ))}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.reviewers")}:</span>
                 <div className="flex items-center gap-1">
-                  {document.reviewersId.map((userId) => {
-                    const fuser = users.find((u) => u.id === userId);
-                    return fuser ? (
-                      <UserHoverCard
-                        key={userId}
-                        user={fuser}
-                        currentUserId={user?.id}
-                      />
-                    ) : null;
-                  })}
+                  {document.reviewers.map((o, index) => (
+                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
+                  ))}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <BadgeCheck className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.status")}:</span>
                 <Badge className={`${documentStatusColors[document.status.toLowerCase()]}`}>
-                  {document.status}
+                  {t(`common.document.status.${document.status.toLowerCase()}`)}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
@@ -179,7 +212,8 @@ export default function DocumentDetailPage() {
         {/* Main Layout: sidebar + content */}
         <Tabs
           orientation="vertical"
-          defaultValue={tabs[0].id}
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
           className="w-full flex flex-row items-start gap-6 justify-center flex-grow"
         >
           {/* Sidebar Tabs */}
@@ -196,6 +230,20 @@ export default function DocumentDetailPage() {
           </TabsList>
 
           <Card className="flex items-center justify-center w-full h-full p-2 flex-grow flex-col">
+            <div className="w-full flex items-center justify-end">
+              {hasActionPermission("document.download") && (
+                <LoadingButton
+                  type="button"
+                  variant="ghost"
+                  onClick={() => download({ id: document.id })}
+                  isLoading={isDownloading}
+                  loadingText={t("document.view.actions.download.loading")}
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  {t("document.view.actions.download.label")}
+                </LoadingButton>
+              )}
+            </div>
             {tabs.map((tab) => (
               <TabsContent
                 key={tab.id}

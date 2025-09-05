@@ -4,14 +4,14 @@ services:
     build:
       context: .
       dockerfile: ${DOCKERFILE:-Dockerfile.dev}
-    image: isms-server:latest
+    image: njatoty/isms-server:latest
     ports:
       - "8080:8080"
     env_file:
       - .env
     volumes:
       - ./uploads:/app/uploads 
-      # - .:/app:cached
+      - .:/app
     environment:
       - CHOKIDAR_USEPOLLING=true
     command: npm run dev

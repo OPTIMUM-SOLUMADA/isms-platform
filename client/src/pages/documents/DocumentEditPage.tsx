@@ -9,7 +9,7 @@ import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useEffect, useRef } from 'react';
 import BackButton from '@/components/BackButton';
-import EditDocumentForm, { EditDocumentFormData, EditDocumentFormRef } from '@/templates/forms/documents/EditDocumentForm';
+import EditDocumentForm, { EditDocumentFormData, EditDocumentFormRef } from '@/templates/documents/forms/EditDocumentForm';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function DocumentEditPage() {

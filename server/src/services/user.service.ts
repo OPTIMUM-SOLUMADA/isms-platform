@@ -1,5 +1,5 @@
-import prisma from "@/database/prisma";
-import { Prisma } from "@prisma/client";
+import prisma from '@/database/prisma';
+import { Prisma } from '@prisma/client';
 
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
@@ -7,12 +7,11 @@ export class UserService {
             data,
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
                 auditLogs: true,
-            }
+            },
         });
     }
 
@@ -21,7 +20,6 @@ export class UserService {
             where: { id },
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
@@ -40,7 +38,6 @@ export class UserService {
             data,
             include: {
                 department: true,
-                ownedDocuments: true,
                 documentReviews: true,
                 documentApprovals: true,
                 notifications: true,
@@ -74,7 +71,6 @@ export class UserService {
                 documentReviews: true,
                 documentApprovals: true,
                 auditLogs: true,
-                ownedDocuments: true
             },
         });
     }

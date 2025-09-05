@@ -24,7 +24,6 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
 
-    
     // Recommended Options
     "strict": true,
     "esModuleInterop": true,
@@ -41,6 +40,6 @@
     "transpileOnly": true,
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "build", "tests", "jest.setup.ts", "jest.config.ts"]
+  "include": ["src/**/*", "tests"],
+  "exclude": ["node_modules", "build"]
 }

@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
 export class FileService {
     static async deleteFile(...filePath: string[]) {
@@ -9,5 +9,4 @@ export class FileService {
             console.error(err);
         }
     }
-
 }

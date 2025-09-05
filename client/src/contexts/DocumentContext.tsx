@@ -3,9 +3,9 @@ import type { Document } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
-import { AddDocumentFormData } from "@/templates/forms/documents/AddDocumentForm";
+import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm";
 import { useToast } from "@/hooks/use-toast";
-import { EditDocumentFormData } from "@/templates/forms/documents/EditDocumentForm";
+import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
 import { useTranslation } from "react-i18next";
 
 // Define shape of context
@@ -43,6 +43,18 @@ interface DocumentContextType {
 
     // stats
     stats: DocumentStats | null;
+
+    // download
+    download: (payload: { id: string, name?: string }) => Promise<any>;
+    isDownloading: boolean;
+
+    // publish
+    publish: (payload: { id: string }) => Promise<any>;
+    isPublishing: boolean;
+
+    // publish
+    unpublish: (payload: { id: string }) => Promise<any>;
+    isUnpublishing: boolean;
 }
 
 // Create context
@@ -212,6 +224,72 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
+    const { mutateAsync: downloadDocument, isPending: isDownloading } = useMutation<any, ApiAxiosError, { id: string, name?: string }>({
+        mutationFn: async ({ id }) => await documentService.download(id),
+        onSuccess: (res) => {
+            console.log(res.headers);
+            // get file
+            const url = URL.createObjectURL(res.data);
+            // Extract filename from Content-Disposition header
+            const disposition = res.headers["content-disposition"];
+            let filename = "downloaded-file";
+            if (disposition && disposition.includes("filename=")) {
+                filename = disposition.split("filename=")[1].trim().replace(/["']/g, "");
+            }
+
+            const link = window.document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            window.document.body.appendChild(link);
+            link.click();
+            window.document.body.removeChild(link);
+
+            URL.revokeObjectURL(url);
+        }
+    });
+
+    // Publish document
+    const { mutateAsync: publishDocument, isPending: isPublishing } = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await documentService.publish(id),
+        onSuccess: (res, { id }) => {
+            toast({
+                title: t("document.publish.toast.success.title"),
+                description: t("document.publish.toast.success.description"),
+                variant: "success",
+            });
+            setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
+        },
+        onError: (err) => {
+            console.error(err.response?.data);
+            toast({
+                title: t("document.publish.toast.error.title"),
+                description: t("document.publish.toast.error.description"),
+                variant: "destructive",
+            })
+        }
+    });
+
+    // Unpublish document
+    const { mutateAsync: unpublishDocument, isPending: isUnpublishing } = useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: async ({ id }) => await documentService.unpublish(id),
+        onSuccess: (res, { id }) => {
+            toast({
+                title: t("document.unpublish.toast.success.title"),
+                description: t("document.unpublish.toast.success.description"),
+                variant: "success",
+            });
+            setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
+        },
+        onError: (err) => {
+            console.error(err.response?.data);
+            toast({
+                title: t("document.unpublish.toast.error.title"),
+                description: t("document.unpublish.toast.error.description"),
+                variant: "destructive",
+            })
+        }
+    });
+
     return (
         <DocumentContext.Provider
             value={{
@@ -236,7 +314,13 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 limit,
                 setLimit,
                 setPage,
-                stats: stats ?? null
+                stats: stats ?? null,
+                download: downloadDocument,
+                isDownloading,
+                publish: publishDocument,
+                isPublishing,
+                unpublish: unpublishDocument,
+                isUnpublishing
             }}
         >
             {children}

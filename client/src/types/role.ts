@@ -13,6 +13,7 @@ export type ActionPermission =
     | "document.edit"
     | "document.delete"
     | "document.publish"
+    | "document.unpublish"
     | "document.assignOwner"
     | "document.approve"
     | "document.uploadVersion"

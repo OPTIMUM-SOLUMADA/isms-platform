@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { DocumentTypeService } from "@/services/documenttype.service";
+import { Request, Response } from 'express';
+import { DocumentTypeService } from '@/services/documenttype.service';
 
 const service = new DocumentTypeService();
 
@@ -26,7 +26,7 @@ export class DocumentTypeController {
     async findById(req: Request, res: Response) {
         try {
             const type = await service.findById(req.params.id!);
-            if (!type) return res.status(404).json({ error: "Type not found" });
+            if (!type) return res.status(404).json({ error: 'Type not found' });
             return res.json(type);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });

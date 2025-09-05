@@ -21,6 +21,12 @@ import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { getFileIconByName } from "@/lib/icon";
+import { cn } from "@/lib/utils";
+import { documentStatusColors } from "@/constants/color";
+import DownloadDocument from "../documents/actions/DownloadDocument";
+import PublishDocument from "../documents/actions/PublishDocument";
+import { documentStatus } from "@/constants/document";
+import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -110,7 +116,7 @@ const Table = ({
             size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
-                const user = row.original.owner;
+                const users = row.original.owners?.map((o) => o.user);
                 return (
                     <button
                         type="button"
@@ -122,15 +128,25 @@ const Table = ({
                         <div className="text-sm flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
                         </div>
-                        <UserHoverCard
-                            user={user}
-                            currentUserId={currentUser?.id}
-                            className="absolute -bottom-1 -left-1"
-                        >
-                            <div className="flex items-center gap-2 group-hover:border-red-300">
-                                <UserAvatar className="size-4" id={user.id} name={user.name} />
-                            </div>
-                        </UserHoverCard>
+                        <div className="absolute -bottom-2 -left-2 flex items-center -space-x-2">
+                            {users.slice(0, 2).map((user) => (
+                                <UserHoverCard
+                                    user={user}
+                                    currentUserId={currentUser?.id}
+                                    className=""
+                                >
+                                    <div className="flex items-center gap-2 group-hover:border-red-300">
+                                        <UserAvatar className="size-4" id={user.id} name={user.name} />
+                                    </div>
+                                </UserHoverCard>
+                            ))}
+
+                            {users.length > 2 && (
+                                <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
+                                    +{users.length - 2}
+                                </div>
+                            )}
+                        </div>
                     </button>
                 );
             },
@@ -149,7 +165,7 @@ const Table = ({
             size: 180,
             header: t("document.table.columns.isoClause"),
             cell: ({ row }) => {
-                return <span>{row.original.isoClause.code}</span>;
+                return <span className="w-full text-center">{row.original.isoClause.code}</span>;
             },
         },
         {
@@ -157,19 +173,23 @@ const Table = ({
             enableSorting: true,
             header: t("document.table.columns.status"),
             cell: ({ row }) => {
-                return <span>{row.original.status}</span>;
+                return <span className={cn("px-1 py-0.5 rounded", documentStatusColors[row.original.status.toLowerCase()])}>
+                    {t(`common.document.status.${row.original.status.toLowerCase()}`)}
+                </span>;
             },
         },
         {
             accessorKey: "version",
             enableSorting: true,
             size: 30,
-            header: t("document.table.columns.version"),
+            header: () => <span className="block text-center w-full">{t("document.table.columns.version")}</span>,
             cell: ({ row }) => {
                 const currentVersion = row.original.versions?.find(v => v.isCurrent);
 
                 return currentVersion ? (
-                    <Badge variant="outline">{currentVersion.version}</Badge>
+                    <div className="w-full flex">
+                        <Badge variant="outline" className="mx-auto">{currentVersion.version}</Badge>
+                    </div>
                 ) : (
                     <>-</>
                 )
@@ -187,14 +207,37 @@ const Table = ({
             id: "actions",
             enableSorting: false,
             size: 40,
-            header: t("document.table.columns.actions"),
+            header: () => <span className="block text-center w-full">{t("document.table.columns.actions")}</span>,
             cell: ({ row }) => {
                 const doc = row.original;
                 return (
-                    <DocumentActionsCell
-                        doc={doc}
-                        onView={onView}
-                    />
+                    <div className="flex items-center gap-2">
+                        {/* Download */}
+                        <DownloadDocument
+                            documentId={doc.id}
+                        />
+                        {/* Publish */}
+                        {!doc.published ? (
+                            <PublishDocument
+                                documentId={doc.id}
+                                className="normal-case w-28"
+                                disabled={doc.status !== documentStatus.APPROVED}
+                            >
+                                {t("document.table.actions.publish")}
+                            </PublishDocument>
+                        ) : (
+                            <UnpublishDocument
+                                documentId={doc.id}
+                                className="normal-case w-28"
+                            >
+                                {t("document.table.actions.unpublish")}
+                            </UnpublishDocument>
+                        )}
+                        <DocumentActionsCell
+                            doc={doc}
+                            onView={onView}
+                        />
+                    </div>
                 );
             },
             enableHiding: false,

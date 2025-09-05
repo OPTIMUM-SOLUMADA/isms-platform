@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
-import type { Department, Document, CustomFormProps, DocumentType, ISOClause, User } from "@/types";
+import { Department, type CustomFormProps, type DocumentType, type ISOClause, type User } from "@/types";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
-import UserLookup from "@/templates/lookup/UserLookup";
+// import UserLookup from "@/templates/lookup/UserLookup";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,41 +39,48 @@ const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
-  owner: z.string().nonempty(i18n.t("zod.errors.required")).min(1, i18n.t("zod.errors.required")),
+
+  // nextReviewDate: z.string().optional(), // ou z.date() si tu veux
+  // reviewFrequency: z.number().int().positive().optional(),
+
+  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+
   type: z.string().nonempty(i18n.t("zod.errors.required")),
+
   department: z.string().nonempty(i18n.t("zod.errors.required")),
+
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
+
   reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+
   files: z
     .array(z.custom<File>())
+    .min(1, { message: i18n.t("components.fileUpload.errors.required") })
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
       message: i18n.t("components.fileUpload.errors.fileTooLarge", {
         size: formatBytes(maxFileSize),
       }),
-    })
-    .optional(),
+    }),
 
 });
 
-export type EditDocumentFormData = z.infer<typeof documentSchema>;
+export type AddDocumentFormData = z.infer<typeof documentSchema>;
 
-interface EdutDocumentFormProps extends CustomFormProps<EditDocumentFormData> {
+interface AddDocumentFormProps extends CustomFormProps<AddDocumentFormData> {
   isoClauses: ISOClause[];
   types: DocumentType[];
   users: User[];
   departments: Department[];
-  doc: Document;
 }
 
-export type EditDocumentFormRef = {
+export type AddDocumentFormRef = {
   resetForm: () => void;
   isStay: () => boolean;
 };
 
-const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
+const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
   (
     {
-      doc,
       isPending = false,
       onSubmit,
       error,
@@ -87,20 +94,20 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const [stay, setStay] = useLocalStorage("editDocumentFormStay", false);
+    const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
 
-    const form = useForm<EditDocumentFormData>({
+    const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),
       defaultValues: {
-        title: doc.title,
-        description: doc.description!,
-        status: doc.status,
-        owner: doc.ownerId,
-        isoClause: doc.isoClauseId,
-        reviewers: doc.reviewersId,
+        title: "ISO Document Test 007",
+        description: "Ce document est un test",
+        status: documentStatus.DRAFT,
+        owners: [],
+        isoClause: "",
+        reviewers: [],
         files: [],
-        type: doc.categoryId,
-        department: doc.departmentId,
+        type: "",
+        department: "",
       },
       mode: "onChange",
     });
@@ -137,7 +144,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.add.form.fields.name.placeholder")}
+                    placeholder={t("document.add.form.name.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                     hasError={!!fieldState.error}
                   />
@@ -159,7 +166,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder={t("document.add.form.fields.description.placeholder")}
+                    placeholder={t("document.add.form.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -299,20 +306,20 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owner"
+              name="owners"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owner.label")}
+                    {t("document.add.form.fields.owners.label")}
                   </FormLabel>
                   <FormControl>
-                    <UserLookup
-                      data={users}
+                    <UserMultiSelect
+                      data={users.filter(user => user.role !== RoleType.VIEWER)}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -328,9 +335,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               control={form.control}
               name="reviewers"
               render={({ field, fieldState }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewer.label")}
+                    {t("document.add.form.fields.reviewers.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -370,13 +377,13 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
           {/* Error */}
           <ErrorCodeField code={error} />
 
-          <div className="flex justify-between gap-4 border-t py-4">
+          <div className="flex flex-wrap justify-between gap-4 border-t py-4">
 
             <div className="flex items-center gap-3">
               <Checkbox id="terms" checked={stay} onCheckedChange={(val) => setStay(!!val)} />
-              <Label htmlFor="terms">{t("common.form.edit.stay")}</Label>
+              <Label htmlFor="terms">{t("common.form.add.stay")}</Label>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center flex-wrap">
               <Button
                 type="reset"
                 variant={"ghost"}
@@ -384,7 +391,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 onClick={() => navigate("/documents")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t("document.edit.form.actions.cancel.label")}
+                {t("document.add.form.actions.cancel.label")}
               </Button>
               <Button
                 type="reset"
@@ -393,17 +400,17 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 onClick={() => form.reset()}
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                {t("document.edit.form.actions.reset.label")}
+                {t("document.add.form.actions.reset.label")}
               </Button>
               {/* Submit */}
               <LoadingButton
                 type="submit"
                 className="btn"
                 isLoading={isPending || isSubmitting}
-                loadingText={t("document.edit.form.actions.submit.loading")}
+                loadingText={t("document.add.form.actions.submit.loading")}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {t("document.edit.form.actions.submit.label")}
+                {t("document.add.form.actions.submit.label")}
               </LoadingButton>
             </div>
 
@@ -413,4 +420,4 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
     );
   });
 
-export default EditDocumentForm;
+export default AddDocumentForm;

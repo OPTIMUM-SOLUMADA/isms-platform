@@ -18,7 +18,7 @@ import { reviewItems } from "@/mocks/review";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import ReviewForm from "@/templates/forms/Review/ReviewForm";
+import ReviewForm from "@/templates/forms/reviews/ReviewForm";
 import { useUser } from '@/contexts/UserContext';
 import { useDocument } from "@/contexts/DocumentContext"
 // import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
@@ -46,7 +46,7 @@ export default function ReviewWorkflowPage() {
     { id: "in-review", label: "review.inProgress", color: "blue" },
     { id: "approved", label: "review.completed", color: "green" },
     { id: "rejected", label: "review.overdue", color: "red" },
-  ];  
+  ];
 
 
 
@@ -85,6 +85,22 @@ export default function ReviewWorkflowPage() {
 
   }, [createViewer, setOpen, toast, t]);
 
+
+  // const getInitials = (name: string) => {
+  //   return name
+  //     .split(" ")
+  //     .map((n) => n[0])
+  //     .join("");
+  // };
+
+  // const getDaysUntilDue = (dueDate: string) => {
+  //   const due = new Date(dueDate);
+  //   const today = new Date();
+  //   const diffTime = due.getTime() - today.getTime();
+  //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //   return diffDays;
+  // };
+
   return (
     <WithTitle>
       <div className="space-y-6">
@@ -92,10 +108,10 @@ export default function ReviewWorkflowPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              { t('review.title')}
+              {t('review.title')}
             </h1>
             <p className="text-gray-600 mt-1">
-              { t('review.subtitle')}
+              {t('review.subtitle')}
             </p>
           </div>
 
@@ -253,10 +269,10 @@ export default function ReviewWorkflowPage() {
                               {item.stage === "in-review"
                                 ? t("review.inProgress")
                                 : item.stage === "approved"
-                                ? t("review.approved")
-                                : item.stage === "rejected"
-                                ? t("review.rejected")
-                                : t("review.pending")}
+                                  ? t("review.approved")
+                                  : item.stage === "rejected"
+                                    ? t("review.rejected")
+                                    : t("review.pending")}
                             </Button>
                             <Button variant="outline" className="h-55">
                               <Eye className="h-4 w-4 mr-1" />

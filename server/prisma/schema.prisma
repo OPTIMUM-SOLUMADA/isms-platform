@@ -60,7 +60,6 @@ model User {
 
   passwordResetToken String?
 
-  ownedDocuments    Document[]         @relation("DocumentOwner")
   documentReviews   DocumentReview[]
   documentApprovals DocumentApproval[]
   notifications     Notification[]
@@ -69,7 +68,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  metadata Json?
+  metadata          Json?
+  documentOwners    DocumentOwner[]    @relation("DocumentOwnerUser")
+  documentReviewers DocumentReviewer[] @relation("DocumentReviewerUser")
 
   @@index([email, isActive])
   @@index([role])
@@ -110,10 +111,10 @@ model Document {
   reviewFrequency Int? // Ajouté : Fréquence en mois (e.g. 12 pour annuel)
   isoClauseId     String         @db.ObjectId
 
-  reviewersId String[] @db.ObjectId
+  published       Boolean   @default(false)
+  publicationDate DateTime?
 
   departmentId String  @db.ObjectId
-  ownerId      String  @db.ObjectId
   categoryId   String? @db.ObjectId
 
   createdAt DateTime @default(now())
@@ -121,17 +122,39 @@ model Document {
 
   department    Department?        @relation("DepartmentDocuments", fields: [departmentId], references: [id], onDelete: Restrict)
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
-  owner         User               @relation("DocumentOwner", fields: [ownerId], references: [id])
   type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
   reviews       DocumentReview[]
   approvals     DocumentApproval[]
-  // permissions  DocumentPermission[]
   notifications Notification[]
   auditlogs     AuditLog[]
+  owners        DocumentOwner[]    @relation("DocumentOwnerDocument")
+  reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
 
   @@index([title])
   @@map("documents")
+}
+
+model DocumentOwner {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  documentId String @db.ObjectId
+  userId     String @db.ObjectId
+
+  document Document @relation(name: "DocumentOwnerDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(name: "DocumentOwnerUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("document_owners")
+}
+
+model DocumentReviewer {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  documentId String @db.ObjectId
+  userId     String @db.ObjectId
+
+  document Document @relation(name: "DocumentReviewerDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(name: "DocumentReviewerUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("document_reviewers")
 }
 
 model ISOClause {
@@ -176,7 +199,7 @@ model DocumentReview {
   isCompleted Boolean   @default(false) // Ajouté : pour suivre si la tâche est terminée
   reviewDate  DateTime? // Ajouté : La date à laquelle la révision a été effectuée
 
-  document Document @relation(fields: [documentId], references: [id])
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   reviewer User     @relation(fields: [reviewerId], references: [id])
 
   @@index([documentId])

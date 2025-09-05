@@ -364,16 +364,16 @@
                         "label": "Fréquence de révision",
                         "placeholder": "Fréquence de révision"
                         },
-                    "owner": {
-                        "label": "Propriétaire",
+                    "owners": {
+                        "label": "Propriétaires",
                         "placeholder": "Nom du propriétaire"
                     },
                     "type": {
                         "label": "Type du document",
                         "placeholder": "Séléctionner un type"
                     },
-                    "reviewer": {
-                        "label": "Reviseur(s)",
+                    "reviewers": {
+                        "label": "Reviseurs",
                         "placeholder": "Séléctionner des reviseurs"
                     },
                     "department": {
@@ -456,6 +456,30 @@
                 }
             }
         },
+        "publish": {
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été publié avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la publication du document. Veuillez réessayer."
+                }
+            }
+        },
+        "unpublish": {
+            "toast": {
+                "success": {
+                    "title": "Succès",
+                    "description": "Le document a été dépublié avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Une erreur s'est produite lors de la dépublication du document. Veuillez réessayer."
+                }
+            }
+        },
         "stats": {
             "total": {
                 "title": "Total des documents",
@@ -518,7 +542,10 @@
             "actions": {
                 "edit": "Modifier",
                 "delete": "Supprimer",
-                "view": "Voir les détails"
+                "view": "Voir les détails",
+                "publish": "Publier",
+                "unpublish": "Dépublier",
+                "download": "Télécharger"
             },
             "empty": {
                 "title": "Aucun document trouvé",
@@ -563,11 +590,29 @@
                     "label": "Supprimer"
                 },
                 "download": {
-                    "label": "Télécharger le fichier"
+                    "label": "Télécharger le fichier",
+                    "loading": "Téléchargement..."
                 },
                 "assignReviewer": {
                     "label": "Assigner un reviseur"
+                },
+                "publish": {
+                    "label": "Publier ce document"
+                },
+                "unpublish": {
+                    "label": "Dépublier ce document"
                 }
+            }
+        },
+        "actions": {
+            "publish": {
+                "label": "Publier un document"
+            },
+            "unpublish": {
+                "label": "Dépublier un document"
+            },
+            "download": {
+                "label": "Télécharger le document"
             }
         }
     },
@@ -822,6 +867,10 @@
             "edit": {
                 "stay": "Rester sur cette page après la modification"
             }
+        },
+        "error": {
+            "tryAgain": "Essayer de nouveau",
+            "somethingWentWrong": "Quelque chose s'est mal passé"
         }
     }
 }

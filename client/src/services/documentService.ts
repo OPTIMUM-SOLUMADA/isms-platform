@@ -2,8 +2,7 @@
 import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
 
-const url = API_CONFIG.ENDPOINTS.DOCUMENTS;
-const statsUrl = API_CONFIG.ENDPOINTS.DOCUMENTS_STATS;
+const docApi = API_CONFIG.ENDPOINTS.DOCUMENTS;
 
 type Params = {
     page?: number;
@@ -11,18 +10,23 @@ type Params = {
 }
 
 export const documentService = {
-    list: async ({ page = 1, limit = 50 }: Params) => axios.get(url, { params: { page, limit } }),
-    getStats: async () => axios.get(statsUrl),
-    getById: async (id: string) => axios.get(`${url}/${id}`),
-    create: async (data: FormData) => axios.post(url, data, {
+    list: async ({ page = 1, limit = 50 }: Params) => axios.get(docApi.BASE, { params: { page, limit } }),
+    getStats: async () => axios.get(docApi.STATS),
+    getById: async (id: string) => axios.get(docApi.GET(id)),
+    create: async (data: FormData) => axios.post(docApi.BASE, data, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
     }),
-    update: async (id: string, data: FormData) => axios.put(`${url}/${id}`, data, {
+    update: async (id: string, data: FormData) => axios.put(docApi.GET(id), data, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
     }),
-    delete: async (id: string) => axios.delete(`${url}/${id}`),
-}
+    delete: async (id: string) => axios.delete(docApi.GET(id)),
+    download: async (id: string) => axios.get(docApi.DOWNLOAD(id), {
+        responseType: "blob"
+    }),
+    publish: async (id: string) => axios.put(docApi.PUBLISH(id)),
+    unpublish: async (id: string) => axios.put(docApi.UNPUBLISH(id)),
+};

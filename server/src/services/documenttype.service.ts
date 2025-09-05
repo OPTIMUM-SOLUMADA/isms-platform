@@ -1,5 +1,5 @@
-import prisma from "@/database/prisma"; // adjust path to your prisma client
-import { DocumentType, Prisma } from "@prisma/client";
+import prisma from '@/database/prisma'; // adjust path to your prisma client
+import { DocumentType, Prisma } from '@prisma/client';
 
 export class DocumentTypeService {
     async create(data: Prisma.DocumentTypeCreateInput): Promise<DocumentType> {
@@ -11,7 +11,7 @@ export class DocumentTypeService {
     async findAll(): Promise<DocumentType[]> {
         return prisma.documentType.findMany({
             include: { documents: true },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
         });
     }
 
@@ -44,11 +44,11 @@ export class DocumentTypeService {
 
     async init() {
         const documentTypesList = [
-            { name: "Policy", description: "" },
-            { name: "Procedure", description: "" },
-            { name: "Plan", description: "" },
-            { name: "Guide", description: "" },
-            { name: "Framework", description: "" },
+            { name: 'Policy', description: '' },
+            { name: 'Procedure', description: '' },
+            { name: 'Plan', description: '' },
+            { name: 'Guide', description: '' },
+            { name: 'Framework', description: '' },
         ];
 
         const result: DocumentType[] = [];
@@ -58,7 +58,7 @@ export class DocumentTypeService {
             if (!existing) {
                 const created = await this.create({
                     name: documentType.name,
-                    description: documentType.description
+                    description: documentType.description,
                 });
                 result.push(created);
             }

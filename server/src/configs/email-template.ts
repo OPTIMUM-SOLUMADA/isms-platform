@@ -1,5 +1,5 @@
 export const EmailTemplate = {
-    resetPassword: (data: { username: string, resetLink: string }) => `
+    resetPassword: (data: { username: string; resetLink: string }) => `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -65,5 +65,4 @@ export const EmailTemplate = {
         </div>
     </body>
     </html>`,
-
-}
+};

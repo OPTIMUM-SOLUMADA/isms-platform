@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@/templates/forms/documents/AddDocumentForm';
+import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@/templates/documents/forms/AddDocumentForm';
 import { useNavigate } from 'react-router-dom';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';

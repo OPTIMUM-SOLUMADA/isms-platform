@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
-import { Department, type CustomFormProps, type DocumentType, type ISOClause, type User } from "@/types";
+import type { Department, Document, CustomFormProps, DocumentType, ISOClause, User } from "@/types";
 import {
   Form,
   FormControl,
@@ -24,7 +24,6 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
-import UserLookup from "@/templates/lookup/UserLookup";
 import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,48 +38,41 @@ const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   status: z.enum(["DRAFT", "IN_REVIEW", "APPROVED", "EXPIRED"]),
-
-  // nextReviewDate: z.string().optional(), // ou z.date() si tu veux
-  // reviewFrequency: z.number().int().positive().optional(),
-
-  owner: z.string().nonempty(i18n.t("zod.errors.required")).min(1, i18n.t("zod.errors.required")),
-
+  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
-
   department: z.string().nonempty(i18n.t("zod.errors.required")),
-
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-
   reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
-
   files: z
     .array(z.custom<File>())
-    .min(1, { message: i18n.t("components.fileUpload.errors.required") })
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
       message: i18n.t("components.fileUpload.errors.fileTooLarge", {
         size: formatBytes(maxFileSize),
       }),
-    }),
+    })
+    .optional(),
 
 });
 
-export type AddDocumentFormData = z.infer<typeof documentSchema>;
+export type EditDocumentFormData = z.infer<typeof documentSchema>;
 
-interface AddDocumentFormProps extends CustomFormProps<AddDocumentFormData> {
+interface EdutDocumentFormProps extends CustomFormProps<EditDocumentFormData> {
   isoClauses: ISOClause[];
   types: DocumentType[];
   users: User[];
   departments: Department[];
+  doc: Document;
 }
 
-export type AddDocumentFormRef = {
+export type EditDocumentFormRef = {
   resetForm: () => void;
   isStay: () => boolean;
 };
 
-const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
+const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
   (
     {
+      doc,
       isPending = false,
       onSubmit,
       error,
@@ -94,20 +86,20 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
+    const [stay, setStay] = useLocalStorage("editDocumentFormStay", false);
 
-    const form = useForm<AddDocumentFormData>({
+    const form = useForm<EditDocumentFormData>({
       resolver: zodResolver(documentSchema),
       defaultValues: {
-        title: "ISO Document Test 007",
-        description: "Ce document est un test",
-        status: documentStatus.DRAFT,
-        owner: "",
-        isoClause: "",
-        reviewers: [],
+        title: doc.title,
+        description: doc.description!,
+        status: doc.status,
+        owners: doc.owners.map(owner => owner.user.id),
+        isoClause: doc.isoClauseId,
+        reviewers: doc.reviewersId,
         files: [],
-        type: "",
-        department: "",
+        type: doc.categoryId,
+        department: doc.departmentId,
       },
       mode: "onChange",
     });
@@ -144,7 +136,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t("document.add.form.name.placeholder")}
+                    placeholder={t("document.add.form.fields.name.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                     hasError={!!fieldState.error}
                   />
@@ -166,7 +158,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder={t("document.add.form.description.placeholder")}
+                    placeholder={t("document.add.form.fields.description.placeholder")}
                     className="border rounded-lg px-3 py-2 w-full"
                   />
                 </FormControl>
@@ -306,20 +298,20 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owner"
+              name="owners"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owner.label")}
+                    {t("document.add.form.fields.owners.label")}
                   </FormLabel>
                   <FormControl>
-                    <UserLookup
-                      data={users}
+                    <UserMultiSelect
+                      data={users.filter(user => user.role !== RoleType.VIEWER)}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -335,9 +327,9 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               control={form.control}
               name="reviewers"
               render={({ field, fieldState }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewer.label")}
+                    {t("document.add.form.fields.reviewers.label")}
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -377,13 +369,13 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
           {/* Error */}
           <ErrorCodeField code={error} />
 
-          <div className="flex flex-wrap justify-between gap-4 border-t py-4">
+          <div className="flex justify-between gap-4 border-t py-4">
 
             <div className="flex items-center gap-3">
               <Checkbox id="terms" checked={stay} onCheckedChange={(val) => setStay(!!val)} />
-              <Label htmlFor="terms">{t("common.form.add.stay")}</Label>
+              <Label htmlFor="terms">{t("common.form.edit.stay")}</Label>
             </div>
-            <div className="flex gap-4 items-center flex-wrap">
+            <div className="flex gap-4 items-center">
               <Button
                 type="reset"
                 variant={"ghost"}
@@ -391,7 +383,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 onClick={() => navigate("/documents")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t("document.add.form.actions.cancel.label")}
+                {t("document.edit.form.actions.cancel.label")}
               </Button>
               <Button
                 type="reset"
@@ -400,17 +392,17 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                 onClick={() => form.reset()}
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                {t("document.add.form.actions.reset.label")}
+                {t("document.edit.form.actions.reset.label")}
               </Button>
               {/* Submit */}
               <LoadingButton
                 type="submit"
                 className="btn"
                 isLoading={isPending || isSubmitting}
-                loadingText={t("document.add.form.actions.submit.loading")}
+                loadingText={t("document.edit.form.actions.submit.loading")}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {t("document.add.form.actions.submit.label")}
+                {t("document.edit.form.actions.submit.label")}
               </LoadingButton>
             </div>
 
@@ -420,4 +412,4 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     );
   });
 
-export default AddDocumentForm;
+export default EditDocumentForm;
