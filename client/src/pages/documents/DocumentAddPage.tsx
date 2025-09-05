@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@/templates/documents/forms/AddDocumentForm';
 import { useNavigate } from 'react-router-dom';
 import WithTitle from '@/templates/layout/WithTitle';
@@ -11,6 +11,7 @@ import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
+import { RequiredIndicatorInfo } from '@/components/Required';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -44,11 +45,14 @@ export default function DocumentAddPage() {
         </div>
 
         {/* Documents Add */}
-        <Card className='flex-grow lg:px-20'>
-          <CardHeader className='border-b'>
-            <CardTitle className='text-lg font-medium'>{t("document.add.form.title")}</CardTitle>
+        <Card className='flex-grow'>
+          <CardHeader className='border-b card-header-bg'>
+            <CardTitle className='text-xl font-medium'>{t("document.add.form.title")}</CardTitle>
+            <CardDescription>
+              <RequiredIndicatorInfo />
+            </CardDescription>
           </CardHeader>
-          <CardContent className='pt-4'>
+          <CardContent className='pt-4 lg:px-20 px-10'>
             <AddDocumentForm
               ref={formRef}
               isoClauses={clauses}

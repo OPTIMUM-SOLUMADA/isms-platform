@@ -9,6 +9,7 @@ import {
     FileUploadList,
     FileUploadTrigger,
 } from "@/components/ui/file-upload";
+import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -20,6 +21,7 @@ interface DocumentFileUploadProps {
     maxFiles?: number;
     maxSize?: number;
     className?: string;
+    hasError?: boolean;
 }
 
 export function DocumentFileUpload({
@@ -28,6 +30,7 @@ export function DocumentFileUpload({
     maxFiles = 1,
     maxSize = 10 * 1024 * 1024, // 5MB
     className,
+    hasError = false,
 }: DocumentFileUploadProps) {
     const [files, setFiles] = React.useState<File[]>(value);
     const { t } = useTranslation();
@@ -59,7 +62,7 @@ export function DocumentFileUpload({
             onFileReject={onFileReject}
             multiple
         >
-            <FileUploadDropzone>
+            <FileUploadDropzone className={cn(hasError && "border-theme-danger")}>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <div className="flex items-center justify-center rounded-full border p-2.5">
                         <Upload className="size-6 text-muted-foreground" />

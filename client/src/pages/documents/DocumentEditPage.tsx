@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { useISOClause } from '@/contexts/ISOClauseContext';
@@ -13,6 +13,7 @@ import EditDocumentForm, { EditDocumentFormData, EditDocumentFormRef } from '@/t
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetDocument } from './DocumentDetailPage';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { RequiredIndicatorInfo } from '@/components/Required';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -65,13 +66,16 @@ export default function DocumentEditPage() {
                 </div>
 
                 {/* Documents Edit */}
-                <Card className='flex-grow lg:px-20'>
+                <Card className='flex-grow'>
                     {document ? (
                         <>
-                            <CardHeader className='border-b'>
+                            <CardHeader className='border-b card-header-bg'>
                                 <CardTitle className='text-lg font-medium'>{t("document.edit.form.title")}</CardTitle>
+                                <CardDescription>
+                                    <RequiredIndicatorInfo />
+                                </CardDescription>
                             </CardHeader>
-                            <CardContent className='pt-4'>
+                            <CardContent className='pt-4 lg:px-20 px-10'>
                                 <EditDocumentForm
                                     doc={doc}
                                     ref={formRef}

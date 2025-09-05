@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
 
-    const table = useReactTable({
+    const table = useReactTable<TData>({
         data,
         columns: enableRowSelection
             ? ([
@@ -123,6 +123,9 @@ export function DataTable<TData, TValue>({
         initialState: {
             pagination: { pageSize },
         },
+        meta: {
+            label: ""
+        }
     });
 
     const onSearchChange = (value: string) => {
@@ -169,23 +172,34 @@ export function DataTable<TData, TValue>({
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="gap-2">
-                                    {t("components.table.actions.toggleColumns.placeholder")} <ChevronDown className="h-4 w-4" />
+                                    {t("components.table.actions.toggleColumns.placeholder")}{" "}
+                                    <ChevronDown className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
+
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>{t("components.table.actions.toggleColumns.label")}</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                    {t("components.table.actions.toggleColumns.label")}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
+
                                 {table.getAllLeafColumns().map((column) => {
-                                    // hide technical columns
                                     if (column.id === "_select") return null;
+
+                                    const label =
+                                        (typeof column.columnDef.header === "function"
+                                            ? column.columnDef.header(table.getHeaderGroups()[0].headers[0].headerGroup.headers[0].getContext())
+                                            : column.columnDef.header) ?? column.id;
+
                                     return (
                                         <DropdownMenuCheckboxItem
                                             key={column.id}
-                                            className="capitalize"
-                                            checked={column.getIsVisible()}
+                                            className="flex items-center gap-2"
                                             onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                                            onSelect={(event) => event.preventDefault()}
+                                            checked={column.getIsVisible()}
                                         >
-                                            {column.columnDef.header as string}
+                                            <span>{label}</span>
                                         </DropdownMenuCheckboxItem>
                                     );
                                 })}

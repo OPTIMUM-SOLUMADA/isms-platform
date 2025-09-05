@@ -32,6 +32,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
 import { FrequenciesUnits } from "@/constants/frequency";
+import Required from "@/components/Required";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -44,7 +45,7 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+  reviewers: z.array(z.string()).optional(),
   files: z
     .array(z.custom<File>())
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
@@ -133,7 +134,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.add.form.fields.name.label")}
+                  {t("document.add.form.fields.name.label")} <Required />
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -179,7 +180,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.type.label")}
+                    {t("document.add.form.fields.type.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -209,7 +210,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               control={form.control}
               name="status"
               render={({ field, fieldState }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel className="font-medium">
                     {t("document.add.form.fields.status.label")}
                   </FormLabel>
@@ -243,7 +244,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.department.label")}
+                    {t("document.add.form.fields.department.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -273,9 +274,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               control={form.control}
               name="isoClause"
               render={({ field, fieldState }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.isoClause.label")}
+                    {t("document.add.form.fields.isoClause.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -299,6 +300,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <FormField
               control={form.control}
@@ -306,7 +310,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewFrequency.label")}
+                    {t("document.add.form.fields.reviewFrequency.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <div className="flex gap-2">
@@ -331,9 +335,6 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 </FormItem>
               )}
             />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Owner */}
             <FormField
@@ -342,7 +343,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owners.label")}
+                    {t("document.add.form.fields.owners.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
@@ -362,7 +363,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               control={form.control}
               name="reviewers"
               render={({ field, fieldState }) => (
-                <FormItem>
+                <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
                     {t("document.add.form.fields.reviewers.label")}
                   </FormLabel>
