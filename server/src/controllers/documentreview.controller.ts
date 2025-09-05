@@ -1,37 +1,37 @@
-import { Request, Response } from "express";
-import { DocumentReviewService } from "@/services/documentreview.service";
+import { Request, Response } from 'express';
+import { DocumentReviewService } from '@/services/documentreview.service';
 
 const service = new DocumentReviewService();
 
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
-        try {            
+        try {
             const { document, dueDate, reviewer } = req.body;
-            const clause = await service.create({ 
-                document: { connect: { id: document } }, 
+            const clause = await service.create({
+                document: { connect: { id: document } },
                 reviewer: { connect: { id: reviewer } },
-                reviewDate: dueDate });
-                console.log("clause", clause);
-                
+                reviewDate: dueDate,
+            });
             return res.status(201).json(clause);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
         }
     }
 
-    // async findAll(_req: Request, res: Response) {
-    //     try {
-    //         const types = await service.findAll();
-    //         return res.json(types);
-    //     } catch (error: any) {
-    //         return res.status(500).json({ error: error.message });
-    //     }
-    // }
+    async findAll(_req: Request, res: Response) {
+        try {
+            const types = await service.findAll();
+            console.log('type', types);
+            return res.json(types);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 
     // async findById(req: Request, res: Response) {
     //     try {
     //         const type = await service.findById(req.params.id!);
-    //         if (!type) return res.status(404).json({ error: "Type not found" });
+    //         if (!type) return res.status(404).json({ error: 'Type not found' });
     //         return res.json(type);
     //     } catch (error: any) {
     //         return res.status(500).json({ error: error.message });

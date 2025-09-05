@@ -1,9 +1,17 @@
-import { AddReviewFormData } from "@/templates/forms/Review/AddReviewForm";
+import { AddReviewFormData } from "@/templates/forms/reviews/AddReviewForm";
 import { ApiAxiosError } from "@/types/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { documentReviewService } from "@/services/documentreviewService";
-import { createContext, useState, ReactNode, useCallback, useMemo, useContext, useEffect } from "react";
-import { users } from "@/mocks/user";
+import {
+  createContext,
+  useState,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from "react";
+import { ReviewItem } from "@/types";
 
 type Viewer = {
   id: string;
@@ -14,43 +22,52 @@ type Viewer = {
 };
 
 type ViewerContextType = {
-  viewers: Viewer[];
+  viewers: ReviewItem[];
   isLoading: boolean;
 
-  createViewer: (data: AddReviewFormData) => Promise<Viewer>;
-  selectedViewer: Viewer | null;
-  setSelectedViewer: (viewer: Viewer) => void;
+  createViewer: (data: AddReviewFormData) => Promise<ReviewItem>;
+  selectedViewer: ReviewItem | null;
+  setSelectedViewer: (viewer: ReviewItem) => void;
 };
 
 const ViewerContext = createContext<ViewerContextType | undefined>(undefined);
 
 export const ViewerProvider = ({ children }: { children: ReactNode }) => {
-  const [viewers, setViewers] = useState<Viewer[]>([]);
-  const [selectedViewer, _setSelectedViewer] = useState<Viewer | null>(null);
+  const [viewers, setViewers] = useState<ReviewItem[]>([]);
+  const [selectedViewer, _setSelectedViewer] = useState<ReviewItem | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const { data: viewersResponse, refetch: refetchViewers } = useQuery<any, ApiAxiosError>({
-      queryKey: ['viewers'],
-      queryFn: async () => await documentReviewService.list(),
-      refetchInterval: 15000,
-      staleTime: 1000 * 60,
-  })
+  const { data: viewersResponse, refetch: refetchViewers } = useQuery<
+    any,
+    ApiAxiosError
+  >({
+    queryKey: ["viewers"],
+    queryFn: async () => await documentReviewService.list(),
+    refetchInterval: 15000,
+    staleTime: 1000 * 60,
+  });
 
   useEffect(() => {
     if (viewersResponse) {
       setViewers(viewersResponse.data);
       setIsLoading(false);
     }
-  }, [viewersResponse])
+  }, [viewersResponse]);
 
-  const createViewerMutation = useMutation<any, ApiAxiosError, AddReviewFormData>({
-      mutationFn: async (data) => await documentReviewService.create(data),
-      onSuccess: (res) => {
-          setViewers((prev) => [...prev, res.data]);
-      },
-      onError: (err) => {
-          console.error(err);
-      },
+  const createViewerMutation = useMutation<
+    any,
+    ApiAxiosError,
+    AddReviewFormData
+  >({
+    mutationFn: async (data) => await documentReviewService.create(data),
+    onSuccess: (res) => {
+      setViewers((prev) => [...prev, res.data]);
+    },
+    onError: (err) => {
+      console.error(err);
+    },
   });
 
   const createViewer = useCallback(
@@ -58,17 +75,19 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       const res = await createViewerMutation.mutateAsync(data);
       setViewers((prev) => [...prev, res.data]);
       return res.data; // ✅ renvoie bien un Viewer
-    }, [createViewerMutation]
-  )
+    },
+    [createViewerMutation]
+  );
 
-  const  setSelectedViewer = useCallback((viewer: Viewer) => {
+  const setSelectedViewer = useCallback((viewer: ReviewItem) => {
     _setSelectedViewer(viewer);
-  }) 
+  });
+
   // async (
-  //   data: Omit<Viewer, "id" | "createdAt">
+  //   data: Omit<Viewer, 'id' | 'createdAt'>
   // ): Promise<Viewer> => {
-  //   console.log("data", data);
-    
+  //   console.log('data', data);
+
   //   // ⚡ Ici tu peux remplacer par un appel API vers ton backend
   //   const newViewer: Viewer = {
   //     ...data,
@@ -86,15 +105,13 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       isLoading,
       fetchUsers: refetchViewers,
       createViewer,
-      setSelectedViewer
-    })
-    , [viewers, createViewer]
+      setSelectedViewer,
+    }),
+    [viewers, createViewer]
   );
 
   return (
-    <ViewerContext.Provider value={values}>
-      {children}
-    </ViewerContext.Provider>
+    <ViewerContext.Provider value={values}>{children}</ViewerContext.Provider>
   );
 };
 
