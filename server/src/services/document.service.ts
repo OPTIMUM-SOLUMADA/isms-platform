@@ -1,4 +1,4 @@
-import { Prisma, ReviewFrequency } from '@prisma/client';
+import { DocumentReview, DocumentStatus, Prisma, ReviewFrequency } from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 import { DocumentOwnerService } from './documentowner.service';
@@ -63,7 +63,7 @@ export class DocumentService {
             const doc = await tx.document.create({
                 data: {
                     ...data,
-                    nextReviewDate: this.calculateNextReviewDate(new Date(), data.reviewFrequency!),
+                    nextReviewDate: this.calculateNextReviewDate(new Date(), data.reviewFrequency),
                 },
             });
             const ownersData = ownerIds.map((userId) => ({ documentId: doc.id, userId }));
@@ -215,7 +215,7 @@ export class DocumentService {
     }
 
     // calculate next review date vbased on frequency (DAILY, WEEKLY, ETC)
-    calculateNextReviewDate(startDate: Date, frequency: ReviewFrequency): Date | null {
+    calculateNextReviewDate(startDate: Date, frequency?: ReviewFrequency | null): Date | null {
         const nextDate = new Date(startDate);
 
         switch (frequency) {
@@ -247,5 +247,43 @@ export class DocumentService {
         }
 
         return nextDate;
+    }
+
+    updateDocumentStatus(
+        doc: Prisma.DocumentGetPayload<{ include: { reviewers: true } }>,
+        reviews: DocumentReview[],
+    ): DocumentStatus {
+        const pendingReviews = reviews.filter((r) => r.documentId === doc.id && !r.isCompleted);
+
+        if (pendingReviews.length > 0) {
+            return DocumentStatus.IN_REVIEW;
+        }
+
+        const approvedReviews = reviews.filter(
+            (r) => r.documentId === doc.id && r.isCompleted && r.isApproved,
+        );
+
+        if (approvedReviews.length === doc.reviewers.length) {
+            // Vérifier si la révision n’est pas encore expirée
+            const lastReviewDate = approvedReviews
+                .map((r) => r.reviewDate!)
+                .sort((a, b) => b.getTime() - a.getTime())[0];
+
+            if (!lastReviewDate) {
+                return DocumentStatus.APPROVED;
+            }
+
+            const nextReviewDate = this.calculateNextReviewDate(
+                lastReviewDate,
+                doc.reviewFrequency,
+            );
+            if (nextReviewDate && nextReviewDate < new Date()) {
+                return DocumentStatus.EXPIRED;
+            }
+            return DocumentStatus.APPROVED;
+        }
+
+        // Par défaut, si aucune review n’a été complétée
+        return DocumentStatus.DRAFT;
     }
 }

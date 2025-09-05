@@ -340,9 +340,9 @@
         "subtitle": "Gérer les documents et leurs versions",
         "add": {
             "title": "Nouveau document",
-            "subtitle": "Ajouter un nouveau document au référentiel",
+            "subtitle": "Enregistrer un nouveau document dans le système",
             "form": {
-                "title": "Remplissez les informations du document",
+                "title": "Veuillez remplir les informations du document",
                 "fields": {
                     "name": {
                         "label": "Nom",
@@ -880,7 +880,8 @@
             },
             "edit": {
                 "stay": "Rester sur cette page après la modification"
-            }
+            },
+            "requiredIndicatorInfo": "Les champs marqués d'un <span>*</span> sont obligatoires"
         },
         "error": {
             "tryAgain": "Essayer de nouveau",

@@ -15,8 +15,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "@/hooks/use-permissions";
-// import { UserAvatar } from "@/components/user-avatar";
-// import { UserHoverCard } from "../hovercard/UserHoverCard";
+import { UserAvatar } from "@/components/user-avatar";
+import { UserHoverCard } from "../hovercard/UserHoverCard";
 import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
@@ -117,6 +117,7 @@ const Table = ({
             size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
+                const users = row.original.owners?.map((o) => o.user);
                 return (
                     <button
                         type="button"
@@ -127,40 +128,30 @@ const Table = ({
                         <div className="text-sm ml-1 flex items-center line-clamp-1 whitespace-nowrap">
                             {doc.title}
                         </div>
+
+                        <div className="absolute -bottom-2 flex items-center justify-center -space-x-2">
+                            {users.slice(0, 2).map((user) => (
+                                <UserHoverCard
+                                    user={user}
+                                    currentUserId={currentUser?.id}
+                                    className=""
+                                >
+                                    <div className="flex items-center gap-2 group-hover:border-red-300">
+                                        <UserAvatar className="size-4" id={user.id} name={user.name} />
+                                    </div>
+                                </UserHoverCard>
+                            ))}
+
+                            {users.length > 2 && (
+                                <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
+                                    +{users.length - 2}
+                                </div>
+                            )}
+                        </div>
                     </button>
                 );
             },
         },
-        // {
-        //     accessorKey: "owner",
-        //     enableSorting: true,
-        //     header: t("document.table.columns.owner"),
-        //     size: 20,
-        //     cell: ({ row }) => {
-        //         const users = row.original.owners?.map((o) => o.user);
-        //         return (
-        //             <div className=" flex items-center justify-center -space-x-2">
-        //                 {users.slice(0, 2).map((user) => (
-        //                     <UserHoverCard
-        //                         user={user}
-        //                         currentUserId={currentUser?.id}
-        //                         className=""
-        //                     >
-        //                         <div className="flex items-center gap-2 group-hover:border-red-300">
-        //                             <UserAvatar className="size-6" id={user.id} name={user.name} />
-        //                         </div>
-        //                     </UserHoverCard>
-        //                 ))}
-
-        //                 {users.length > 2 && (
-        //                     <div className="size-4 relative z-10 rounded-full bg-gray-300 flex items-center justify-center text-xxs font-medium text-gray-700 border border-white">
-        //                         +{users.length - 2}
-        //                     </div>
-        //                 )}
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             accessorKey: "type",
             enableSorting: true,
