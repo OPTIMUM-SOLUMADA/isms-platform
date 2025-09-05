@@ -16,7 +16,6 @@ export const validate =
         }
 
         req[property] = value;
-        console.log("velal", value);
         
         return next();
     };

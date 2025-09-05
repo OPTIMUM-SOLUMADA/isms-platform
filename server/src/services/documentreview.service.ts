@@ -1,5 +1,5 @@
-import prisma from "@/database/prisma"; // adjust path to your prisma client
-import { DocumentReview, Prisma } from "@prisma/client";
+import prisma from '@/database/prisma'; // adjust path to your prisma client
+import { DocumentReview, Prisma } from '@prisma/client';
 
 export class DocumentReviewService {
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
@@ -8,12 +8,25 @@ export class DocumentReviewService {
         });
     }
 
-    // async findAll(): Promise<DocumentReview[]> {
-    //     return prisma.documentReview.findMany({
-    //         include: { documents: true },
-    //         orderBy: { createdAt: "desc" },
-    //     });
-    // }
+    async findAll(): Promise<DocumentReview[]> {
+        try {
+            return await prisma.documentReview.findMany({
+                include: {
+                    document: {
+                        include: {
+                            versions: true,
+                            isoClause: true,
+                        },
+                    },
+                    reviewer: true,
+                },
+                orderBy: { reviewDate: 'desc' },
+            });
+        } catch (error) {
+            console.error('Error fetching document reviews:', error);
+            throw new Error('Unable to fetch document reviews');
+        }
+    }
 
     // async findByName(name: string): Promise<DocumentType | null> {
     //     return prisma.documentType.findUnique({

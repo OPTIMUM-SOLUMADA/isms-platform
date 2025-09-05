@@ -1,9 +1,9 @@
 
 import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
-import { AddReviewFormData } from "@/templates/forms/Review/AddReviewForm";
+import { AddReviewFormData } from "@/templates/forms/reviews/AddReviewForm";
 
-const url = API_CONFIG.ENDPOINTS.DOCUMENT_REVIEWS;
+const url = API_CONFIG.ENDPOINTS.DOCUMENTS.REVIEWS;
 
 export const documentReviewService = {
     list: async () => axios.get(url),
