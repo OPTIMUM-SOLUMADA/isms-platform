@@ -1,15 +1,15 @@
 import { AlertTriangle, CheckCircle, Clock, GitBranch, XCircle } from "lucide-react";
 
 export const documentStatusIcons = {
-    draft: Clock,
-    review: AlertTriangle,
-    approved: CheckCircle,
-    expired: AlertTriangle
+  DRAFT: Clock,
+  REVIEW: AlertTriangle,
+  APPROVED: CheckCircle,
+  EXPIRED: AlertTriangle,
 };
 
 export const reviewStageIcons = {
-    pending: Clock,
-    'in-review': GitBranch,
-    approved: CheckCircle,
-    rejected: XCircle
+  PENDING: Clock,
+  IN_REVIEW: GitBranch,
+  APPROVED: CheckCircle,
+  EXPIRED: XCircle,
 };
