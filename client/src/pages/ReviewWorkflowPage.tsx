@@ -45,8 +45,6 @@ export default function ReviewWorkflowPage() {
   const { toast } = useToast();
   const { viewers, createViewer } = useViewer();
 
-  console.log("view", viewers);
-
   const workflowStages = [
     { id: "PENDING", label: "review.pendingReview", color: "gray" },
     { id: "IN_REVIEW", label: "review.inProgress", color: "blue" },
@@ -88,7 +86,6 @@ export default function ReviewWorkflowPage() {
     return matchesSearch && matchesTab && matchesPriority;
   });
 
-  console.log("filter", filteredItems);
 
   const getStageIcon = (stage: string) => {
     const Icon = reviewStageIcons[stage as keyof typeof reviewStageIcons];
@@ -162,10 +159,16 @@ export default function ReviewWorkflowPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {workflowStages.map((stage) => {
+
+            console.log("stat", stage);
+            
             const count = viewers.filter(
-              (item) => item.status === stage.id
+              (item) => item.document.status === stage.id
             ).length;
+            console.log("counr", count);
+            
             const Icon = getStageIcon(stage.id);
+            
 
             return (
               <Card key={stage.id}>
