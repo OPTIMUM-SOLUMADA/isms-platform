@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { roles } from '@/constants/role';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
+import { SelectWithButton } from '@/components/SelectWithButton';
 import ErrorCodeField from '@/components/ErrorCodeField';
 
 const addUserSchema = z.object({
@@ -45,7 +45,6 @@ const AddUserForm = ({
             departmentId: "",
         },
     });
-
 
     const {
         handleSubmit,
@@ -98,22 +97,12 @@ const AddUserForm = ({
                         <FormItem>
                             <FormLabel>{t('user.forms.add.role.label')}</FormLabel>
                             <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
+                                <SelectWithButton
+                                    items={roles.map(role => ({ value: role, label: t(`role.options.${role.toLowerCase()}`) }))}
                                     value={field.value}
-                                    defaultValue={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('user.forms.add.role.placeholder')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {roles.map((role, index) => (
-                                            <SelectItem key={index} value={role}>
-                                                {t(`user.forms.add.role.options.${role.toLowerCase()}`)}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    placeholder={t('user.forms.add.role.placeholder')}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -128,22 +117,14 @@ const AddUserForm = ({
                         <FormItem>
                             <FormLabel>{t('user.forms.add.department.label')}</FormLabel>
                             <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
+                                <SelectWithButton
+                                    items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
                                     value={field.value}
-                                    defaultValue={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('user.forms.add.department.placeholder')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {departments.map((department, index) => (
-                                            <SelectItem key={index} value={department.id}>
-                                                {department.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    placeholder={t('user.forms.add.role.placeholder')}
+                                    onChange={field.onChange}
+                                    onAdd={() => { }}
+                                    addLabel={t('department.actions.add.label')}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

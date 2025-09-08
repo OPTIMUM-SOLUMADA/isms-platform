@@ -1,5 +1,6 @@
 export const RolesObject = {
     ADMIN: "ADMIN",
+    CONTRIBUTOR: "CONTRIBUTOR",
     REVIEWER: "REVIEWER",
     VIEWER: "VIEWER"
 } as const;

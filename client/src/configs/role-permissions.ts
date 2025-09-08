@@ -59,22 +59,26 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "reviews.page.access",
         "compliance.page.access",
         "users.page.access",
-        "audit.page.access"
+        "audit.page.access",
+        "settings.page.access"
     ],
     [RoleType.CONTRIBUTOR]: [
         "dashboard.page.access",
         "documents.page.access",
         "reviews.page.access",
         "compliance.page.access",
-        "audit.page.access"
+        "audit.page.access",
+        "settings.page.access"
     ],
     [RoleType.REVIEWER]: [
         "documents.page.access",
         "reviews.page.access",
-        "compliance.page.access"
+        "compliance.page.access",
+        "settings.page.access"
     ],
     [RoleType.VIEWER]: [
         "documents.page.access",
-        "compliance.page.access"
+        "compliance.page.access",
+        "settings.page.access"
     ],
 };

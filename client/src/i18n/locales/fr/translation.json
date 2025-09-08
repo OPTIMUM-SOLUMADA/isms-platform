@@ -187,6 +187,10 @@
             "reviewer": {
                 "title": "Reviseurs",
                 "value": "{{count}} reviseurs"
+            },
+            "contributor": {
+                "title": "Contributeurs",
+                "value": "{{count}} contributeurs"
             }
         },
         "filters": {
@@ -649,6 +653,24 @@
                 "view": {
                     "label": "Voir les utilisateurs"
                 }
+            }
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un département"
+            }
+        }
+    },
+    "role": {
+        "options": {
+            "admin": "Administrateur",
+            "viewer": "Visiteur",
+            "reviewer": "Reviseur",
+            "contributor": "Contributeur"
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un rôle"
             }
         }
     },

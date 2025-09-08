@@ -144,6 +144,7 @@ const Table = ({
         {
             id: "actions",
             header: t("user.table.columns.actions"),
+            size: 70,
             cell: ({ row }) => {
                 const user = row.original;
                 return (
