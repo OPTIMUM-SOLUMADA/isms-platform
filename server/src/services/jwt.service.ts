@@ -8,7 +8,7 @@ interface Payload extends JwtPayload {
 
 export class JwtService {
     generateAccessToken = (payload: User) => {
-        const { passwordHash, ...rest } = payload;
+        const { passwordHash, passwordResetToken, metadata, ...rest } = payload;
         return jwt.sign({ user: rest }, env.JWT_ACCESS_SECRET, {
             expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
             issuer: env.JWT_ISSUER,
@@ -16,7 +16,7 @@ export class JwtService {
     };
 
     generateRefreshToken = (user: User) => {
-        const { passwordHash, ...rest } = user;
+        const { passwordHash, passwordResetToken, metadata, ...rest } = user;
         return jwt.sign({ user: rest }, env.JWT_REFRESH_SECRET, {
             expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
         });
@@ -31,7 +31,7 @@ export class JwtService {
     };
 
     generatePasswordResetToken(user: User) {
-        const { passwordHash, ...rest } = user;
+        const { passwordHash, passwordResetToken, metadata, ...rest } = user;
         return jwt.sign({ user: rest }, env.JWT_ACCESS_SECRET, {
             expiresIn: env.JWT_RESET_EXPIRES_IN as any,
             issuer: env.JWT_ISSUER,
