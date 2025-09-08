@@ -1,0 +1,195 @@
+<!-- templates/en/layout.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>{{title}}</title>
+    <style>
+        :root {
+            --green: #3E9243;
+            --dark-blue: #344085;
+            --blue: #4A5698;
+            --white: #FFFFFF;
+            --radius: 0.2rem;
+            --muted: #6B7280;
+            --foreground: #111827;
+            --background: #F9FAFB;
+            --border: #000000;
+            --shadow-2: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 32px auto;
+            background: var(--white);
+            border-radius: calc(var(--radius));
+            box-shadow: var(--shadow-2);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .content h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        .content p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+            color: var(--white);
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        header small {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        header img {
+            background: var(--white);
+        }
+
+        section {
+            padding: 28px;
+        }
+
+        section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--foreground);
+            margin: 0 0 6px;
+        }
+
+        section p {
+            margin: 0;
+        }
+
+        .card {
+            border: 1px solid var(--muted);
+            border-radius: calc(var(--radius));
+            margin-top: 16px;
+            padding: 20px;
+            background: var(--background);
+        }
+
+        .card .detail {
+            margin: 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .card .detail span {
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .pill {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--blue);
+            background: color-mix(in srgb, var(--blue) 10%, var(--white));
+            border-radius: var(--radius);
+            padding: 6px 10px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .cta {
+            text-align: center;
+            padding: 2px 0px;
+            display: flex;
+            align-items: stretch;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta a {
+            text-decoration: none;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-2);
+            font-weight: 700;
+        }
+
+        .cta a.main {
+            background: var(--green);
+            border-radius: var(--radius);
+            font-size: 14px;
+            width: 220px;
+            text-decoration: none;
+            color: var(--white) !important;
+        }
+
+        .cta a.secondary {
+            font-size: 14px;
+            text-decoration: none;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            color: var(--foreground) !important;
+        }
+
+        footer {
+            padding: 24px 28px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            padding: 24px 28px;
+            font-size: 12px;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            background: var(--background);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        {{> header}}
+        {{{body}}}
+        {{> footer}}
+    </div>
+</body>
+
+</html>

@@ -25,8 +25,33 @@ router.put('/publish/:id', controller.publish.bind(controller));
 // unpublish document
 router.put('/unpublish/:id', controller.unpublish.bind(controller));
 
-EmailTemplate.test({
-    username: 'John Doe',
+// EmailTemplate.review({
+//     document: {
+//         title: 'Document X',
+//         description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.',
+//         status: 'IN_REVIEW',
+//     },
+//     dueDate: '08/01/2025',
+//     orgName: 'ISMS Solumada',
+//     owner: {
+//         email: 'njatotianafiononana@gmail.com',
+//         name: 'Njato',
+//     },
+//     reviewer: {
+//         name: 'Njato',
+//     },
+//     reviewLink: 'http://localhost:3000/review',
+//     viewDocLink: 'http://localhost:3000/document/1',
+//     year: '2025',
+// }).then((res) => console.log(res));
+
+EmailTemplate.resetPassword({
+    user: {
+        name: 'Njato',
+    },
+    resetLink: 'http://localhost:3000/document/1',
+    year: '2025',
+    orgName: 'ISMS SOLUMADA',
 }).then((res) => console.log(res));
 
 export default router;
