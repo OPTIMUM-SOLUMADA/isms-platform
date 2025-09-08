@@ -431,6 +431,8 @@
         "edit": {
             "title": "Modifier le document",
             "subtitle": "Modifier les informations du document",
+            "fetching": "Récupération des données du document...",
+            "loading": "Chargement du document...",
             "form": {
                 "title": "Mettez à jour les informations du document",
                 "actions": {
@@ -872,6 +874,18 @@
                 "in_review": "En révision",
                 "approved": "Approuvé",
                 "expired": "Expiré"
+            },
+            "notFound": {
+                "title": "Document non trouvé",
+                "description": "Le document que vous recherchez n'existe pas.",
+                "actions": {
+                    "goBack": {
+                        "label": "Retourner à la liste des documents"
+                    },
+                    "contactSupport": {
+                        "label": "Contacter le support"
+                    }
+                }
             }
         },
         "form": {

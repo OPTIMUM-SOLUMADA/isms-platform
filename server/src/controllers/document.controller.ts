@@ -77,7 +77,10 @@ export class DocumentController {
         try {
             const document = await this.service.getDocumentById(req.params.id!);
             if (!document) {
-                res.status(404).json({ error: 'Document not found' });
+                res.status(404).json({
+                    error: 'Document not found',
+                    code: 'ERR_DOCUMENT_NOT_FOUND',
+                });
             } else {
                 res.json(document);
             }
