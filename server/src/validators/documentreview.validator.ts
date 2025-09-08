@@ -7,11 +7,11 @@ export const documentReviewCreateSchema = Joi.object({
     reviewer: Joi.string().optional().default(''),
     dueDate: Joi.date().iso().required().messages({
         'string.empty': 'Due date is required',
-    })
+    }),
 });
 
 export const documentReviewUpdateSchema = Joi.object({
-    name: Joi.string().trim().optional().messages({
+    id: Joi.string().trim().optional().messages({
         'string.empty': 'Name is required',
     }),
     description: Joi.string().optional().default(''),

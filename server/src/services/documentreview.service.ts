@@ -28,6 +28,13 @@ export class DocumentReviewService {
         }
     }
 
+    async update(id: string, data: Prisma.DocumentReviewUpdateInput): Promise<DocumentReview> {
+        return prisma.documentReview.update({
+            where: { id },
+            data,
+        });
+    }
+
     // async findByName(name: string): Promise<DocumentType | null> {
     //     return prisma.documentType.findUnique({
     //         where: { name },
@@ -39,13 +46,6 @@ export class DocumentReviewService {
     //     return prisma.documentType.findUnique({
     //         where: { id },
     //         include: { documents: true },
-    //     });
-    // }
-
-    // async update(id: string, data: Prisma.DocumentTypeUpdateInput): Promise<DocumentType> {
-    //     return prisma.documentType.update({
-    //         where: { id },
-    //         data,
     //     });
     // }
 

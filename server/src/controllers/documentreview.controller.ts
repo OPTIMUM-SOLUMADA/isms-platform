@@ -27,6 +27,18 @@ export class DocumentReviewController {
         }
     }
 
+    async update(req: Request, res: Response) {
+        try {
+            console.log('req', req.body);
+            const type = await service.update(req.params.id!, req.body);
+            console.log('req 1', req.body);
+
+            return res.json(type);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
     // async findById(req: Request, res: Response) {
     //     try {
     //         const type = await service.findById(req.params.id!);
@@ -34,15 +46,6 @@ export class DocumentReviewController {
     //         return res.json(type);
     //     } catch (error: any) {
     //         return res.status(500).json({ error: error.message });
-    //     }
-    // }
-
-    // async update(req: Request, res: Response) {
-    //     try {
-    //         const type = await service.update(req.params.id!, req.body);
-    //         return res.json(type);
-    //     } catch (error: any) {
-    //         return res.status(400).json({ error: error.message });
     //     }
     // }
 
