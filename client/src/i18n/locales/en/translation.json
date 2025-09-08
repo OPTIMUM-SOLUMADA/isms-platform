@@ -111,7 +111,9 @@
             "buttonNewReview": "Start new review",
             "viewDoc": "View Document",
             "addComment": "Add comment",
-            "assignReview": "Assign Review"
+            "assignReview": "Assign Review",
+            "save": "Enregistrer",
+            "cancel": "Annuler"
         },
         "pending": "Pending",
         "pendingReview": "Pending Review",
