@@ -156,7 +156,7 @@ export type ReviewItem = {
 
 export enum RoleType {
   ADMIN = "ADMIN",
-  // CONTRIBUTOR = "CONTRIBUTOR",
+  CONTRIBUTOR = "CONTRIBUTOR",
   REVIEWER = "REVIEWER",
   VIEWER = "VIEWER",
 }

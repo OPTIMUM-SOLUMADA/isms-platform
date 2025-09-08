@@ -14,6 +14,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetDocument } from './DocumentDetailPage';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { RequiredIndicatorInfo } from '@/components/Required';
+import CircleLoading from '@/components/loading/CircleLoading';
+import ItemNotFound from '../ItemNotFound';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -26,7 +28,7 @@ export default function DocumentEditPage() {
 
     const params = useParams();
 
-    const { data: doc, isLoading, isError } = useGetDocument(params.id);
+    const { data: doc, isLoading, isError, error } = useGetDocument(params.id);
 
     const formRef = useRef<EditDocumentFormRef>(null);
 
@@ -44,14 +46,27 @@ export default function DocumentEditPage() {
     }, [updateDocument, doc, navigate]);
 
 
-    if (isLoading) return <>Loading...</>;
+    if (isLoading) return (
+        <WithTitle title={t("document.edit.fetching")}>
+            <CircleLoading
+                className='flex-grow'
+                text={t("document.edit.loading")}
+            />
+        </WithTitle>
+    );
 
-    if (isError) return (
+    if (isError && error && !doc) return error.status === 404 ? (
+        <WithTitle title={t("common.document.notFound.title")}>
+            <ItemNotFound
+                title={t("common.document.notFound.title")}
+                description={t("common.document.notFound.description")}
+                actionLabel={t("common.document.notFound.actions.goBack.label")}
+                onActionClick={() => navigate("/documents")}
+            />
+        </WithTitle>
+    ) : (
         <ErrorDisplay />
-    )
-
-    if (!doc) return <p>Document not found.</p>;
-
+    );
 
     return (
         <WithTitle title={t("document.edit.title")}>
@@ -67,32 +82,24 @@ export default function DocumentEditPage() {
 
                 {/* Documents Edit */}
                 <Card className='flex-grow'>
-                    {document ? (
-                        <>
-                            <CardHeader className='border-b card-header-bg'>
-                                <CardTitle className='text-lg font-medium'>{t("document.edit.form.title")}</CardTitle>
-                                <CardDescription>
-                                    <RequiredIndicatorInfo />
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className='pt-4 lg:px-20 px-10'>
-                                <EditDocumentForm
-                                    doc={doc}
-                                    ref={formRef}
-                                    isoClauses={clauses}
-                                    types={types}
-                                    users={users}
-                                    departments={departments}
-                                    onSubmit={handleUpdateDocument}
-                                    isPending={isUpdating}
-                                />
-                            </CardContent>
-                        </>
-                    ) : (
-                        <div className='text-center m-auto text-2xl uppercase font-bold text-muted-foreground py-32'>
-                            {t("document.edit.notFound")}
-                        </div>
-                    )}
+                    <CardHeader className='border-b card-header-bg'>
+                        <CardTitle className='text-lg font-medium'>{t("document.edit.form.title")}</CardTitle>
+                        <CardDescription>
+                            <RequiredIndicatorInfo />
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className='pt-4 lg:px-20 px-10'>
+                        <EditDocumentForm
+                            doc={doc!}
+                            ref={formRef}
+                            isoClauses={clauses}
+                            types={types}
+                            users={users}
+                            departments={departments}
+                            onSubmit={handleUpdateDocument}
+                            isPending={isUpdating}
+                        />
+                    </CardContent>
                 </Card>
 
             </div>

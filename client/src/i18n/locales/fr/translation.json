@@ -187,6 +187,10 @@
             "reviewer": {
                 "title": "Reviseurs",
                 "value": "{{count}} reviseurs"
+            },
+            "contributor": {
+                "title": "Contributeurs",
+                "value": "{{count}} contributeurs"
             }
         },
         "filters": {
@@ -431,6 +435,8 @@
         "edit": {
             "title": "Modifier le document",
             "subtitle": "Modifier les informations du document",
+            "fetching": "Récupération des données du document...",
+            "loading": "Chargement du document...",
             "form": {
                 "title": "Mettez à jour les informations du document",
                 "actions": {
@@ -647,6 +653,24 @@
                 "view": {
                     "label": "Voir les utilisateurs"
                 }
+            }
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un département"
+            }
+        }
+    },
+    "role": {
+        "options": {
+            "admin": "Administrateur",
+            "viewer": "Visiteur",
+            "reviewer": "Reviseur",
+            "contributor": "Contributeur"
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un rôle"
             }
         }
     },
@@ -872,6 +896,18 @@
                 "in_review": "En révision",
                 "approved": "Approuvé",
                 "expired": "Expiré"
+            },
+            "notFound": {
+                "title": "Document non trouvé",
+                "description": "Le document que vous recherchez n'existe pas.",
+                "actions": {
+                    "goBack": {
+                        "label": "Retourner à la liste des documents"
+                    },
+                    "contactSupport": {
+                        "label": "Contacter le support"
+                    }
+                }
             }
         },
         "form": {

@@ -40,4 +40,5 @@ export type AccessPermission =
     | "reviews.page.access"
     | "compliance.page.access"
     | "users.page.access"
+    | "settings.page.access"
     | "audit.page.access";

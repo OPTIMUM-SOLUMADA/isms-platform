@@ -132,7 +132,7 @@ const Table = ({
             cell: ({ row }) => {
                 const role = row.getValue<string>("role") as RoleType;
                 return <Badge className={cn(userRoleColors[role], "uppercase")}>
-                    {t(`user.role.${role.toLowerCase()}`)}
+                    {t(`role.options.${role.toLowerCase()}`)}
                 </Badge>;
             },
         },
@@ -144,6 +144,7 @@ const Table = ({
         {
             id: "actions",
             header: t("user.table.columns.actions"),
+            size: 70,
             cell: ({ row }) => {
                 const user = row.original;
                 return (

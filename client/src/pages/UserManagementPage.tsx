@@ -18,7 +18,7 @@ import { useUser } from '@/contexts/UserContext';
 import AddUserForm, { AddUserFormData } from '@/templates/forms/users/AddUserForm';
 import { UserTable } from '@/templates/table/UserTable';
 import { roles, RolesObject } from '@/constants/role';
-import { User } from '@/types';
+import { RoleType, User } from '@/types';
 import { UsersStatusObject, userStatus } from '@/constants/status';
 import SearchInput from '@/components/SearchInput';
 import { useUserUI } from '@/contexts/ui/UserUIContext';
@@ -29,6 +29,8 @@ import UpdateUserForm, { UpdateUserFormData } from '@/templates/forms/users/Edit
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { userRoleColors } from '@/constants/color';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -75,11 +77,12 @@ export default function UserManagementPage() {
     return matchesSearch && matchesRole && matchesDepartment && matchesStatus;
   }), [filterDepartment, filterRole, searchTerm, users, filterStatus]);
 
-  const roleStats = {
-    admin: users.filter(u => u.role === RolesObject.ADMIN).length,
-    reviewer: users.filter(u => u.role === RolesObject.REVIEWER).length,
-    viewer: users.filter(u => u.role === RolesObject.VIEWER).length
-  };
+  const roleStats: Record<RoleType, number> = {
+    ADMIN: users.filter(u => u.role === RolesObject.ADMIN).length,
+    CONTRIBUTOR: users.filter(u => u.role === RolesObject.CONTRIBUTOR).length,
+    REVIEWER: users.filter(u => u.role === RolesObject.REVIEWER).length,
+    VIEWER: users.filter(u => u.role === RolesObject.VIEWER).length
+  } as const;
 
   const handleAddUser = useCallback(async (newUser: AddUserFormData) => {
     const res = await createUser(newUser);
@@ -159,15 +162,15 @@ export default function UserManagementPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t("user.stats.total.title")}</p>
+                  <p className="text-sm text-primary">{t("user.stats.total.title")}</p>
                   <p className="text-2xl font-bold">{users.length}</p>
                 </div>
-                <Users className="h-8 w-8 text-blue-600" />
+                <Users className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -177,8 +180,14 @@ export default function UserManagementPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">{t(`user.stats.${role.toLowerCase()}.title`)}</p>
-                    <p className="text-2xl font-bold">{count}</p>
+                    <p className="text-sm text-gray-600">
+                      {t(`user.stats.${role.toLowerCase()}.title`)}
+                    </p>
+                    <p className={cn(
+                      "text-2xl font-bold",
+                      userRoleColors[role as RoleType],
+                      "bg-transparent"
+                    )}>{count}</p>
                   </div>
                   <Shield className="h-8 w-8 text-gray-400" />
                 </div>

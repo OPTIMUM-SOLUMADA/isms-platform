@@ -5,6 +5,7 @@ import Layout from '@/templates/layout/Layout';
 import LoginPage from '@/pages/auth/LoginPage';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
+import SettingsPage from '@/pages/SettingsPage';
 
 import { ProtectedRoute } from '@/components/routes/ProtectedRoute';
 import { PublicRoute } from '@/components/routes/PublicRoute';
@@ -140,6 +141,12 @@ const routeConfig: AppRoute[] = [
                 path: "audit",
                 permission: "audit.page.access",
                 children: [{ index: true, element: <AuditLogPage /> }],
+            },
+
+            {
+                path: "settings",
+                permission: "settings.page.access",
+                children: [{ index: true, element: <SettingsPage /> }],
             },
 
             // Special pages
