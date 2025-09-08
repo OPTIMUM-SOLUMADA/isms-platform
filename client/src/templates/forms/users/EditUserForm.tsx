@@ -12,6 +12,7 @@ import { roles } from '@/constants/role';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
 import ErrorCodeField from '@/components/ErrorCodeField';
+import { SelectWithButton } from '@/components/SelectWithButton';
 
 const updateUserSchema = z.object({
     id: z.string(),
@@ -93,22 +94,12 @@ const UpdateUserForm = ({
                         <FormItem>
                             <FormLabel>{t('user.forms.update.role.label')}</FormLabel>
                             <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
+                                <SelectWithButton
+                                    items={roles.map(role => ({ value: role, label: t(`role.options.${role.toLowerCase()}`) }))}
                                     value={field.value}
-                                    defaultValue={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('user.forms.update.role.placeholder')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {roles.map((role, index) => (
-                                            <SelectItem key={index} value={role}>
-                                                {t(`user.forms.update.role.options.${role.toLowerCase()}`)}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    placeholder={t('user.forms.update.role.placeholder')}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -123,22 +114,14 @@ const UpdateUserForm = ({
                         <FormItem>
                             <FormLabel>{t('user.forms.update.department.label')}</FormLabel>
                             <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
+                                <SelectWithButton
+                                    items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
                                     value={field.value}
-                                    defaultValue={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('user.forms.update.department.placeholder')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {departments.map((department, index) => (
-                                            <SelectItem key={index} value={department.id}>
-                                                {department.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    placeholder={t('user.forms.update.role.placeholder')}
+                                    onChange={field.onChange}
+                                    onAdd={() => { }}
+                                    addLabel={t('department.actions.add.label')}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
