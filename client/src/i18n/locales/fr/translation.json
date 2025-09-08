@@ -129,9 +129,11 @@
         "subtitle": "Gérer les révisions des documents",
         "button": {
             "buttonNewReview": "nouvelle évaluation",
-            "viewDoc": "Afficher le document",
-            "addComment": "Ajouter un commentaire",
-            "assignReview": "Attribuer une révision"
+            "viewDoc": "Voir document",
+            "addComment": "Commenter",
+            "assignReview": "Attribuer une révision",
+            "save": "Enregistrer",
+            "cancel": "Annuler"
         },
         "pending": "En attente",
         "pendingReview": "En attente de révision",

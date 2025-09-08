@@ -24,8 +24,8 @@ type Viewer = {
 type ViewerContextType = {
   viewers: ReviewItem[];
   isLoading: boolean;
-
   createViewer: (data: AddReviewFormData) => Promise<ReviewItem>;
+  updateComment: (id: string, comment: string) => Promise<ReviewItem>;
   selectedViewer: ReviewItem | null;
   setSelectedViewer: (viewer: ReviewItem) => void;
 };
@@ -79,35 +79,49 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
     [createViewerMutation]
   );
 
+
+  const updateCommentMutation = useMutation<
+    any, 
+    ApiAxiosError,
+    { id: string; comment: string }
+  >({
+    mutationFn: async ({ id, comment }) => await documentReviewService.updateComment(id, comment ),
+    onSuccess: (res) => {
+      setViewers((prev) => prev.map((viewer) => (
+        viewer.id === res.data.id ? ({ ...viewer, comment: res.data.comment }) : viewer))
+      );
+    },
+    onError: (err) => {
+      console.error(err);
+    }
+  })
+
+  const updateComment = useCallback(
+    async (id: string, comment: string): Promise<ReviewItem> => {
+      const res = await updateCommentMutation.mutateAsync({ id, comment });
+      // setViewers((prev) => prev.map((viewer) => (
+      //   viewer.id === res.data.id ? ({ ...viewer, comment: res.data.comment }) : viewer))
+      // );
+      return res.data; // ✅ renvoie bien un Viewer
+    },
+    [updateCommentMutation]
+  );
+
   const setSelectedViewer = useCallback((viewer: ReviewItem) => {
     _setSelectedViewer(viewer);
   });
 
-  // async (
-  //   data: Omit<Viewer, 'id' | 'createdAt'>
-  // ): Promise<Viewer> => {
-  //   console.log('data', data);
-
-  //   // ⚡ Ici tu peux remplacer par un appel API vers ton backend
-  //   const newViewer: Viewer = {
-  //     ...data,
-  //     id: Math.random().toString(36).substring(2, 9),
-  //     createdAt: new Date(),
-  //   };
-
-  //   setViewers((prev) => [...prev, newViewer]);
-
-  //   return newViewer;
-  // };
   const values = useMemo(
     () => ({
       viewers,
       isLoading,
       fetchUsers: refetchViewers,
       createViewer,
+      updateComment,
+      selectedViewer,
       setSelectedViewer,
     }),
-    [viewers, createViewer]
+    [viewers, createViewer, updateComment]
   );
 
   return (
