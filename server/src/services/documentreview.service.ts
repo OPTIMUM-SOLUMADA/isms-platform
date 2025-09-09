@@ -8,6 +8,67 @@ export class DocumentReviewService {
         });
     }
 
+    async findByIdWithIncludedData(id: string): Promise<DocumentReview | null> {
+        return prisma.documentReview.findUnique({
+            where: { id },
+            include: {
+                document: {
+                    include: {
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                                document: {
+                                    select: {
+                                        title: true,
+                                        description: true,
+                                        status: true,
+                                        isoClause: {
+                                            select: {
+                                                name: true,
+                                                code: true,
+                                            },
+                                        },
+                                        reviewers: {
+                                            include: {
+                                                user: {
+                                                    select: {
+                                                        name: true,
+                                                        email: true,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        isoClause: {
+                            select: {
+                                name: true,
+                                code: true,
+                            },
+                        },
+                    },
+                },
+                reviewer: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+    }
+
     async findAll(): Promise<DocumentReview[]> {
         try {
             return await prisma.documentReview.findMany({
@@ -35,57 +96,41 @@ export class DocumentReviewService {
         });
     }
 
-    // async findByName(name: string): Promise<DocumentType | null> {
-    //     return prisma.documentType.findUnique({
-    //         where: { name },
-    //         include: { documents: true },
-    //     });
-    // }
-
-    // async findById(id: string): Promise<DocumentType | null> {
-    //     return prisma.documentType.findUnique({
-    //         where: { id },
-    //         include: { documents: true },
-    //     });
-    // }
-
-    // async delete(id: string): Promise<DocumentType> {
-    //     return prisma.documentType.delete({
-    //         where: { id },
-    //     });
-    // }
-
-    // async init() {
-    //     const documentTypesList = [
-    //         { name: "Policy", description: "" },
-    //         { name: "Procedure", description: "" },
-    //         { name: "Plan", description: "" },
-    //         { name: "Guide", description: "" },
-    //         { name: "Framework", description: "" },
-    //     ];
-
-    //     const result: DocumentType[] = [];
-
-    //     for (const documentType of documentTypesList) {
-    //         const existing = await this.findByName(documentType.name);
-    //         if (!existing) {
-    //             const created = await this.create({
-    //                 name: documentType.name,
-    //                 description: documentType.description
-    //             });
-    //             result.push(created);
-    //         }
-    //     }
-
-    //     return result;
-    // }
-
-    async assignReviewersToDocument(documentId: string, reviewerIds: string[]) {
+    async assignReviewersToDocument(documentId: string, reviewerIds: string[], userId?: string) {
         return prisma.documentReview.createMany({
             data: reviewerIds.map((reviewerId) => ({
                 documentId: documentId,
                 reviewerId: reviewerId,
+                ...(userId ? { assignedById: userId } : {}),
             })),
+        });
+    }
+
+    async submitReviewDecision(
+        reviewId: string,
+        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision'>,
+    ) {
+        return prisma.documentReview.update({
+            where: { id: reviewId },
+            data,
+        });
+    }
+
+    async markAsCompleted(reviewId: string) {
+        return prisma.documentReview.update({
+            where: { id: reviewId },
+            data: {
+                isCompleted: true,
+                reviewDate: new Date(),
+            },
+        });
+    }
+
+    async findById(reviewId: string) {
+        return prisma.documentReview.findFirst({
+            where: {
+                id: reviewId,
+            },
         });
     }
 }

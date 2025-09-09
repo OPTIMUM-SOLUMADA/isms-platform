@@ -1,4 +1,10 @@
-import { DocumentReview, DocumentStatus, Prisma, ReviewFrequency } from '@prisma/client';
+import {
+    DocumentReview,
+    DocumentStatus,
+    Prisma,
+    ReviewDecision,
+    ReviewFrequency,
+} from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 import { DocumentOwnerService } from './documentowner.service';
@@ -260,7 +266,8 @@ export class DocumentService {
         }
 
         const approvedReviews = reviews.filter(
-            (r) => r.documentId === doc.id && r.isCompleted && r.isApproved,
+            (r) =>
+                r.documentId === doc.id && r.isCompleted && r.decision === ReviewDecision.APPROVE,
         );
 
         if (approvedReviews.length === doc.reviewers.length) {

@@ -69,9 +69,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  metadata          Json?
-  documentOwners    DocumentOwner[]    @relation("DocumentOwnerUser")
-  documentReviewers DocumentReviewer[] @relation("DocumentReviewerUser")
+  metadata                Json?
+  documentOwners          DocumentOwner[]    @relation("DocumentOwnerUser")
+  documentReviewers       DocumentReviewer[] @relation("DocumentReviewerUser")
+  assignedDocumentReviews DocumentReview[]   @relation("Assigner")
 
   @@index([email, isActive])
   @@index([role])
@@ -201,19 +202,28 @@ model DocumentVersion {
 // ===========================================================================================
 // REVIEWS SYSTEM, APPROVAL AND NOTIFICATIONS
 // ===========================================================================================
+enum ReviewDecision {
+  APPROVE
+  REJECT
+  REQUEST_CHANGES
+}
 
 // Ce modèle est plus robuste et inclut l'état de la révision et les commentaire
 model DocumentReview {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  documentId  String    @db.ObjectId
-  reviewerId  String    @db.ObjectId
-  comment     String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
-  isApproved  Boolean? // Ajouté : Indique si le réviseur a approuvé
-  isCompleted Boolean   @default(false) // Ajouté : pour suivre si la tâche est terminée
-  reviewDate  DateTime? // Ajouté : La date à laquelle la révision a été effectuée
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  documentId   String          @db.ObjectId
+  reviewerId   String          @db.ObjectId
+  assignedById String?         @db.ObjectId
+  comment      String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  decision     ReviewDecision?
+  isCompleted  Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
+  reviewDate   DateTime? // Ajouté : La date à laquelle la révision a été effectuée
 
-  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  reviewer User     @relation(fields: [reviewerId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  reviewer   User     @relation(fields: [reviewerId], references: [id])
+  assignedBy User?    @relation("Assigner", fields: [assignedById], references: [id])
+
+  createdAt DateTime @default(now())
 
   @@index([documentId])
   @@index([reviewerId])
