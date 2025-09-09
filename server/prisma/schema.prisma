@@ -201,15 +201,21 @@ model DocumentVersion {
 // ===========================================================================================
 // REVIEWS SYSTEM, APPROVAL AND NOTIFICATIONS
 // ===========================================================================================
+enum ReviewDecision {
+  APPROVE
+  REJECT
+  REQUEST_CHANGES
+}
 
 // Ce modèle est plus robuste et inclut l'état de la révision et les commentaire
 model DocumentReview {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  documentId  String    @db.ObjectId
-  reviewerId  String    @db.ObjectId
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String          @db.ObjectId
+  reviewerId  String          @db.ObjectId
   comment     String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  decision    ReviewDecision?
   isApproved  Boolean? // Ajouté : Indique si le réviseur a approuvé
-  isCompleted Boolean   @default(false) // Ajouté : pour suivre si la tâche est terminée
+  isCompleted Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
   reviewDate  DateTime? // Ajouté : La date à laquelle la révision a été effectuée
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)

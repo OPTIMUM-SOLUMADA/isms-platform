@@ -3,7 +3,7 @@ import { DocumentController } from '@/controllers/document.controller';
 import { validate } from '@/middlewares/validate';
 import { documentCreateSchema } from '@/validators/document.validator';
 import { uploadSingleDocument } from '@/middlewares/upload-document';
-import { EmailTemplate } from '@/configs/email-template';
+// import { EmailTemplate } from '@/configs/email-template';
 
 const router = express.Router();
 const controller = new DocumentController();
@@ -43,15 +43,17 @@ router.put('/unpublish/:id', controller.unpublish.bind(controller));
 //     reviewLink: 'http://localhost:3000/review',
 //     viewDocLink: 'http://localhost:3000/document/1',
 //     year: '2025',
+//     headerDescription: 'Automated email',
 // }).then((res) => console.log(res));
 
-EmailTemplate.resetPassword({
-    user: {
-        name: 'Njato',
-    },
-    resetLink: 'http://localhost:3000/document/1',
-    year: '2025',
-    orgName: 'ISMS SOLUMADA',
-}).then((res) => console.log(res));
+// EmailTemplate.resetPassword({
+//     user: {
+//         name: 'Njato',
+//     },
+//     resetLink: 'http://localhost:3000/document/1',
+//     year: '2025',
+//     orgName: 'ISMS SOLUMADA',
+//     headerDescription: 'Automated email',
+// }).then((res) => console.log(res));
 
 export default router;

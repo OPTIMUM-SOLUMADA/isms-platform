@@ -154,6 +154,7 @@ export class AuthController {
                 year: new Date().getFullYear().toString(),
                 user: { name: user.name },
                 resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`,
+                headerDescription: '',
             });
 
             await emailService.sendMail({
@@ -243,6 +244,13 @@ export class AuthController {
             }
 
             if (user.passwordResetToken !== resetToken) {
+                // remove passwordResetToken from user
+                if (user.passwordResetToken !== null) {
+                    await userService.updateUser(user.id, {
+                        passwordResetToken: null,
+                    });
+                }
+
                 res.status(400).json({
                     error: 'Link has expired',
                     code: 'ERR_RESET_TOKEN_EXPIRED',

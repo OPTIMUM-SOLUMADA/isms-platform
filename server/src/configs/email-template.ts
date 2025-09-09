@@ -1,10 +1,16 @@
 import { renderTemplate } from '@/utils/email-template';
 import { Document, User } from '@prisma/client';
 
-type CommonData = {
+type HeaderData = {
     orgName: string;
+    headerDescription: string;
+};
+
+type FooterData = {
     year: string;
 };
+
+type CommonData = HeaderData & FooterData;
 
 export const EmailTemplate = {
     test: (data: { username: string }) => renderTemplate('fr', 'isms_test_email', data),
