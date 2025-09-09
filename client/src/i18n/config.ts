@@ -5,7 +5,13 @@ import { initReactI18next } from 'react-i18next';
 import enTranslations from './locales/en/translation.json';
 import frTranslations from './locales/fr/translation.json';
 
-const resources = {
+type Language = 'en' | 'fr';
+export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
+    { code: 'en', label: 'English', flag: '🇬🇧' },
+    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+];
+
+const resources: Record<Language, any> = {
     en: {
         translation: enTranslations
     },
