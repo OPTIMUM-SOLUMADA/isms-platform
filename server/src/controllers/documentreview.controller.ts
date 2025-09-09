@@ -29,9 +29,7 @@ export class DocumentReviewController {
 
     async update(req: Request, res: Response) {
         try {
-            console.log('req', req.body);
             const type = await service.update(req.params.id!, req.body);
-            console.log('req 1', req.body);
 
             return res.json(type);
         } catch (error: any) {
