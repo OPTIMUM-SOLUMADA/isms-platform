@@ -38,7 +38,7 @@ const initializeI18n = async () => {
         .use(initReactI18next)
         .init({
             resources,
-            fallbackLng: 'fr',
+            fallbackLng: 'en',
             supportedLngs: ['en', 'fr'],
 
             interpolation: {
@@ -49,7 +49,5 @@ const initializeI18n = async () => {
 
 // Initialize and export
 initializeI18n();
-
-console.log(i18n.language);
 
 export default i18n;

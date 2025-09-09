@@ -129,7 +129,8 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             const res = await documentService.getStats();
             return res.data;
         },
-        staleTime: 1000 * 60, // cache data for 1 min
+        staleTime: 1000 * 60 * 3, // cache data for 1 min
+
     });
 
     useEffect(() => {
