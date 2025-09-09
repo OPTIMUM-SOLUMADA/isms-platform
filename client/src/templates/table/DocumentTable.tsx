@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Edit, Trash2, Eye, FilePlus, Files } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ interface DocumentActionsCell {
     onView?: (user: Document) => void;
 }
 
-const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
+const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
@@ -50,6 +50,8 @@ const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
         setCurrentDocument(doc);
         navigate(`edit/${doc.id}`);
     };
+
+    console.log('rr')
 
     return (
         <>
@@ -86,7 +88,7 @@ const DocumentActionsCell = ({ doc, onView }: DocumentActionsCell) => {
             />
         </>
     );
-};
+});
 
 // UserTable component using the reusable DataTable
 interface UserTableProps {

@@ -14,6 +14,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { useTranslation } from 'react-i18next';
 import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -46,6 +47,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          {/* Langues switcher */}
+          <LanguageSwitcher />
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
