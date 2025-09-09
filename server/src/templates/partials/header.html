@@ -1,8 +1,28 @@
+<!-- container table for the header -->
+<!-- Replace {{orgName}} with your organization name -->
 <header>
-    <img src="https://dtb.solumada.mg/assets/images/solumada-logo.png" alt="{{orgName}} Logo"
-        style="height:40px; width:auto; border-radius:4px;">
-    <div>
-        <h1 style="margin:0;">{{orgName}}</h1>
-        <small>Automated Review Reminder</small>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="header">
+        <tr>
+            <td style="padding:20px 28px;">
+                <!-- inner table with two columns -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                        <!-- Left column: logo -->
+                        <td align="left" valign="middle" style="padding:0;">
+                            <img src="https://dtb.solumada.mg/assets/images/solumada-logo.png" alt="{{orgName}} Logo">
+                        </td>
+                        <!-- Right column: title and subtitle -->
+                        <td align="right" valign="middle" style="padding:0;">
+                            <h1>
+                                {{orgName}}
+                            </h1>
+                            <small>
+                                {{headerDescription}}
+                            </small>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </header>
