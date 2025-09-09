@@ -39,31 +39,66 @@ export class DocumentReviewController {
         }
     }
 
-    // async findById(req: Request, res: Response) {
-    //     try {
-    //         const type = await service.findById(req.params.id!);
-    //         if (!type) return res.status(404).json({ error: 'Type not found' });
-    //         return res.json(type);
-    //     } catch (error: any) {
-    //         return res.status(500).json({ error: error.message });
-    //     }
-    // }
+    async findById(req: Request, res: Response) {
+        try {
+            const type = await service.findByIdWithIncludedData(req.params.id!);
+            if (!type) {
+                res.status(404).json({
+                    error: 'Review not found',
+                    code: 'ERR_DOCUMENT_REVIEW_NOT_FOUND',
+                });
+                return;
+            }
+            return res.json(type);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 
-    // async delete(req: Request, res: Response) {
-    //     try {
-    //         await service.delete(req.params.id!);
-    //         return res.status(204).send();
-    //     } catch (error: any) {
-    //         return res.status(400).json({ error: error.message });
-    //     }
-    // }
+    async makeDecision(req: Request, res: Response) {
+        try {
+            const { decision, comment } = req.body;
 
-    // async initialize(req: Request, res: Response) {
-    //     try {
-    //         const types = await service.init();
-    //         return res.json(types);
-    //     } catch (error: any) {
-    //         return res.status(400).json({ error: error.message });
-    //     }
-    // }
+            const review = await service.findById(req.params.id!);
+            if (!review) {
+                res.status(404).json({
+                    error: 'Review not found',
+                    code: 'ERR_DOCUMENT_REVIEW_NOT_FOUND',
+                });
+                return;
+            }
+
+            const type = await service.submitReviewDecision(req.params.id!, {
+                decision,
+                comment,
+            });
+            return res.json(type);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
+    async markAsCompleted(req: Request, res: Response) {
+        try {
+            const review = await service.findById(req.params.id!);
+
+            if (!review) {
+                res.status(404).json({
+                    error: 'Review not found',
+                    code: 'ERR_DOCUMENT_REVIEW_NOT_FOUND',
+                });
+                return;
+            }
+
+            if (review.isCompleted) {
+                res.status(400).json({ error: 'Document review already completed' });
+                return;
+            }
+
+            const type = await service.markAsCompleted(req.params.id!);
+            return res.json(type);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
 }

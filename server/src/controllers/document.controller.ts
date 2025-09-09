@@ -29,8 +29,6 @@ export class DocumentController {
                 reviewFrequency,
             } = req.body;
 
-            console.log(req.body);
-
             const fileUrl = req.file ? req.file.filename : null;
 
             const createdDoc = await this.service.createDocumentWithOwnersAndReviewers(
@@ -61,6 +59,7 @@ export class DocumentController {
                 await this.reviewService.assignReviewersToDocument(
                     createdDoc.id,
                     reviewers.split(','),
+                    req.user?.id,
                 );
             }
 

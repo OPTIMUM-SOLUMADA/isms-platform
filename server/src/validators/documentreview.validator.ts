@@ -1,4 +1,7 @@
+import { ReviewDecision } from '@prisma/client';
 import Joi from 'joi';
+
+const ReviewDecisions = Object.values(ReviewDecision);
 
 export const documentReviewCreateSchema = Joi.object({
     document: Joi.string().trim().required().messages({
@@ -15,4 +18,15 @@ export const documentReviewUpdateSchema = Joi.object({
         'string.empty': 'Name is required',
     }),
     description: Joi.string().optional().default(''),
+});
+
+export const documentReviewMakeDecisionSchema = Joi.object({
+    decision: Joi.string()
+        .valid(...ReviewDecisions)
+        .required()
+        .messages({
+            'string.empty': 'Decision is required',
+            'any.only': 'Invalid decision',
+        }),
+    comment: Joi.string().optional().default(''),
 });
