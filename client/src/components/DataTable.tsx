@@ -141,9 +141,9 @@ export function DataTable<TData, TValue>({
         : globalFilter;
 
     return (
-        <Card className={cn("w-full flex flex-col", className)}>
+        <Card className={cn("w-full flex flex-col shadow-none", className)}>
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                {title && <CardTitle className="text-xl">{title}</CardTitle>}
+                {title && <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>}
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {enableSearch && (
                         <Input
@@ -210,7 +210,7 @@ export function DataTable<TData, TValue>({
             </CardHeader>
 
             <CardContent className="flex-1 flex flex-col flex-grow">
-                <div className="rounded-lg border overflow-hidden flex flex-col flex-grow">
+                <div className="rounded-lg border overflow-hidden flex flex-col flex-grow bg-white">
                     <div className="flex-grow overflow-auto rounded-lg">
                         <Table className="w-full">
                             <TableHeader>

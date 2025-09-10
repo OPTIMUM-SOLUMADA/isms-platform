@@ -47,7 +47,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           <img
             src="/logo/solumada-long.png"
             alt="logo"
-            className="w-auto h-10 rounded-full object-contain"
+            className="w-auto h-10 rounded-full object-contain max-sm:hidden"
           />
         </div>
 

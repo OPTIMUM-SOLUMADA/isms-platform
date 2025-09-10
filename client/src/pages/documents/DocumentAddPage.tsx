@@ -39,8 +39,8 @@ export default function DocumentAddPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <BackButton />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t("document.add.title")}</h1>
-            <p className="text-gray-600 mt-1">{t("document.add.subtitle")}</p>
+            <h1 className="page-title">{t("document.add.title")}</h1>
+            <p className="page-description">{t("document.add.subtitle")}</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ export default function DocumentAddPage() {
               <RequiredIndicatorInfo />
             </CardDescription>
           </CardHeader>
-          <CardContent className='pt-4 lg:px-20 px-10'>
+          <CardContent className='pt-4 lg:px-20 px-10 bg-white'>
             <AddDocumentForm
               ref={formRef}
               isoClauses={clauses}
