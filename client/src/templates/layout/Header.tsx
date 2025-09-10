@@ -43,6 +43,12 @@ export function Header({ onMenuClick }: HeaderProps) {
           >
             <Menu className="h-5 w-5" />
           </Button>
+          {/* Logo */}
+          <img
+            src="/logo/solumada-long.png"
+            alt="logo"
+            className="w-auto h-10 rounded-full object-contain max-sm:hidden"
+          />
         </div>
 
         {/* Right side */}

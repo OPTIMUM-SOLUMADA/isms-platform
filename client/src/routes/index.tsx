@@ -9,17 +9,12 @@ import SettingsPage from '@/pages/SettingsPage';
 
 import { ProtectedRoute } from '@/components/routes/ProtectedRoute';
 import { PublicRoute } from '@/components/routes/PublicRoute';
-import { UserProvider } from "@/contexts/UserContext";
-import { DepartmentProvider } from "@/contexts/DepartmentContext";
-import { UserUIProvider } from "@/contexts/ui/UserUIContext";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import AccessPermissionRoute from "@/components/routes/AccessPermissionRoute";
 import NotFoundPage from "@/pages/404";
 import { AccessPermission } from "@/types/role";
-import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
-import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
-import { DocumentProvider } from "@/contexts/DocumentContext";
-import { ViewerProvider } from "@/contexts/DocumentReviewContext";
+import { AppProviders } from "@/providers/AppProviders";
+import { PageSkeleton } from "@/components/page-skeleton";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -29,17 +24,10 @@ const DocumentEditPage = lazy(() => import('@/pages/documents/DocumentEditPage')
 const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage'))
 
 const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
-const UserManagementPage = lazy(() => import('@/pages/UserManagementPage'));
+const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
 const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage'));
-const UserProfilePage = lazy(() => import('@/pages/UserProfilePage'));
-
-
-const Loading = () => (
-    <div className="flex justify-center items-center h-screen">
-        Loading...
-    </div>
-);
+const UserProfilePage = lazy(() => import('@/pages/users/UserProfilePage'));
 
 interface AppRoute {
     type?: "public" | "protected";
@@ -60,21 +48,9 @@ const routeConfig: AppRoute[] = [
         type: "protected",
         element: (
             <ProtectedRoute>
-                <DepartmentProvider>
-                    <UserProvider>
-                        <DocumentTypeProvider>
-                            <ISOClauseProvider>
-                                <DocumentProvider>
-                                    <ViewerProvider>
-                                        <UserUIProvider>
-                                            <Layout />
-                                        </UserUIProvider>
-                                    </ViewerProvider>
-                                </DocumentProvider>
-                            </ISOClauseProvider>
-                        </DocumentTypeProvider>
-                    </UserProvider>
-                </DepartmentProvider>
+                <AppProviders>
+                    <Layout />
+                </AppProviders>
             </ProtectedRoute>
         ),
         children: [
@@ -161,7 +137,7 @@ const routeConfig: AppRoute[] = [
 const renderRoutes = (routes: AppRoute[]): React.ReactNode =>
     routes.map(({ path, element, type, permission, wrapper, children, index }) => {
         const WrappedElement = (
-            <Suspense fallback={<Loading />}>{wrapper ?? element}</Suspense>
+            <Suspense fallback={<PageSkeleton />}>{wrapper ?? element}</Suspense>
         );
 
         let routeElement: React.ReactNode = WrappedElement;

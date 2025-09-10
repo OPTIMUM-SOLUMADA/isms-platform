@@ -47,10 +47,11 @@ a:hover {
   :root {
     --theme-1: 124 40% 41%;
     --theme-2: 231 44% 36%;
+    --theme-2-dark: 231 37% 35%;
     --theme-2-muted: 231 35% 44%;
     --theme-danger: 350 98% 52%;
     --theme-warning: 55 98% 46%;
-    --theme: 124 32% 45%;
+    --theme: 117 45% 38%;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -63,7 +64,7 @@ a:hover {
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
+    --accent: 0 0% 93%;
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -77,9 +78,7 @@ a:hover {
     --chart-5: 27 87% 67%;
     --radius: 0rem;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -91,5 +90,14 @@ a:hover {
   body {
     background-image: var(--bits-gradients-checkoutIridescentBgLight);
     @apply text-foreground min-h-screen;
+  }
+}
+
+@layer utilities {
+  .page-title {
+    @apply text-2xl font-bold;
+  }
+  .page-description {
+    @apply text-sm text-muted-foreground font-normal;
   }
 }

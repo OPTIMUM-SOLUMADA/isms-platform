@@ -111,8 +111,8 @@ export default function DocumentDetailPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <BackButton />
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t("document.view.title", { name: document.title })}</h1>
-              <p className="text-gray-600 mt-1">{document.description}</p>
+              <h1 className="page-title">{t("document.view.title", { name: document.title })}</h1>
+              <p className="page-description">{document.description}</p>
             </div>
           </div>
 

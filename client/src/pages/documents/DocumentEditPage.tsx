@@ -75,8 +75,8 @@ export default function DocumentEditPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <BackButton />
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{t("document.edit.title")}</h1>
-                        <p className="text-gray-600 mt-1">{t("document.edit.subtitle")}</p>
+                        <h1 className="page-title">{t("document.edit.title")}</h1>
+                        <p className="page-description">{t("document.edit.subtitle")}</p>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@ export default function DocumentEditPage() {
                             <RequiredIndicatorInfo />
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className='pt-4 lg:px-20 px-10'>
+                    <CardContent className='pt-4 lg:px-20 px-10 bg-white'>
                         <EditDocumentForm
                             doc={doc!}
                             ref={formRef}

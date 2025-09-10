@@ -26,6 +26,7 @@ export default {
         theme: 'hsl(var(--theme))',
         "theme-1": 'hsl(var(--theme-1))',
         "theme-2": 'hsl(var(--theme-2))',
+        "theme-2-dark": 'hsl(var(--theme-2-dark))',
         "theme-2-muted": 'hsl(var(--theme-2-muted))',
         "theme-danger": 'hsl(var(--theme-danger))',
         "theme-warning": 'hsl(var(--theme-warning))',
@@ -92,6 +93,13 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      textShadow: {
+        sm: '1px 1px 0 #000',
+        DEFAULT: '2px 2px 0 #000',
+        lg: '3px 3px 0 #000',
+        classic3d:
+          '1px 1px 0 #000, 2px 2px 0 #000, 3px 3px 0 #000, 4px 4px 0 #000',
+      },
     },
   },
   plugins: [
@@ -117,7 +125,7 @@ export default {
           "@apply !border-theme-danger/50 focus:!border-theme-danger/70 focus:!ring-theme-danger/30": {}
         },
         ".card-header-bg": {
-          "@apply bg-gradient-to-br from-white to-muted": {}
+          "@apply bg-gradient-to-b from-white to-muted": {}
         }
       })
     })

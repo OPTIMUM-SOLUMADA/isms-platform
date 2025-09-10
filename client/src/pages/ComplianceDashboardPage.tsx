@@ -44,8 +44,8 @@ export default function ComplianceDashboardPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Compliance Dashboard</h1>
-            <p className="text-gray-600 mt-1">ISO 27001 compliance status and progress tracking</p>
+            <h1 className="page-title">Compliance Dashboard</h1>
+            <p className="page-description">ISO 27001 compliance status and progress tracking</p>
           </div>
           <Button className="flex items-center space-x-2">
             <FileText className="h-4 w-4" />
