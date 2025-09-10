@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ReviewForm from "@/templates/forms/reviews/ReviewForm";
+import ReviewForm from "@/templates/reviews/forms/ReviewForm";
 import { useUser } from "@/contexts/UserContext";
 import { useDocument } from "@/contexts/DocumentContext";
 // import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
@@ -109,10 +109,10 @@ export default function ReviewWorkflowPage() {
     [createViewer, setOpen, toast, t]
   );
 
-  const handleAddComment= useCallback(
+  const handleAddComment = useCallback(
     async (id: any, comment: any) => {
-      console.log('new ====> ',id,  comment);
-      
+      console.log('new ====> ', id, comment);
+
       const res = await updateComment(id, comment);
 
       if (res) {
@@ -181,14 +181,14 @@ export default function ReviewWorkflowPage() {
           {workflowStages.map((stage) => {
 
             console.log("stat", stage);
-            
+
             const count = viewers.filter(
               (item) => item.document.status === stage.id
             ).length;
             console.log("counr", count);
-            
+
             const Icon = getStageIcon(stage.id);
-            
+
 
             return (
               <Card key={stage.id}>
@@ -256,16 +256,16 @@ export default function ReviewWorkflowPage() {
               </TabsList>
               <div className="mt-6">
                 <div className="space-y-4">
-                  {filteredItems.map((item) =>{
-                    
-                    return <ReviewCard 
-                      key={item.id}  
-                      item={item} 
-                      t={t} 
-                      navigate={navigate} 
+                  {filteredItems.map((item) => {
+
+                    return <ReviewCard
+                      key={item.id}
+                      item={item}
+                      t={t}
+                      navigate={navigate}
                       onSubmit={handleAddComment} />;
-                    })
-                  } 
+                  })
+                  }
 
                   {filteredItems.length === 0 && (
                     <div className="text-center py-12">
@@ -317,7 +317,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
 
   const handleSave = () => {
     console.log('item =====', item.id, comment);
-    
+
     onSubmit(item.id, comment);
     setIsEditing(false);
   }
@@ -350,7 +350,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
               </div>
               <div className="flex items-center space-x-1">
                 <FileText className="h-4 w-4" />
-                <span>{ item.document.versions[0].version }</span>
+                <span>{item.document.versions[0].version}</span>
               </div>
             </div>
 
@@ -388,12 +388,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
               )}
             </div>
 
-              {/* ISO Clause */}
-              <div>
-                <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
-                  { item.document.isoClause.code } - { item.document.isoClause.name }
-                </span>
-              </div>
+            {/* ISO Clause */}
+            <div>
+              <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
+                {item.document.isoClause.code} - {item.document.isoClause.name}
+              </span>
+            </div>
           </div>
 
           {/* Right Side*/}
@@ -401,11 +401,11 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
             <Button className="h-50 " disabled>
               {item.status === "IN_REVIEW"
                 ? t("review.inProgress")
-                  : item.status === "APPROVED"
-                ? t("review.approved")
+                : item.status === "APPROVED"
+                  ? t("review.approved")
                   : item.status === "EXPIRED"
-                ? t("review.rejected")
-                  : t("review.pending")}
+                    ? t("review.rejected")
+                    : t("review.pending")}
             </Button>
             <Button
               variant="outline"

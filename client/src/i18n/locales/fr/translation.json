@@ -589,7 +589,7 @@
                 "type": "Type",
                 "isoClause": "Clause ISO / Control",
                 "status": "Statut",
-                "owner": "Propriétaire",
+                "owner": "Propriétaires",
                 "version": "Version",
                 "nextReview": "Prochaine révision",
                 "reviewDue": "Date de révision",

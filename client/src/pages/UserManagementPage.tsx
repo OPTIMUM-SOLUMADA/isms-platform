@@ -13,10 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useUser } from '@/contexts/UserContext';
-import AddUserForm, { AddUserFormData } from '@/templates/forms/users/AddUserForm';
-import { UserTable } from '@/templates/table/UserTable';
+import { UserTable } from '@/templates/users/table/UserTable';
 import { roles, RolesObject } from '@/constants/role';
 import { RoleType, User } from '@/types';
 import { UsersStatusObject, userStatus } from '@/constants/status';
@@ -25,7 +23,6 @@ import { useUserUI } from '@/contexts/ui/UserUIContext';
 import { useTranslation } from 'react-i18next';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';
-import UpdateUserForm, { UpdateUserFormData } from '@/templates/forms/users/EditUserForm';
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useNavigate } from 'react-router-dom';
@@ -46,23 +43,16 @@ export default function UserManagementPage() {
 
   const {
     users,
-    createUser,
-    updateUser,
     deleteUser,
-    createError,
-    isCreating,
-    isUpdating,
-    updateError,
     deleteError,
-    selectedUser,
-    setSelectedUser
   } = useUser();
 
   const { departments } = useDepartment();
 
   const {
-    isAddOpen, openAdd, closeAdd,
-    isEditOpen, openEdit, closeEdit
+    openAdd,
+    openEdit,
+    setCurrentUser
   } = useUserUI();
 
   const filteredUsers = useMemo(() => users.filter(user => {
@@ -84,31 +74,6 @@ export default function UserManagementPage() {
     VIEWER: users.filter(u => u.role === RolesObject.VIEWER).length
   } as const;
 
-  const handleAddUser = useCallback(async (newUser: AddUserFormData) => {
-    const res = await createUser(newUser);
-    if (res) {
-      closeAdd();
-      toast({
-        title: t("components.toast.success.title"),
-        description: t("components.toast.success.user.created"),
-        variant: "success",
-      })
-    };
-  }, [createUser, closeAdd, toast, t]);
-
-
-  const handleUpdateUser = useCallback(async (user: UpdateUserFormData) => {
-    const res = await updateUser(user);
-    if (res) {
-      closeEdit();
-      toast({
-        title: t("components.toast.success.title"),
-        description: t("components.toast.success.user.updated"),
-        variant: "success",
-      })
-    };
-  }, [updateUser, closeEdit, toast, t]);
-
   const handleDeleteUser = useCallback(async (user: User) => {
     const res = await deleteUser(user.id);
     if (res) {
@@ -122,9 +87,9 @@ export default function UserManagementPage() {
   }, [deleteUser, toast, t]);
 
   const handleOpenEditForm = useCallback(async (user: User) => {
-    setSelectedUser(user);
+    setCurrentUser(user);
     openEdit();
-  }, [openEdit, setSelectedUser]);
+  }, [openEdit, setCurrentUser]);
 
   useEffect(() => {
     if (deleteError) {
@@ -261,43 +226,6 @@ export default function UserManagementPage() {
           onView={handleOpenView}
           onMessage={handleOpenMessage}
         />
-
-        {/* Modal to add user */}
-        <Dialog open={isAddOpen} onOpenChange={closeAdd}>
-          <DialogContent className='bg-gray-50'>
-            <DialogHeader>
-              <DialogTitle>{t("user.forms.add.title")}</DialogTitle>
-              <DialogDescription>{t("user.forms.add.subtitle")}</DialogDescription>
-            </DialogHeader>
-            <AddUserForm
-              departments={departments}
-              onSubmit={handleAddUser}
-              onCancel={closeAdd}
-              isPending={isCreating}
-              error={createError}
-            />
-          </DialogContent>
-        </Dialog>
-
-        {/* Modal to edit user */}
-        {selectedUser && (
-          <Dialog open={isEditOpen} onOpenChange={closeEdit}>
-            <DialogContent className='bg-gray-50'>
-              <DialogHeader>
-                <DialogTitle>{t("user.forms.update.title")}</DialogTitle>
-                <DialogDescription>{t("user.forms.update.subtitle")}</DialogDescription>
-              </DialogHeader>
-              <UpdateUserForm
-                departments={departments}
-                onSubmit={handleUpdateUser}
-                onCancel={closeEdit}
-                isPending={isUpdating}
-                error={updateError}
-                user={selectedUser}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
 
       </div>
     </WithTitle>

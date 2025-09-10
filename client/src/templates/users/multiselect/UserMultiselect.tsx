@@ -23,6 +23,8 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { userRoleColors } from "@/constants/color"
 import type { User } from "@/types"
+import { usePermissions } from "@/hooks/use-permissions"
+import { useUserUI } from "@/contexts/ui/UserUIContext"
 
 interface UserMultiSelectProps {
     data: User[];
@@ -38,7 +40,8 @@ export default function UserMultiSelect({
     hasError = false,
 }: UserMultiSelectProps) {
     const id = useId();
-    const [open, setOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState<boolean>(false);
+    const { openAdd } = useUserUI();
 
     const selectedUsers = useMemo(
         () => data.filter((user) => value.includes(user.id)),
@@ -46,6 +49,7 @@ export default function UserMultiSelect({
     );
 
     const { t } = useTranslation();
+    const { hasActionPermission } = usePermissions();
 
     const toggleUser = (userId: string) => {
         if (value.includes(userId)) {
@@ -75,8 +79,7 @@ export default function UserMultiSelect({
                                     <Badge
                                         key={user.id}
                                         className={cn(
-                                            "flex items-center gap-1 px-2 py-0.5 text-xs font-normal",
-                                            userRoleColors[user.role]
+                                            "flex items-center gap-1 px-2 py-0.5 text-xs font-normal bg-theme-2/10 text-primary",
                                         )}
                                     >
                                         <UserAvatar
@@ -155,21 +158,26 @@ export default function UserMultiSelect({
                                     )
                                 })}
                             </CommandGroup>
-                            <CommandSeparator />
-                            <CommandGroup>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start font-normal"
-                                >
-                                    <PlusIcon
-                                        size={16}
-                                        className="opacity-60 mr-2"
-                                        aria-hidden="true"
-                                    />
-                                    {t("components.multiselect.user.addNew")}
-                                </Button>
-                            </CommandGroup>
+                            {hasActionPermission('user.create') && (
+                                <>
+                                    <CommandSeparator />
+                                    <CommandGroup>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="w-full justify-start font-normal"
+                                            onClick={openAdd}
+                                        >
+                                            <PlusIcon
+                                                size={16}
+                                                className="opacity-60 mr-2"
+                                                aria-hidden="true"
+                                            />
+                                            {t("components.multiselect.user.addNew")}
+                                        </Button>
+                                    </CommandGroup>
+                                </>
+                            )}
                         </CommandList>
                     </Command>
                 </PopoverContent>

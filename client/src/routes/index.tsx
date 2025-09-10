@@ -66,7 +66,9 @@ const routeConfig: AppRoute[] = [
                             <ISOClauseProvider>
                                 <DocumentProvider>
                                     <ViewerProvider>
-                                        <Layout />
+                                        <UserUIProvider>
+                                            <Layout />
+                                        </UserUIProvider>
                                     </ViewerProvider>
                                 </DocumentProvider>
                             </ISOClauseProvider>
@@ -124,9 +126,7 @@ const routeConfig: AppRoute[] = [
                     {
                         index: true,
                         element: (
-                            <UserUIProvider>
-                                <UserManagementPage />
-                            </UserUIProvider>
+                            <UserManagementPage />
                         ),
                     },
                     {

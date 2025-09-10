@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 
 type SidebarItemProps = {
@@ -149,7 +150,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           </div>
 
           {/* Navigation */}
-          <ScrollArea className="flex-1 px-4 py-6 space-y-2">
+          <ScrollArea className="flex-1 px-4 py-6 space-y-0">
             {filteredMenuItems.map((item) => {
               const Icon = item.icon;
 
@@ -158,19 +159,20 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) => cn(
-                    "w-full flex items-center gap-3 p-3 mb-1 h-20 text-left rounded-lg transition-colors duration-200 outline-transparent",
+                    "w-full flex items-center gap-3 p-3 h-22 text-left rounded-lg transition-colors duration-200 outline-transparent",
                     isActive
                       ? "bg-white/10 text-theme"
-                      : "text-gray-300 hover:bg-white/5 hover:text-white"
+                      : "text-gray-300 hover:bg-white/5 hover:text-white",
+                    "border-b border-theme-2-muted"
                   )}
                 >
-                  {({ isActive }) => (
+                  {({ isActive }) => !sidebarCollapsed ? (
                     <>
                       <Icon className={cn(
                         "h-6 w-6 shrink-0",
                         isActive ? "text-theme-1" : "text-gray-300"
                       )} />
-                      <div className={cn("flex-1", sidebarCollapsed && "hidden")}>
+                      <div className={cn("flex-1")}>
                         <div className="font-medium">{t(item.labelKey)}</div>
                         <div className={cn(
                           "text-xs mt-0.5 line-clamp-2 font-light",
@@ -178,6 +180,24 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                         )}>{t(item.descriptionKey)}</div>
                       </div>
                     </>
+                  ) : (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Icon className={cn(
+                          "h-6 w-6 shrink-0 aspect-square",
+                          isActive ? "text-theme-1" : "text-gray-300"
+                        )} />
+                      </HoverCardTrigger>
+                      <HoverCardContent side='left' sideOffset={16} className='bg-theme-2-muted rounded-lg border-theme-2'>
+                        <div className={cn("flex-1")}>
+                          <div className="font-medium text-muted">{t(item.labelKey)}</div>
+                          <div className={cn(
+                            "text-xs mt-0.5 line-clamp-2 font-light",
+                            isActive ? "text-theme-1" : "text-gray-400"
+                          )}>{t(item.descriptionKey)}</div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
                   )}
                 </NavLink>
               );

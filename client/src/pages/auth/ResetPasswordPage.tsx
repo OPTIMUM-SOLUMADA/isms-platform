@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import ResetPasswordForm, { type ResetFormData } from '@/templates/forms/ResetPasswordForm';
+import ResetPasswordForm, { type ResetFormData } from '@/templates/auth/forms/ResetPasswordForm';
 import AuthLayout from '@/templates/layout/AuthLayout';
 import { useCallback, useEffect, useState } from 'react';
 import AuthService from '@/services/authService';

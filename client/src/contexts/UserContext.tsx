@@ -3,8 +3,10 @@ import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiAxiosError } from "@/types/api";
 import { userService } from "@/services/userService";
-import type { AddUserFormData } from "@/templates/forms/users/AddUserForm";
-import type { UpdateUserFormData } from "@/templates/forms/users/EditUserForm";
+import type { AddUserFormData } from "@/templates/users/forms/AddUserForm";
+import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 // -----------------------------
 // Context Types
@@ -26,6 +28,10 @@ type UserContextType = {
     createError?: string | null;
     updateError?: string | null;
     deleteError?: string | null;
+    // success
+    createSuccess?: boolean;
+    updateSuccess?: boolean;
+    deleteSuccess?: boolean;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -42,6 +48,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     const [selectedUser, _setSelectedUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
+    const { toast } = useToast();
+    const { t } = useTranslation();
+
     const { data: usersResponse, refetch: refetchUsers } = useQuery<any, ApiAxiosError>({
         queryKey: ['users'],
         queryFn: async () => await userService.list(),
@@ -52,7 +61,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     useEffect(() => {
         if (usersResponse) {
             setUsers(usersResponse.data);
-             setIsLoading(false);
+            setIsLoading(false);
         }
     }, [usersResponse]);
 
@@ -60,6 +69,11 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         mutationFn: async (data) => await userService.create(data),
         onSuccess: (res) => {
             setUsers([...users, res.data]);
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.user.created"),
+                variant: "success",
+            });
         },
         onError: (err) => {
             console.error(err);
@@ -75,6 +89,11 @@ export const UserProvider = ({ children }: UserProviderProps) => {
             setUsers(prev => prev.map((user) => (
                 user.id === res.data.id ? ({ ...user, ...res.data }) : user))
             );
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.user.updated"),
+                variant: "success",
+            });
         },
         onError: (err) => {
             console.error(err);
@@ -85,6 +104,11 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         mutationFn: async ({ id }) => await userService.delete(id),
         onSuccess: (res) => {
             setUsers(prev => prev.filter(user => user.id !== res.data.id));
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.user.deleted"),
+                variant: "success",
+            });
         },
         onError: (err) => {
             console.error(err);
@@ -142,10 +166,13 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         setSelectedUser,
         selectedUser,
         isCreating: createUserMutation.isPending,
+        createSuccess: createUserMutation.isSuccess,
         createError: createUserMutation.error?.response?.data?.code ?? null,
         isUpdating: updateUserMutation.isPending,
+        updateSuccess: updateUserMutation.isSuccess,
         updateError: updateUserMutation.error?.response?.data?.code ?? null,
         isDeleting: deleteUserMutation.isPending,
+        deleteSuccess: deleteUserMutation.isSuccess,
         deleteError: deleteUserMutation.error?.response?.data?.code ?? null
     }), [createUser,
         refetchUsers,
@@ -157,10 +184,13 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         setSelectedUser,
         createUserMutation.isPending,
         createUserMutation.error,
+        createUserMutation.isSuccess,
         updateUserMutation.isPending,
         updateUserMutation.error,
+        updateUserMutation.isSuccess,
         deleteUserMutation.isPending,
-        deleteUserMutation.error
+        deleteUserMutation.error,
+        deleteUserMutation.isSuccess,
     ]);
 
     return (

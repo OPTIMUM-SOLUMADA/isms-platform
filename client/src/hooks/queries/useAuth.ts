@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import AuthService from "@/services/authService";
-import type { LoginFormData } from "@/templates/forms/LoginForm";
+import type { LoginFormData } from "@/templates/auth/forms/LoginForm";
 import type { ApiAxiosError } from "@/types/api";
 
 export const useLogin = () => useMutation({
