@@ -8,6 +8,7 @@ export const loginSchema = Joi.object({
     password: Joi.string().required().messages({
         'string.empty': 'Password is required',
     }),
+    rememberMe: Joi.boolean().optional(),
 });
 
 export const requestPasswordResetSchema = Joi.object({

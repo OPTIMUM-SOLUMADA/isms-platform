@@ -36,7 +36,10 @@ export const envSchema = z.object({
     JWT_REFRESH_SECRET: z
         .string()
         .min(10, 'JWT_REFRESH_SECRET must be at least 10 characters for security'),
-    JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+    // Short expiration time for JWT refresh token
+    JWT_REFRESH_SHORT_EXPIRES_IN: z.string().default('1d'),
+    // Long expiration time for JWT refresh token
+    JWT_REFRESH_LONG_EXPIRES_IN: z.string().default('30d'),
     JWT_ISSUER: z.string().default(''),
 
     JWT_RESET_EXPIRES_IN: z.string().default('1h'),
@@ -62,7 +65,8 @@ const envServer = envSchema.safeParse({
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
+    JWT_REFRESH_SHORT_EXPIRES_IN: process.env.JWT_REFRESH_SHORT_EXPIRES_IN,
+    JWT_REFRESH_LONG_EXPIRES_IN: process.env.JWT_REFRESH_LONG_EXPIRES_IN,
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_RESET_EXPIRES_IN: process.env.JWT_RESET_EXPIRES_IN,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,

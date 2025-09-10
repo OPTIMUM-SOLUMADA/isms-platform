@@ -15,10 +15,13 @@ export class JwtService {
         });
     };
 
-    generateRefreshToken = (user: User) => {
+    // If isLongExpiration is true, it will return a long expiration token
+    generateRefreshToken = (user: User, isLongExpiration = false) => {
         const { passwordHash, passwordResetToken, metadata, ...rest } = user;
         return jwt.sign({ user: rest }, env.JWT_REFRESH_SECRET, {
-            expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
+            expiresIn: (isLongExpiration
+                ? env.JWT_REFRESH_LONG_EXPIRES_IN
+                : env.JWT_REFRESH_SHORT_EXPIRES_IN) as any,
         });
     };
 
