@@ -19,7 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
-import DepartmentHoverCard from "../hovercard/DepartmentHoverCard";
+import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
 

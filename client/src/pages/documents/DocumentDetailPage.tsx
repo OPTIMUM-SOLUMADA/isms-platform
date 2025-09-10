@@ -12,14 +12,15 @@ import {
   Clock,
   Download,
   Rocket,
-  Archive
+  Archive,
+  Users
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/tabs/DocumentPreview";
+import DocPreview from "@/templates/documents/tabs/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
-import Notification from "@/templates/tabs/Notification";
+import Notification from "@/templates/documents/tabs/Notification";
 import { documentStatusColors } from "@/constants/color";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WithTitle from "@/templates/layout/WithTitle";
@@ -27,7 +28,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDocument } from "@/contexts/DocumentContext";
 import { useCallback } from "react";
-import { UserHoverCard } from "@/templates/hovercard/UserHoverCard";
+import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
@@ -59,6 +60,14 @@ const tabs = [
     content: (document: Document) => <Notification documentId={document.id} />
   },
 ];
+
+const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {
+  return numberOfUsers <= 1 ? (
+    <User className="h-4 w-4 text-muted-foreground" />
+  ) : (
+    <Users className="h-4 w-4 text-muted-foreground" />
+  )
+}
 
 export default function DocumentDetailPage() {
 
@@ -157,7 +166,7 @@ export default function DocumentDetailPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+                <UserIcon numberOfUsers={document.owners.length} />
                 <span className="font-medium">{t("document.view.detail.owner")}:</span>
                 <div className="flex items-center gap-1">
                   {document.owners.map((o, index) => (
@@ -166,7 +175,7 @@ export default function DocumentDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+                <UserIcon numberOfUsers={document.reviewers.length} />
                 <span className="font-medium">{t("document.view.detail.reviewers")}:</span>
                 <div className="flex items-center gap-1">
                   {document.reviewers.map((o, index) => (

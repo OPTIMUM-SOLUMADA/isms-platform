@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useUserUI } from "@/contexts/ui/UserUIContext";
 
 
 interface UserHoverCardProps {
@@ -28,11 +29,16 @@ export function UserHoverCard({
     children,
     onViewDetails,
     onMessage,
-    onEdit,
     className
 }: UserHoverCardProps) {
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();
+    const { setCurrentUser, openEdit } = useUserUI();
+
+    const handleEdit = () => {
+        setCurrentUser(user);
+        openEdit();
+    };
 
     return (
         <HoverCard>
@@ -64,7 +70,7 @@ export function UserHoverCard({
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge className={cn(userRoleColors[user.role], "uppercase")}>
-                            {t(`user.role.${user.role.toLowerCase()}`)}
+                            {t(`role.options.${user.role.toLowerCase()}`)}
                         </Badge>
                     </div>
                 </div>
@@ -95,7 +101,7 @@ export function UserHoverCard({
                             <Button
                                 variant="default"
                                 size="sm"
-                                onClick={() => onEdit?.(user)}
+                                onClick={handleEdit}
                                 className="flex items-center gap-1 normal-case"
                             >
                                 <Pencil className="h-4 w-4" />

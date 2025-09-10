@@ -14,10 +14,10 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import UserLookup from "@/templates/lookup/UserLookup";
+import UserLookup from "@/templates/users/lookup/UserLookup";
 import i18n from "@/i18n/config";
 import { Document, User } from "@/types";
-import DocumentLookup from "@/templates/lookup/DocumentLookup";
+import DocumentLookup from "@/templates/documents/lookup/DocumentLookup";
 
 
 // ✅ Validation schema
@@ -33,7 +33,7 @@ interface ReviewFormProps {
   onSubmit: (data: any) => void
 }
 
-export default function ReviewForm({documents, users, onSubmit }:  ReviewFormProps ) {
+export default function ReviewForm({ documents, users, onSubmit }: ReviewFormProps) {
   const { t } = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,7 +47,7 @@ export default function ReviewForm({documents, users, onSubmit }:  ReviewFormPro
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     onSubmit(data)
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">

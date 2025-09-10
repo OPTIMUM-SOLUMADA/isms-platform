@@ -588,7 +588,7 @@
         "type": "Type",
         "isoClause": "ISO Clause / Control",
         "status": "Status",
-        "owner": "Owner",
+        "owner": "Owners",
         "version": "Version",
         "nextReview": "Next Review",
         "reviewDue": "Review Date",

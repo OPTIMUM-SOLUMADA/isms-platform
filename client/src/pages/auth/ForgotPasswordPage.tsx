@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import ForgotPasswordForm, { type ForgotPasswordFormData } from '@/templates/forms/ForgotPasswordForm';
+import ForgotPasswordForm, { type ForgotPasswordFormData } from '@/templates/auth/forms/ForgotPasswordForm';
 import AuthLayout from '@/templates/layout/AuthLayout';
 import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

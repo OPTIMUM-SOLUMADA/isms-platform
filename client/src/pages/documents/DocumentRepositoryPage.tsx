@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Link, useNavigate } from 'react-router-dom';
-import { DocumentTable } from '@/templates/table/DocumentTable';
+import { DocumentTable } from '@/templates/documents/table/DocumentTable';
 import { useTranslation } from 'react-i18next';
 import { documentStatus } from '@/constants/document';
 import { useDocumentType } from '@/contexts/DocumentTypeContext';

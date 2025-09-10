@@ -1,8 +1,8 @@
 
 import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
-import type { AddUserFormData } from "@/templates/forms/users/AddUserForm";
-import type { UpdateUserFormData } from "@/templates/forms/users/EditUserForm";
+import type { AddUserFormData } from "@/templates/users/forms/AddUserForm";
+import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 
 const userUrl = API_CONFIG.ENDPOINTS.USERS;
 
