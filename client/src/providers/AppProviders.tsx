@@ -1,7 +1,7 @@
 import { composeProviders } from "@/lib/provider";
 import { UserProvider } from "@/contexts/UserContext";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
-import { UserUIProvider } from "@/contexts/ui/UserUIContext";
+import { UIProvider } from "@/contexts/ui/UIProvider";
 import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
 import { DocumentProvider } from "@/contexts/DocumentContext";
@@ -15,6 +15,6 @@ export const AppProviders = composeProviders(
     ISOClauseProvider,
     DocumentProvider,
     ViewerProvider,
-    UserUIProvider,
+    UIProvider,
     // Add more providers here
 );

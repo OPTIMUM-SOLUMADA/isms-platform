@@ -220,7 +220,7 @@ model DocumentReview {
   reviewDate   DateTime? // Ajouté : La date à laquelle la révision a été effectuée
 
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  reviewer   User     @relation(fields: [reviewerId], references: [id])
+  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
   assignedBy User?    @relation("Assigner", fields: [assignedById], references: [id])
 
   createdAt DateTime @default(now())

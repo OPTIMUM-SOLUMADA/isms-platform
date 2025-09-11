@@ -120,7 +120,7 @@ const AddUserForm = ({
                                 <SelectWithButton
                                     items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
                                     value={field.value}
-                                    placeholder={t('user.forms.add.role.placeholder')}
+                                    placeholder={t('user.forms.add.department.placeholder')}
                                     onChange={field.onChange}
                                     onAdd={() => { }}
                                     addLabel={t('department.actions.add.label')}

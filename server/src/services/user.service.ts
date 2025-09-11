@@ -1,16 +1,45 @@
 import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
 
+const userIncludes: Prisma.UserInclude = {
+    department: {
+        include: {
+            members: {
+                select: {
+                    name: true,
+                    email: true,
+                    id: true,
+                },
+            },
+        },
+    },
+    documentReviews: true,
+    documentApprovals: true,
+    notifications: true,
+    auditLogs: true,
+    documentOwners: {
+        select: {
+            document: {
+                select: {
+                    title: true,
+                    versions: {
+                        where: { isCurrent: true },
+                        select: {
+                            version: true,
+                            fileUrl: true,
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
         return prisma.user.create({
             data,
             include: {
-                department: true,
-                documentReviews: true,
-                documentApprovals: true,
-                notifications: true,
-                auditLogs: true,
+                ...userIncludes,
             },
         });
     }
@@ -19,11 +48,7 @@ export class UserService {
         return prisma.user.findUnique({
             where: { id },
             include: {
-                department: true,
-                documentReviews: true,
-                documentApprovals: true,
-                notifications: true,
-                auditLogs: true,
+                ...userIncludes,
             },
         });
     }
@@ -37,11 +62,7 @@ export class UserService {
             where: { id },
             data,
             include: {
-                department: true,
-                documentReviews: true,
-                documentApprovals: true,
-                notifications: true,
-                auditLogs: true,
+                ...userIncludes,
             },
         });
     }
@@ -63,14 +84,7 @@ export class UserService {
         return prisma.user.findMany({
             ...(filter ? { where: filter } : {}),
             include: {
-                department: {
-                    include: {
-                        members: true,
-                    },
-                },
-                documentReviews: true,
-                documentApprovals: true,
-                auditLogs: true,
+                ...userIncludes,
             },
         });
     }

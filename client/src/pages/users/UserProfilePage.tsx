@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
     User,
     Calendar,
-    MapPin,
     Building,
     Shield,
     Edit,
@@ -13,10 +12,11 @@ import {
     Bell,
     FileText,
     Activity,
-    Clock, 
+    Clock,
     Settings,
     Award,
-    CheckCircle
+    CheckCircle,
+    Mail
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,20 +25,21 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { useParams } from 'react-router-dom';
 import { userService } from '@/services/userService';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select"
 
 import { roles } from '@/constants/role';
 import { depService } from '@/services/departmentService';
+import { UserAvatar } from '@/components/user-avatar';
+import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 
 interface UserData {
     id: string;
@@ -57,8 +58,8 @@ interface UserData {
     ownedDocuments: string;
 }
 interface Department {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }
 
 export default function UserProfilePage() {
@@ -79,7 +80,7 @@ export default function UserProfilePage() {
         updates: false,
         security: true
     });
-    
+
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -88,10 +89,10 @@ export default function UserProfilePage() {
             try {
                 const res = await userService.getById(id!);
                 const data = res.data;
-                
+
                 setUserData(data);
                 setFormData({
-                    name : data.name || '',
+                    name: data.name || '',
                     email: data.email || '',
                     role: data.role || '',
                     department: data.department.id || ''
@@ -101,11 +102,11 @@ export default function UserProfilePage() {
             }
         }
 
-        async  function fetchDepartment() {
+        async function fetchDepartment() {
             try {
                 const allDepart = await depService.list();
-                const depart = allDepart.data;  
-                setDepartment(depart);             
+                const depart = allDepart.data;
+                setDepartment(depart);
             } catch (error) {
                 console.error('Error fetching department data:', error);
             }
@@ -123,9 +124,9 @@ export default function UserProfilePage() {
         }));
     };
 
-    const handleSave = async() => {
+    const handleSave = async () => {
         try {
-            if (!userData)  return;
+            if (!userData) return;
             const updateData = {
                 name: formData.name,
                 email: formData.email,
@@ -134,26 +135,26 @@ export default function UserProfilePage() {
             }
 
             console.log("udp", updateData);
-            
+
             await userService.update(id!, updateData);
             // Mettre à jour les données locales
             const updatedUser = await userService.getById(userData.id);
             setUserData(updatedUser.data);
-            
+
             setIsEditing(false);
-            
+
             // Optionnel: Afficher un message de succès
             console.log('Profil mis à jour avec succès');
         } catch (error) {
             console.error('Erreur lors de la mise à jour du profil:', error);
         }
         setIsEditing(false);
-    }; 
+    };
 
     const handleCancel = () => {
         if (!userData) return;
         setFormData({
-            name: userData?.name || '' ,
+            name: userData?.name || '',
             email: userData?.email || '',
             role: userData?.role || '',
             department: userData?.department?.id || ''
@@ -161,10 +162,6 @@ export default function UserProfilePage() {
         setIsEditing(false);
     };
 
-    const getInitials = (name: string) => {        
-        return name.split(' ').map(n => n[0]).join('');
-    };
-    
     const formatTimestamp = (timestamp: string) => {
         return new Date(timestamp).toLocaleString();
     };
@@ -173,6 +170,13 @@ export default function UserProfilePage() {
 
     return (
         <div className="space-y-6">
+            <BreadcrumbNav
+                items={[
+                    { label: t("user.title"), href: "/documents" },
+                    { label: t("user.view.title") },
+                ]}
+                className="mb-3"
+            />
             {/* Hero Section with Profile */}
             <div className="relative bg-gradient-to-r from-theme via-green-800 to-indigo-800 rounded-2xl p-8 text-white overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
@@ -180,14 +184,16 @@ export default function UserProfilePage() {
 
                 <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-6">
                     <div className="relative">
-                        <Avatar className="h-24 w-24 border-4 border-white/20">
-                            <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
-                                {getInitials(userData?.name || '')}
-                            </AvatarFallback>
-                        </Avatar>
+                        {userData && (
+                            <UserAvatar
+                                className="h-24 w-24 border-4 border-white/20"
+                                name={userData.name}
+                                id={userData.id}
+                            />
+                        )}
                         <Button
                             size="sm"
-                            className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0 bg-white text-blue-600 hover:bg-gray-100"
+                            className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0 bg-white text-white hover:bg-gray-100"
                         >
                             <Camera className="h-4 w-4" />
                         </Button>
@@ -204,7 +210,7 @@ export default function UserProfilePage() {
                                 {userData?.department?.name || ''}
                             </div>
                             <div className="flex items-center text-blue-100">
-                                <MapPin className="h-4 w-4 mr-1" />
+                                <Mail className="h-4 w-4 mr-1" />
                                 {userData?.email || ''}
                             </div>
                         </div>

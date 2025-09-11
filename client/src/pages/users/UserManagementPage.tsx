@@ -19,7 +19,7 @@ import { roles, RolesObject } from '@/constants/role';
 import { RoleType, User } from '@/types';
 import { UsersStatusObject, userStatus } from '@/constants/status';
 import SearchInput from '@/components/SearchInput';
-import { useUserUI } from '@/contexts/ui/UserUIContext';
+import { useUserUI } from '@/stores/useUserUI';
 import { useTranslation } from 'react-i18next';
 import { useDepartment } from '@/contexts/DepartmentContext';
 import { useToast } from '@/hooks/use-toast';

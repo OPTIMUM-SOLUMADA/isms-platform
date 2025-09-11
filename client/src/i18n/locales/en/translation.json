@@ -173,6 +173,28 @@
   "user": {
     "title": "User Management",
     "subtitle": "Manage user accounts and roles",
+    "view": {
+      "title": "User Details",
+      "subtitle": "User Information",
+      "detail": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "department": "Department",
+        "status": "Status",
+        "createdBy": "Created By",
+        "createdAt": "Created On",
+        "lastUpdated": "Last Updated"
+      },
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "delete": {
+          "label": "Delete"
+        }
+      }
+    },
     "stats": {
       "total": {
         "title": "Total users",
@@ -304,6 +326,23 @@
           "add": {
             "label": "Add User"
           }
+        }
+      }
+    },
+    "delete": {
+    "dialog": {
+        "message": "Deleting this user will also remove all the following associated information:",
+        "relatedItems": {
+          "documents": "All documents owned by {{name}} and their versions.",
+          "reviews": "All reviews completed by {{name}}.",
+          "auditLogs": "All audit logs related to {{name}}.",
+          "pendingReviews": "All pending reviews assigned to {{name}}."
+        },
+        "cannotDeleteDescription": "However, you cannot delete this user because:",
+        "canBeDeleted": "The user can be safely deleted.",
+        "actions": {
+          "notPermitted": "You cannot delete your own account.",
+          "hasDocuments": "This user owns documents. Please reassign or delete these documents before deleting the user."
         }
       }
     },
@@ -475,6 +514,17 @@
           "title": "Error",
           "description": "An error occurred while deleting the document. Please try again."
         }
+      },
+      "dialog": {
+        "message": "Deleting this document will also remove the following associated information:",
+        "relatedItems": {
+          "reviews": "All reviews associated with this document.",
+          "versions": "All versions of this document.",
+          "files": "All files linked to this document."
+        },
+        "cannotDeleteDescription": "However, you cannot delete this document because:",
+        "documentPublished": "The document is published. Please unpublish it before deleting.",
+        "canBeDeleted": "The document can be safely deleted."
       }
     },
     "publish": {
@@ -579,7 +629,7 @@
       }
     },
     "view": {
-      "title": "{{name}}",
+      "title": "Document Details",
       "subtitle": "Document Description",
       "detail": {
         "title": "Document Information",
