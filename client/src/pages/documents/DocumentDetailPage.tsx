@@ -45,6 +45,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
+import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 
 const tabs = [
   {
@@ -105,13 +106,22 @@ export default function DocumentDetailPage() {
 
   return (
     <WithTitle title={document.title}>
-      <div className="flex flex-col space-y-6 flex-grow">
+      <div className="flex flex-col flex-grow">
+        <BreadcrumbNav
+          items={[
+            { label: t("document.title"), href: "/documents" },
+            { label: t("document.view.title") },
+          ]}
+          className="mb-3"
+        />
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
             <BackButton />
             <div>
-              <h1 className="page-title">{t("document.view.title", { name: document.title })}</h1>
+              <h1 className="page-title">{document.title}</h1>
               <p className="page-description">{document.description}</p>
             </div>
           </div>
@@ -159,7 +169,7 @@ export default function DocumentDetailPage() {
         </div>
 
         {/* Document Info */}
-        <Card className="text-sm">
+        <Card className="text-sm mb-6">
           <CardHeader>
             <CardTitle>{t("document.view.detail.title")}</CardTitle>
           </CardHeader>

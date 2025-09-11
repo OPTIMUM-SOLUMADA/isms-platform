@@ -12,6 +12,7 @@ import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
 import { RequiredIndicatorInfo } from '@/components/Required';
+import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -34,9 +35,16 @@ export default function DocumentAddPage() {
 
   return (
     <WithTitle title={t("document.add.title")}>
-      <div className="space-y-6 flex-grow flex flex-col pb-10">
+      <div className="flex-grow flex flex-col pb-10">
+        <BreadcrumbNav
+          items={[
+            { label: t("document.title"), href: "/documents" },
+            { label: t("document.add.title") },
+          ]}
+          className="mb-3"
+        />
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
           <BackButton />
           <div>
             <h1 className="page-title">{t("document.add.title")}</h1>

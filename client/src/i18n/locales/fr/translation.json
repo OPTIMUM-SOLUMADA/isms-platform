@@ -580,7 +580,7 @@
             }
         },
         "view": {
-            "title": "{{name}}",
+            "title": "Détail du document",
             "subtitle": "Description du document",
             "detail": {
                 "title": "Informations sur le document",

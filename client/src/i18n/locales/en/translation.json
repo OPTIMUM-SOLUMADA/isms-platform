@@ -579,7 +579,7 @@
       }
     },
     "view": {
-      "title": "{{name}}",
+      "title": "Document Details",
       "subtitle": "Document Description",
       "detail": {
         "title": "Document Information",
