@@ -20,14 +20,16 @@ const AddUserFormDialog = ({
         createError,
         isCreating,
         createUser,
-        createSuccess
+        createSuccess,
+        resetCreate
     } = useUser();
 
     useEffect(() => {
         if (createSuccess) {
             onOpenChange(false);
+            resetCreate();
         }
-    }, [createSuccess, onOpenChange]);
+    }, [createSuccess, onOpenChange, resetCreate]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

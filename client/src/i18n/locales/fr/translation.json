@@ -975,6 +975,25 @@
         "error": {
             "tryAgain": "Essayer de nouveau",
             "somethingWentWrong": "Quelque chose s'est mal passé"
+        },
+        "password": {
+            "requirements": {
+                "minLength": "Au moins 8 caractères",
+                "number": "Au moins 1 chiffre",
+                "lowercase": "Au moins 1 lettre minuscule",
+                "uppercase": "Au moins 1 lettre majuscule"
+            },
+            "strength": {
+                "enter": "Saisissez un mot de passe",
+                "weak": "Mot de passe faible",
+                "medium": "Mot de passe moyen",
+                "strong": "Mot de passe fort",
+                "mustContain": "Doit contenir :",
+                "label": "Sécurité du mot de passe",
+                "requirementsLabel": "Exigences du mot de passe",
+                "requirementMet": "Exigence remplie",
+                "requirementNotMet": "Exigence non remplie"
+            }
         }
     }
 }

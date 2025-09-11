@@ -14,6 +14,7 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import ErrorCodeField from "@/components/ErrorCodeField";
 import i18n from "@/i18n/config";
 import { useTranslation } from "react-i18next";
+import PasswordStrength from "@/components/password-strengh";
 
 const resetSchema = cz.z
     .object({
@@ -49,6 +50,7 @@ export default function ResetPasswordForm({
             confirmPassword: "",
             keepSignedIn: false
         },
+        mode: "onChange"
     });
 
     const {
@@ -88,6 +90,7 @@ export default function ResetPasswordForm({
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                             </div>
+                            <PasswordStrength value={field.value} />
                             <FormMessage />
                         </FormItem>
                     )}
