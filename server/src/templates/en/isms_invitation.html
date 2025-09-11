@@ -1,0 +1,35 @@
+<!--
+  ISMS Invitation Email — Responsive Email Template (single-file)
+  Notes:
+  - Same look & feel as reset-password email.
+  - Replace placeholders: {{userName}}, {{orgName}}, {{inviteLink}}, {{year}}
+-->
+<div class="content" style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333;">
+    <h1 style="font-size:24px;margin-bottom:16px;">Welcome {{userName}},</h1>
+
+    <p style="font-size:16px;line-height:1.5;margin-bottom:16px;">
+        You've been invited to join <strong>{{orgName}}</strong>.
+        To get started, you'll need to set up your password and login to your account.
+    </p>
+
+    <div style="margin:24px 0;text-align:center;">
+        <a href="{{inviteLink}}" target="_blank" style="background-color:#4F46E5;color:#ffffff;padding:12px 24px;border-radius:4px;
+              text-decoration:none;display:inline-block;font-size:16px;">
+            Set Your Password
+        </a>
+    </div>
+
+    <p style="font-size:14px;line-height:1.5;margin-bottom:8px;">
+        This link will remain valid for 24 hours.
+        If it expires, you can request a new invitation from an administrator.
+    </p>
+
+    <p style="font-size:14px;line-height:1.5;margin-top:24px;">
+        If you weren't expecting this invitation, you can safely ignore this email.
+    </p>
+
+    <hr style="border:none;border-top:1px solid #ddd;margin:32px 0;">
+    <p style="font-size:12px;color:#999;text-align:center;">
+        &copy; {{year}} {{orgName}}. All rights reserved.
+    </p>
+</div>
