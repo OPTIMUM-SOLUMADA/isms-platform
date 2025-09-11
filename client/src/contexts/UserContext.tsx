@@ -34,6 +34,8 @@ type UserContextType = {
     deleteSuccess?: boolean;
 
     resetDelete: () => void;
+    resetCreate: () => void;
+    resetUpdate: () => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -177,6 +179,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         deleteSuccess: deleteUserMutation.isSuccess,
         deleteError: deleteUserMutation.error?.response?.data?.code ?? null,
         resetDelete: deleteUserMutation.reset,
+        resetCreate: createUserMutation.reset,
+        resetUpdate: updateUserMutation.reset,
     }), [createUser,
         refetchUsers,
         isLoading,
@@ -195,6 +199,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         deleteUserMutation.error,
         deleteUserMutation.isSuccess,
         deleteUserMutation.reset,
+        createUserMutation.reset,
+        updateUserMutation.reset,
     ]);
 
     return (

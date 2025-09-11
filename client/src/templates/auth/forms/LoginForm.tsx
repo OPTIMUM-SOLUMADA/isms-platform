@@ -43,6 +43,7 @@ export default function LoginForm({
             password: "Njato!0011",
             rememberMe: false
         },
+        reValidateMode: "onChange"
     });
 
     const {

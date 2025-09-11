@@ -56,6 +56,11 @@
         "resetPassword": {
             "title": "Changer votre mot de passe",
             "subtitle": "Saisissez votre nouveau mot de passe",
+            "invitation": {
+                "welcome": "Bienvenue dans le portail ISMS",
+                "setPassword": "Veuillez définir votre mot de passe pour commencer à utiliser votre compte.",
+                "definePassword": "Définir votre mot de passe"
+            },
             "form": {
                 "password": {
                     "label": "Mot de passe",
@@ -975,6 +980,25 @@
         "error": {
             "tryAgain": "Essayer de nouveau",
             "somethingWentWrong": "Quelque chose s'est mal passé"
+        },
+        "password": {
+            "requirements": {
+                "minLength": "Au moins 8 caractères",
+                "number": "Au moins 1 chiffre",
+                "lowercase": "Au moins 1 lettre minuscule",
+                "uppercase": "Au moins 1 lettre majuscule"
+            },
+            "strength": {
+                "enter": "Saisissez un mot de passe",
+                "weak": "Mot de passe faible",
+                "medium": "Mot de passe moyen",
+                "strong": "Mot de passe fort",
+                "mustContain": "Doit contenir :",
+                "label": "Sécurité du mot de passe",
+                "requirementsLabel": "Exigences du mot de passe",
+                "requirementMet": "Exigence remplie",
+                "requirementNotMet": "Exigence non remplie"
+            }
         }
     }
 }

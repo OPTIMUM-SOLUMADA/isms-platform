@@ -22,6 +22,14 @@ export const EmailTemplate = {
         } & CommonData,
     ) => renderTemplate('en', 'isms_reset_password', data),
 
+    welcome: (
+        data: {
+            userName: string;
+            orgName: string;
+            inviteLink: string;
+        } & CommonData,
+    ) => renderTemplate('en', 'isms_invitation', data),
+
     // Review email template
     review: (
         data: {

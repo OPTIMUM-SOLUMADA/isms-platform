@@ -56,6 +56,11 @@
     "resetPassword": {
       "title": "Change your password",
       "subtitle": "Enter your new password",
+      "invitation": {
+        "welcome": "Welcome to the ISMS portal",
+        "setPassword": "Please set your password to start using your account.",
+        "definePassword": "Define your password"
+      },
       "form": {
         "password": {
           "label": "Password",
@@ -972,6 +977,25 @@
     "error": {
       "tryAgain": "Try again",
       "somethingWentWrong": "Something went wrong"
+    },
+    "password": {
+      "requirements": {
+        "minLength": "At least 8 characters",
+        "number": "At least 1 number",
+        "lowercase": "At least 1 lowercase letter",
+        "uppercase": "At least 1 uppercase letter"
+      },
+      "strength": {
+        "enter": "Enter a password",
+        "weak": "Weak password",
+        "medium": "Medium password",
+        "strong": "Strong password",
+        "mustContain": "Must contain:",
+        "label": "Password strength",
+        "requirementsLabel": "Password requirements",
+        "requirementMet": "Requirement met",
+        "requirementNotMet": "Requirement not met"
+      }
     }
   }
 }
