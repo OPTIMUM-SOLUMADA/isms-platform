@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { userRoleColors } from "@/constants/color"
 import type { User } from "@/types"
 import { usePermissions } from "@/hooks/use-permissions"
-import { useUserUI } from "@/contexts/ui/UserUIContext"
+import { useUserUI } from "@/stores/useUserUI"
 
 interface UserMultiSelectProps {
     data: User[];

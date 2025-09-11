@@ -3,7 +3,6 @@ import {
     Breadcrumb,
     BreadcrumbList,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb" // ShadCN re-export
 import { ChevronRightIcon } from "lucide-react"

@@ -16,6 +16,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import { RequiredIndicatorInfo } from '@/components/Required';
 import CircleLoading from '@/components/loading/CircleLoading';
 import ItemNotFound from '../ItemNotFound';
+import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -70,9 +71,16 @@ export default function DocumentEditPage() {
 
     return (
         <WithTitle title={t("document.edit.title")}>
-            <div className="space-y-6 flex-grow flex flex-col pb-10">
+            <div className="flex-grow flex flex-col pb-10">
+                <BreadcrumbNav
+                    items={[
+                        { label: t("document.title"), href: "/documents" },
+                        { label: t("document.edit.title") },
+                    ]}
+                    className="mb-3"
+                />
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
                     <BackButton />
                     <div>
                         <h1 className="page-title">{t("document.edit.title")}</h1>

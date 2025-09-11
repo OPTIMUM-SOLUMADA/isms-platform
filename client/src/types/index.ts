@@ -171,7 +171,7 @@ export type User = {
   department: Department;
   departmentId: string;
 
-  documents: any[];
+  documentOwners: Document[];
   reviews: any[];
 
   createdAt: string;

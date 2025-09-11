@@ -137,7 +137,7 @@ export default function DocumentRepositoryPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <Select value={filterOwner} onValueChange={setFilterOwner}>
-                  <SelectTrigger className="w-full sm:w-40">
+                  <SelectTrigger className="w-full sm:w-40 hidden">
                     <SelectValue placeholder={t("document.filter.owner.title")} />
                   </SelectTrigger>
                   <SelectContent>

@@ -27,12 +27,11 @@ import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDocument } from "@/contexts/DocumentContext";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
-import { DeleteDialog } from "@/components/DeleteDialog";
 import { Document } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
@@ -46,6 +45,7 @@ import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
+import { useDocumentUI } from "@/stores/useDocumentUi";
 
 const tabs = [
   {
@@ -77,7 +77,7 @@ export default function DocumentDetailPage() {
 
   const params = useParams();
 
-  const { deleteDocument, download, isDownloading } = useDocument();
+  const { isDeleted, download, isDownloading } = useDocument();
   const { user } = useAuth();
   const { hasActionPermission } = usePermissions();
   const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
@@ -90,10 +90,20 @@ export default function DocumentDetailPage() {
     refetch
   } = useGetDocument(params.id);
 
+  const { openDelete, setCurrentDocument } = useDocumentUI();
+
   const handleDelete = useCallback(async () => {
-    await deleteDocument({ id: document!.id });
-    navigate("/documents");
-  }, [navigate, deleteDocument, document]);
+    if (!document) return;
+    setCurrentDocument(document);
+    openDelete();
+  }, [document, openDelete, setCurrentDocument]);
+
+  useEffect(() => {
+    if (isDeleted) {
+      navigate("/documents");
+      console.log(isDeleted);
+    }
+  }, [isDeleted, navigate]);
 
 
   if (isLoading) return <DocumentDetailSkeleton />;
@@ -154,16 +164,10 @@ export default function DocumentDetailPage() {
             )}
 
             {hasActionPermission("document.delete") && (
-              <DeleteDialog
-                entityName={document.title}
-                onConfirm={handleDelete}
-                trigger={
-                  <Button variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    {t("document.view.actions.delete.label")}
-                  </Button>
-                }
-              />
+              <Button variant="destructive" onClick={handleDelete}>
+                <Trash2 className="h-4 w-4 mr-1" />
+                {t("document.view.actions.delete.label")}
+              </Button>
             )}
           </div>
         </div>

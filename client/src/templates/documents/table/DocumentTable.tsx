@@ -12,12 +12,10 @@ import { DataTable } from "@/components/DataTable";
 import type { Document } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "@/hooks/use-permissions";
 import { UserAvatar } from "@/components/user-avatar";
 import { UserHoverCard } from "../../users/hovercard/UserHoverCard";
-import { useDocument } from "@/contexts/DocumentContext";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { getFileIconByName } from "@/lib/icon";
@@ -28,6 +26,7 @@ import PublishDocument from "../actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { formatDate } from "@/lib/date";
+import { useDocumentUI } from "@/stores/useDocumentUi";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -37,21 +36,18 @@ interface DocumentActionsCell {
 
 const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
     const { t } = useTranslation();
-    const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
-    const { deleteDocument, setCurrentDocument } = useDocument();
     const navigate = useNavigate();
+    const { openDelete, setCurrentDocument } = useDocumentUI();
 
     const handleDelete = async () => {
-        await deleteDocument({ id: doc.id });
+        setCurrentDocument(doc);
+        openDelete();
     };
 
     const handleOpenEdit = async () => {
-        setCurrentDocument(doc);
         navigate(`edit/${doc.id}`);
     };
-
-    console.log('rr')
 
     return (
         <>
@@ -73,19 +69,12 @@ const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-theme-danger" onClick={() => setOpen(true)}>
+                        <DropdownMenuItem className="text-theme-danger" onClick={handleDelete}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <DeleteDialog
-                entityName={doc.title}
-                open={open}
-                onOpenChange={setOpen}
-                onConfirm={handleDelete}
-            />
         </>
     );
 });

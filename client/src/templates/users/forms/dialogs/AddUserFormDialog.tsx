@@ -31,7 +31,7 @@ const AddUserFormDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='bg-gray-50'>
+            <DialogContent className='card-header-bg'>
                 <DialogHeader>
                     <DialogTitle>{t("user.forms.add.title")}</DialogTitle>
                     <DialogDescription>{t("user.forms.add.subtitle")}</DialogDescription>

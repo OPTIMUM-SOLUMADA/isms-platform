@@ -22,6 +22,7 @@ import { UserHoverCard } from "../hovercard/UserHoverCard";
 import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useUserUI } from "@/stores/useUserUI";
 
 interface UserActionsCell {
     user: User;
@@ -30,13 +31,15 @@ interface UserActionsCell {
     onView?: (user: User) => void;
 }
 
-const UserActionsCell = ({ user, onEdit, onDelete, onView }: UserActionsCell) => {
+const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
+    const { openDelete, setCurrentUser } = useUserUI();
 
     const handleDelete = async () => {
-        if (onDelete) await onDelete(user);
+        setCurrentUser(user);
+        openDelete();
     };
 
     return (
@@ -59,7 +62,7 @@ const UserActionsCell = ({ user, onEdit, onDelete, onView }: UserActionsCell) =>
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-red-600" onClick={() => setOpen(true)}>
+                        <DropdownMenuItem className="text-red-600" onClick={handleDelete}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}

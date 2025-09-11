@@ -5,6 +5,13 @@ export default function AuthLayout({ children }: PropsWithChildren) {
     const { t } = useTranslation();
     return (
         <div className="min-h-screen flex flex-col w-full">
+            <div className="w-full p-6">
+                <img
+                    src="./logo/solumada-long.png"
+                    alt="logo"
+                    className="w-auto h-10 rounded-full object-contain max-sm:hidden m"
+                />
+            </div>
             {/* Left Side - Logo + Title */}
             <div className="flex justify-center items-center flex-grow w-full max-w-7xl mx-auto">
                 <div className="flex items-center justify-center w-full max-md:hidden">

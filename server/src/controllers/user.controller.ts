@@ -61,6 +61,7 @@ export class UserController {
             const user = await service.delete(req.params.id!);
             res.json(user);
         } catch (err) {
+            console.log(err);
             res.status(400).json({
                 error: (err as Error).message,
                 code: 'ERR_SERVER_ERROR',

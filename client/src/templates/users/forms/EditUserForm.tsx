@@ -116,7 +116,7 @@ const UpdateUserForm = ({
                                 <SelectWithButton
                                     items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
                                     value={field.value}
-                                    placeholder={t('user.forms.update.role.placeholder')}
+                                    placeholder={t('user.forms.update.department.placeholder')}
                                     onChange={field.onChange}
                                     onAdd={() => { }}
                                     addLabel={t('department.actions.add.label')}
