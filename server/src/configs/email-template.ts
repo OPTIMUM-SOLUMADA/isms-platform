@@ -22,7 +22,7 @@ export const EmailTemplate = {
         } & CommonData,
     ) => renderTemplate('en', 'isms_reset_password', data),
 
-    invitation: (
+    welcome: (
         data: {
             userName: string;
             orgName: string;

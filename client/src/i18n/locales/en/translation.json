@@ -56,6 +56,11 @@
     "resetPassword": {
       "title": "Change your password",
       "subtitle": "Enter your new password",
+      "invitation": {
+        "welcome": "Welcome to the ISMS portal",
+        "setPassword": "Please set your password to start using your account.",
+        "definePassword": "Define your password"
+      },
       "form": {
         "password": {
           "label": "Password",

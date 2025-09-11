@@ -16,8 +16,11 @@ export default function ResetPasswordPage() {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
+    const invitation = searchParams.get("invitation");
     const [tokenError, setTokenError] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
+
+    const isInvitation = invitation === "true";
 
     const { login, errorCode } = useAuth();
     const {
@@ -90,12 +93,25 @@ export default function ResetPasswordPage() {
                 <AuthLayout>
                     <Card className="shadow-lg">
                         <CardHeader className="space-y-1 pb-6">
-                            <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
-                                {t('authentification.resetPassword.title')}
-                            </CardTitle>
-                            <p className="text-sm text-gray-600 text-center">
-                                {t('authentification.resetPassword.subtitle')}
-                            </p>
+                            {isInvitation ? (
+                                <>
+                                    <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
+                                        {t('authentification.resetPassword.invitation.welcome')}
+                                    </CardTitle>
+                                    <p className="text-sm text-gray-600 text-center">
+                                        {t('authentification.resetPassword.invitation.setPassword')}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <CardTitle className="text-2xl font-semibold text-center text-gray-900 ">
+                                        {t('authentification.resetPassword.title')}
+                                    </CardTitle>
+                                    <p className="text-sm text-gray-600 text-center">
+                                        {t('authentification.resetPassword.subtitle')}
+                                    </p>
+                                </>
+                            )}
                         </CardHeader>
                         <CardContent>
                             <ResetPasswordForm
@@ -105,8 +121,9 @@ export default function ResetPasswordPage() {
                             />
                         </CardContent>
                     </Card>
-                </AuthLayout>
-            )}
-        </WithTitle>
+                </AuthLayout >
+            )
+            }
+        </WithTitle >
     )
 }

@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
 import { UserService } from '@/services/user.service';
+import { EmailService } from '@/services/email.service';
+import { EmailTemplate } from '@/configs/email-template';
+import { env } from '@/configs/env';
+import { JwtService } from '@/services/jwt.service';
 
 const service = new UserService();
+const emailService = new EmailService();
+const jwtService = new JwtService();
 
 export class UserController {
     async create(req: Request, res: Response) {
@@ -16,6 +22,25 @@ export class UserController {
                 return;
             }
             const user = await service.createUser(req.body);
+
+            const resetToken = await jwtService.generatePasswordResetToken(user);
+
+            // upate user passwordReset
+            await service.updateUser(user.id, { passwordResetToken: resetToken });
+
+            // SEND EMAIL INVITATION
+            await emailService.sendMail({
+                to: req.body.email,
+                subject: 'Welcome to Solumada',
+                html: await EmailTemplate.welcome({
+                    userName: req.body.name,
+                    orgName: env.ORG_NAME,
+                    inviteLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}&invitation=true`,
+                    year: new Date().getFullYear().toString(),
+                    headerDescription: '',
+                }),
+            });
+
             res.status(201).json(user);
         } catch (err) {
             res.status(500).json({

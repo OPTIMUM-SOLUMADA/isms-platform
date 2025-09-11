@@ -56,6 +56,11 @@
         "resetPassword": {
             "title": "Changer votre mot de passe",
             "subtitle": "Saisissez votre nouveau mot de passe",
+            "invitation": {
+                "welcome": "Bienvenue dans le portail ISMS",
+                "setPassword": "Veuillez définir votre mot de passe pour commencer à utiliser votre compte.",
+                "definePassword": "Définir votre mot de passe"
+            },
             "form": {
                 "password": {
                     "label": "Mot de passe",
