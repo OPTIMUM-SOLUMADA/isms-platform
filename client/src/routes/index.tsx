@@ -20,6 +20,7 @@ import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
 import { DocumentProvider } from "@/contexts/DocumentContext";
 import { ViewerProvider } from "@/contexts/DocumentReviewContext";
+import DocumentReviewPage from "@/pages/documents/DocumentReviewPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -98,7 +99,8 @@ const routeConfig: AppRoute[] = [
                     { index: true, element: <DocumentRepositoryPage /> },
                     { path: "add", element: <DocumentAddPage /> },
                     { path: "edit/:id", element: <DocumentEditPage /> },
-                    { path: "view/:id", element: <DocumentDetail /> }
+                    { path: "view/:id", element: <DocumentDetail /> },
+                    { path: "review/:id", element: <DocumentReviewPage /> }
                 ],
             },
 

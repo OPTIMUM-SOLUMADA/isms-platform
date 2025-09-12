@@ -107,6 +107,24 @@ export default function ReviewWorkflowPage() {
     [createViewer, setOpen, toast, t]
   );
 
+  // const handleAddComment= useCallback(
+  //   async (id: any, comment: any) => {
+  //     console.log('new ====> ',id,  comment);
+      
+  //     const res = await updateComment(id, comment);
+
+  //     if (res) {
+  //       toast({
+  //         title: t("components.toast.success.title"),
+  //         description: t("components.toast.success.document.created"),
+  //         variant: "success",
+  //       });
+  //       setOpen(false);
+  //     }
+  //   },
+  //   [updateComment, setOpen, toast, t]
+
+  // )
   // const getInitials = (name: string) => {
   //   return name
   //     .split(" ")
@@ -282,7 +300,7 @@ export default function ReviewWorkflowPage() {
           </div>
 
           {/* Right Side*/}
-          <div className="flex flex-col items-stretch space-y-2 w-40 mt-4">
+          <div className="flex flex-col items-stretch space-y-2 w-40 mt-10">
             <Button className="h-50 " disabled>
               {item.status === "IN_REVIEW"
                 ? t("review.inProgress")
@@ -294,7 +312,7 @@ export default function ReviewWorkflowPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => navigate(`/documents/view/${item.documentId}`)}
+              onClick={() => navigate(`/documents/review/${item.documentId}`)}
             >
               <Eye className="h-4 w-4 mr-1" />
               {t("review.button.viewDoc")}
