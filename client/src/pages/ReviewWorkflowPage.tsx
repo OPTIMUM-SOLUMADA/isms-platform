@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ReviewForm from "@/templates/forms/reviews/ReviewForm";
+import ReviewForm from "@/templates/reviews/forms/ReviewForm";
 import { useUser } from "@/contexts/UserContext";
 import { useDocument } from "@/contexts/DocumentContext";
 // import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
@@ -147,10 +147,10 @@ export default function ReviewWorkflowPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="page-title">
               {t("review.title")}
             </h1>
-            <p className="text-gray-600 mt-1">{t("review.subtitle")}</p>
+            <p className="page-description">{t("review.subtitle")}</p>
           </div>
 
           {/* ----------- Modal Trigger ---------- */}
@@ -177,12 +177,16 @@ export default function ReviewWorkflowPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {workflowStages.map((stage) => {
-            
+
+            console.log("stat", stage);
+
             const count = viewers.filter(
               (item) => item.document.status === stage.id
             ).length;
-            
+            console.log("counr", count);
+
             const Icon = getStageIcon(stage.id);
+
 
             return (
               <Card key={stage.id}>
@@ -281,7 +285,7 @@ export default function ReviewWorkflowPage() {
               </div>
               <div className="flex items-center space-x-1">
                 <FileText className="h-4 w-4" />
-                <span>{ item.document.versions[0].version }</span>
+                <span>{item.document.versions[0].version}</span>
               </div>
             </div>
 
@@ -291,12 +295,12 @@ export default function ReviewWorkflowPage() {
                 <p className="text-sm text-gray-600">{item.comment || "No comments yet"}</p>
             </div>
 
-              {/* ISO Clause */}
-              <div>
-                <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
-                  { item.document.isoClause.code } - { item.document.isoClause.name }
-                </span>
-              </div>
+            {/* ISO Clause */}
+            <div>
+              <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
+                {item.document.isoClause.code} - {item.document.isoClause.name}
+              </span>
+            </div>
           </div>
 
           {/* Right Side*/}
@@ -304,11 +308,11 @@ export default function ReviewWorkflowPage() {
             <Button className="h-50 " disabled>
               {item.status === "IN_REVIEW"
                 ? t("review.inProgress")
-                  : item.status === "APPROVED"
-                ? t("review.approved")
+                : item.status === "APPROVED"
+                  ? t("review.approved")
                   : item.status === "EXPIRED"
-                ? t("review.rejected")
-                  : t("review.pending")}
+                    ? t("review.rejected")
+                    : t("review.pending")}
             </Button>
             <Button
               variant="outline"

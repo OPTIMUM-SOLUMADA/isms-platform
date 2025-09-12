@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import LoginForm from '@/templates/forms/LoginForm';
+import LoginForm from '@/templates/auth/forms/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthLayout from '@/templates/layout/AuthLayout';
 import { useTranslation } from 'react-i18next';

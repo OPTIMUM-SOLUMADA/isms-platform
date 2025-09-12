@@ -24,13 +24,13 @@ import { formatBytes } from "@/hooks/use-file-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
-import UserMultiSelect from "@/templates/multiselect/UserMultiselect";
+import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
 import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { RoleType } from "@/types/role";
-import { DocumentFileUpload } from "@/templates/uploader/DocumentFileUpload";
+import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
 

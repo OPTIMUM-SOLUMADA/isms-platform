@@ -2,8 +2,8 @@ import { API_CONFIG as API } from "@/configs/api";
 import axios from "@/lib/axios";
 
 const AuthService = {
-    login: async (email: string, password: string) => {
-        return axios.post(API.ENDPOINTS.AUTH.LOGIN, { email, password });
+    login: async ({ email, password, rememberMe = false }: { email: string, password: string, rememberMe?: boolean }) => {
+        return axios.post(API.ENDPOINTS.AUTH.LOGIN, { email, password, rememberMe });
     },
     logout: async () => {
         return axios.post(API.ENDPOINTS.AUTH.LOGOUT);

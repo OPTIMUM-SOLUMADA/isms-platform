@@ -1,151 +1,1002 @@
 {
-    "authentification": {
-        "login": {
-            "title": "Connexion",
-            "subtitle": "Saisissez vos identifiants pour accéder au portail ISMS",
-            "form": {
-                "email": {
-                    "label": "Adresse email",
-                    "placeholder": "isms@example.com"
-                },
-                "password": {
-                    "label": "Mot de passe",
-                    "placeholder": "Mot de passe"
-                },
-                "actions": {
-                    "submit": {
-                        "label": "Se connecter",
-                        "loading": "Connexion en cours..."
-                    }
-                },
-                "rememberMe": "Se souvenir de moi",
-                "forgotPassword": "Mot de passe oublié?",
-                "errors": {
-                    "INVALID_EMAIL_OR_PASSWORD": "Email ou mot de passe incorrect"
-                }
-            }
+  "authentification": {
+    "title": "Authentication",
+    "copyright": "© 2025 ISMS Solumada. All rights reserved.",
+    "login": {
+      "title": "Login",
+      "subtitle": "Enter your credentials to access the ISMS portal",
+      "form": {
+        "email": {
+          "label": "Email address",
+          "placeholder": "isms@example.com"
         },
-        "forgotPassword": {
-            "title": "Mot de passe oublié",
-            "subtitle": "Entrer votre email pour réinitialiser votre mot de passe",
-            "form": {
-                "email": {
-                    "label": "Adresse email",
-                    "placeholder": "isms@example.com"
-                },
-                "actions": {
-                    "submit": {
-                        "label": "Recevoir le lien",
-                        "loading": "Envoi en cours..."
-                    },
-                    "back": {
-                        "label": "Retour"
-                    }
-                },
-                "errors": {
-                    "EMAIL_NOT_FOUND": "Email non trouvé"
-                },
-                "success": {
-                    "title": "Demande envoyée !",
-                    "message": "Un lien de réinitialisation du mot de passe a été envoyé à <strong>{{email}}</strong>.\nVeuillez vérifier votre boîte de réception et suivre les instructions pour réinitialiser votre mot de passe."
-                }
-            }
-        }
-    },
-    "document": {
-    "title": "Document Management",
-    "subtitle": "Manage documents and their versions",
-    "forms": {
-        "add": {
-            "title": "Add a Document",
-            "name": {
-                "label": "Name",
-                "placeholder": "Document name"
-            },
-            "description": {
-                "label": "Description",
-                "placeholder": "Document description"
-            },
-            "status": {
-                "label": "Status",
-                "draft": "Draft",
-                "review": "In Review",
-                "approved": "Approved",
-                "expired": "Expired"
-            },
-            "nextReviews": {
-                "label": "Next Review"
-            },
-            "reviewFrequency": {
-                "label": "Review Frequency",
-                "placeholder": "Review frequency"
-            },
-            "owner": {
-                "label": "Owner",
-                "placeholder": "Owner's name"
-            },
-            "category": {
-                "label": "Category",
-                "placeholder": "Category name"
-            },
-            "file": {
-                "label": "File",
-                "selected": "File selected",
-                "dragOrClick": "Drag or click here to select a file"
-            },
-            "actions": {
-                "submit": {
-                    "label": "Add",
-                    "loading": "Adding..."
-                },
-                "cancel": {
-                    "label": "Cancel"
-                }
-            }
-        }
-    },
-    "review": {
-        "title": "Review Workflow",
-        "subtitle": "Manage document review processes and approvals",
-        "button": {
-            "buttonNewReview": "Start new review",
-            "viewDoc": "View Document",
-            "addComment": "Add comment",
-            "assignReview": "Assign Review",
-            "save": "Enregistrer",
-            "cancel": "Annuler"
+        "password": {
+          "label": "Password",
+          "placeholder": "Password"
         },
-        "pending": "Pending",
-        "pendingReview": "Pending Review",
-        "inProgress": "In Progress",
-        "approved": "Approved",
-        "overdue": "Overdue",
-        "completed": "Terminé",
-        "search": "Search documents, assignees, or reviewers...", 
-        "searchPlaceholder": "Search a document",
-        "documentEmpty": "No documents found",
-        "all": "Tous",
-        "rejected": "Rejected",
-        "inReview": "In Review",
-        "reviewer": "Reviewer",
-        "due": "Due",
-        "comment": "Comment",
-        "form": {
-            "title": "Assign document review",
-            "documentReview": "Document to Review",
-            "selectDoc": "Select document for review",
-            "dueDate": "Due Date",
-            "comment": "Comment",
-            "assigneReviewer": "Assign Reviewer",
-            "reviewerPlaceholder": "Add Reviewer",
-            "errorMessage": "Please complete all fields"
+        "actions": {
+          "submit": {
+            "label": "Log in",
+            "loading": "Logging in..."
+          }
+        },
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "errors": {
+          "INVALID_EMAIL_OR_PASSWORD": "Incorrect email or password"
+        }
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to reset your password",
+      "form": {
+        "email": {
+          "label": "Email address",
+          "placeholder": "isms@example.com"
+        },
+        "actions": {
+          "submit": {
+            "label": "Receive link",
+            "loading": "Sending..."
+          },
+          "back": {
+            "label": "Back"
+          }
         },
         "errors": {
-            "document": "Select a document",
-            "reviewer": "Select a reviewer",
-            "date": "Choose a date"
+          "EMAIL_NOT_FOUND": "Email not found"
         }
+      },
+      "success": {
+        "title": "Request sent!",
+        "message": "A password reset link has been sent to <strong>{{email}}</strong>.\nPlease check your inbox and follow the instructions to reset your password."
+      }
+    },
+    "resetPassword": {
+      "title": "Change your password",
+      "subtitle": "Enter your new password",
+      "invitation": {
+        "welcome": "Welcome to the ISMS portal",
+        "setPassword": "Please set your password to start using your account.",
+        "definePassword": "Define your password"
+      },
+      "form": {
+        "password": {
+          "label": "Password",
+          "placeholder": "New password"
+        },
+        "confirmPassword": {
+          "label": "Confirm password",
+          "placeholder": "Re-type password"
+        },
+        "keepSignedIn": {
+          "label": "Log in automatically"
+        },
+        "actions": {
+          "submit": {
+            "label": "Change my password",
+            "loading": "Changing..."
+          }
+        },
+        "errors": {
+          "INVALID_PASSWORD": "Incorrect password",
+          "UNKNOWN": "An unknown error occurred"
+        }
+      },
+      "error": {
+        "title": "Link verification",
+        "messages": {
+          "INVALID_OR_EXPIRED": "The link is invalid or has expired",
+          "USER_NOT_FOUND": "User not found"
+        },
+        "button": {
+          "label": "Return to login"
+        }
+      }
     }
-}
-
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to the ISMS portal",
+    "stats": {
+      "totalUsers": {
+        "title": "Total users",
+        "value": "{{count}} users"
+      },
+      "activeUsers": {
+        "title": "Active users",
+        "value": "{{count}} active"
+      },
+      "documents": {
+        "title": "Documents",
+        "value": "{{count}} documents"
+      },
+      "departments": {
+        "title": "Departments",
+        "value": "{{count}} departments"
+      }
+    },
+    "actions": {
+      "viewUsers": {
+        "label": "View users"
+      },
+      "viewDocuments": {
+        "label": "View documents"
+      },
+      "viewDepartments": {
+        "label": "View departments"
+      }
+    }
+  },
+  "review": {
+    "title": "Document Revisions",
+    "subtitle": "Manage document revisions",
+    "button": {
+      "buttonNewReview": "new evaluation",
+      "viewDoc": "View document",
+      "addComment": "Comment",
+      "assignReview": "Assign revision",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "pending": "Pending",
+    "pendingReview": "Pending review",
+    "inProgress": "In progress",
+    "approved": "Approved",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "search": "Search for documents, assignees, or reviewers...",
+    "searchPlaceholder": "Search for a document",
+    "documentEmpty": "No documents found",
+    "all": "All",
+    "rejected": "Rejected",
+    "inReview": "Reviewing",
+    "reviewer": "Reviewer",
+    "due": "to",
+    "comment": "Comment",
+    "form": {
+      "newReview": "Assign document review",
+      "documentReview": "Document to review",
+      "documentReviewPlaceholder": "Select document to review",
+      "dueDate": "Due date",
+      "comment": "Comment",
+      "assigneReviewer": "Assign reviewer",
+      "reviewerPlaceholder": "Add reviewer",
+      "errorMessage": "Please fill in all fields"
+    },
+    "errors": {
+      "document": "Please select a document",
+      "reviewer": "Please select a reviewer",
+      "date": "choose a date"
+    }
+  },
+  "compliance": {
+    "title": "Compliance",
+    "subtitle": ""
+  },
+  "user": {
+    "title": "User Management",
+    "subtitle": "Manage user accounts and roles",
+    "view": {
+      "title": "User Details",
+      "subtitle": "User Information",
+      "detail": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "department": "Department",
+        "status": "Status",
+        "createdBy": "Created By",
+        "createdAt": "Created On",
+        "lastUpdated": "Last Updated"
+      },
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "delete": {
+          "label": "Delete"
+        }
+      }
+    },
+    "stats": {
+      "total": {
+        "title": "Total users",
+        "value": "{{count}} users"
+      },
+      "admin": {
+        "title": "Administrators",
+        "value": "{{count}} administrators"
+      },
+      "viewer": {
+        "title": "Visitors",
+        "value": "{{count}} visitors"
+      },
+      "reviewer": {
+        "title": "Reviewers",
+        "value": "{{count}} reviewers"
+      },
+      "contributor": {
+        "title": "Contributors",
+        "value": "{{count}} contributors"
+      }
+    },
+    "filters": {
+      "search": {
+        "label": "Search by name or email",
+        "placeholder": "Search for a user..."
+      },
+      "role": {
+        "label": "Filter by role",
+        "placeholder": "All roles"
+      },
+      "department": {
+        "label": "Filter by department",
+        "placeholder": "All departments"
+      },
+      "status": {
+        "label": "Filter by status",
+        "placeholder": "All statuses"
+      }
+    },
+    "forms": {
+      "add": {
+        "title": "Add user",
+        "subtitle": "Fill in user information",
+        "email": {
+          "label": "Email address",
+          "placeholder": "isms@example.com"
+        },
+        "name": {
+          "label": "Name",
+          "placeholder": "User Name"
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "User Role",
+          "options": {
+            "admin": "Administrator",
+            "viewer": "Visitor",
+            "reviewer": "Reviewer"
+          }
+        },
+        "department": {
+          "label": "Department",
+          "placeholder": "User Department"
+        },
+        "actions": {
+          "submit": {
+            "label": "Save",
+            "loading": "Saving..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          }
+        }
+      },
+      "update": {
+        "title": "Edit User",
+        "subtitle": "Edit User Information",
+        "email": {
+          "label": "Email Address",
+          "placeholder": "isms@example.com"
+        },
+        "name": {
+          "label": "Name",
+          "placeholder": "User Name"
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "User Role",
+          "options": {
+            "admin": "Administrator",
+            "viewer": "Visitor",
+            "reviewer": "Reviewer"
+          }
+        },
+        "department": {
+          "label": "Department",
+          "placeholder": "User Department"
+        },
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          }
+        }
+      }
+    },
+    "table": {
+      "title": "User List",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "department": "Department",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View Details"
+      },
+      "empty": {
+        "title": "No users found",
+        "message": "Try modifying the filters or adding a new user.",
+        "actions": {
+          "add": {
+            "label": "Add User"
+          }
+        }
+      }
+    },
+    "delete": {
+    "dialog": {
+        "message": "Deleting this user will also remove all the following associated information:",
+        "relatedItems": {
+          "documents": "All documents owned by {{name}} and their versions.",
+          "reviews": "All reviews completed by {{name}}.",
+          "auditLogs": "All audit logs related to {{name}}.",
+          "pendingReviews": "All pending reviews assigned to {{name}}."
+        },
+        "cannotDeleteDescription": "However, you cannot delete this user because:",
+        "canBeDeleted": "The user can be safely deleted.",
+        "actions": {
+          "notPermitted": "You cannot delete your own account.",
+          "hasDocuments": "This user owns documents. Please reassign or delete these documents before deleting the user."
+        }
+      }
+    },
+    "actions": {
+      "add": {
+        "label": "Add New User"
+      }
+    },
+    "role": {
+      "admin": "Administrator",
+      "viewer": "Visitor",
+      "reviewer": "Reviewer",
+      "contributor": "Contributor"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "hovercard": {
+      "title": "User Details",
+      "department": "Department",
+      "createdAt": "Created On",
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "view": {
+          "label": "View More Details"
+        },
+        "contact": {
+          "label": "Contact"
+        }
+      }
+    },
+    "you": {
+      "label": "You"
+    }
+  },
+  "document": {
+    "title": "Document Management",
+    "subtitle": "Manage documents and their versions",
+    "add": {
+      "title": "New Document",
+      "subtitle": "Save a new document to the system",
+      "form": {
+        "title": "Please fill in the document information",
+        "fields": {
+          "name": {
+            "label": "Name",
+            "placeholder": "Document Name"
+          },
+          "description": {
+            "label": "Description",
+            "placeholder": "Document Description"
+          },
+          "status": {
+            "label": "Status",
+            "placeholder": "Document Status"
+          },
+          "nextReviews": {
+            "label": "Next Revision"
+          },
+          "reviewFrequency": {
+            "label": "Revision Frequency",
+            "placeholder": "Revision Frequency"
+          },
+          "reviewFrequencyUnit": {
+            "label": "Frequency Unit",
+            "placeholder": "Select a unit",
+            "options": {
+              "daily": "Daily",
+              "weekly": "Weekly",
+              "monthly": "Monthly",
+              "quarterly": "Quarterly",
+              "semi_annual": "Semi-Annually",
+              "yearly": "Annually",
+              "biennial": "Biennially",
+              "as_needed": "As Needed"
+            }
+          },
+          "owners": {
+            "label": "Owners",
+            "placeholder": "Owner Name"
+          },
+          "type": {
+            "label": "Document Type",
+            "placeholder": "Select a type"
+          },
+          "reviewers": {
+            "label": "Reviewers",
+            "placeholder": "Select reviewers"
+          },
+          "department": {
+            "label": "Department",
+            "placeholder": "Select a department"
+          },
+          "isoClause": {
+            "label": "ISO Clause",
+            "placeholder": "Select an ISO clause"
+          },
+          "file": {
+            "label": "File",
+            "selected": "Selected File",
+            "dragOrClick": "Drag or click here to choose a file"
+          }
+        },
+        "actions": {
+          "submit": {
+            "label": "Save",
+            "loading": "Saving..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Clear"
+          }
+        }
+      },
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "The document was added successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while adding the document. Please try again."
+        }
+      }
+    },
+    "edit": {
+      "title": "Edit Document",
+      "subtitle": "Edit Document Information",
+      "fetching": "Fetching document data...",
+      "loading": "Loading document...",
+      "form": {
+        "title": "Update the document information",
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        }
+      },
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "The document was updated successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while updating the document. Please try again."
+        }
+      },
+      "notFound": "Document not found"
+    },
+    "delete": {
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "The document was deleted successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while deleting the document. Please try again."
+        }
+      },
+      "dialog": {
+        "message": "Deleting this document will also remove the following associated information:",
+        "relatedItems": {
+          "reviews": "All reviews associated with this document.",
+          "versions": "All versions of this document.",
+          "files": "All files linked to this document."
+        },
+        "cannotDeleteDescription": "However, you cannot delete this document because:",
+        "documentPublished": "The document is published. Please unpublish it before deleting.",
+        "canBeDeleted": "The document can be safely deleted."
+      }
+    },
+    "publish": {
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "Document published successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while publishing the document. Please try again."
+        }
+      }
+    },
+    "unpublish": {
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "Document unpublished successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while unpublishing the document. Please try again."
+        }
+      }
+    },
+    "stats": {
+      "total": {
+        "title": "Total Documents",
+        "value": "{{count}} documents"
+      },
+      "draft": {
+        "title": "Drafts",
+        "value": "{{count}} drafts"
+      },
+      "inReview": {
+        "title": "In Review",
+        "value": "{{count}} in review"
+      },
+      "approved": {
+        "title": "Approved",
+        "value": "{{count}} approved"
+      },
+      "expired": {
+        "title": "Expired",
+        "value": "{{count}} expired"
+      }
+    },
+    "filter": {
+      "search": {
+        "label": "Search by name, owner, or ISO clause",
+        "placeholder": "Search for a document..."
+      },
+      "status": {
+        "label": "Filter by status",
+        "placeholder": "All statuses"
+      },
+      "type": {
+        "label": "Filter by type",
+        "placeholder": "All types"
+      },
+      "owner": {
+        "label": "Filter by owner",
+        "placeholder": "All owners"
+      },
+      "isoClause": {
+        "label": "Filter by ISO clause",
+        "placeholder": "All ISO clauses"
+      }
+    },
+    "table": {
+      "title": "Document List",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "isoClause": "ISO Clause / Control",
+        "status": "Status",
+        "owner": "Owner",
+        "version": "Version",
+        "nextReview": "Next Review",
+        "reviewDue": "Review Date",
+        "reviewFrequency": "Review Frequency",
+        "lastUpdated": "Last Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View Details",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "download": "Download"
+      },
+      "empty": {
+        "title": "No documents found",
+        "message": "Try modifying filters or adding a new document.",
+        "actions": {
+          "add": {
+            "label": "Add Document"
+          }
+        }
+      }
+    },
+    "view": {
+      "title": "Document Details",
+      "subtitle": "Document Description",
+      "detail": {
+        "title": "Document Information",
+        "name": "Name",
+        "description": "Description",
+        "type": "Type",
+        "isoClause": "ISO Clause / Control",
+        "status": "Status",
+        "owner": "Owners",
+        "version": "Version",
+        "nextReview": "Next Review",
+        "reviewDue": "Review Date",
+        "reviewFrequency": "Review Frequency",
+        "lastUpdated": "Last Updated",
+        "createdBy": "Created By",
+        "createdAt": "Created On",
+        "reviewers": "Reviewers",
+        "department": "Department"
+      },
+      "tabs": {
+        "preview": "File Preview",
+        "changeLogs": "Change Log"
+      },
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "delete": {
+          "label": "Delete"
+        },
+        "download": {
+          "label": "Download File",
+          "loading": "Downloading..."
+        },
+        "assignReviewer": {
+          "label": "Assign Reviewer"
+        },
+        "publish": {
+          "label": "Publish this document"
+        },
+        "unpublish": {
+          "label": "Unpublish this document"
+        }
+      }
+    },
+    "actions": {
+      "publish": {
+        "label": "Publish Document"
+      },
+      "unpublish": {
+        "label": "Unpublish Document"
+      },
+      "download": {
+        "label": "Download Document"
+      }
+    }
+  },
+  "department": {
+    "title": "Department Management",
+    "subtitle": "Manage departments and their users",
+    "hovercard": {
+      "title": "Department Details",
+      "description": "Department Description",
+      "members": "{{count}} members",
+      "noMembers": "No members",
+      "createdBy": "Created By",
+      "createdAt": "Created On",
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "view": {
+          "label": "View Users"
+        }
+      }
+    },
+    "actions": {
+      "add": {
+        "label": "Add Department"
+      }
+    }
+  },
+  "role": {
+    "options": {
+      "admin": "Administrator",
+      "viewer": "Visitor",
+      "reviewer": "Reviewer",
+      "contributor": "Contributor"
+    },
+    "actions": {
+      "add": {
+        "label": "Add Role"
+      }
+    }
+  },
+  "unauthorized": {
+    "title": "Unauthorized Access",
+    "subtitle": "You do not have the necessary permissions to access this page.",
+    "message": "Please contact the administrator if you believe this is an error.",
+    "actions": {
+      "goBack": {
+        "label": "Go back to previous page"
+      },
+      "contactAdmin": {
+        "label": "Contact Administrator"
+      }
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "subtitle": "The page you are looking for does not exist.",
+    "message": "Check the URL or return to the homepage.",
+    "actions": {
+      "goHome": {
+        "label": "Go to Homepage"
+      },
+      "contactSupport": {
+        "label": "Contact Support"
+      }
+    }
+  },
+  "errors": {
+    "ERR_INVALID_CREDENTIALS": "Incorrect email or password",
+    "ERR_SERVER_ERROR": "An unknown error occurred",
+    "ERR_USER_NOT_FOUND": "User not found",
+    "ERR_USER_INACTIVE": "Inactive user",
+    "ERR_INVALID_REFRESH_TOKEN": "Invalid refresh token",
+    "ERR_INVALID_TOKEN": "Invalid token",
+    "ERR_RESET_TOKEN_EXPIRED": "Password reset link has expired",
+    "ERR_INVALID_RESET_TOKEN": "The password reset link is invalid",
+    "ERR_USER_EXISTS": "A user with this email already exists. Please choose another."
+  },
+  "zod": {
+    "errors": {
+      "password": {
+        "min": "Password must contain at least {{limit}} characters",
+        "regex": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+        "required": "Password is required"
+      },
+      "confirmPassword": {
+        "min": "Please enter password confirmation",
+        "matches": "Password confirmation does not match password"
+      },
+      "email": {
+        "email": "Please enter a valid email address"
+      },
+      "name": {
+        "required": "This field is required"
+      },
+      "department": {
+        "required": "Please select a department"
+      },
+      "required": "This field is required"
+    }
+  },
+  "components": {
+    "deleteDialog": {
+      "title": "Delete {{entity}}?",
+      "description": "Are you sure you want to delete {{entity}}? This action is irreversible.",
+      "actions": {
+        "confirm": {
+          "label": "Yes, delete",
+          "loading": "Deleting..."
+        },
+        "cancel": {
+          "label": "No, cancel"
+        }
+      }
+    },
+    "toast": {
+      "success": {
+        "title": "Success",
+        "user": {
+          "created": "User created successfully",
+          "updated": "User updated successfully",
+          "deleted": "User deleted successfully"
+        },
+        "document": {
+          "created": "Revision created successfully",
+          "updated": "Revision updated successfully",
+          "deleted": "Revision deleted successfully"
+        }
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred during {{action}}. Please try again."
+      }
+    },
+    "table": {
+      "pagination": {
+        "label": "Page {{page}} of {{totalPages}}",
+        "next": "Next",
+        "previous": "Previous",
+        "first": "First page",
+        "last": "Last page"
+      },
+      "search": {
+        "placeholder": "Search...",
+        "noResults": "No results found"
+      },
+      "actions": {
+        "toggleColumns": {
+          "label": "Show/Hide columns",
+          "placeholder": "Show / Hide"
+        },
+        "deleteSelected": {
+          "label": "Delete the {{count}} selected items",
+          "loading": "Deleting..."
+        }
+      },
+      "empty": {
+        "title": "No records found"
+      },
+      "selection": {
+        "selectAll": "Select all",
+        "select": "Select",
+        "deselectAll": "Deselect all",
+        "selected": "{{count}} of {{total}} items selected"
+      }
+    },
+    "fileUpload": {
+      "title": {
+        "plural": "Import files",
+        "singular": "Import a file"
+      },
+      "dragAndDrop": "Drag and drop files here or",
+      "browseFiles": "Browse files",
+      "maxSize": "Maximum file size: <span>{{size}}</span>",
+      "uploading": "Uploading...",
+      "uploaded": "{{count}} file(s) uploaded",
+      "errors": {
+        "fileTooLarge": "File is too large. Maximum size: {{size}}",
+        "invalidFileType": "Invalid file type. Allowed types: {{types}}",
+        "required": "Please select a file to upload"
+      }
+    },
+    "lookup": {
+      "user": {
+        "label": "User",
+        "placeholder": "Select a user",
+        "search": "Search for a user...",
+        "empty": "No users found.",
+        "addNew": "Add new user"
+      }
+    },
+    "multiselect": {
+      "user": {
+        "label": "Users",
+        "placeholder": "Select users",
+        "search": "Search for users...",
+        "empty": "No users found.",
+        "addNew": "Add new user"
+      }
+    },
+    "document": {
+      "fileupload": {
+        "title": "Drag and drop your documents here",
+        "description": "Or click to browse (max {{maxFiles}} files, up to {{maxSize}} MB each)",
+        "browse": "Browse files",
+        "fileRejected": "The file \"{{name}}\" was rejected"
+      }
+    }
+  },
+  "navigation": {
+    "dashboard": {
+      "label": "Dashboard",
+      "description": "Overview and Key Indicators"
+    },
+    "documents": {
+      "label": "Documents",
+      "description": "Policies and Procedures Repository"
+    },
+    "reviews": {
+      "label": "Reviews",
+      "description": "Validation Process Management"
+    },
+    "compliance": {
+      "label": "Compliance",
+      "description": "ISO 27001 Compliance Status Tracking"
+    },
+    "users": {
+      "label": "Users",
+      "description": "Roles and Access Management"
+    },
+    "auditLog": {
+      "label": "Audit Log",
+      "description": "Change Tracking and Traceability"
+    }
+  },
+  "header": {
+    "search": {
+      "placeholder": "Search the portal..."
+    },
+    "profile": {
+      "title": "My profile",
+      "viewProfile": "View profile",
+      "settings": "Settings",
+      "logout": "Log out"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "empty": "No notifications",
+      "markAllAsRead": "Mark all as read"
+    }
+  },
+  "sidebar": {
+    "title": "ISMS Solumada",
+    "logout": "Log out"
+  },
+  "common": {
+    "document": {
+      "status": {
+        "draft": "Draft",
+        "in_review": "In Review",
+        "approved": "Approved",
+        "expired": "Expired"
+      },
+      "notFound": {
+        "title": "Document not found",
+        "description": "The document you are looking for does not exist.",
+        "actions": {
+          "goBack": {
+            "label": "Return to document list"
+          },
+          "contactSupport": {
+            "label": "Contact support"
+          }
+        }
+      }
+    },
+    "form": {
+      "add": {
+        "stay": "Stay on this page after saving"
+      },
+      "edit": {
+        "stay": "Stay on this page after editing"
+      },
+      "requiredIndicatorInfo": "Fields marked with a <span>*</span> are required"
+    },
+    "error": {
+      "tryAgain": "Try again",
+      "somethingWentWrong": "Something went wrong"
+    },
+    "password": {
+      "requirements": {
+        "minLength": "At least 8 characters",
+        "number": "At least 1 number",
+        "lowercase": "At least 1 lowercase letter",
+        "uppercase": "At least 1 uppercase letter"
+      },
+      "strength": {
+        "enter": "Enter a password",
+        "weak": "Weak password",
+        "medium": "Medium password",
+        "strong": "Strong password",
+        "mustContain": "Must contain:",
+        "label": "Password strength",
+        "requirementsLabel": "Password requirements",
+        "requirementMet": "Requirement met",
+        "requirementNotMet": "Requirement not met"
+      }
+    }
+  }
 }

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Link, useNavigate } from 'react-router-dom';
-import { DocumentTable } from '@/templates/table/DocumentTable';
+import { DocumentTable } from '@/templates/documents/table/DocumentTable';
 import { useTranslation } from 'react-i18next';
 import { documentStatus } from '@/constants/document';
 import { useDocumentType } from '@/contexts/DocumentTypeContext';
@@ -96,8 +96,8 @@ export default function DocumentRepositoryPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t("document.title")}</h1>
-            <p className="text-muted-foreground mt-1">{t("document.subtitle")}</p>
+            <h1 className="page-title">{t("document.title")}</h1>
+            <p className="page-description">{t("document.subtitle")}</p>
           </div>
           <Link to={NEW_DOCUMENT_PATH} >
             <Button className="flex items-center space-x-2">
@@ -137,7 +137,7 @@ export default function DocumentRepositoryPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <Select value={filterOwner} onValueChange={setFilterOwner}>
-                  <SelectTrigger className="w-full sm:w-40">
+                  <SelectTrigger className="w-full sm:w-40 hidden">
                     <SelectValue placeholder={t("document.filter.owner.title")} />
                   </SelectTrigger>
                   <SelectContent>

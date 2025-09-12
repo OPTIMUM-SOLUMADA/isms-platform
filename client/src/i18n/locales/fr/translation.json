@@ -56,6 +56,11 @@
         "resetPassword": {
             "title": "Changer votre mot de passe",
             "subtitle": "Saisissez votre nouveau mot de passe",
+            "invitation": {
+                "welcome": "Bienvenue dans le portail ISMS",
+                "setPassword": "Veuillez définir votre mot de passe pour commencer à utiliser votre compte.",
+                "definePassword": "Définir votre mot de passe"
+            },
             "form": {
                 "password": {
                     "label": "Mot de passe",
@@ -173,6 +178,29 @@
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et roles",
+        "view": {
+            "title": "Détail de l'utilisateur",
+            "subtitle": "Informations sur l'utilisateur",
+            "detail": {
+                "title": "Informations sur l'utilisateur",
+                "name": "Nom",
+                "email": "Email",
+                "role": "Rôle",
+                "department": "Département",
+                "status": "Statut",
+                "createdAt": "Créé le",
+                "createdBy": "Créé par"
+            },
+            "actions": {
+                "edit": {
+                    "label": "Modifier"
+                },
+                "delete": {
+                    "label": "Supprimer"
+                }
+            },
+            "notFound": "Utilisateur non trouvé"
+        },
         "stats": {
             "total": {
                 "title": "Total des utilisateurs",
@@ -307,6 +335,23 @@
                 }
             }
         },
+        "delete": {
+            "dialog": {
+                "message": "Supprimer cet utilisateur supprimera également toutes les informations associées suivantes :",
+                "relatedItems": {
+                    "documents": "Tous les documents possédés par {{name}} et leurs versions.",
+                    "reviews": "Tous les examens terminés par {{name}}.",
+                    "auditLogs": "Tous les journaux d'audit liés à {{name}}.",
+                    "pendingReviews": "Toutes les révisions en attente assignées à {{name}}."
+                },
+                "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer cet utilisateur car :",
+                "canBeDeleted": "L'utilisateur peut être supprimé sans risque.",
+                "actions": {
+                    "notPermitted": "Vous ne pouvez pas supprimer votre propre compte.",
+                    "hasDocuments": "Cet utilisateur possède des documents. Veuillez réassigner ou supprimer ces documents avant de supprimer l'utilisateur."
+                }
+            }
+        },
         "actions": {
             "add": {
                 "label": "Ajouter un nouvel utilisateur"
@@ -315,7 +360,8 @@
         "role": {
             "admin": "Administrateur",
             "viewer": "Visiteur",
-            "reviewer": "Reviseur"
+            "reviewer": "Reviseur",
+            "contributor": "Contributeur"
         },
         "status": {
             "active": "Actif",
@@ -476,6 +522,17 @@
                     "title": "Erreur",
                     "description": "Une erreur s'est produite lors de la suppression du document. Veuillez réessayer."
                 }
+            },
+            "dialog": {
+                "message": "La suppression de cet document supprimera également les informations associées suivantes :",
+                "relatedItems": {
+                    "reviews": "Toutes les révisions associées à ce document.",
+                    "versions": "Toutes les versions de ce document.",
+                    "files": "Tous les fichiers liés à ce document."
+                },
+                "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer ce document car :",
+                "documentPublished": "Le document est publié. Veuillez le dépublier avant de le supprimer.",
+                "canBeDeleted": "Le document peut être supprimé sans risque."
             }
         },
         "publish": {
@@ -580,7 +637,7 @@
             }
         },
         "view": {
-            "title": "Détails du document: {{name}}",
+            "title": "Détail du document",
             "subtitle": "Description du document",
             "detail": {
                 "title": "Informations sur le document",
@@ -589,7 +646,7 @@
                 "type": "Type",
                 "isoClause": "Clause ISO / Control",
                 "status": "Statut",
-                "owner": "Propriétaire",
+                "owner": "Propriétaires",
                 "version": "Version",
                 "nextReview": "Prochaine révision",
                 "reviewDue": "Date de révision",
@@ -742,11 +799,11 @@
             "description": "Êtes-vous sûr de vouloir supprimer {{entity}} ? Cette action est irréversible.",
             "actions": {
                 "confirm": {
-                    "label": "Supprimer",
+                    "label": "Oui, supprimer",
                     "loading": "Suppression en cours..."
                 },
                 "cancel": {
-                    "label": "Annuler"
+                    "label": "Non, annuler"
                 }
             }
         },
@@ -924,6 +981,25 @@
         "error": {
             "tryAgain": "Essayer de nouveau",
             "somethingWentWrong": "Quelque chose s'est mal passé"
+        },
+        "password": {
+            "requirements": {
+                "minLength": "Au moins 8 caractères",
+                "number": "Au moins 1 chiffre",
+                "lowercase": "Au moins 1 lettre minuscule",
+                "uppercase": "Au moins 1 lettre majuscule"
+            },
+            "strength": {
+                "enter": "Saisissez un mot de passe",
+                "weak": "Mot de passe faible",
+                "medium": "Mot de passe moyen",
+                "strong": "Mot de passe fort",
+                "mustContain": "Doit contenir :",
+                "label": "Sécurité du mot de passe",
+                "requirementsLabel": "Exigences du mot de passe",
+                "requirementMet": "Exigence remplie",
+                "requirementNotMet": "Exigence non remplie"
+            }
         }
     }
 }

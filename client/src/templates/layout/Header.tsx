@@ -14,6 +14,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { useTranslation } from 'react-i18next';
 import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -42,10 +43,18 @@ export function Header({ onMenuClick }: HeaderProps) {
           >
             <Menu className="h-5 w-5" />
           </Button>
+          {/* Logo */}
+          <img
+            src="/logo/solumada-long.png"
+            alt="logo"
+            className="w-auto h-10 rounded-full object-contain max-sm:hidden"
+          />
         </div>
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          {/* Langues switcher */}
+          <LanguageSwitcher />
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

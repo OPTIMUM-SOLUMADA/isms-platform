@@ -15,7 +15,8 @@ const emailService = new EmailService();
 
 export class AuthController {
     login = async (req: Request, res: Response) => {
-        const { email, password } = req.body;
+        const { email, password, rememberMe = false } = req.body;
+
         try {
             const user = await authService.login(email, password);
             if (!user) {
@@ -36,7 +37,7 @@ export class AuthController {
 
             // generate token
             const accessToken = jwtService.generateAccessToken(user);
-            const refreshToken = jwtService.generateRefreshToken(user);
+            const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
             // set cookie and header, then send json response
             res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })

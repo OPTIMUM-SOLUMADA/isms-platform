@@ -1,4 +1,4 @@
-import { AddReviewFormData } from "@/templates/forms/reviews/AddReviewForm";
+import { AddReviewFormData } from "@/templates/reviews/forms/AddReviewForm";
 import { ApiAxiosError } from "@/types/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { documentReviewService } from "@/services/documentreviewService";
@@ -81,11 +81,11 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
 
   const updateCommentMutation = useMutation<
-    any, 
+    any,
     ApiAxiosError,
     { id: string; comment: string }
   >({
-    mutationFn: async ({ id, comment }) => await documentReviewService.updateComment(id, comment ),
+    mutationFn: async ({ id, comment }) => await documentReviewService.updateComment(id, comment),
     onSuccess: (res) => {
       setViewers((prev) => prev.map((viewer) => (
         viewer.id === res.data.id ? ({ ...viewer, comment: res.data.comment }) : viewer))

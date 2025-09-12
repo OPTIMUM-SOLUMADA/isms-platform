@@ -16,6 +16,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import { RequiredIndicatorInfo } from '@/components/Required';
 import CircleLoading from '@/components/loading/CircleLoading';
 import ItemNotFound from '../ItemNotFound';
+import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -70,13 +71,20 @@ export default function DocumentEditPage() {
 
     return (
         <WithTitle title={t("document.edit.title")}>
-            <div className="space-y-6 flex-grow flex flex-col pb-10">
+            <div className="flex-grow flex flex-col pb-10">
+                <BreadcrumbNav
+                    items={[
+                        { label: t("document.title"), href: "/documents" },
+                        { label: t("document.edit.title") },
+                    ]}
+                    className="mb-3"
+                />
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
                     <BackButton />
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{t("document.edit.title")}</h1>
-                        <p className="text-gray-600 mt-1">{t("document.edit.subtitle")}</p>
+                        <h1 className="page-title">{t("document.edit.title")}</h1>
+                        <p className="page-description">{t("document.edit.subtitle")}</p>
                     </div>
                 </div>
 
@@ -88,7 +96,7 @@ export default function DocumentEditPage() {
                             <RequiredIndicatorInfo />
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className='pt-4 lg:px-20 px-10'>
+                    <CardContent className='pt-4 lg:px-20 px-10 bg-white'>
                         <EditDocumentForm
                             doc={doc!}
                             ref={formRef}

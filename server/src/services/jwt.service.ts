@@ -6,19 +6,28 @@ interface Payload extends JwtPayload {
     user: User;
 }
 
+const l = (user: User) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isActive: user.isActive,
+});
+
 export class JwtService {
     generateAccessToken = (payload: User) => {
-        const { passwordHash, passwordResetToken, metadata, ...rest } = payload;
-        return jwt.sign({ user: rest }, env.JWT_ACCESS_SECRET, {
+        return jwt.sign({ user: l(payload) }, env.JWT_ACCESS_SECRET, {
             expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
             issuer: env.JWT_ISSUER,
         });
     };
 
-    generateRefreshToken = (user: User) => {
-        const { passwordHash, passwordResetToken, metadata, ...rest } = user;
-        return jwt.sign({ user: rest }, env.JWT_REFRESH_SECRET, {
-            expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
+    // If isLongExpiration is true, it will return a long expiration token
+    generateRefreshToken = (user: User, isLongExpiration = false) => {
+        return jwt.sign({ user: l(user) }, env.JWT_REFRESH_SECRET, {
+            expiresIn: (isLongExpiration
+                ? env.JWT_REFRESH_LONG_EXPIRES_IN
+                : env.JWT_REFRESH_SHORT_EXPIRES_IN) as any,
         });
     };
 
@@ -31,8 +40,7 @@ export class JwtService {
     };
 
     generatePasswordResetToken(user: User) {
-        const { passwordHash, passwordResetToken, metadata, ...rest } = user;
-        return jwt.sign({ user: rest }, env.JWT_ACCESS_SECRET, {
+        return jwt.sign({ user: l(user) }, env.JWT_ACCESS_SECRET, {
             expiresIn: env.JWT_RESET_EXPIRES_IN as any,
             issuer: env.JWT_ISSUER,
         });

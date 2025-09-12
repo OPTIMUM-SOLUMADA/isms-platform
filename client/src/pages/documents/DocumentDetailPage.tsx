@@ -12,26 +12,26 @@ import {
   Clock,
   Download,
   Rocket,
-  Archive
+  Archive,
+  Users
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/tabs/DocumentPreview";
+import DocPreview from "@/templates/documents/tabs/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
-import Notification from "@/templates/tabs/Notification";
+import Notification from "@/templates/documents/tabs/Notification";
 import { documentStatusColors } from "@/constants/color";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDocument } from "@/contexts/DocumentContext";
-import { useCallback } from "react";
-import { UserHoverCard } from "@/templates/hovercard/UserHoverCard";
+import { useCallback, useEffect } from "react";
+import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
-import { DeleteDialog } from "@/components/DeleteDialog";
 import { Document } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
@@ -44,6 +44,8 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
+import { BreadcrumbNav } from "@/components/breadcrumb-nav";
+import { useDocumentUI } from "@/stores/useDocumentUi";
 
 const tabs = [
   {
@@ -60,6 +62,14 @@ const tabs = [
   },
 ];
 
+const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {
+  return numberOfUsers <= 1 ? (
+    <User className="h-4 w-4 text-muted-foreground" />
+  ) : (
+    <Users className="h-4 w-4 text-muted-foreground" />
+  )
+}
+
 export default function DocumentDetailPage() {
 
   const { t } = useTranslation();
@@ -67,7 +77,7 @@ export default function DocumentDetailPage() {
 
   const params = useParams();
 
-  const { deleteDocument, download, isDownloading } = useDocument();
+  const { isDeleted, download, isDownloading } = useDocument();
   const { user } = useAuth();
   const { hasActionPermission } = usePermissions();
   const [activeTab, setActiveTab] = useLocalStorage(`documentDetailTab-${user?.id}-${params.id}`, tabs[0].id);
@@ -80,10 +90,20 @@ export default function DocumentDetailPage() {
     refetch
   } = useGetDocument(params.id);
 
+  const { openDelete, setCurrentDocument } = useDocumentUI();
+
   const handleDelete = useCallback(async () => {
-    await deleteDocument({ id: document!.id });
-    navigate("/documents");
-  }, [navigate, deleteDocument, document]);
+    if (!document) return;
+    setCurrentDocument(document);
+    openDelete();
+  }, [document, openDelete, setCurrentDocument]);
+
+  useEffect(() => {
+    if (isDeleted) {
+      navigate("/documents");
+      console.log(isDeleted);
+    }
+  }, [isDeleted, navigate]);
 
 
   if (isLoading) return <DocumentDetailSkeleton />;
@@ -96,14 +116,23 @@ export default function DocumentDetailPage() {
 
   return (
     <WithTitle title={document.title}>
-      <div className="flex flex-col space-y-6 flex-grow">
+      <div className="flex flex-col flex-grow">
+        <BreadcrumbNav
+          items={[
+            { label: t("document.title"), href: "/documents" },
+            { label: t("document.view.title") },
+          ]}
+          className="mb-3"
+        />
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
             <BackButton />
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t("document.view.title", { name: document.title })}</h1>
-              <p className="text-gray-600 mt-1">{document.description}</p>
+              <h1 className="page-title">{document.title}</h1>
+              <p className="page-description">{document.description}</p>
             </div>
           </div>
 
@@ -135,29 +164,23 @@ export default function DocumentDetailPage() {
             )}
 
             {hasActionPermission("document.delete") && (
-              <DeleteDialog
-                entityName={document.title}
-                onConfirm={handleDelete}
-                trigger={
-                  <Button variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    {t("document.view.actions.delete.label")}
-                  </Button>
-                }
-              />
+              <Button variant="destructive" onClick={handleDelete}>
+                <Trash2 className="h-4 w-4 mr-1" />
+                {t("document.view.actions.delete.label")}
+              </Button>
             )}
           </div>
         </div>
 
         {/* Document Info */}
-        <Card className="text-sm">
+        <Card className="text-sm mb-6">
           <CardHeader>
             <CardTitle>{t("document.view.detail.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+                <UserIcon numberOfUsers={document.owners.length} />
                 <span className="font-medium">{t("document.view.detail.owner")}:</span>
                 <div className="flex items-center gap-1">
                   {document.owners.map((o, index) => (
@@ -166,7 +189,7 @@ export default function DocumentDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+                <UserIcon numberOfUsers={document.reviewers.length} />
                 <span className="font-medium">{t("document.view.detail.reviewers")}:</span>
                 <div className="flex items-center gap-1">
                   {document.reviewers.map((o, index) => (

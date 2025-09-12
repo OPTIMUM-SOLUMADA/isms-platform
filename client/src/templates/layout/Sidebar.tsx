@@ -17,6 +17,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 
 type SidebarItemProps = {
@@ -65,8 +67,8 @@ export const SidebarActions = ({
   collapsed = false,
 }: SidebarActionsProps) => {
   return (
-    <div className={cn("grid", !collapsed && "grid-cols-3")}>
-      {!collapsed &&
+    <div className={cn("grid place-items-center", !collapsed ? "grid-cols-3" : "grid-cols-1 gap-3")}>
+      {
         items.map((item, index) => (
           <SidebarItem key={index} {...item} />
         ))}
@@ -86,6 +88,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const { t } = useTranslation();
   const { hasAccessPermission } = usePermissions();
   const { logout, user } = useAuth();
+  const isMobile = useIsMobile(1024);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage(`sidebar-collapse-${user?.id}`, false);
 
@@ -106,7 +109,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-30 w-64 bg-theme-2 shadow-lg transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+        "fixed inset-y-0 left-0 z-30 w-64 bg-gradient-to-br from-theme-2 via-theme-2 to-theme-2-dark shadow-lg transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
         isOpen ? "translate-x-0" : "-translate-x-full",
         sidebarCollapsed && "w-20",
       )}>
@@ -121,7 +124,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </div>
             <div className={cn(
               "absolute z-10 top-0 right-0 rotate-45 translate-x-1/2 h-full scale-[0.707] aspect-square bg-theme-2 flex items-center justify-center",
-              !isOpen && "hidden"
+              (!isOpen && isMobile) && "hidden"
             )}>
               <div className="-rotate-45 scale-[1.414] aspect-square flex items-center justify-center">
                 <button
@@ -135,7 +138,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   onClick={() => setSidebarCollapsed(prev => !prev)}
                   className={cn(
                     "outline-transparent hidden lg:flex",
-                    "text-gray-400 hover:text-white hover:bg-transparent"
+                    "text-gray-400 hover:text-white hover:bg-transparent focus-visible:outline-transparent"
                   )}
                 >
                   {sidebarCollapsed ? (
@@ -149,7 +152,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           </div>
 
           {/* Navigation */}
-          <ScrollArea className="flex-1 px-4 py-6 space-y-2">
+          <ScrollArea className="flex-1 px-4 py-6 space-y-0">
             {filteredMenuItems.map((item) => {
               const Icon = item.icon;
 
@@ -158,26 +161,45 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) => cn(
-                    "w-full flex items-center gap-3 p-3 mb-1 h-20 text-left rounded-lg transition-colors duration-200 outline-transparent",
+                    "w-full flex items-center gap-3 p-3 h-22 text-left rounded-lg transition-colors duration-200 outline-transparent",
                     isActive
-                      ? "bg-white/10 text-theme"
-                      : "text-gray-300 hover:bg-white/5 hover:text-white"
+                      ? "bg-theme-2-muted/60 text-theme"
+                      : "text-gray-300 hover:bg-white/5 hover:text-white",
+                    "border-b border-theme-2-muted",
                   )}
                 >
-                  {({ isActive }) => (
+                  {({ isActive }) => !sidebarCollapsed ? (
                     <>
                       <Icon className={cn(
                         "h-6 w-6 shrink-0",
-                        isActive ? "text-theme-1" : "text-gray-300"
+                        isActive ? "text-theme" : "text-gray-300"
                       )} />
-                      <div className={cn("flex-1", sidebarCollapsed && "hidden")}>
+                      <div className={cn("flex-1")}>
                         <div className="font-medium">{t(item.labelKey)}</div>
                         <div className={cn(
                           "text-xs mt-0.5 line-clamp-2 font-light",
-                          isActive ? "text-theme-1" : "text-gray-400"
+                          isActive ? "text-theme" : "text-gray-400"
                         )}>{t(item.descriptionKey)}</div>
                       </div>
                     </>
+                  ) : (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Icon className={cn(
+                          "h-6 w-6 shrink-0 aspect-square",
+                          isActive ? "text-theme-1" : "text-gray-300"
+                        )} />
+                      </HoverCardTrigger>
+                      <HoverCardContent side='left' sideOffset={16} className='bg-theme-2-muted rounded-lg border-theme-2'>
+                        <div className={cn("flex-1")}>
+                          <div className="font-medium text-muted">{t(item.labelKey)}</div>
+                          <div className={cn(
+                            "text-xs mt-0.5 line-clamp-2 font-light",
+                            isActive ? "text-theme-1" : "text-gray-400"
+                          )}>{t(item.descriptionKey)}</div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
                   )}
                 </NavLink>
               );

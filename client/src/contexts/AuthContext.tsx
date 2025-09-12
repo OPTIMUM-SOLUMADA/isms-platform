@@ -9,6 +9,7 @@ import type { ApiAxiosError } from '@/types/api';
 export type LoginCredentials = {
     email: string;
     password: string;
+    rememberMe?: boolean;
 }
 
 interface AuthContextType {
@@ -51,10 +52,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, [token]);
 
     const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
-        mutationFn: async (credentials) => AuthService.login(
-            credentials.email,
-            credentials.password
-        ),
+        mutationFn: async (credentials) => AuthService.login({
+            email: credentials.email,
+            password: credentials.password,
+            rememberMe: credentials.rememberMe
+        }),
         onSuccess: (res) => {
             setUser(res.data);
         }

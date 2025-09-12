@@ -22,6 +22,7 @@ interface DocumentContextType {
     deleteDocument: (payload: { id: string }) => Promise<any>;
     isDeleting: boolean;
     isDeleted: boolean;
+    resetDelete: () => void;
 
     // update
     updateDocument: (payload: { id: string, data: EditDocumentFormData }) => Promise<any>;
@@ -129,7 +130,8 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             const res = await documentService.getStats();
             return res.data;
         },
-        staleTime: 1000 * 60, // cache data for 1 min
+        staleTime: 1000 * 60 * 3, // cache data for 1 min
+
     });
 
     useEffect(() => {
@@ -205,7 +207,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Delete document
-    const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted } = useMutation<any, ApiAxiosError, { id: string }>({
+    const { mutateAsync: deleteDocument, isPending: isDeleting, isSuccess: isDeleted, reset: resetDelete } = useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: async ({ id }) => await documentService.delete(id),
         onSuccess: (_, { id }) => {
             toast({
@@ -304,6 +306,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 deleteDocument,
                 isDeleting,
                 isDeleted,
+                resetDelete,
                 currentDocument,
                 setCurrentDocument: setCurrentDocument,
                 document: document ?? null,

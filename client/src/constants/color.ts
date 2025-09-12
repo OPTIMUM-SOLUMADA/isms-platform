@@ -30,9 +30,9 @@ export const documentStatusColors: Record<string, string> = {
 
 export const userRoleColors: Record<RoleType, string> = {
     ADMIN: 'bg-theme/10 text-theme',
-    VIEWER: 'bg-primary/10 text-muted-foreground',
-    REVIEWER: 'bg-theme-2/10 text-theme-2',
-    CONTRIBUTOR: 'bg-theme-danger/10 text-theme-danger',
+    VIEWER: 'bg-primary/5 text-gray-500',
+    REVIEWER: 'bg-amber/10 text-amber-600',
+    CONTRIBUTOR: 'bg-indigo/10 text-indigo-600',
 };
 
 export const userStatusColors = {
