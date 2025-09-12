@@ -1,9 +1,8 @@
-import { FC, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   GitBranch,
   User,
   Calendar,
-  MessageCircle,
   Eye,
   Search,
   FileText,
@@ -30,7 +29,6 @@ import { useDocument } from "@/contexts/DocumentContext";
 import { useToast } from "@/hooks/use-toast";
 import { useViewer } from "@/contexts/DocumentReviewContext";
 import { useNavigate } from "react-router-dom";
-import { Textarea } from "@/components/ui/textarea";
 
 export default function ReviewWorkflowPage() {
 
@@ -44,7 +42,7 @@ export default function ReviewWorkflowPage() {
   const { documents } = useDocument();
 
   const { toast } = useToast();
-  const { viewers, createViewer, updateComment } = useViewer();
+  const { viewers, createViewer } = useViewer();
 
   const workflowStages = [
     { id: "PENDING", label: "review.pendingReview", color: "gray" },
@@ -109,24 +107,24 @@ export default function ReviewWorkflowPage() {
     [createViewer, setOpen, toast, t]
   );
 
-  const handleAddComment = useCallback(
-    async (id: any, comment: any) => {
-      console.log('new ====> ', id, comment);
+  // const handleAddComment= useCallback(
+  //   async (id: any, comment: any) => {
+  //     console.log('new ====> ',id,  comment);
+      
+  //     const res = await updateComment(id, comment);
 
-      const res = await updateComment(id, comment);
+  //     if (res) {
+  //       toast({
+  //         title: t("components.toast.success.title"),
+  //         description: t("components.toast.success.document.created"),
+  //         variant: "success",
+  //       });
+  //       setOpen(false);
+  //     }
+  //   },
+  //   [updateComment, setOpen, toast, t]
 
-      if (res) {
-        toast({
-          title: t("components.toast.success.title"),
-          description: t("components.toast.success.document.created"),
-          variant: "success",
-        });
-        setOpen(false);
-      }
-    },
-    [updateComment, setOpen, toast, t]
-
-  )
+  // )
   // const getInitials = (name: string) => {
   //   return name
   //     .split(" ")
@@ -256,73 +254,10 @@ export default function ReviewWorkflowPage() {
               </TabsList>
               <div className="mt-6">
                 <div className="space-y-4">
-                  {filteredItems.map((item) => {
-
-                    return <ReviewCard
-                      key={item.id}
-                      item={item}
-                      t={t}
-                      navigate={navigate}
-                      onSubmit={handleAddComment} />;
-                  })
-                  }
-
-                  {filteredItems.length === 0 && (
-                    <div className="text-center py-12">
-                      <GitBranch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No review items found
-                      </h3>
-                      <p className="text-gray-500">
-                        Try adjusting your filters or start a new review process
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-    </WithTitle>
-  );
-}
-
-
-type ReviewCardProps = {
-  item: {
-    id: string;
-    comment?: string;
-    documentId: string;
-    document: {
-      title: string;
-      description?: string | null;
-      isoClause: { code: string; name: string };
-      versions: { version: string }[];
-    };
-    reviewer: {
-      name: string
-    };
-    reviewDate: Date;
-    status: string;
-  };
-  t: (key: string) => string;
-  navigate: (url: string) => void;
-  onSubmit: (id: string, comment: string) => void;
-};
-
-const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
-  const [comment, setComment] = useState(item.comment || "");
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleSave = () => {
-    console.log('item =====', item.id, comment);
-
-    onSubmit(item.id, comment);
-    setIsEditing(false);
-  }
-
-  return (
+                  {filteredItems.map((item) =>{
+                    
+                    return (
+                    
     <Card className="hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-6">
         <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
@@ -357,35 +292,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
             {/* Comment */}
             <div className="mb-3 px-2 py-1 bg-gray-200 rounded">
               <p className="font-medium text-gray-700">{t("review.comment")}:</p>
-              {isEditing ? (
-                <div className="space-y-2">
-                  <Textarea
-                    className="w-full border rounded px-2 py-1 text-sm"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      onClick={handleSave}
-                    >
-                      {t("review.button.save")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setIsEditing(false);
-                        setComment(item.comment || "");
-                      }}
-                    >
-                      {t("review.button.cancel")}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-600">{comment || "No comments yet"}</p>
-              )}
+                <p className="text-sm text-gray-600">{item.comment || "No comments yet"}</p>
             </div>
 
             {/* ISO Clause */}
@@ -397,7 +304,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
           </div>
 
           {/* Right Side*/}
-          <div className="flex flex-col items-stretch space-y-2 w-40">
+          <div className="flex flex-col items-stretch space-y-2 w-40 mt-10">
             <Button className="h-50 " disabled>
               {item.status === "IN_REVIEW"
                 ? t("review.inProgress")
@@ -409,21 +316,183 @@ const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => navigate(`/documents/view/${item.documentId}`)}
+              onClick={() => navigate(`/documents/review/${item.documentId}`)}
             >
               <Eye className="h-4 w-4 mr-1" />
               {t("review.button.viewDoc")}
             </Button>
-            <Button
+            {/* <Button
               variant="outline"
               onClick={() => setIsEditing(true)}
             >
               <MessageCircle className="h-4 w-4 mr-1" />
               {t("review.button.addComment")}
-            </Button>
+            </Button> */}
           </div>
         </div>
       </CardContent>
     </Card>
+                   
+
+                  )}) }
+                  
+                  {filteredItems.length === 0 && (
+                    <div className="text-center py-12">
+                      <GitBranch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No review items found
+                      </h3>
+                      <p className="text-gray-500">
+                        Try adjusting your filters or start a new review process
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </WithTitle>
   );
 }
+
+
+// type ReviewCardProps = {
+//   item: {
+//     id: string;
+//     comment?: string;
+//     documentId: string;
+//     document: {
+//       title: string;
+//       description?: string | null;
+//       isoClause: { code: string; name: string };
+//       versions: { version: string }[];
+//     };
+//     reviewer: {
+//       name: string
+//     };
+//     reviewDate: Date;
+//     status: string;
+//   };
+//   t: (key: string) => string;
+//   navigate: (url: string) => void;
+//   onSubmit: (id: string, comment: string) => void;
+// };
+
+// const ReviewCard: FC<ReviewCardProps> = ({ item, t, navigate, onSubmit }) => {
+//   const [comment, setComment] = useState(item.comment || "");
+//   const [isEditing, setIsEditing] = useState(false);
+
+//   const handleSave = () => {
+//     console.log('item =====', item.id, comment);
+    
+//     onSubmit(item.id, comment);
+//     setIsEditing(false);
+//   }
+
+//   return (
+//     <Card className="hover:shadow-md transition-shadow duration-200">
+//       <CardContent className="p-6">
+//         <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
+//           {/* Left */}
+//           <div className="flex-1">
+//             <h3 className="font-semibold text-lg mb-1">{item.document.title}</h3>
+//             <p className="text-gray-600 text-sm mb-3">{item.document.description}</p>
+
+//             {/* Metadata */}
+//             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-3">
+//               <div className="flex items-center space-x-1">
+//                 <User className="h-4 w-4" />
+//                 <span>
+//                   {t("review.reviewer")}: {item.reviewer.name}
+//                 </span>
+//               </div>
+//               <div className="flex items-center space-x-1">
+//                 <Calendar className="h-4 w-4" />
+//                 <span>
+//                   {t("review.due")}:{" "}
+//                   {new Date(
+//                     item.reviewDate
+//                   ).toLocaleDateString()}
+//                 </span>
+//               </div>
+//               <div className="flex items-center space-x-1">
+//                 <FileText className="h-4 w-4" />
+//                 <span>{ item.document.versions[0].version }</span>
+//               </div>
+//             </div>
+
+//             {/* Comment */}
+//             <div className="mb-3 px-2 py-1 bg-gray-200 rounded">
+//               <p className="font-medium text-gray-700">{t("review.comment")}:</p>
+//               {isEditing ? (
+//                 <div className="space-y-2">
+//                   <Textarea
+//                     className="w-full border rounded px-2 py-1 text-sm"
+//                     value={comment}
+//                     onChange={(e) => setComment(e.target.value)}
+//                   />
+//                   <div className="flex space-x-2">
+//                     <Button
+//                       size="sm"
+//                       onClick={handleSave}
+//                     >
+//                       {t("review.button.save")}
+//                     </Button>
+//                     <Button
+//                       size="sm"
+//                       variant="outline"
+//                       onClick={() => {
+//                         setIsEditing(false);
+//                         setComment(item.comment || "");
+//                       }}
+//                     >
+//                       {t("review.button.cancel")}
+//                     </Button>
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <p className="text-sm text-gray-600">{comment || "No comments yet"}</p>
+//               )}
+//             </div>
+
+//               {/* ISO Clause */}
+//               <div>
+//                 <span className=" text-xs px-2 py-1 bg-gray-200 rounded">
+//                   { item.document.isoClause.code } - { item.document.isoClause.name }
+//                 </span>
+//               </div>
+//           </div>
+
+//           {/* Right Side*/}
+//           <div className="flex flex-col items-stretch space-y-2 w-40">
+//             <Button className="h-50 " disabled>
+//               {item.status === "IN_REVIEW"
+//                 ? t("review.inProgress")
+//                   : item.status === "APPROVED"
+//                 ? t("review.approved")
+//                   : item.status === "EXPIRED"
+//                 ? t("review.rejected")
+//                   : t("review.pending")}
+//             </Button>
+//             <Button
+//               variant="outline"
+//               onClick={() => navigate(`/documents/view/${item.documentId}`)}
+//             >
+//               <Eye className="h-4 w-4 mr-1" />
+//               {t("review.button.viewDoc")}
+//             </Button>
+//             <Button
+//               variant="outline"
+//               onClick={() => setIsEditing(true)}
+//             >
+//               <MessageCircle className="h-4 w-4 mr-1" />
+//               {t("review.button.addComment")}
+//             </Button>
+//           </div>
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// }
