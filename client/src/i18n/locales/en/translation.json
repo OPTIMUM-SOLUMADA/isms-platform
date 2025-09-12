@@ -359,7 +359,8 @@
     "role": {
       "admin": "Administrator",
       "viewer": "Visitor",
-      "reviewer": "Reviewer"
+      "reviewer": "Reviewer",
+      "contributor": "Contributor"
     },
     "status": {
       "active": "Active",

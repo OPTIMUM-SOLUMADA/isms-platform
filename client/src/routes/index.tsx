@@ -13,6 +13,7 @@ import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import AccessPermissionRoute from "@/components/routes/AccessPermissionRoute";
 import NotFoundPage from "@/pages/404";
 import { AccessPermission } from "@/types/role";
+// import { ReviewWorkflowPage } from "@/pages/documents/DocumentReviewPage";
 import { AppProviders } from "@/providers/AppProviders";
 import { PageSkeleton } from "@/components/page-skeleton";
 
@@ -76,7 +77,8 @@ const routeConfig: AppRoute[] = [
                     { index: true, element: <DocumentRepositoryPage /> },
                     { path: "add", element: <DocumentAddPage /> },
                     { path: "edit/:id", element: <DocumentEditPage /> },
-                    { path: "view/:id", element: <DocumentDetail /> }
+                    { path: "view/:id", element: <DocumentDetail /> },
+                    { path: "review/:id", element: <ReviewWorkflowPage /> }
                 ],
             },
 

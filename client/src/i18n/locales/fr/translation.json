@@ -360,7 +360,8 @@
         "role": {
             "admin": "Administrateur",
             "viewer": "Visiteur",
-            "reviewer": "Reviseur"
+            "reviewer": "Reviseur",
+            "contributor": "Contributeur"
         },
         "status": {
             "active": "Actif",

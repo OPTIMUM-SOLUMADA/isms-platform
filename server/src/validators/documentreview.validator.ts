@@ -15,9 +15,9 @@ export const documentReviewCreateSchema = Joi.object({
 
 export const documentReviewUpdateSchema = Joi.object({
     id: Joi.string().trim().optional().messages({
-        'string.empty': 'Name is required',
+        'string.empty': 'Id is required',
     }),
-    description: Joi.string().optional().default(''),
+    comment: Joi.string().optional().default(''),
 });
 
 export const documentReviewMakeDecisionSchema = Joi.object({
