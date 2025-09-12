@@ -40,6 +40,7 @@ import { roles } from '@/constants/role';
 import { depService } from '@/services/departmentService';
 import { UserAvatar } from '@/components/user-avatar';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
+import BackButton from '@/components/BackButton';
 
 interface UserData {
     id: string;
@@ -177,6 +178,15 @@ export default function UserProfilePage() {
                 ]}
                 className="mb-3"
             />
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+                <BackButton />
+                <div>
+                    <h1 className="page-title">{t("user.view.title")}</h1>
+                    <p className="page-description">{t("user.view.subtitle")}</p>
+                </div>
+            </div>
             {/* Hero Section with Profile */}
             <div className="relative bg-gradient-to-r from-theme via-green-800 to-indigo-800 rounded-2xl p-8 text-white overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
