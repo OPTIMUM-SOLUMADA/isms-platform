@@ -135,7 +135,7 @@ const DeleteUserDialog = ({
                             deleteUser(user.id);
                         }}
                         isLoading={isDeleting}
-                        disabled={hasDocuments}
+                        disabled={hasDocuments || isHisOwnAccount}
                         loadingText={t("components.deleteDialog.actions.confirm.loading")}
                     >
                         {t("components.deleteDialog.actions.confirm.label")}

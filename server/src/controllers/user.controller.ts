@@ -23,7 +23,7 @@ export class UserController {
             }
             const user = await service.createUser(req.body);
 
-            const resetToken = await jwtService.generatePasswordResetToken(user);
+            const resetToken = await jwtService.generatePasswordChangeToken(user);
 
             // upate user passwordReset
             await service.updateUser(user.id, { passwordResetToken: resetToken });
@@ -50,6 +50,46 @@ export class UserController {
         }
     }
 
+    async sendInvitation(req: Request, res: Response) {
+        try {
+            const user = await service.getUseByIdNoInclude(req.params.id!);
+            if (!user) {
+                res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+            } else {
+                // Check if user already has password hash set
+                if (user.passwordHash) {
+                    res.status(400).json({
+                        error: 'User already has password set',
+                        code: 'ERR_USER_PASSWORD_SET',
+                    });
+                    return;
+                }
+
+                const resetToken = await jwtService.generatePasswordChangeToken(user);
+
+                // upate user passwordReset
+                await service.updateUser(user.id, { passwordResetToken: resetToken });
+
+                // SEND EMAIL INVITATION
+                await emailService.sendMail({
+                    to: user.email,
+                    subject: 'Welcome to Solumada',
+                    html: await EmailTemplate.welcome({
+                        userName: user.name!,
+                        orgName: env.ORG_NAME,
+                        inviteLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}&invitation=true`,
+                        year: new Date().getFullYear().toString(),
+                        headerDescription: '',
+                    }),
+                });
+
+                res.json(user);
+            }
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
     async getById(req: Request, res: Response) {
         try {
             const user = await service.getUserById(req.params.id!);
@@ -67,6 +107,15 @@ export class UserController {
         try {
             const updated = await service.updateUser(req.params.id!, req.body);
             res.json(updated);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async activate(req: Request, res: Response) {
+        try {
+            const user = await service.activateUser(req.params.id!);
+            res.json(user);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }

@@ -23,6 +23,7 @@ import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useUserUI } from "@/stores/useUserUI";
+import InviteUserButton from "../actions/InviteUserButton";
 
 interface UserActionsCell {
     user: User;
@@ -147,16 +148,25 @@ const Table = ({
         {
             id: "actions",
             header: t("user.table.columns.actions"),
-            size: 70,
+            size: 50,
             cell: ({ row }) => {
                 const user = row.original;
+                const showInvitationBtn = !user.lastLogin;
                 return (
-                    <UserActionsCell
-                        user={user}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onView={onView}
-                    />
+                    <>
+                        <UserActionsCell
+                            user={user}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onView={onView}
+                        />
+
+                        {showInvitationBtn && (
+                            <InviteUserButton
+                                userId={user.id}
+                            />
+                        )}
+                    </>
                 );
             },
             enableSorting: false,

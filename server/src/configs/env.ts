@@ -43,6 +43,7 @@ export const envSchema = z.object({
     JWT_ISSUER: z.string().default(''),
 
     JWT_RESET_EXPIRES_IN: z.string().default('1h'),
+    JWT_CHANGE_PWD_EXPIRES_IN: z.string().default('7d'),
 
     // Optional Email Config (if you want password reset)
     SMTP_HOST: z.string().optional(),
@@ -69,6 +70,7 @@ const envServer = envSchema.safeParse({
     JWT_REFRESH_LONG_EXPIRES_IN: process.env.JWT_REFRESH_LONG_EXPIRES_IN,
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_RESET_EXPIRES_IN: process.env.JWT_RESET_EXPIRES_IN,
+    JWT_CHANGE_PWD_EXPIRES_IN: process.env.JWT_CHANGE_PWD_EXPIRES_IN,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
     CORS_ORIGIN: process.env.CORS_ORIGIN,
     SESSION_SECRET: process.env.SESSION_SECRET,
