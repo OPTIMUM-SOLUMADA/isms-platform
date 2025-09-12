@@ -9,8 +9,14 @@ const controller = new UserController();
 router.post('/', validate(userCreateSchema), controller.create.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', controller.update.bind(controller));
-router.patch('/:id/deactivate', controller.deactivate.bind(controller));
 router.delete('/:id', controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
+
+// invite user
+router.post('/:id/invite', controller.sendInvitation.bind(controller));
+// deactivate user
+router.patch('/:id/deactivate', controller.deactivate.bind(controller));
+// activate user
+router.patch('/:id/activate', controller.activate.bind(controller));
 
 export default router;

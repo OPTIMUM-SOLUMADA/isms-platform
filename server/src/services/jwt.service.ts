@@ -46,6 +46,13 @@ export class JwtService {
         });
     }
 
+    generatePasswordChangeToken(user: User) {
+        return jwt.sign({ user: l(user) }, env.JWT_ACCESS_SECRET, {
+            expiresIn: env.JWT_CHANGE_PWD_EXPIRES_IN as any,
+            issuer: env.JWT_ISSUER,
+        });
+    }
+
     verifyPasswordResetToken = (token: string) => {
         return jwt.verify(token, env.JWT_ACCESS_SECRET) as Payload;
     };

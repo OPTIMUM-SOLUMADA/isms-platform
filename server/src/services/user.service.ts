@@ -53,6 +53,12 @@ export class UserService {
         });
     }
 
+    async getUseByIdNoInclude(id: string) {
+        return prisma.user.findUnique({
+            where: { id },
+        });
+    }
+
     async findByEmail(email: string) {
         return prisma.user.findUnique({ where: { email } });
     }
@@ -64,6 +70,13 @@ export class UserService {
             include: {
                 ...userIncludes,
             },
+        });
+    }
+
+    async activateUser(id: string) {
+        return prisma.user.update({
+            where: { id },
+            data: { isActive: true },
         });
     }
 

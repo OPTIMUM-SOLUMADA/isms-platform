@@ -4,12 +4,15 @@ import axios from "@/lib/axios";
 import type { AddUserFormData } from "@/templates/users/forms/AddUserForm";
 import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 
-const userUrl = API_CONFIG.ENDPOINTS.USERS;
+const api = API_CONFIG.ENDPOINTS.USERS;
 
 export const userService = {
-    list: async () => axios.get(userUrl),
-    create: async (data: AddUserFormData) => axios.post(userUrl, { ...data }),
-    getById: async (id: string) => axios.get(`${userUrl}/${id}`),
-    update: async (id: string, data: Partial<UpdateUserFormData>) => axios.put(`${userUrl}/${id}`, { ...data }),
-    delete: async (id: string) => axios.delete(`${userUrl}/${id}`),
+    list: async () => axios.get(api.BASE),
+    create: async (data: AddUserFormData) => axios.post(api.BASE, { ...data }),
+    getById: async (id: string) => axios.get(api.GET(id)),
+    update: async (id: string, data: Partial<UpdateUserFormData>) => axios.put(api.UPDATE(id), { ...data }),
+    delete: async (id: string) => axios.delete(api.DELETE(id)),
+    sendInvitation: async (id: string) => axios.post(api.INVITE(id)),
+    activate: async (id: string) => axios.patch(api.ACTIVATE(id)),
+    deactivate: async (id: string) => axios.patch(api.DEACTIVATE(id)),
 }
