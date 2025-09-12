@@ -148,23 +148,24 @@ const Table = ({
         {
             id: "actions",
             header: t("user.table.columns.actions"),
-            size: 70,
+            size: 50,
             cell: ({ row }) => {
                 const user = row.original;
-                const showInvitationBtn = !!user.lastLogin;
+                const showInvitationBtn = !user.lastLogin;
                 return (
                     <>
-                        {showInvitationBtn && (
-                            <InviteUserButton
-                                userId={user.id}
-                            />
-                        )}
                         <UserActionsCell
                             user={user}
                             onEdit={onEdit}
                             onDelete={onDelete}
                             onView={onView}
                         />
+
+                        {showInvitationBtn && (
+                            <InviteUserButton
+                                userId={user.id}
+                            />
+                        )}
                     </>
                 );
             },

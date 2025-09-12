@@ -354,6 +354,9 @@
     "actions": {
       "add": {
         "label": "Add New User"
+      },
+      "sendInvitation": {
+        "label": "Send Invitation Link"
       }
     },
     "role": {
@@ -811,7 +814,8 @@
         "user": {
           "created": "User created successfully",
           "updated": "User updated successfully",
-          "deleted": "User deleted successfully"
+          "deleted": "User deleted successfully",
+          "invited": "Invitation sent successfully to {{email}}"
         },
         "document": {
           "created": "Revision created successfully",

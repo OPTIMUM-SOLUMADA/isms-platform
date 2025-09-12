@@ -177,7 +177,7 @@
     },
     "user": {
         "title": "Gestion des utilisateurs",
-        "subtitle": "Gerer les comptes des utilisateurs et roles",
+        "subtitle": "Gerer les comptes des utilisateurs et rôles",
         "view": {
             "title": "Détail de l'utilisateur",
             "subtitle": "Informations sur l'utilisateur",
@@ -355,6 +355,9 @@
         "actions": {
             "add": {
                 "label": "Ajouter un nouvel utilisateur"
+            },
+            "sendInvitation": {
+                "label": "Envoyer le lien d'invitation"
             }
         },
         "role": {
@@ -813,7 +816,8 @@
                 "user": {
                     "created": "Utilisateur créé avec succès",
                     "updated": "Utilisateur mis à jour avec succès",
-                    "deleted": "Utilisateur supprimé avec succès"
+                    "deleted": "Utilisateur supprimé avec succès",
+                    "invited": "Invitation envoyée avec succès à {{email}}"
                 },
                 "document": {
                     "created": "Révision créé avec succès",

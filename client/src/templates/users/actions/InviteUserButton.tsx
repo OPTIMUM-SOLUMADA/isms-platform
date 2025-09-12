@@ -26,17 +26,17 @@ const InviteUserButton = ({
     // send invitation query
     const { mutate: send, isPending } = useMutation<any, ApiAxiosError, { userId: string }>({
         mutationFn: ({ userId }) => userService.sendInvitation(userId),
-        onSuccess: () => {
+        onSuccess: (res) => {
             toast({
                 title: t("components.toast.success.title"),
-                description: t("components.toast.success.user.invited"),
+                description: t("components.toast.success.user.invited", { email: res.data.email }),
                 variant: "success",
             });
         },
         onError: () => {
             toast({
                 title: t("components.toast.error.title"),
-                description: t("components.toast.error.user.invited"),
+                description: t("components.toast.error.description"),
                 variant: "destructive",
             });
         }
