@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDepartment } from '@/contexts/DepartmentContext';
 
 export interface SelectItemType {
     value: string;
@@ -23,6 +24,8 @@ interface SelectWithButtonProps {
     onAdd?: () => void; // when add button clicked
     className?: string;
 }
+
+const { openAdd } = useDepartment();
 
 export function SelectWithButton({
     items,
@@ -53,6 +56,7 @@ export function SelectWithButton({
                             onClick={(e) => {
                                 e.stopPropagation(); // prevent Select from closing weirdly
                                 onAdd();
+                                openAdd();
                             }}
                         >
                             <Plus className="h-4 w-4" />
