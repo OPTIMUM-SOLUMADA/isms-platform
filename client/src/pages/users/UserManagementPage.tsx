@@ -20,7 +20,6 @@ import { UsersStatusObject, userStatus } from '@/constants/status';
 import SearchInput from '@/components/SearchInput';
 import { useUserUIStore } from '@/stores/user/useUserUIStore';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { userRoleColors } from '@/constants/color';
 import useUserStore from '@/stores/user/useUserStore';
 import { useUser } from '@/contexts/UserContext';
+import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export default function UserManagementPage() {
   const { users } = useUserStore();
   const { isLoading } = useUser();
 
-  const { departments } = useDepartment();
+  const { departments } = useDepartmentStore();
 
   const {
     openAdd,

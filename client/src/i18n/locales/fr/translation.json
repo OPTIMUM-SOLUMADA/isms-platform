@@ -755,6 +755,25 @@
                 }
             }
         },
+        "forms": {
+            "add": {
+                "title": "Ajouter un département",
+                "subtitle": "Remplir les informations du département",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du département"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du département"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Ajouter"
+                    }
+                }
+            }
+        },
         "actions": {
             "add": {
                 "label": "Ajouter un département"

@@ -8,7 +8,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useDepartment } from '@/contexts/DepartmentContext';
 
 export interface SelectItemType {
     value: string;
@@ -21,11 +20,10 @@ interface SelectWithButtonProps {
     placeholder?: string;
     onChange: (value: string) => void;
     addLabel?: string; // label for "Add new"
-    onAdd?: () => void; // when add button clicked
+    onButtonClick?: () => void; // when add button clicked
     className?: string;
 }
 
-const { openAdd } = useDepartment();
 
 export function SelectWithButton({
     items,
@@ -33,7 +31,7 @@ export function SelectWithButton({
     placeholder = 'Select an option',
     onChange,
     addLabel = 'Add new',
-    onAdd,
+    onButtonClick,
     className,
 }: SelectWithButtonProps) {
     return (
@@ -47,17 +45,13 @@ export function SelectWithButton({
                         {label}
                     </SelectItem>
                 ))}
-                {onAdd && (
+                {onButtonClick && (
                     <div className="py-1 border-t">
                         <Button
                             variant="ghost"
                             size="sm"
                             className="w-full flex items-center gap-2"
-                            onClick={(e) => {
-                                e.stopPropagation(); // prevent Select from closing weirdly
-                                onAdd();
-                                openAdd();
-                            }}
+                            onClick={onButtonClick}
                         >
                             <Plus className="h-4 w-4" />
                             {addLabel}

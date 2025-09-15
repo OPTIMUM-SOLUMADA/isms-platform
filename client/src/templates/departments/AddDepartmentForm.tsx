@@ -3,10 +3,12 @@ import { CustomFormProps } from "@/types";
 import z from "zod";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
-import { Form } from "react-router-dom";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ErrorCodeField from "@/components/ErrorCodeField";
+import { LoadingButton } from "@/components/ui/loading-button";
+import { Button } from "@/components/ui/button";
 
 const addDepartmentSchema = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -19,9 +21,11 @@ type AddDepartmentFormProps = CustomFormProps<AddDepartmentFormData>;
 
 const AddDepartmentForm = ({
     onSubmit,
+    onCancel,
+    isPending = false,
     error
 }: AddDepartmentFormProps) => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const form = useForm<AddDepartmentFormData>({
         resolver: zodResolver(addDepartmentSchema),
@@ -44,11 +48,11 @@ const AddDepartmentForm = ({
                     name='name'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("department.form.name.label")}</FormLabel>
+                            <FormLabel>{t("department.forms.add.name.label")}</FormLabel>
                             <FormControl>
-                                <Input 
-                                    placeholder={t("department.form.name.placeholder")}
-                                    {...field} 
+                                <Input
+                                    placeholder={t("department.forms.add.name.placeholder")}
+                                    {...field}
                                     type="text"
                                     className="border rounded-lg px-3 py-2 w-full"
                                     hasError={!!error}
@@ -65,18 +69,41 @@ const AddDepartmentForm = ({
                     name='description'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("department.form.description.label")}</FormLabel>
+                            <FormLabel>{t("department.forms.add.description.label")}</FormLabel>
                             <FormControl>
-                                <Input placeholder={t("department.form.description.placeholder")} {...field} />
+                                <Input placeholder={t("department.forms.add.description.placeholder")} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
+
+                {/* Error */}
+                <ErrorCodeField code={error} />
+
+                {/* actions */}
+                <div className="flex justify-end items-center gap-2 mt-6">
+                    <LoadingButton
+                        type="submit"
+                        loadingText={t('user.forms.add.actions.submit.loading')}
+                        isLoading={isPending}
+                    >
+                        {t('user.forms.add.actions.submit.label')}
+                    </LoadingButton>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={onCancel}
+                    >
+                        {t('user.forms.add.actions.cancel.label')}
+                    </Button>
+                </div>
+
             </form>
         </Form>
     )
-    
+
 }
 
 export default AddDepartmentForm

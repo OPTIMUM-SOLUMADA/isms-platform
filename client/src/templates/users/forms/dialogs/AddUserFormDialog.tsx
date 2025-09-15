@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AddUserForm, { AddUserFormData } from '../AddUserForm';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
 import { useEffect } from "react";
 import { useCreateUser, useSendInvitation } from "@/hooks/queries/useUserMutations";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 interface Props {
     open: boolean;
@@ -15,7 +15,7 @@ const AddUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
-    const { departments } = useDepartment();
+    const { departments } = useDepartmentStore();
     const {
         mutateAsync: createUser,
         isPending,

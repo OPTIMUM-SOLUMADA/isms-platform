@@ -4,7 +4,6 @@ import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocumentType } from '@/contexts/DocumentTypeContext';
-import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
@@ -17,6 +16,7 @@ import CircleLoading from '@/components/loading/CircleLoading';
 import ItemNotFound from '../ItemNotFound';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import useUserStore from '@/stores/user/useUserStore';
+import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -24,7 +24,7 @@ export default function DocumentEditPage() {
     const { clauses } = useISOClause();
     const { types } = useDocumentType();
     const { users } = useUserStore();
-    const { departments } = useDepartment();
+    const { departments } = useDepartmentStore();
     const navigate = useNavigate();
 
     const params = useParams();

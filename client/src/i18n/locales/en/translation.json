@@ -751,6 +751,28 @@
         }
       }
     },
+    "forms": {
+      "add": {
+        "title": "Add Department",
+        "subtitle": "Fill out department details",
+        "name": {
+          "label": "Name",
+          "placeholder": "Department Name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Department Description"
+        },
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "submit": {
+            "label": "Submit"
+          }
+        }
+      }
+    },
     "actions": {
       "add": {
         "label": "Add Department"

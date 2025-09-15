@@ -14,6 +14,7 @@ import { SelectWithButton } from '@/components/SelectWithButton';
 import ErrorCodeField from '@/components/ErrorCodeField';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useDepartmentUI } from '@/stores/department/useDepartmentUI';
 
 const addUserSchema = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
@@ -39,6 +40,7 @@ const AddUserForm = ({
 }: AddUserFormProps) => {
 
     const { t } = useTranslation();
+    const { openAdd } = useDepartmentUI();
 
     const form = useForm<AddUserFormData>({
         resolver: zodResolver(addUserSchema),
@@ -128,7 +130,7 @@ const AddUserForm = ({
                                     value={field.value}
                                     placeholder={t('user.forms.add.department.placeholder')}
                                     onChange={field.onChange}
-                                    onAdd={() => { }}
+                                    onButtonClick={openAdd}
                                     addLabel={t('department.actions.add.label')}
                                 />
                             </FormControl>

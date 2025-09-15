@@ -17,4 +17,5 @@ export const AppProviders = composeProviders(
     ViewerProvider,
     UIProvider,
     // Add more providers here
+    DepartmentProvider
 );
