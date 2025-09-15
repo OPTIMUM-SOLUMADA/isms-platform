@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
-import { useUserUI } from "@/stores/useUserUI";
+import { useUserUIStore } from "@/stores/user/useUserUIStore";
 import { MouseEvent } from "react";
 
 
@@ -34,7 +34,7 @@ export function UserHoverCard({
 }: UserHoverCardProps) {
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();
-    const { setCurrentUser, openEdit } = useUserUI();
+    const { setCurrentUser, openEdit } = useUserUIStore();
 
     const handleEdit = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();

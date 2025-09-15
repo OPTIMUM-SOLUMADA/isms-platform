@@ -12,12 +12,17 @@ import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { SelectWithButton } from '@/components/SelectWithButton';
 import ErrorCodeField from '@/components/ErrorCodeField';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useDepartmentUI } from '@/stores/department/useDepartmentUI';
 
 const addUserSchema = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
     email: cz.email(),
     role: z.enum(roles),
     departmentId: z.string().nonempty(i18n.t("zod.errors.department.required")),
+    sendInvitationLink: z.boolean().optional().default(true),
+    isActive: z.boolean().optional().default(true),
 });
 
 export type AddUserFormData = z.infer<typeof addUserSchema>;
@@ -35,6 +40,7 @@ const AddUserForm = ({
 }: AddUserFormProps) => {
 
     const { t } = useTranslation();
+    const { openAdd } = useDepartmentUI();
 
     const form = useForm<AddUserFormData>({
         resolver: zodResolver(addUserSchema),
@@ -43,6 +49,8 @@ const AddUserForm = ({
             email: "",
             role: "VIEWER",
             departmentId: "",
+            sendInvitationLink: true,
+            isActive: true
         },
     });
 
@@ -122,11 +130,58 @@ const AddUserForm = ({
                                     value={field.value}
                                     placeholder={t('user.forms.add.department.placeholder')}
                                     onChange={field.onChange}
-                                    onAdd={() => { }}
+                                    onButtonClick={openAdd}
                                     addLabel={t('department.actions.add.label')}
                                 />
                             </FormControl>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {/* Active user */}
+                <FormField
+                    control={form.control}
+                    name='isActive'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <div className="flex items-center justify-between space-x-2">
+                                    <Label htmlFor="isActive">
+                                        {t('user.forms.add.status.label')}
+                                    </Label>
+                                    <div className="flex items-center gap-2">
+                                        <span className='text-xs'>
+                                            {field.value ? t("common.user.status.active") : t("common.user.status.inactive")}
+                                        </span>
+                                        <Switch
+                                            id='isActive'
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </div>
+                                </div>
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+
+                {/* Checkbox to send email invitation */}
+                <FormField
+                    control={form.control}
+                    name='sendInvitationLink'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl >
+                                <div className="flex items-center justify-between space-x-2">
+                                    <Label htmlFor="send-invitation">{t('user.forms.add.sendInvitation.label')}</Label>
+                                    <Switch
+                                        id='send-invitation'
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </div>
+                            </FormControl>
                         </FormItem>
                     )}
                 />

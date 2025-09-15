@@ -153,13 +153,13 @@
         "rejected": "Rejeté",
         "inReview": "En revue",
         "reviewer": "Evaluateur",
-        "due": "à", 
+        "due": "à",
         "comment": "Commentaire",
         "form": {
-            "newReview": "Assigner la révision du document", 
-            "documentReview": "Document à examiner", 
-            "documentReviewPlaceholder": "Sélectionner le document à examiner", 
-            "dueDate": "Date d'échéance", 
+            "newReview": "Assigner la révision du document",
+            "documentReview": "Document à examiner",
+            "documentReviewPlaceholder": "Sélectionner le document à examiner",
+            "dueDate": "Date d'échéance",
             "comment": "Commentaire",
             "assigneReviewer": "Assigner l'evaluateur",
             "reviewerPlaceholder": "Ajouter un evaluateur",
@@ -204,7 +204,7 @@
         "stats": {
             "total": {
                 "title": "Total des utilisateurs",
-                "value": "{{count}} utilisateurs"   
+                "value": "{{count}} utilisateurs"
             },
             "admin": {
                 "title": "Administrateurs",
@@ -266,6 +266,12 @@
                     "label": "Departement",
                     "placeholder": "Departement de l'utilisateur"
                 },
+                "sendInvitation": {
+                    "label": "Envoyer le lien d'invitation par email"
+                },
+                "status": {
+                    "label": "Statut de l'utilisateur"
+                },
                 "actions": {
                     "submit": {
                         "label": "Enregistrer",
@@ -318,6 +324,7 @@
                 "email": "Email",
                 "role": "Rôle",
                 "department": "Departement",
+                "status": "Statut",
                 "actions": "Actions"
             },
             "actions": {
@@ -349,6 +356,38 @@
                 "actions": {
                     "notPermitted": "Vous ne pouvez pas supprimer votre propre compte.",
                     "hasDocuments": "Cet utilisateur possède des documents. Veuillez réassigner ou supprimer ces documents avant de supprimer l'utilisateur."
+                }
+            }
+        },
+        "activate": {
+            "dialog": {
+                "title": "Activation de l'utilisateur",
+                "message": "Êtes-vous sûr de vouloir changer le statut de cet utilisateur ?",
+                "important": "Important : Si vous activez cet utilisateur, il peut se connecter au système.",
+                "actions": {
+                    "confirm": {
+                        "label": "Oui, activer",
+                        "loading": "Changement en cours..."
+                    },
+                    "cancel": {
+                        "label": "Non, annuler"
+                    }
+                }
+            }
+        },
+        "deactivate": {
+            "dialog": {
+                "title": "Désactivation de l'utilisateur",
+                "message": "Êtes-vous sûr de vouloir changer le statut de cet utilisateur ?",
+                "important": "Important : Si vous désactivez cet utilisateur, il ne pourra plus se connecter au système.",
+                "actions": {
+                    "confirm": {
+                        "label": "Oui, désactiver",
+                        "loading": "Changement en cours..."
+                    },
+                    "cancel": {
+                        "label": "Non, annuler"
+                    }
                 }
             }
         },
@@ -410,7 +449,6 @@
                     "status": {
                         "label": "Statut",
                         "placeholder": "Statut du document"
-                        
                     },
                     "nextReviews": {
                         "label": "Prochaine révision"
@@ -565,7 +603,7 @@
         "stats": {
             "total": {
                 "title": "Total des documents",
-                "value": "{{count}} documents"   
+                "value": "{{count}} documents"
             },
             "draft": {
                 "title": "Brouillons",
@@ -584,7 +622,7 @@
                 "value": "{{count}} expirés"
             }
         },
-        "filter" : {
+        "filter": {
             "search": {
                 "label": "Rechercher par nom, propriétaire ou clause ISO",
                 "placeholder": "Rechercher un document..."
@@ -717,6 +755,25 @@
                 }
             }
         },
+        "forms": {
+            "add": {
+                "title": "Ajouter un département",
+                "subtitle": "Remplir les informations du département",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du département"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du département"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Ajouter"
+                    }
+                }
+            }
+        },
         "actions": {
             "add": {
                 "label": "Ajouter un département"
@@ -766,7 +823,7 @@
         "ERR_INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
         "ERR_SERVER_ERROR": "Une erreur inconnue s'est produite",
         "ERR_USER_NOT_FOUND": "Utilisateur non trouvé",
-        "ERR_USER_INACTIVE": "Utilisateur inactif",
+        "ERR_USER_INACTIVE": "Vous ne pouvez pas vous connecter car votre compte est desactivé. Veuillez contacter l'administrateur.",
         "ERR_INVALID_REFRESH_TOKEN": "Token de rafraîchissement invalide",
         "ERR_INVALID_TOKEN": "Token invalide",
         "ERR_RESET_TOKEN_EXPIRED": "Le lien de réinitialisation du mot de passe a expiré",
@@ -861,7 +918,6 @@
                 "deselectAll": "Désélectionner tout",
                 "selected": "{{count}} sur {{total}} éléments sélectionnés"
             }
-
         },
         "fileUpload": {
             "title": {
@@ -971,6 +1027,12 @@
                         "label": "Contacter le support"
                     }
                 }
+            }
+        },
+        "user": {
+            "status": {
+                "active": "Actif",
+                "inactive": "Inactif"
             }
         },
         "form": {

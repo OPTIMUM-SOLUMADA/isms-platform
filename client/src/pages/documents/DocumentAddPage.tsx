@@ -6,21 +6,21 @@ import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocumentType } from '@/contexts/DocumentTypeContext';
-import { useUser } from '@/contexts/UserContext';
-import { useDepartment } from '@/contexts/DepartmentContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
 import { RequiredIndicatorInfo } from '@/components/Required';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
+import useUserStore from '@/stores/user/useUserStore';
+import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { clauses } = useISOClause();
   const { types } = useDocumentType();
-  const { users } = useUser();
-  const { departments } = useDepartment();
+  const { users } = useUserStore();
+  const { departments } = useDepartmentStore();
   const { create, isCreating } = useDocument();
 
   const formRef = useRef<AddDocumentFormRef>(null);

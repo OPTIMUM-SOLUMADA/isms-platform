@@ -1,3 +1,4 @@
+import { DepartmentUIModals } from "@/templates/departments/modal/DepartmentUIModals";
 import { DocumentUIModals } from "@/templates/documents/modals/DocumentUIModals";
 import { UserUIModals } from "@/templates/users/modals/UserUIModals";
 import { createContext, ReactNode } from "react";
@@ -12,6 +13,8 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
             <UserUIModals />
             {/* Document modals */}
             <DocumentUIModals />
+            {/* Department modals */}
+            <DepartmentUIModals />
         </UIContext.Provider>
     );
 };

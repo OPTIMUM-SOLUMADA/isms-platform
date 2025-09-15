@@ -8,7 +8,7 @@ interface ErrorFieldProps {
 
 const ErrorField: React.FC<ErrorFieldProps> = ({ value, className }) => {
     return (
-        <p className={cn("text-sm text-red-600 text-center", className)}>
+        <p className={cn("text-sm text-theme-danger text-center", className)}>
             {value}
         </p>
     );

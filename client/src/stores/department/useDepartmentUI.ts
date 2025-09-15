@@ -23,7 +23,7 @@ export const useDepartmentUI = create<DepartmentUIState>((set) => ({
     isAddOpen: false,
     isEditOpen: false,
     isDeleteOpen: false,
-    currentDocument: null,
+    currentDepartment: null,
 
     // actions
     openAdd: () => set({ isAddOpen: true }),

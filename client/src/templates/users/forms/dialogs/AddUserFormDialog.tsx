@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import AddUserForm from '../AddUserForm';
+import AddUserForm, { AddUserFormData } from '../AddUserForm';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
-import { useUser } from '@/contexts/UserContext';
 import { useEffect } from "react";
+import { useCreateUser, useSendInvitation } from "@/hooks/queries/useUserMutations";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 interface Props {
     open: boolean;
@@ -15,21 +15,32 @@ const AddUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
-    const { departments } = useDepartment();
+    const { departments } = useDepartmentStore();
     const {
-        createError,
-        isCreating,
-        createUser,
-        createSuccess,
-        resetCreate
-    } = useUser();
+        mutateAsync: createUser,
+        isPending,
+        isSuccess,
+        reset,
+        error
+    } = useCreateUser();
+
+    const { mutate: sendInvitation } = useSendInvitation();
+
 
     useEffect(() => {
-        if (createSuccess) {
+        if (isSuccess) {
             onOpenChange(false);
-            resetCreate();
+            reset();
         }
-    }, [createSuccess, onOpenChange, resetCreate]);
+    }, [isSuccess, reset, onOpenChange]);
+
+    async function handleCreateUser(data: AddUserFormData) {
+        const res = await createUser(data);
+        // request send email invitation
+        if (res.data && data.sendInvitationLink) {
+            sendInvitation({ id: res.data.id });
+        }
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -40,10 +51,10 @@ const AddUserFormDialog = ({
                 </DialogHeader>
                 <AddUserForm
                     departments={departments}
-                    onSubmit={createUser}
+                    onSubmit={handleCreateUser}
                     onCancel={() => onOpenChange(false)}
-                    isPending={isCreating}
-                    error={createError}
+                    isPending={isPending}
+                    error={error?.response?.data.code}
                 />
             </DialogContent>
         </Dialog>

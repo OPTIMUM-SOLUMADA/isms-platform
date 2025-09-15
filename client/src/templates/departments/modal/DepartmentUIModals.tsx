@@ -1,12 +1,12 @@
-import { useDepartmentUI } from "@/stores/useDepartmentUI";
-import { AddDepartmentFormDialog } from "@/templates/departments/dialog/AddDepartment";
+import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
+import AddDepartmentFormDialog from "../dialog/AddDepartmentDialog";
 
-export const DepartmentUIModal = () => {
-  const { isAddOpen, } = useDepartmentUI(); 
-  
+export const DepartmentUIModals = () => {
+  const { isAddOpen, closeAdd } = useDepartmentUI();
+
   return (
     <>
-      <AddDepartmentFormDialog open={isAddOpen} />
+      <AddDepartmentFormDialog onOpenChange={closeAdd} open={isAddOpen} />
       {/* <EditDepartmentFormDialog open={isEditOpen} />
       <DeleteDepartmentDialog open={isDeleteOpen} /> */}
     </>

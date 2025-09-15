@@ -24,4 +24,6 @@ export const userCreateSchema = Joi.object({
         .messages({
             'string.empty': 'Department is required',
         }),
+    sendInvitationLink: Joi.boolean().optional().default(true),
+    isActive: Joi.boolean().optional().default(true),
 });

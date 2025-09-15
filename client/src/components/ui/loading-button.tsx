@@ -5,7 +5,7 @@ import { LoaderCircle } from "lucide-react";
 interface LoadingButtonProps extends ButtonProps {
     isLoading?: boolean;
     text?: string;
-    loadingText: string;
+    loadingText?: string;
 }
 
 const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
