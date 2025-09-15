@@ -12,7 +12,15 @@ export const API_CONFIG = {
             LOGOUT: "/auth/logout",
             VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
         },
-        USERS: "/users",
+        USERS: {
+            BASE: "/users",
+            GET: (id: string | number) => `/users/${id}`,
+            UPDATE: (id: string | number) => `/users/${id}`,
+            DELETE: (id: string | number) => `/users/${id}`,
+            INVITE: (id: string | number) => `/users/${id}/invite`,
+            DEACTIVATE: (id: string | number) => `/users/${id}/deactivate`,
+            ACTIVATE: (id: string | number) => `/users/${id}/activate`,
+        },
         DEPARTMENTS: "/departments",
         DOCUMENTS: {
             BASE: "/documents",

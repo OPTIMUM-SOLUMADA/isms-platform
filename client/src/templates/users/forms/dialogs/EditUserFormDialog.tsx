@@ -24,13 +24,15 @@ const EditUserFormDialog = ({
         updateError,
         updateSuccess,
         isUpdating,
+        resetUpdate
     } = useUser();
 
     useEffect(() => {
         if (updateSuccess) {
             onOpenChange(false);
+            resetUpdate();
         }
-    }, [updateSuccess, onOpenChange]);
+    }, [updateSuccess, onOpenChange, resetUpdate]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
