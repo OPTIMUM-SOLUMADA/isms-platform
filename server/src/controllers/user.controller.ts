@@ -21,28 +21,21 @@ export class UserController {
                 });
                 return;
             }
-            const user = await service.createUser(req.body);
 
-            const resetToken = await jwtService.generatePasswordChangeToken(user);
+            const { departmentId, sendInvitationLink, ...rest } = req.body;
 
-            // upate user passwordReset
-            await service.updateUser(user.id, { passwordResetToken: resetToken });
-
-            // SEND EMAIL INVITATION
-            await emailService.sendMail({
-                to: req.body.email,
-                subject: 'Welcome to Solumada',
-                html: await EmailTemplate.welcome({
-                    userName: req.body.name,
-                    orgName: env.ORG_NAME,
-                    inviteLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}&invitation=true`,
-                    year: new Date().getFullYear().toString(),
-                    headerDescription: '',
-                }),
+            const user = await service.createUser({
+                ...rest,
+                department: {
+                    connect: {
+                        id: departmentId,
+                    },
+                },
             });
 
             res.status(201).json(user);
         } catch (err) {
+            console.log(err);
             res.status(500).json({
                 error: (err as Error).message,
                 code: 'ERR_SERVER_ERROR',

@@ -31,7 +31,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 h-16">
+    <header className="bg-background border-b border-gray-200 h-16">
       <div className="h-full px-5 flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">

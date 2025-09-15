@@ -265,6 +265,9 @@
           "label": "Department",
           "placeholder": "User Department"
         },
+        "sendInvitation": {
+          "label": "Send invitation link via email"
+        },
         "actions": {
           "submit": {
             "label": "Save",
@@ -317,6 +320,7 @@
         "email": "Email",
         "role": "Role",
         "department": "Department",
+        "status": "Status",
         "actions": "Actions"
       },
       "actions": {
@@ -335,7 +339,7 @@
       }
     },
     "delete": {
-    "dialog": {
+      "dialog": {
         "message": "Deleting this user will also remove all the following associated information:",
         "relatedItems": {
           "documents": "All documents owned by {{name}} and their versions.",
@@ -348,6 +352,38 @@
         "actions": {
           "notPermitted": "You cannot delete your own account.",
           "hasDocuments": "This user owns documents. Please reassign or delete these documents before deleting the user."
+        }
+      }
+    },
+    "activate": {
+      "dialog": {
+        "title": "Activate User",
+        "message": "Are you sure you want to change this user's status?",
+        "important": "Important: If you activate this user, they will be able to log in to the system.",
+        "actions": {
+          "confirm": {
+            "label": "Yes, activate",
+            "loading": "Changing status..."
+          },
+          "cancel": {
+            "label": "No, cancel"
+          }
+        }
+      }
+    },
+    "deactivate": {
+      "dialog": {
+        "title": "Deactivate User",
+        "message": "Are you sure you want to change this user's status?",
+        "important": "Important: If you deactivate this user, they will no longer be able to log in to the system.",
+        "actions": {
+          "confirm": {
+            "label": "Yes, deactivate",
+            "loading": "Changing status..."
+          },
+          "cancel": {
+            "label": "No, cancel"
+          }
         }
       }
     },
@@ -764,7 +800,7 @@
     "ERR_INVALID_CREDENTIALS": "Incorrect email or password",
     "ERR_SERVER_ERROR": "An unknown error occurred",
     "ERR_USER_NOT_FOUND": "User not found",
-    "ERR_USER_INACTIVE": "Inactive user",
+    "ERR_USER_INACTIVE": "You cannot log in because your account is disabled. Please contact the administrator.",
     "ERR_INVALID_REFRESH_TOKEN": "Invalid refresh token",
     "ERR_INVALID_TOKEN": "Invalid token",
     "ERR_RESET_TOKEN_EXPIRED": "Password reset link has expired",

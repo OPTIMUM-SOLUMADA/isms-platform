@@ -25,9 +25,9 @@ import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import WithTitle from '@/templates/layout/WithTitle';
-import { useUser } from '@/contexts/UserContext';
 import { UserAvatar } from '@/components/user-avatar';
 import { StatCard } from '@/templates/documents/card/StatCard';
+import useUserStore from '@/stores/user/useUserStore';
 
 
 export const NEW_DOCUMENT_PATH = '/documents/add';
@@ -40,7 +40,7 @@ export default function DocumentRepositoryPage() {
   const { types } = useDocumentType();
   const { clauses } = useISOClause();
   const { documents, loading, stats } = useDocument();
-  const { users } = useUser();
+  const { users } = useUserStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -126,7 +126,7 @@ export default function DocumentRepositoryPage() {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder={t("document.filter.search.placeholder")}
                     value={searchTerm}

@@ -6,6 +6,8 @@ type UserUIState = {
     isAddOpen: boolean;
     isEditOpen: boolean;
     isDeleteOpen: boolean;
+    isActivationOpen: boolean;
+    isDesactivationOpen: boolean;
     currentUser: User | null;
 
     // actions
@@ -15,14 +17,20 @@ type UserUIState = {
     closeEdit: () => void;
     openDelete: () => void;
     closeDelete: () => void;
+    openActivation: () => void;
+    closeActivation: () => void;
+    openDesactivation: () => void;
+    closeDesactivation: () => void;
     setCurrentUser: (user: User | null) => void;
 };
 
-export const useUserUI = create<UserUIState>((set) => ({
+export const useUserUIStore = create<UserUIState>((set) => ({
     // initial state
     isAddOpen: false,
     isEditOpen: false,
     isDeleteOpen: false,
+    isActivationOpen: false,
+    isDesactivationOpen: false,
     currentUser: null,
 
     // actions
@@ -32,5 +40,9 @@ export const useUserUI = create<UserUIState>((set) => ({
     closeEdit: () => set({ isEditOpen: false }),
     openDelete: () => set({ isDeleteOpen: true }),
     closeDelete: () => set({ isDeleteOpen: false }),
+    openActivation: () => set({ isActivationOpen: true }),
+    closeActivation: () => set({ isActivationOpen: false }),
+    openDesactivation: () => set({ isDesactivationOpen: true }),
+    closeDesactivation: () => set({ isDesactivationOpen: false }),
     setCurrentUser: (user) => set({ currentUser: user }),
 }));

@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { userRoleColors } from "@/constants/color"
 import type { User } from "@/types"
 import { usePermissions } from "@/hooks/use-permissions"
-import { useUserUI } from "@/stores/useUserUI"
+import { useUserUIStore } from "@/stores/user/useUserUIStore"
 
 interface UserMultiSelectProps {
     data: User[];
@@ -41,7 +41,7 @@ export default function UserMultiSelect({
 }: UserMultiSelectProps) {
     const id = useId();
     const [open, setOpen] = useState<boolean>(false);
-    const { openAdd } = useUserUI();
+    const { openAdd } = useUserUIStore();
 
     const selectedUsers = useMemo(
         () => data.filter((user) => value.includes(user.id)),

@@ -16,14 +16,14 @@ import { userRoleColors } from "@/constants/color";
 import type { RoleType, User } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
 import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
-import { useUserUI } from "@/stores/useUserUI";
+import { useUserUIStore } from "@/stores/user/useUserUIStore";
 import InviteUserButton from "../actions/InviteUserButton";
+import { UserActivationSwitch } from "../actions/UserActivationSwitch";
 
 interface UserActionsCell {
     user: User;
@@ -34,9 +34,8 @@ interface UserActionsCell {
 
 const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
     const { t } = useTranslation();
-    const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
-    const { openDelete, setCurrentUser } = useUserUI();
+    const { openDelete, setCurrentUser } = useUserUIStore();
 
     const handleDelete = async () => {
         setCurrentUser(user);
@@ -63,19 +62,12 @@ const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
                         </DropdownMenuItem>
                     )}
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-red-600" onClick={handleDelete}>
+                        <DropdownMenuItem className="text-theme-danger" onClick={handleDelete}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <DeleteDialog
-                entityName={user.name}
-                open={open}
-                onOpenChange={setOpen}
-                onConfirm={handleDelete}
-            />
         </>
     );
 };
@@ -88,6 +80,7 @@ interface UserTableProps {
     onAddUser?: () => void;
     onView?: (user: User) => void;
     onMessage?: (user: User) => void;
+    isLoading?: boolean;
 }
 
 const Table = ({
@@ -96,7 +89,8 @@ const Table = ({
     onDelete,
     onAddUser,
     onView,
-    onMessage
+    onMessage,
+    isLoading = false,
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
@@ -144,6 +138,17 @@ const Table = ({
             accessorKey: "department",
             header: t("user.table.columns.department"),
             cell: ({ row }) => <DepartmentHoverCard department={row.original.department} />
+        },
+        {
+            accessorKey: "isActive",
+            header: t("user.table.columns.status"),
+            size: 100,
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <UserActivationSwitch user={user} active={user.isActive} />
+                )
+            }
         },
         {
             id: "actions",
@@ -195,6 +200,7 @@ const Table = ({
                 </Card>
             )}
             className="flex-grow"
+            isLoading={isLoading}
         />
     );
 }

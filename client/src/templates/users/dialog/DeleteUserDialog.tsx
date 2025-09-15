@@ -12,10 +12,10 @@ import { AlertCircle, Info, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
 import type { User } from "@/types";
-import { useUser } from "@/contexts/UserContext";
 import { useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserUI } from "@/stores/useUserUI";
+import { useUserUIStore } from "@/stores/user/useUserUIStore";
+import { useDeleteUser } from "@/hooks/queries/useUserMutations";
 
 interface Props {
     open: boolean;
@@ -28,17 +28,17 @@ const DeleteUserDialog = ({
     user,
 }: Props) => {
     const { t } = useTranslation();
-    const { deleteUser, deleteSuccess, isDeleting, resetDelete } = useUser();
+    const { mutate: deleteUser, isSuccess, isPending, reset } = useDeleteUser();
     const { user: activeUser } = useAuth();
-    const { setCurrentUser } = useUserUI();
+    const { setCurrentUser } = useUserUIStore();
 
     useEffect(() => {
-        if (deleteSuccess) {
+        if (isSuccess) {
             setCurrentUser(null);
             onOpenChange(false);
-            resetDelete();
+            reset();
         }
-    }, [onOpenChange, deleteSuccess, setCurrentUser, resetDelete]);
+    }, [onOpenChange, isSuccess, setCurrentUser, reset]);
 
     const isHisOwnAccount = useMemo(() => {
         return user.id === activeUser?.id;
@@ -132,9 +132,9 @@ const DeleteUserDialog = ({
                         variant="destructive"
                         onClick={() => {
                             if (hasDocuments || isHisOwnAccount) return;
-                            deleteUser(user.id);
+                            deleteUser({ id: user.id });
                         }}
-                        isLoading={isDeleting}
+                        isLoading={isPending}
                         disabled={hasDocuments || isHisOwnAccount}
                         loadingText={t("components.deleteDialog.actions.confirm.loading")}
                     >
