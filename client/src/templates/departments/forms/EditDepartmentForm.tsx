@@ -95,6 +95,7 @@ const EditDepartmentForm = ({
                         type="button"
                         variant="ghost"
                         onClick={() => reset(defaultValues)}
+                        disabled={!isDirty}
                     >
                         {t('department.forms.edit.actions.reset.label')}
                     </Button>
@@ -102,7 +103,8 @@ const EditDepartmentForm = ({
                         <LoadingButton
                             type="submit"
                             loadingText={t('department.forms.edit.actions.submit.loading')}
-                            isLoading={isPending || isDirty}
+                            isLoading={isPending}
+                            disabled={!isDirty}
                         >
                             {t('department.forms.edit.actions.submit.label')}
                         </LoadingButton>

@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AddDepartmentForm from "@/templates/departments/forms/AddDepartmentForm";
-import { useCreateDepartment } from "@/hooks/queries/departmentMutations";
+import { useCreateDepartment } from "@/hooks/queries/useDepartmentMutations";
 
 interface Props {
     open: boolean,

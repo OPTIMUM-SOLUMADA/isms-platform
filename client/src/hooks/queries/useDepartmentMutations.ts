@@ -15,7 +15,7 @@ import { EditDepartmentFormData } from "@/templates/departments/forms/EditDepart
 export const useFetchDepartments = () => {
     const { setDepartments } = useDepartmentStore();
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["departelents"],
+        queryKey: ["departements"],
         queryFn: () => depService.list(),
         staleTime: 1000 * 60 * 5,
     });

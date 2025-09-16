@@ -14,7 +14,7 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import type { Document } from "@/types";
 import { useDocument } from "@/contexts/DocumentContext";
 import { useEffect, useMemo } from "react";
-import { useDocumentUI } from "@/stores/useDocumentUi";
+import { useDocumentUI } from "@/stores/document/useDocumentUi";
 
 interface Props {
     open: boolean;

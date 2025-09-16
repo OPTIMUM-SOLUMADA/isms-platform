@@ -12,7 +12,7 @@ import { AlertCircle, Info, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
 import type { Department } from "@/types";
-import { useDeleteDepartment } from "@/hooks/queries/departmentMutations";
+import { useDeleteDepartment } from "@/hooks/queries/useDepartmentMutations";
 
 interface Props {
     open: boolean;
