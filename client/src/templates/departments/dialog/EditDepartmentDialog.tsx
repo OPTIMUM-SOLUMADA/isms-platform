@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import EditDepartmentForm, { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
-import { useUpdateDepartment } from "@/hooks/queries/departmentMutations";
+import { useUpdateDepartment } from "@/hooks/queries/useDepartmentMutations";
 import type { Department } from "@/types";
 
 interface Props {

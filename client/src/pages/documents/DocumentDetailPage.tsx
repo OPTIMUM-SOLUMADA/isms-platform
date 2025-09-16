@@ -45,7 +45,7 @@ import { documentStatus } from "@/constants/document";
 import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
-import { useDocumentUI } from "@/stores/useDocumentUi";
+import { useDocumentUI } from "@/stores/document/useDocumentUi";
 
 const tabs = [
   {

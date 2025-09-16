@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useDepartment } from '@/contexts/DepartmentContext';
+import { useFetchDepartments } from '@/hooks/queries/useDepartmentMutations';
 import { useDepartmentUI } from '@/stores/department/useDepartmentUI';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 import { DepartmentTable } from '@/templates/departments/table/DepartmentTable';
@@ -11,8 +11,9 @@ import { useTranslation } from 'react-i18next'
 const DepartmentPage = () => {
     const { t } = useTranslation();
     const { departments } = useDepartmentStore();
-    const { isLoading } = useDepartment();
     const { openAdd } = useDepartmentUI();
+
+    const { isLoading } = useFetchDepartments();
 
     return (
         <WithTitle title={t('department.title')}>

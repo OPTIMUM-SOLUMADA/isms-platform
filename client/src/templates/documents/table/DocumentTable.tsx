@@ -26,7 +26,7 @@ import PublishDocument from "../actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { formatDate } from "@/lib/date";
-import { useDocumentUI } from "@/stores/useDocumentUi";
+import { useDocumentUI } from "@/stores/document/useDocumentUi";
 
 interface DocumentActionsCell {
     doc: Document;
