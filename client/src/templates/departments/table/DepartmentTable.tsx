@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Users, PlusCircle, Edit, Trash } from "lucide-react";
+import { PlusCircle, Edit, Trash, Building2, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import type { Department } from "@/types";
@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { UserAvatarGroup } from "@/components/UserAvatarGroup";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
+import DocumentsHoverCard from "@/templates/documents/hovercard/DocumentsHoverCard";
 
 
 // UserTable component using the reusable DataTable
@@ -21,7 +22,7 @@ const Table = ({
     isLoading = false,
 }: DepartmentTableProps) => {
     const { t } = useTranslation();
-    const { openDelete, setCurrentDepartment } = useDepartmentUI();
+    const { openDelete, setCurrentDepartment, openEdit } = useDepartmentUI();
 
     // Define columns for UserTable
     const departmentColumns: ColumnDef<Department>[] = useMemo(() => [
@@ -51,18 +52,23 @@ const Table = ({
             header: t("department.table.columns.members"),
             cell: ({ row }) => {
                 const users = row.original.members;
-                return (
+                return users.length > 0 ? (
                     <UserAvatarGroup users={users} />
+                ) : (
+                    <Minus className="h-4 w-4 text-muted-foreground" />
                 );
             }
         },
         {
             accessorKey: "documents",
             header: t("department.table.columns.documents"),
+            size: 60,
             cell: ({ row }) => {
                 const docs = row.original.documents;
-                return (
-                    <span>{docs.length}</span>
+                return docs.length > 0 ? (
+                    <DocumentsHoverCard documents={docs} />
+                ) : (
+                    <Minus className="h-4 w-4 text-muted-foreground" />
                 );
             }
         },
@@ -70,12 +76,20 @@ const Table = ({
         {
             id: "actions",
             header: t("department.table.columns.actions"),
-            size: 40,
+            size: 60,
             cell: ({ row }) => {
                 const department = row.original;
                 return (
                     <>
-                        <Button type="button" variant="ghost" size="sm">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setCurrentDepartment(department);
+                                openEdit();
+                            }}
+                        >
                             <Edit className="h-4 w-4" />
                         </Button>
                         <Button
@@ -95,24 +109,25 @@ const Table = ({
             enableSorting: false,
             enableHiding: false,
         },
-    ], [t, openDelete, setCurrentDepartment]);
+    ], [t, openDelete, setCurrentDepartment, openEdit]);
 
     return (
         <DataTable
             title={t("user.table.title")}
             columns={departmentColumns}
             data={data}
+            enableSearch
             searchableColumnId="name"
             enableRowSelection
             renderNoData={() => (
                 <Card className="shadow-none flex-grow">
                     <CardContent className="p-12 text-center">
-                        <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t("user.table.empty.title")}</h3>
-                        <p className="text-gray-500 mb-4">{t("user.table.empty.message")}</p>
+                        <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t("department.table.empty.title")}</h3>
+                        <p className="text-gray-500 mb-4">{t("department.table.empty.message")}</p>
                         <Button>
                             <PlusCircle className="h-4 w-4 mr-2" />
-                            {t("user.table.empty.actions.add.label")}
+                            {t("department.table.empty.actions.add.label")}
                         </Button>
                     </CardContent>
                 </Card>

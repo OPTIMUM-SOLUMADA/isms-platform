@@ -41,7 +41,9 @@ const EditDepartmentForm = ({
     })
 
     const {
-        handleSubmit
+        handleSubmit,
+        reset,
+        formState: { isDirty }
     } = form;
 
     return (
@@ -88,21 +90,30 @@ const EditDepartmentForm = ({
                 <ErrorCodeField code={error} />
 
                 {/* actions */}
-                <div className="flex justify-end items-center gap-2 mt-6">
-                    <LoadingButton
-                        type="submit"
-                        loadingText={t('user.forms.edit.actions.submit.loading')}
-                        isLoading={isPending}
-                    >
-                        {t('user.forms.edit.actions.submit.label')}
-                    </LoadingButton>
+                <div className="flex justify-between items-center gap-2 mt-6">
                     <Button
                         type="button"
                         variant="ghost"
-                        onClick={onCancel}
+                        onClick={() => reset(defaultValues)}
                     >
-                        {t('user.forms.edit.actions.cancel.label')}
+                        {t('department.forms.edit.actions.reset.label')}
                     </Button>
+                    <div className="flex gap-2 items-center">
+                        <LoadingButton
+                            type="submit"
+                            loadingText={t('department.forms.edit.actions.submit.loading')}
+                            isLoading={isPending || isDirty}
+                        >
+                            {t('department.forms.edit.actions.submit.label')}
+                        </LoadingButton>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={onCancel}
+                        >
+                            {t('department.forms.edit.actions.cancel.label')}
+                        </Button>
+                    </div>
                 </div>
 
             </form>

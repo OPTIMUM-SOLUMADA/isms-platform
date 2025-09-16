@@ -789,6 +789,30 @@
                         "label": "Ajouter"
                     }
                 }
+            },
+            "edit": {
+                "title": "Modifier le département",
+                "subtitle": "Modifier les informations du département",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du département"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du département"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                }
             }
         },
         "table": {

@@ -1,8 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import EditDepartmentForm from "@/templates/departments/forms/EditDepartmentForm";
-import { useCreateDepartment } from "@/hooks/queries/departmentMutations";
+import EditDepartmentForm, { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
+import { useUpdateDepartment } from "@/hooks/queries/departmentMutations";
 import type { Department } from "@/types";
 
 interface Props {
@@ -18,19 +17,18 @@ const EditDepartmentFormDialog = ({
     const { t } = useTranslation();
 
     const {
-        mutateAsync: createDepartment,
+        mutate: createDepartment,
         isPending,
-        isSuccess,
         error,
-        reset
-    } = useCreateDepartment();
+    } = useUpdateDepartment();
 
-    useEffect(() => {
-        if (isSuccess) {
-            onOpenChange(false);
-            reset();
-        }
-    }, [isSuccess, onOpenChange, reset]);
+    function handleUpdate(data: EditDepartmentFormData) {
+        createDepartment(data, {
+            onSuccess: () => {
+                onOpenChange(false);
+            }
+        });
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,7 +39,7 @@ const EditDepartmentFormDialog = ({
                 </DialogHeader>
                 <EditDepartmentForm
                     defaultValues={department}
-                    onSubmit={createDepartment}
+                    onSubmit={handleUpdate}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}

@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  Building,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -20,8 +19,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { Item } from '@radix-ui/react-dropdown-menu';
-import { Separator } from '@/components/ui/separator';
 
 
 type SidebarItemProps = {
@@ -213,7 +210,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           <div className="p-4">
             <h3 className='text-gray-400 text-xs flex items-center gap-1'>
               <hr className='w-1 border-theme-2-muted' />
-              <span>Other menus</span>
+              <span>{t("navigation.others.title")}</span>
               <hr className='flex-1 border-theme-2-muted' />
             </h3>
             <div className="w-full space-y-1 my-2">
