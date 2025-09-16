@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { DepartmentService } from '@/services/department.service';
+import { Prisma } from '@prisma/client';
 
 const service = new DepartmentService();
 
@@ -9,7 +10,20 @@ export class DepartmentController {
             const department = await service.createDepartment(req.body);
             res.status(201).json(department);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                if (err.code === 'P2002') {
+                    res.status(400).json({
+                        error: err.message,
+                        code: 'ERR_DEPARTMENT_DUPLICATED_NAME',
+                    });
+                } else {
+                    res.status(400).json({
+                        error: err.message,
+                    });
+                }
+            } else {
+                res.status(500).json({ error: (err as Error).message });
+            }
         }
     }
 

@@ -330,7 +330,8 @@
             "actions": {
                 "edit": "Modifier",
                 "delete": "Supprimer",
-                "view": "Voir les détails"
+                "view": "Voir les détails",
+                "reinvite": "Renvoyer l'invitation"
             },
             "empty": {
                 "title": "Aucun utilisateur trouvé",
@@ -387,6 +388,22 @@
                     },
                     "cancel": {
                         "label": "Non, annuler"
+                    }
+                }
+            }
+        },
+        "reinvite": {
+            "dialog": {
+                "title": "Renvoyer l'invitation",
+                "message": "Êtes-vous sûr de vouloir renvoyer l'invitation à cet utilisateur ?",
+                "description": "Un email d'invitation qui contient un lien pour définir son mot de passe sera envoyé à <strong>{{email}}</strong>.",
+                "actions": {
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "send": {
+                        "label": "Renvoyer l'invitation",
+                        "loading": "Envoi en cours..."
                     }
                 }
             }
@@ -772,11 +789,74 @@
                         "label": "Ajouter"
                     }
                 }
+            },
+            "edit": {
+                "title": "Modifier le département",
+                "subtitle": "Modifier les informations du département",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du département"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du département"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                }
+            }
+        },
+        "table": {
+            "title": "Liste des départements",
+            "columns": {
+                "name": "Nom",
+                "description": "Description",
+                "members": "Membres",
+                "documents": "Documents",
+                "createdBy": "Créé par",
+                "createdAt": "Créé le",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "view": "Voir les utilisateurs"
+            },
+            "empty": {
+                "title": "Aucun département trouvé",
+                "message": "Essayez d'ajouter un nouveau département.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter un département"
+                    }
+                }
             }
         },
         "actions": {
             "add": {
                 "label": "Ajouter un département"
+            },
+            "delete": {
+                "dialog": {
+                    "title": "Supprimer le département",
+                    "message": "La suppression de ce département supprimera également toutes les informations associées suivantes :",
+                    "hasMembers": "Vous ne pouvez pas supprimer ce département car il a des utilisateurs assignés. Veuillez réassigner ou supprimer ces utilisateurs avant de supprimer le département.",
+                    "hasDocuments": "Vous ne pouvez pas supprimer ce département car il a des documents associés. Veuillez réassigner ou supprimer ces documents avant de supprimer le département.",
+                    "canBeDeleted": "Le département peut être supprimé sans risque car il n'a aucun utilisateur ni document assigné.",
+                    "relatedItems": {
+                        "users": "Tous les utilisateurs assignés à ce département.",
+                        "douments": "Tous les documents associés à ce département."
+                    }
+                }
             }
         }
     },
@@ -828,7 +908,8 @@
         "ERR_INVALID_TOKEN": "Token invalide",
         "ERR_RESET_TOKEN_EXPIRED": "Le lien de réinitialisation du mot de passe a expiré",
         "ERR_INVALID_RESET_TOKEN": "Le lien de réinitialisation du mot de passe est invalide",
-        "ERR_USER_EXISTS": "Un utilisateur avec cet email existe déjà. Veuillez en choisir un autre."
+        "ERR_USER_EXISTS": "Un utilisateur avec cet email existe déjà. Veuillez en choisir un autre.",
+        "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre."
     },
     "zod": {
         "errors": {
@@ -855,8 +936,8 @@
     },
     "components": {
         "deleteDialog": {
-            "title": "Supprimer {{entity}} ?",
-            "description": "Êtes-vous sûr de vouloir supprimer {{entity}} ? Cette action est irréversible.",
+            "title": "Confirmer la supperssion du \"{{entity}}\"",
+            "description": "Vous êtes sur le point de supprimer définitivement cet élément. Cette action est irréversible.",
             "actions": {
                 "confirm": {
                     "label": "Oui, supprimer",
@@ -880,6 +961,11 @@
                     "created": "Révision créé avec succès",
                     "updated": "Révision mis à jour avec succès",
                     "deleted": "Révision supprimé avec succès"
+                },
+                "department": {
+                    "deleted": "Département supprimé avec succès",
+                    "added": "Département ajouté avec succès",
+                    "updated": "Département mis à jour avec succès"
                 }
             },
             "error": {
@@ -986,6 +1072,13 @@
         "auditLog": {
             "label": "Journal d'audit",
             "description": "Suivi et traçabilité des modifications"
+        },
+        "others": {
+            "title": "Autres menus",
+            "departments": {
+                "label": "Départements",
+                "description": "Gestion des départements"
+            }
         }
     },
     "header": {

@@ -7,6 +7,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/DataTable";
@@ -22,7 +23,6 @@ import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useUserUIStore } from "@/stores/user/useUserUIStore";
-import InviteUserButton from "../actions/InviteUserButton";
 import { UserActivationSwitch } from "../actions/UserActivationSwitch";
 
 interface UserActionsCell {
@@ -35,12 +35,17 @@ interface UserActionsCell {
 const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
     const { t } = useTranslation();
     const { hasActionPermission, hasActionPermissions } = usePermissions();
-    const { openDelete, setCurrentUser } = useUserUIStore();
+    const { openDelete, setCurrentUser, openInvitation } = useUserUIStore();
 
     const handleDelete = async () => {
         setCurrentUser(user);
         openDelete();
     };
+
+    function handleOpenInvitationDialog() {
+        setCurrentUser(user);
+        openInvitation();
+    }
 
     return (
         <>
@@ -61,6 +66,12 @@ const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
                             <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
                         </DropdownMenuItem>
                     )}
+                    {(hasActionPermission("user.invite") && !user.lastLogin) && (
+                        <DropdownMenuItem className="text-theme" onClick={handleOpenInvitationDialog}>
+                            <UserPlus className="mr-2 h-4 w-4" /> {t("user.table.actions.reinvite")}
+                        </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
                     {hasActionPermission("user.delete") && (
                         <DropdownMenuItem className="text-theme-danger" onClick={handleDelete}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
@@ -156,7 +167,6 @@ const Table = ({
             size: 50,
             cell: ({ row }) => {
                 const user = row.original;
-                const showInvitationBtn = !user.lastLogin;
                 return (
                     <>
                         <UserActionsCell
@@ -165,12 +175,6 @@ const Table = ({
                             onDelete={onDelete}
                             onView={onView}
                         />
-
-                        {showInvitationBtn && (
-                            <InviteUserButton
-                                userId={user.id}
-                            />
-                        )}
                     </>
                 );
             },

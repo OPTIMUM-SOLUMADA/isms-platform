@@ -57,9 +57,12 @@ model User {
 
   departmentId String?     @db.ObjectId
   department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict)
-  // managedDept  Department? @relation("ManagedDepartment")
 
   passwordResetToken String?
+
+  // Who created this user
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation("CreatedUsers", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   documentReviews   DocumentReview[]
   documentApprovals DocumentApproval[]
@@ -74,9 +77,35 @@ model User {
   documentReviewers       DocumentReviewer[] @relation("DocumentReviewerUser")
   assignedDocumentReviews DocumentReview[]   @relation("Assigner")
 
+  // Reverse relations: must break referential action cycles
+  createdUsers    User[]       @relation("CreatedUsers")
+  invitationsSent Invitation[] @relation("InvitationsSent")
+
   @@index([email, isActive])
   @@index([role])
   @@map("users")
+}
+
+model Invitation {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  email       String
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  invitedBy   User             @relation(name: "InvitationsSent", fields: [invitedById], references: [id])
+  invitedById String           @db.ObjectId
+  acceptedAt  DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELED
 }
 
 // ===========================================================================================

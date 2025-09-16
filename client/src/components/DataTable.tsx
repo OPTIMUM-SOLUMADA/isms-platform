@@ -26,7 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ArrowUpDown, Trash2 } from "lucide-react";
+import { ChevronDown, ArrowUpDown, Trash2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TableSkeletonRow from "./TableSkeletonRow";
 
@@ -146,12 +146,15 @@ export function DataTable<TData, TValue>({
                 {title && <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>}
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {enableSearch && (
-                        <Input
-                            placeholder={searchableColumnId ? `Search ${searchableColumnId}...` : t("components.table.search.placeholder")}
-                            value={searchValue}
-                            onChange={(e) => onSearchChange(e.target.value)}
-                            className="h-9 w-full sm:w-64"
-                        />
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder={t("components.table.search.placeholder")}
+                                value={searchValue}
+                                onChange={(e) => onSearchChange(e.target.value)}
+                                className="pl-10 w-full sm:w-64"
+                            />
+                        </div>
                     )}
 
                     <div className="flex items-center gap-2">
@@ -171,7 +174,7 @@ export function DataTable<TData, TValue>({
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2">
+                                <Button variant="outline" size="sm" className="gap-2 h-9">
                                     {t("components.table.actions.toggleColumns.placeholder")}{" "}
                                     <ChevronDown className="h-4 w-4" />
                                 </Button>
@@ -245,7 +248,7 @@ export function DataTable<TData, TValue>({
                                 ) : (
                                     table.getRowModel().rows?.length ? (
                                         table.getRowModel().rows.map((row) => (
-                                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="bg-white">
+                                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className={cn("bg-white")}>
                                                 {row.getVisibleCells().map((cell) => (
                                                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                                 ))}

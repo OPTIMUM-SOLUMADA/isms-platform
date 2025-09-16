@@ -15,6 +15,7 @@ export const roleActionPermissions: Record<RoleType, ActionPermission[]> = {
         "document.download",
         "user.create",
         "user.read",
+        "user.invite",
         "user.update",
         "user.delete",
         "audit.view",

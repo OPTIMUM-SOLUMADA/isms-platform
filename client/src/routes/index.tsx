@@ -16,6 +16,7 @@ import { AccessPermission } from "@/types/role";
 // import { ReviewWorkflowPage } from "@/pages/documents/DocumentReviewPage";
 import { AppProviders } from "@/providers/AppProviders";
 import { PageSkeleton } from "@/components/page-skeleton";
+import DepartmentPage from "@/pages/departments/DepartmentPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -125,6 +126,12 @@ const routeConfig: AppRoute[] = [
                 path: "settings",
                 permission: "settings.page.access",
                 children: [{ index: true, element: <SettingsPage /> }],
+            },
+
+            {
+                path: "departments",
+                permission: "documents.page.access",
+                children: [{ index: true, element: <DepartmentPage /> }],
             },
 
             // Special pages

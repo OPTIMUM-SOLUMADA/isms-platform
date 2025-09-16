@@ -1,7 +1,7 @@
 
 import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
-import { AddDepartmentFormData } from "@/templates/departments/AddDepartmentForm";
+import { AddDepartmentFormData } from "@/templates/departments/forms/AddDepartmentForm";
 
 const url = API_CONFIG.ENDPOINTS.DOCUMENT_TYPES;
 

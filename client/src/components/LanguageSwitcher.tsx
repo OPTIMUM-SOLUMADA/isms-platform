@@ -8,20 +8,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 import { LANGUAGES } from '@/i18n/config';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useEffect } from 'react';
 
 export default function LanguageSwitcher() {
     const { i18n } = useTranslation();
     const current = i18n.language;
+    const [lang, setLang] = useLocalStorage("lang", current);
 
-    function change(lang: string) {
+    useEffect(() => {
         i18n.changeLanguage(lang);
-        try {
-            localStorage.setItem('lang', lang);
-        } catch (e) {
-            // ignore
-            console.error(e);
-        }
-    }
+    }, [lang, i18n]);
 
 
     return (
@@ -37,7 +34,7 @@ export default function LanguageSwitcher() {
                 {LANGUAGES.filter((l) => l.code !== current).map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
-                        onClick={() => change(lang.code)}
+                        onClick={() => setLang(lang.code)}
                         className="flex items-center gap-3"
                     >
                         <div className="flex-1">

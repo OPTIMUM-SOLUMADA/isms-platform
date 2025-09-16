@@ -6,6 +6,9 @@ interface DepartmentState {
     setDepartments: (departments: Department[]) => void;
     currentDepartment: Department | null;
     setCurrentDepartment: (department: Department | null) => void;
+    // CRUD
+    deleteDepartment: (id: string) => void;
+    replaceDepartement: (id: string, department: Department) => void;
 }
 
 const useDepartmentStore = create<DepartmentState>((set) => ({
@@ -13,6 +16,9 @@ const useDepartmentStore = create<DepartmentState>((set) => ({
     currentDepartment: null,
     setDepartments: (departments) => set({ departments: departments }),
     setCurrentDepartment: (department) => set({ currentDepartment: department }),
+
+    deleteDepartment: (id: string) => set((state) => ({ departments: state.departments.filter((dep) => dep.id !== id) })),
+    replaceDepartement: (id: string, department: Department) => set((state) => ({ departments: state.departments.map((dep) => dep.id === id ? department : dep) }))
 }));
 
 export default useDepartmentStore;

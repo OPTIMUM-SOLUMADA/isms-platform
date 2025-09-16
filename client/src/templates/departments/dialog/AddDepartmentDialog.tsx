@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import AddDepartmentForm from "@/templates/departments/AddDepartmentForm";
+import AddDepartmentForm from "@/templates/departments/forms/AddDepartmentForm";
 import { useCreateDepartment } from "@/hooks/queries/departmentMutations";
 
 interface Props {
@@ -39,6 +39,7 @@ const AddDepartmentFormDialog = ({
                 <AddDepartmentForm
                     onSubmit={createDepartment}
                     error={error?.response?.data.code}
+                    onCancel={() => onOpenChange(false)}
                     isPending={isPending}
                 />
             </DialogContent>

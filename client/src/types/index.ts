@@ -191,6 +191,7 @@ export type Department = {
   name: string;
   description: string;
   members: User[];
+  documents: Document[];
 
   createdAt: string;
   updatedAt: string;
