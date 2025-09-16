@@ -8,6 +8,7 @@ type UserUIState = {
     isDeleteOpen: boolean;
     isActivationOpen: boolean;
     isDesactivationOpen: boolean;
+    isInvitationOpen: boolean;
     currentUser: User | null;
 
     // actions
@@ -21,6 +22,8 @@ type UserUIState = {
     closeActivation: () => void;
     openDesactivation: () => void;
     closeDesactivation: () => void;
+    openInvitation: () => void;
+    closeInvitation: () => void;
     setCurrentUser: (user: User | null) => void;
 };
 
@@ -31,6 +34,7 @@ export const useUserUIStore = create<UserUIState>((set) => ({
     isDeleteOpen: false,
     isActivationOpen: false,
     isDesactivationOpen: false,
+    isInvitationOpen: false,
     currentUser: null,
 
     // actions
@@ -45,4 +49,6 @@ export const useUserUIStore = create<UserUIState>((set) => ({
     openDesactivation: () => set({ isDesactivationOpen: true }),
     closeDesactivation: () => set({ isDesactivationOpen: false }),
     setCurrentUser: (user) => set({ currentUser: user }),
+    openInvitation: () => set({ isInvitationOpen: true }),
+    closeInvitation: () => set({ isInvitationOpen: false }),
 }));

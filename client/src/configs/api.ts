@@ -21,7 +21,12 @@ export const API_CONFIG = {
             DEACTIVATE: (id: string | number) => `/users/${id}/deactivate`,
             ACTIVATE: (id: string | number) => `/users/${id}/activate`,
         },
-        DEPARTMENTS: "/departments",
+        DEPARTMENTS: {
+            BASE: "/departments",
+            GET: (id: string | number) => `/departments/${id}`,
+            UPDATE: (id: string | number) => `/departments/${id}`,
+            DELETE: (id: string | number) => `/departments/${id}`,
+        },
         DOCUMENTS: {
             BASE: "/documents",
             STATS: "/documents/statistics",

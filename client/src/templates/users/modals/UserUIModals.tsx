@@ -4,6 +4,7 @@ import DeleteUserDialog from "@/templates/users/dialog/DeleteUserDialog";
 import { useUserUIStore } from "@/stores/user/useUserUIStore";
 import { DeactivateUserDialog } from "../dialog/DeactivateUserDialog";
 import { ActivateUserDialog } from "../dialog/ActivateUserDialog";
+import { InviteUserConfirmDialog } from "../dialog/InviteUserDialog";
 
 export const UserUIModals = () => {
     const {
@@ -43,6 +44,8 @@ export const UserUIModals = () => {
             {/* Activation and Desactivation */}
             <ActivateUserDialog />
             <DeactivateUserDialog />
+            {/* Invitation */}
+            <InviteUserConfirmDialog />
         </>
     );
 };

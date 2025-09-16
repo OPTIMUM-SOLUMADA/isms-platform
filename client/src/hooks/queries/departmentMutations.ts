@@ -3,9 +3,11 @@ import { ApiAxiosError } from "@/types/api";
 import { useEffect } from "react";
 import { depService } from "@/services/departmentService";
 import useDepartmentStore from "@/stores/department/useDepatrmentStore";
-import { AddDepartmentFormData } from "@/templates/departments/AddDepartmentForm";
+import { AddDepartmentFormData } from "@/templates/departments/forms/AddDepartmentForm";
 import { useToast } from "../use-toast";
 import { Department } from "@/types";
+import { useTranslation } from "react-i18next";
+import { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
 
 // -----------------------------
 // Fetch Departments
@@ -19,7 +21,6 @@ export const useFetchDepartments = () => {
     });
 
     useEffect(() => {
-        console.log(query.data.data)
         if (query.data) setDepartments(query.data.data);
     }, [query.data, setDepartments]);
 
@@ -43,6 +44,48 @@ export const useCreateDepartment = () => {
             });
             const newDep = res.data as Department;
             setDepartments([...departments, newDep]);
+        },
+    });
+};
+
+// -----------------------------
+// Update Department
+// -----------------------------
+export const useUpdateDepartment = () => {
+    const { toast } = useToast();
+    const { t } = useTranslation();
+    const { replaceDepartement } = useDepartmentStore();
+
+    return useMutation<any, ApiAxiosError, EditDepartmentFormData>({
+        mutationFn: ({ id, ...rest }) => depService.update(id, rest),
+        onSuccess: (res, variables) => {
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.department.updated"),
+                variant: "success",
+            });
+            replaceDepartement(variables.id, res.data);
+        },
+    });
+};
+
+// -----------------------------
+// Delete Department
+// -----------------------------
+export const useDeleteDepartment = () => {
+    const { toast } = useToast();
+    const { t } = useTranslation();
+    const { deleteDepartment } = useDepartmentStore();
+
+    return useMutation<any, ApiAxiosError, { id: string }>({
+        mutationFn: ({ id }) => depService.delete(id),
+        onSuccess: (_, variables) => {
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.department.deleted"),
+                variant: "success",
+            });
+            deleteDepartment(variables.id);
         },
     });
 };

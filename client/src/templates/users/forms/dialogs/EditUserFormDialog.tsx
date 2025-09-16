@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EditUserForm from '../EditUserForm';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
 import { useEffect } from "react";
 import { User } from "@/types";
 import { useUpdateUser } from "@/hooks/queries/useUserMutations";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 interface Props {
     open: boolean;
@@ -18,7 +18,7 @@ const EditUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
-    const { departments } = useDepartment();
+    const { departments } = useDepartmentStore();
     const { mutateAsync: updateUser, isSuccess, isPending, error, reset } = useUpdateUser();
 
     useEffect(() => {

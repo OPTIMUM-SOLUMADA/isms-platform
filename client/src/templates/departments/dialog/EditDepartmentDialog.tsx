@@ -1,16 +1,19 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import AddDepartmentForm from "@/templates/departments/forms/AddDepartmentForm";
+import EditDepartmentForm from "@/templates/departments/forms/EditDepartmentForm";
 import { useCreateDepartment } from "@/hooks/queries/departmentMutations";
+import type { Department } from "@/types";
 
 interface Props {
-    open: boolean,
-    onOpenChange: (open: boolean) => void
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    department: Department;
 }
-const AddDepartmentFormDialog = ({
+const EditDepartmentFormDialog = ({
     open,
-    onOpenChange
+    onOpenChange,
+    department,
 }: Props) => {
     const { t } = useTranslation();
 
@@ -33,10 +36,11 @@ const AddDepartmentFormDialog = ({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className='card-header-bg'>
                 <DialogHeader>
-                    <DialogTitle>{t("department.forms.add.title")}</DialogTitle>
-                    <DialogDescription>{t("department.forms.add.subtitle")}</DialogDescription>
+                    <DialogTitle>{t("department.forms.edit.title")}</DialogTitle>
+                    <DialogDescription>{t("department.forms.edit.subtitle")}</DialogDescription>
                 </DialogHeader>
-                <AddDepartmentForm
+                <EditDepartmentForm
+                    defaultValues={department}
                     onSubmit={createDepartment}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
@@ -46,5 +50,5 @@ const AddDepartmentFormDialog = ({
         </Dialog>)
 };
 
-export default AddDepartmentFormDialog
+export default EditDepartmentFormDialog
 

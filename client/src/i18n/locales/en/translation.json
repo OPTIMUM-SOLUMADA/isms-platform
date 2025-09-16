@@ -268,6 +268,9 @@
         "sendInvitation": {
           "label": "Send invitation link via email"
         },
+        "status": {
+          "label": "Status of the user"
+        },
         "actions": {
           "submit": {
             "label": "Save",
@@ -326,7 +329,8 @@
       "actions": {
         "edit": "Edit",
         "delete": "Delete",
-        "view": "View Details"
+        "view": "View Details",
+        "reinvite": "Resend Invitation"
       },
       "empty": {
         "title": "No users found",
@@ -383,6 +387,22 @@
           },
           "cancel": {
             "label": "No, cancel"
+          }
+        }
+      }
+    },
+    "reinvite": {
+      "dialog": {
+        "title": "Resend an invitation",
+        "message": "Are you sure you want to resend an invitation to this user?",
+        "description": "An invitation email containing a link to set their password will be sent to <strong>{{email}}</strong>.",
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "send": {
+            "label": "Resend invitation",
+            "loading": "Sending..."
           }
         }
       }
@@ -827,7 +847,8 @@
     "ERR_INVALID_TOKEN": "Invalid token",
     "ERR_RESET_TOKEN_EXPIRED": "Password reset link has expired",
     "ERR_INVALID_RESET_TOKEN": "The password reset link is invalid",
-    "ERR_USER_EXISTS": "A user with this email already exists. Please choose another."
+    "ERR_USER_EXISTS": "A user with this email already exists. Please choose another.",
+    "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another."
   },
   "zod": {
     "errors": {
@@ -985,6 +1006,13 @@
     "auditLog": {
       "label": "Audit Log",
       "description": "Change Tracking and Traceability"
+    },
+    "others": {
+      "title": "Other Menus",
+      "departments": {
+        "label": "Departments",
+        "description": "Department Management"
+      }
     }
   },
   "header": {
@@ -1026,6 +1054,12 @@
             "label": "Contact support"
           }
         }
+      }
+    },
+    "user": {
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
       }
     },
     "form": {

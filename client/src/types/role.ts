@@ -26,6 +26,7 @@ export type ActionPermission =
     | "user.read"
     | "user.update"
     | "user.delete"
+    | "user.invite"
     | "audit.view"
     | "dashboard.view"
     | "report.export"
