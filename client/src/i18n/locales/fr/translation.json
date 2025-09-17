@@ -824,6 +824,8 @@
                 "documents": "Documents",
                 "createdBy": "Créé par",
                 "createdAt": "Créé le",
+                "updatedAt": "Modifié le",
+                "updatedBy": "Modifié par",
                 "actions": "Actions"
             },
             "actions": {

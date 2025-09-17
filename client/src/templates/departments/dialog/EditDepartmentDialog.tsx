@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import EditDepartmentForm, { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
 import { useUpdateDepartment } from "@/hooks/queries/useDepartmentMutations";
 import type { Department } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean;
@@ -21,6 +22,8 @@ const EditDepartmentFormDialog = ({
         isPending,
         error,
     } = useUpdateDepartment();
+
+    const { user } = useAuth();
 
     function handleUpdate(data: EditDepartmentFormData) {
         createDepartment(data, {
@@ -43,6 +46,7 @@ const EditDepartmentFormDialog = ({
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
+                    userId={user?.id}
                 />
             </SheetContent>
         </Sheet>)

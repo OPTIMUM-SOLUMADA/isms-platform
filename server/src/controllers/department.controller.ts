@@ -47,9 +47,12 @@ export class DepartmentController {
 
     async update(req: Request, res: Response) {
         try {
-            console.log('req', req.body);
+            const { name, description } = req.body;
 
-            const updated = await service.updateDepartment(req.params.id!, req.body);
+            const updated = await service.updateDepartment(req.params.id!, {
+                name,
+                description,
+            });
             console.log('updat', updated);
 
             res.json(updated);

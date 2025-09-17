@@ -12,18 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 const addDepartmentSchema = z.object({
+    userId: z.string().optional(),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
 
 export type AddDepartmentFormData = z.infer<typeof addDepartmentSchema>;
 
-type AddDepartmentFormProps = CustomFormProps<AddDepartmentFormData>;
+type AddDepartmentFormProps = CustomFormProps<AddDepartmentFormData> & {
+    userId?: string;
+};
 
 const AddDepartmentForm = ({
     onSubmit,
     onCancel,
     isPending = false,
+    userId,
     error
 }: AddDepartmentFormProps) => {
     const { t } = useTranslation();
@@ -31,6 +35,7 @@ const AddDepartmentForm = ({
     const form = useForm<AddDepartmentFormData>({
         resolver: zodResolver(addDepartmentSchema),
         defaultValues: {
+            userId: userId,
             name: "",
             description: "",
         },

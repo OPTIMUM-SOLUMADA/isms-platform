@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import AddDepartmentForm from "@/templates/departments/forms/AddDepartmentForm";
 import { useCreateDepartment } from "@/hooks/queries/useDepartmentMutations";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean,
@@ -21,6 +22,8 @@ const AddDepartmentFormDialog = ({
         error,
         reset
     } = useCreateDepartment();
+
+    const { user } = useAuth();
 
     useEffect(() => {
         if (isSuccess) {
@@ -41,6 +44,7 @@ const AddDepartmentFormDialog = ({
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
+                    userId={user?.id}
                 />
             </SheetContent>
         </Sheet>)
