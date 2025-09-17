@@ -1,16 +1,27 @@
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentType, Prisma } from '@prisma/client';
 
+const includes: Prisma.DocumentTypeInclude = {
+    documents: {
+        select: {
+            id: true,
+            title: true,
+            fileUrl: true,
+        },
+    },
+};
+
 export class DocumentTypeService {
     async create(data: Prisma.DocumentTypeCreateInput): Promise<DocumentType> {
         return prisma.documentType.create({
             data,
+            include: includes,
         });
     }
 
     async findAll(): Promise<DocumentType[]> {
         return prisma.documentType.findMany({
-            include: { documents: true },
+            include: includes,
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -18,14 +29,14 @@ export class DocumentTypeService {
     async findByName(name: string): Promise<DocumentType | null> {
         return prisma.documentType.findUnique({
             where: { name },
-            include: { documents: true },
+            include: includes,
         });
     }
 
     async findById(id: string): Promise<DocumentType | null> {
         return prisma.documentType.findUnique({
             where: { id },
-            include: { documents: true },
+            include: includes,
         });
     }
 
@@ -33,6 +44,7 @@ export class DocumentTypeService {
         return prisma.documentType.update({
             where: { id },
             data,
+            include: includes,
         });
     }
 
