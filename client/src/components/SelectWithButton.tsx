@@ -1,13 +1,23 @@
+
 import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from '@/components/ui/select';
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, PlusIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useMemo, useState } from 'react';
+import { useTranslation } from "react-i18next";
 
 export interface SelectItemType {
     value: string;
@@ -22,43 +32,109 @@ interface SelectWithButtonProps {
     addLabel?: string; // label for "Add new"
     onButtonClick?: () => void; // when add button clicked
     className?: string;
+    hasError?: boolean;
 }
 
 
 export function SelectWithButton({
     items,
     value,
-    placeholder = 'Select an option',
+    placeholder = "Select an option",
     onChange,
-    addLabel = 'Add new',
+    addLabel = "Add new",
     onButtonClick,
     className,
+    hasError = false,
 }: SelectWithButtonProps) {
+    const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState("");
+    const { t } = useTranslation();
+
+    const filteredItems = useMemo(() => {
+        if (!search) return items;
+        return items.filter((item) =>
+            item.label.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [items, search]);
+
     return (
-        <Select onValueChange={onChange} value={value}>
-            <SelectTrigger className={cn(className)}>
-                <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-                {items.map(({ label, value }, index) => (
-                    <SelectItem key={index} value={value}>
-                        {label}
-                    </SelectItem>
-                ))}
-                {onButtonClick && (
-                    <div className="py-1 border-t">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full flex items-center gap-2"
-                            onClick={onButtonClick}
-                        >
-                            <Plus className="h-4 w-4" />
-                            {addLabel}
-                        </Button>
-                    </div>
-                )}
-            </SelectContent>
-        </Select>
+        <div className="*:not-first:mt-2">
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className={cn(
+                            "bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]",
+                            "normal-case h-8",
+                            className,
+                            hasError && "border-destructive"
+                        )}
+                    >
+                        <span className={cn("truncate", !value && "text-muted-foreground")}>
+                            {value
+                                ? items.find((item) => item.value === value)?.label
+                                : placeholder}
+                        </span>
+                        <ChevronDownIcon
+                            size={16}
+                            className="text-muted-foreground/80 shrink-0"
+                            aria-hidden="true"
+                        />
+                    </Button>
+                </PopoverTrigger>
+
+                <PopoverContent
+                    className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                    align="start"
+                >
+                    <Command>
+                        <CommandInput
+                            placeholder={t("components.selectWithButton.search.placeholder")}
+                            value={search}
+                            onValueChange={setSearch}
+                            onKeyDown={(e) => e.stopPropagation()} // prevent blur
+                        />
+                        <CommandList>
+                            {filteredItems.length === 0 && <CommandEmpty>{t("components.selectWithButton.noResults")}</CommandEmpty>}
+
+                            <CommandGroup>
+                                {filteredItems.map((item) => (
+                                    <CommandItem
+                                        key={item.value}
+                                        value={item.value}
+                                        onSelect={(currentValue) => {
+                                            onChange(currentValue === value ? "" : currentValue)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        {item.label}
+                                        {value === item.value && <CheckIcon size={16} className="ml-auto" />}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+
+
+                        {onButtonClick && (
+                            <>
+                                <CommandSeparator />
+                                <CommandGroup>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-start font-normal normal-case"
+                                        onClick={onButtonClick}
+                                    >
+                                        <PlusIcon size={16} className="mr-2 opacity-60" aria-hidden="true" />
+                                        {addLabel}
+                                    </Button>
+                                </CommandGroup>
+                            </>
+                        )}
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 }

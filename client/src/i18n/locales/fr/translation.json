@@ -1194,6 +1194,12 @@
                 "browse": "Parcourir les fichiers",
                 "fileRejected": "Le fichier \"{{name}}\" a été rejeté"
             }
+        },
+        "selectWithButton": {
+            "noResults": "Aucun résultat trouvé",
+            "search": {
+                "placeholder": "Rechercher..."
+            }
         }
     },
     "navigation": {

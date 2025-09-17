@@ -21,13 +21,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { DocumentTable } from '@/templates/documents/table/DocumentTable';
 import { useTranslation } from 'react-i18next';
 import { documentStatus } from '@/constants/document';
-import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import WithTitle from '@/templates/layout/WithTitle';
 import { UserAvatar } from '@/components/user-avatar';
 import { StatCard } from '@/templates/documents/card/StatCard';
 import useUserStore from '@/stores/user/useUserStore';
+import useDocumentTypeStore from '@/stores/document-type/useDocumentTypeStore';
 
 
 export const NEW_DOCUMENT_PATH = '/documents/add';
@@ -37,9 +37,9 @@ export default function DocumentRepositoryPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { types } = useDocumentType();
   const { clauses } = useISOClause();
   const { documents, loading, stats } = useDocument();
+  const { documentTypes } = useDocumentTypeStore();
   const { users } = useUserStore();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -177,7 +177,7 @@ export default function DocumentRepositoryPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t('document.filter.type.placeholder')}</SelectItem>
-                    {types.map((item, index) => (
+                    {documentTypes.map((item, index) => (
                       <SelectItem key={index} value={item.id}>
                         {item.name}
                       </SelectItem>
