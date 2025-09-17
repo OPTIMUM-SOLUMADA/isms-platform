@@ -10,6 +10,7 @@ import isoClauseRoutes from './routes/isoclause.route';
 import documentTypeRoutes from './routes/documenttype.routes';
 import documentReviewRoutes from './routes/documentreview.routes';
 import excelRoutes from './routes/excel.routes';
+import invitationRoutes from './routes/invitation.routes';
 import { env } from './configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from './configs/upload';
 
@@ -44,5 +45,6 @@ app.use('/iso-clauses', isoClauseRoutes);
 app.use('/document-types', documentTypeRoutes);
 app.use('/document-reviews', documentReviewRoutes);
 app.use('/excel', excelRoutes);
+app.use('/invitation', invitationRoutes);
 
 export default app;

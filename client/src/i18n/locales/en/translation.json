@@ -265,6 +265,12 @@
           "label": "Department",
           "placeholder": "User Department"
         },
+        "sendInvitation": {
+          "label": "Send invitation link via email"
+        },
+        "status": {
+          "label": "Status of the user"
+        },
         "actions": {
           "submit": {
             "label": "Save",
@@ -317,12 +323,14 @@
         "email": "Email",
         "role": "Role",
         "department": "Department",
+        "status": "Status",
         "actions": "Actions"
       },
       "actions": {
         "edit": "Edit",
         "delete": "Delete",
-        "view": "View Details"
+        "view": "View Details",
+        "reinvite": "Resend Invitation"
       },
       "empty": {
         "title": "No users found",
@@ -335,7 +343,7 @@
       }
     },
     "delete": {
-    "dialog": {
+      "dialog": {
         "message": "Deleting this user will also remove all the following associated information:",
         "relatedItems": {
           "documents": "All documents owned by {{name}} and their versions.",
@@ -348,6 +356,54 @@
         "actions": {
           "notPermitted": "You cannot delete your own account.",
           "hasDocuments": "This user owns documents. Please reassign or delete these documents before deleting the user."
+        }
+      }
+    },
+    "activate": {
+      "dialog": {
+        "title": "Activate User",
+        "message": "Are you sure you want to change this user's status?",
+        "important": "Important: If you activate this user, they will be able to log in to the system.",
+        "actions": {
+          "confirm": {
+            "label": "Yes, activate",
+            "loading": "Changing status..."
+          },
+          "cancel": {
+            "label": "No, cancel"
+          }
+        }
+      }
+    },
+    "deactivate": {
+      "dialog": {
+        "title": "Deactivate User",
+        "message": "Are you sure you want to change this user's status?",
+        "important": "Important: If you deactivate this user, they will no longer be able to log in to the system.",
+        "actions": {
+          "confirm": {
+            "label": "Yes, deactivate",
+            "loading": "Changing status..."
+          },
+          "cancel": {
+            "label": "No, cancel"
+          }
+        }
+      }
+    },
+    "reinvite": {
+      "dialog": {
+        "title": "Resend an invitation",
+        "message": "Are you sure you want to resend an invitation to this user?",
+        "description": "An invitation email containing a link to set their password will be sent to <strong>{{email}}</strong>.",
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "send": {
+            "label": "Resend invitation",
+            "loading": "Sending..."
+          }
         }
       }
     },
@@ -715,6 +771,28 @@
         }
       }
     },
+    "forms": {
+      "add": {
+        "title": "Add Department",
+        "subtitle": "Fill out department details",
+        "name": {
+          "label": "Name",
+          "placeholder": "Department Name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Department Description"
+        },
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "submit": {
+            "label": "Submit"
+          }
+        }
+      }
+    },
     "actions": {
       "add": {
         "label": "Add Department"
@@ -764,12 +842,13 @@
     "ERR_INVALID_CREDENTIALS": "Incorrect email or password",
     "ERR_SERVER_ERROR": "An unknown error occurred",
     "ERR_USER_NOT_FOUND": "User not found",
-    "ERR_USER_INACTIVE": "Inactive user",
+    "ERR_USER_INACTIVE": "You cannot log in because your account is disabled. Please contact the administrator.",
     "ERR_INVALID_REFRESH_TOKEN": "Invalid refresh token",
     "ERR_INVALID_TOKEN": "Invalid token",
     "ERR_RESET_TOKEN_EXPIRED": "Password reset link has expired",
     "ERR_INVALID_RESET_TOKEN": "The password reset link is invalid",
-    "ERR_USER_EXISTS": "A user with this email already exists. Please choose another."
+    "ERR_USER_EXISTS": "A user with this email already exists. Please choose another.",
+    "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another."
   },
   "zod": {
     "errors": {
@@ -927,6 +1006,13 @@
     "auditLog": {
       "label": "Audit Log",
       "description": "Change Tracking and Traceability"
+    },
+    "others": {
+      "title": "Other Menus",
+      "departments": {
+        "label": "Departments",
+        "description": "Department Management"
+      }
     }
   },
   "header": {
@@ -968,6 +1054,12 @@
             "label": "Contact support"
           }
         }
+      }
+    },
+    "user": {
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
       }
     },
     "form": {

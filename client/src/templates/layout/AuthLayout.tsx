@@ -1,3 +1,4 @@
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -5,12 +6,13 @@ export default function AuthLayout({ children }: PropsWithChildren) {
     const { t } = useTranslation();
     return (
         <div className="min-h-screen flex flex-col w-full">
-            <div className="w-full p-6">
+            <div className="w-full p-6 flex items-center justify-between">
                 <img
                     src="./logo/solumada-long.png"
                     alt="logo"
-                    className="w-auto h-10 rounded-full object-contain max-sm:hidden m"
+                    className="w-auto h-10 rounded-full object-contain"
                 />
+                <LanguageSwitcher />
             </div>
             {/* Left Side - Logo + Title */}
             <div className="flex justify-center items-center flex-grow w-full max-w-7xl mx-auto">

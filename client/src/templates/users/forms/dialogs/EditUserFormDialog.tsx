@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EditUserForm from '../EditUserForm';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
-import { useUser } from '@/contexts/UserContext';
 import { useEffect } from "react";
 import { User } from "@/types";
+import { useUpdateUser } from "@/hooks/queries/useUserMutations";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 interface Props {
     open: boolean;
@@ -18,21 +18,15 @@ const EditUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
-    const { departments } = useDepartment();
-    const {
-        updateUser,
-        updateError,
-        updateSuccess,
-        isUpdating,
-        resetUpdate
-    } = useUser();
+    const { departments } = useDepartmentStore();
+    const { mutateAsync: updateUser, isSuccess, isPending, error, reset } = useUpdateUser();
 
     useEffect(() => {
-        if (updateSuccess) {
+        if (isSuccess) {
             onOpenChange(false);
-            resetUpdate();
+            reset();
         }
-    }, [updateSuccess, onOpenChange, resetUpdate]);
+    }, [isSuccess, onOpenChange, reset]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,8 +40,8 @@ const EditUserFormDialog = ({
                     departments={departments}
                     onSubmit={updateUser}
                     onCancel={() => onOpenChange(false)}
-                    isPending={isUpdating}
-                    error={updateError}
+                    isPending={isPending}
+                    error={error?.response?.data.code}
                 />
             </DialogContent>
         </Dialog>

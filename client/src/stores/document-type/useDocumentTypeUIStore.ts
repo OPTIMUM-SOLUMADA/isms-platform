@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import type { Department } from "@/types";
+import type { DocumentType } from "@/types";
 
-type DepartmentUIState = {
+type DocumentTypeUIState = {
     // states
     isAddOpen: boolean;
     isEditOpen: boolean;
     isDeleteOpen: boolean;
-    currentDepartment: Department | null;
+    currentDocumentType: DocumentType | null;
 
     // actions
     openAdd: () => void;
@@ -15,15 +15,15 @@ type DepartmentUIState = {
     closeEdit: () => void;
     openDelete: () => void;
     closeDelete: () => void;
-    setCurrentDepartment: (department: Department | null) => void;
+    setCurrentDocumentType: (document: DocumentType | null) => void;
 };
 
-export const useDepartmentUI = create<DepartmentUIState>((set) => ({
+export const useDocumentTypeUIStore = create<DocumentTypeUIState>((set) => ({
     // initial state
     isAddOpen: false,
     isEditOpen: false,
     isDeleteOpen: false,
-    currentDocument: null,
+    currentDocumentType: null,
 
     // actions
     openAdd: () => set({ isAddOpen: true }),
@@ -32,5 +32,5 @@ export const useDepartmentUI = create<DepartmentUIState>((set) => ({
     closeEdit: () => set({ isEditOpen: false }),
     openDelete: () => set({ isDeleteOpen: true }),
     closeDelete: () => set({ isDeleteOpen: false }),
-    setCurrentDepartment: (department) => set({ currentDepartment: department }),
+    setCurrentDocumentType: (document) => set({ currentDocumentType: document }),
 }));

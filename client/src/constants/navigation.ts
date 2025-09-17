@@ -7,6 +7,8 @@ import {
     Shield,
     Activity,
     type LucideIcon,
+    Building2,
+    FileType2,
 } from 'lucide-react';
 
 type MenuItem = {
@@ -60,4 +62,22 @@ export const menuItems: MenuItem[] = [
         descriptionKey: 'navigation.auditLog.description',
         requiredPermission: "audit.page.access"
     }
+];
+
+
+export const otherMenuItems: MenuItem[] = [
+    {
+        path: '/departments',
+        labelKey: 'navigation.others.departments.label',
+        icon: Building2,
+        descriptionKey: 'navigation.others.departments.description',
+        requiredPermission: 'documents.page.access',
+    },
+    {
+        path: '/document-types',
+        labelKey: 'navigation.others.documentTypes.label',
+        icon: FileType2,
+        descriptionKey: 'navigation.others.documentTypes.description',
+        requiredPermission: 'documents.page.access',
+    },
 ];

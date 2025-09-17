@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Users,
   UserPlus,
@@ -13,21 +13,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useUser } from '@/contexts/UserContext';
 import { UserTable } from '@/templates/users/table/UserTable';
 import { roles, RolesObject } from '@/constants/role';
 import { RoleType, User } from '@/types';
 import { UsersStatusObject, userStatus } from '@/constants/status';
 import SearchInput from '@/components/SearchInput';
-import { useUserUI } from '@/stores/useUserUI';
+import { useUserUIStore } from '@/stores/user/useUserUIStore';
 import { useTranslation } from 'react-i18next';
-import { useDepartment } from '@/contexts/DepartmentContext';
-import { useToast } from '@/hooks/use-toast';
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { userRoleColors } from '@/constants/color';
+import useUserStore from '@/stores/user/useUserStore';
+import { useUser } from '@/contexts/UserContext';
+import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -39,21 +39,16 @@ export default function UserManagementPage() {
   const navigate = useNavigate();
   const { hasActionPermission } = usePermissions();
 
-  const { toast } = useToast();
+  const { users } = useUserStore();
+  const { isLoading } = useUser();
 
-  const {
-    users,
-    deleteUser,
-    deleteError,
-  } = useUser();
-
-  const { departments } = useDepartment();
+  const { departments } = useDepartmentStore();
 
   const {
     openAdd,
     openEdit,
     setCurrentUser
-  } = useUserUI();
+  } = useUserUIStore();
 
   const filteredUsers = useMemo(() => users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,32 +69,10 @@ export default function UserManagementPage() {
     VIEWER: users.filter(u => u.role === RolesObject.VIEWER).length
   } as const;
 
-  const handleDeleteUser = useCallback(async (user: User) => {
-    const res = await deleteUser(user.id);
-    if (res) {
-      toast({
-        title: t("components.toast.success.title"),
-        description: t("components.toast.success.user.deleted"),
-        variant: "success",
-      });
-    }
-    return res;
-  }, [deleteUser, toast, t]);
-
   const handleOpenEditForm = useCallback(async (user: User) => {
     setCurrentUser(user);
     openEdit();
   }, [openEdit, setCurrentUser]);
-
-  useEffect(() => {
-    if (deleteError) {
-      toast({
-        title: t("components.toast.error.title"),
-        description: t(`errors.${deleteError}`),
-        variant: "destructive",
-      });
-    }
-  }, [deleteError, t, toast]);
 
   const handleOpenView = useCallback((user: User) => {
     navigate(`view/${user.id}`, { state: { user } });
@@ -221,10 +194,10 @@ export default function UserManagementPage() {
         <UserTable
           data={filteredUsers}
           onEdit={handleOpenEditForm}
-          onDelete={handleDeleteUser}
           onAddUser={openAdd}
           onView={handleOpenView}
           onMessage={handleOpenMessage}
+          isLoading={isLoading}
         />
 
       </div>

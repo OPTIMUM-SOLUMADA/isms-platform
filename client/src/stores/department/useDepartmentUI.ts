@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import type { User } from "@/types";
+import type { Department } from "@/types";
 
-type UserUIState = {
+type DepartmentUIState = {
     // states
     isAddOpen: boolean;
     isEditOpen: boolean;
     isDeleteOpen: boolean;
-    currentUser: User | null;
+    currentDepartment: Department | null;
 
     // actions
     openAdd: () => void;
@@ -15,15 +15,15 @@ type UserUIState = {
     closeEdit: () => void;
     openDelete: () => void;
     closeDelete: () => void;
-    setCurrentUser: (user: User | null) => void;
+    setCurrentDepartment: (department: Department | null) => void;
 };
 
-export const useUserUI = create<UserUIState>((set) => ({
+export const useDepartmentUI = create<DepartmentUIState>((set) => ({
     // initial state
     isAddOpen: false,
     isEditOpen: false,
     isDeleteOpen: false,
-    currentUser: null,
+    currentDepartment: null,
 
     // actions
     openAdd: () => set({ isAddOpen: true }),
@@ -32,5 +32,5 @@ export const useUserUI = create<UserUIState>((set) => ({
     closeEdit: () => set({ isEditOpen: false }),
     openDelete: () => set({ isDeleteOpen: true }),
     closeDelete: () => set({ isDeleteOpen: false }),
-    setCurrentUser: (user) => set({ currentUser: user }),
+    setCurrentDepartment: (department) => set({ currentDepartment: department }),
 }));

@@ -68,7 +68,8 @@ export type DocumentType = {
   id: string;
   name: string;
   description: string;
-  // isoClauseNumber: string;
+
+  documents: Document[];
 
   createdAt: string;
   updatedAt: string;
@@ -191,6 +192,7 @@ export type Department = {
   name: string;
   description: string;
   members: User[];
+  documents: Document[];
 
   createdAt: string;
   updatedAt: string;

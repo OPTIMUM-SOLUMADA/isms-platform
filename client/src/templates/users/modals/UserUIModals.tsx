@@ -1,7 +1,10 @@
 import AddUserFormDialog from "@/templates/users/forms/dialogs/AddUserFormDialog";
 import EditUserFormDialog from "@/templates/users/forms/dialogs/EditUserFormDialog";
 import DeleteUserDialog from "@/templates/users/dialog/DeleteUserDialog";
-import { useUserUI } from "@/stores/useUserUI";
+import { useUserUIStore } from "@/stores/user/useUserUIStore";
+import { DeactivateUserDialog } from "../dialog/DeactivateUserDialog";
+import { ActivateUserDialog } from "../dialog/ActivateUserDialog";
+import { InviteUserConfirmDialog } from "../dialog/InviteUserDialog";
 
 export const UserUIModals = () => {
     const {
@@ -16,7 +19,7 @@ export const UserUIModals = () => {
         closeEdit,
         openDelete,
         closeDelete,
-    } = useUserUI();
+    } = useUserUIStore();
 
     return (
         <>
@@ -38,6 +41,11 @@ export const UserUIModals = () => {
                     user={currentUser}
                 />
             )}
+            {/* Activation and Desactivation */}
+            <ActivateUserDialog />
+            <DeactivateUserDialog />
+            {/* Invitation */}
+            <InviteUserConfirmDialog />
         </>
     );
 };

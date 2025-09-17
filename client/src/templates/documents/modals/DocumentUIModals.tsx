@@ -1,5 +1,5 @@
 
-import { useDocumentUI } from "@/stores/useDocumentUi";
+import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import DeleteDocumentDialog from "../dialog/DeleteDocumentDialog";
 
 export const DocumentUIModals = () => {

@@ -7,6 +7,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/DataTable";
@@ -16,14 +17,13 @@ import { userRoleColors } from "@/constants/color";
 import type { RoleType, User } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { DeleteDialog } from "@/components/DeleteDialog";
 import { useTranslation } from "react-i18next";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
 import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
-import { useUserUI } from "@/stores/useUserUI";
-import InviteUserButton from "../actions/InviteUserButton";
+import { useUserUIStore } from "@/stores/user/useUserUIStore";
+import { UserActivationSwitch } from "../actions/UserActivationSwitch";
 
 interface UserActionsCell {
     user: User;
@@ -34,14 +34,18 @@ interface UserActionsCell {
 
 const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
     const { t } = useTranslation();
-    const [open, setOpen] = React.useState(false);
     const { hasActionPermission, hasActionPermissions } = usePermissions();
-    const { openDelete, setCurrentUser } = useUserUI();
+    const { openDelete, setCurrentUser, openInvitation } = useUserUIStore();
 
     const handleDelete = async () => {
         setCurrentUser(user);
         openDelete();
     };
+
+    function handleOpenInvitationDialog() {
+        setCurrentUser(user);
+        openInvitation();
+    }
 
     return (
         <>
@@ -62,20 +66,19 @@ const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
                             <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
                         </DropdownMenuItem>
                     )}
+                    {(hasActionPermission("user.invite") && !user.lastLogin) && (
+                        <DropdownMenuItem className="text-theme" onClick={handleOpenInvitationDialog}>
+                            <UserPlus className="mr-2 h-4 w-4" /> {t("user.table.actions.reinvite")}
+                        </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
                     {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-red-600" onClick={handleDelete}>
+                        <DropdownMenuItem className="text-theme-danger" onClick={handleDelete}>
                             <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
                         </DropdownMenuItem>
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <DeleteDialog
-                entityName={user.name}
-                open={open}
-                onOpenChange={setOpen}
-                onConfirm={handleDelete}
-            />
         </>
     );
 };
@@ -88,6 +91,7 @@ interface UserTableProps {
     onAddUser?: () => void;
     onView?: (user: User) => void;
     onMessage?: (user: User) => void;
+    isLoading?: boolean;
 }
 
 const Table = ({
@@ -96,7 +100,8 @@ const Table = ({
     onDelete,
     onAddUser,
     onView,
-    onMessage
+    onMessage,
+    isLoading = false,
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
@@ -146,12 +151,22 @@ const Table = ({
             cell: ({ row }) => <DepartmentHoverCard department={row.original.department} />
         },
         {
+            accessorKey: "isActive",
+            header: t("user.table.columns.status"),
+            size: 100,
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <UserActivationSwitch user={user} active={user.isActive} />
+                )
+            }
+        },
+        {
             id: "actions",
             header: t("user.table.columns.actions"),
             size: 50,
             cell: ({ row }) => {
                 const user = row.original;
-                const showInvitationBtn = !user.lastLogin;
                 return (
                     <>
                         <UserActionsCell
@@ -160,12 +175,6 @@ const Table = ({
                             onDelete={onDelete}
                             onView={onView}
                         />
-
-                        {showInvitationBtn && (
-                            <InviteUserButton
-                                userId={user.id}
-                            />
-                        )}
                     </>
                 );
             },
@@ -195,6 +204,7 @@ const Table = ({
                 </Card>
             )}
             className="flex-grow"
+            isLoading={isLoading}
         />
     );
 }

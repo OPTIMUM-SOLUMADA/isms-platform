@@ -2,6 +2,23 @@ import { Department, Prisma } from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 
+const depIncludes: Prisma.DepartmentInclude = {
+    documents: {
+        select: {
+            id: true,
+            title: true,
+            fileUrl: true,
+        },
+    },
+    members: {
+        select: {
+            name: true,
+            email: true,
+            id: true,
+        },
+    },
+};
+
 export class DepartmentService {
     protected userService: UserService;
     constructor() {
@@ -9,24 +26,20 @@ export class DepartmentService {
     }
 
     async createDepartment(data: Prisma.DepartmentCreateInput) {
-        return prisma.department.create({ data });
+        return prisma.department.create({ data, include: depIncludes });
     }
 
     async getDepartmentById(id: string) {
         return prisma.department.findUnique({
             where: { id },
-            include: {
-                members: true,
-            },
+            include: depIncludes,
         });
     }
 
     async getDepartmentByName(name: string) {
         return prisma.department.findUnique({
             where: { name },
-            include: {
-                members: true,
-            },
+            include: depIncludes,
         });
     }
 
@@ -34,6 +47,7 @@ export class DepartmentService {
         return prisma.department.update({
             where: { id },
             data,
+            include: depIncludes,
         });
     }
 
@@ -43,9 +57,7 @@ export class DepartmentService {
 
     async listDepartments() {
         return prisma.department.findMany({
-            include: {
-                members: true,
-            },
+            include: depIncludes,
         });
     }
 
