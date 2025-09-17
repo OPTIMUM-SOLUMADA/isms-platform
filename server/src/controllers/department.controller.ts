@@ -7,7 +7,12 @@ const service = new DepartmentService();
 export class DepartmentController {
     async create(req: Request, res: Response) {
         try {
-            const department = await service.createDepartment(req.body);
+            const { name, description, userId } = req.body;
+            const department = await service.createDepartment({
+                name,
+                description,
+                ...(userId && { createdBy: { connect: { id: userId } } }),
+            });
             res.status(201).json(department);
         } catch (err) {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {

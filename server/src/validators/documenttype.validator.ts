@@ -5,6 +5,7 @@ export const documentTypeCreateSchema = Joi.object({
         'string.empty': 'Name is required',
     }),
     description: Joi.string().optional().allow('').default(''),
+    userId: Joi.string().optional().allow(''),
 });
 
 export const documentTypeUpdateSchema = Joi.object({
@@ -12,4 +13,5 @@ export const documentTypeUpdateSchema = Joi.object({
         'string.empty': 'Name is required',
     }),
     description: Joi.string().optional().allow('').default(''),
+    userId: Joi.string().optional().allow(''),
 });

@@ -6,8 +6,12 @@ const service = new DocumentTypeService();
 export class DocumentTypeController {
     async create(req: Request, res: Response) {
         try {
-            const { name, description } = req.body;
-            const clause = await service.create({ name, description });
+            const { name, description, userId } = req.body;
+            const clause = await service.create({
+                name,
+                description,
+                ...(userId && { createdBy: { connect: { id: userId } } }),
+            });
             return res.status(201).json(clause);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
