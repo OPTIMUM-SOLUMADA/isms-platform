@@ -18,6 +18,7 @@ import { AppProviders } from "@/providers/AppProviders";
 import { PageSkeleton } from "@/components/page-skeleton";
 import DepartmentPage from "@/pages/departments/DepartmentPage";
 import DocumentTypePage from "@/pages/document-types/DocumentTypePage";
+import ISOClausePage from "@/pages/ISOClausePage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -140,6 +141,12 @@ const routeConfig: AppRoute[] = [
                 path: "document-types",
                 permission: "documents.page.access",
                 children: [{ index: true, element: <DocumentTypePage /> }],
+            },
+            // ISOClause 
+            {
+                path: "iso-clauses",
+                permission: "documents.page.access",
+                children: [{ index: true, element: <ISOClausePage /> }],
             },
 
             // Special pages

@@ -9,6 +9,7 @@ import {
     type LucideIcon,
     Building2,
     FileType2,
+    FileLock2,
 } from 'lucide-react';
 
 type MenuItem = {
@@ -78,6 +79,13 @@ export const otherMenuItems: MenuItem[] = [
         labelKey: 'navigation.others.documentTypes.label',
         icon: FileType2,
         descriptionKey: 'navigation.others.documentTypes.description',
+        requiredPermission: 'documents.page.access',
+    },
+    {
+        path: '/iso-clauses',
+        labelKey: 'navigation.others.isoClauses.label',
+        icon: FileLock2,
+        descriptionKey: 'navigation.others.isoClauses.description',
         requiredPermission: 'documents.page.access',
     },
 ];

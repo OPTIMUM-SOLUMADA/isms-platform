@@ -213,8 +213,11 @@ export interface CustomFormProps<T> {
 export interface ISOClause {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   code: string;
+
+  createdBy?: User;
+  createdById?: string;
 
   documents: Document[];
   createdAt: string;
