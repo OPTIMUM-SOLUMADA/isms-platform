@@ -27,6 +27,9 @@ model Department {
   // manager   User[]   @relation("ManagedDepartment")
   members User[] @relation("DepartmentMembers")
 
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation(name: "CreatedDepartments", fields: [createdById], references: [id], onDelete: SetNull)
+
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   documents Document[] @relation("DepartmentDocuments")
@@ -56,7 +59,7 @@ model User {
   passwordHash String?
 
   departmentId String?     @db.ObjectId
-  department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict)
+  department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   passwordResetToken String?
 
@@ -78,8 +81,10 @@ model User {
   assignedDocumentReviews DocumentReview[]   @relation("Assigner")
 
   // Reverse relations: must break referential action cycles
-  createdUsers    User[]       @relation("CreatedUsers")
-  invitationsSent Invitation[] @relation("InvitationsSent")
+  createdUsers         User[]         @relation("CreatedUsers")
+  invitationsSent      Invitation[]   @relation("InvitationsSent")
+  createdDocumentTypes DocumentType[] @relation("CreatedDocumentTypes")
+  createdDepartments   Department[]   @relation("CreatedDepartments")
 
   @@index([email, isActive])
   @@index([role])
@@ -118,6 +123,9 @@ model DocumentType {
   description String?
   // isoClauseNumber String?
   documents   Document[]
+
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation(name: "CreatedDocumentTypes", fields: [createdById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

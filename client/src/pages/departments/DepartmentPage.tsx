@@ -25,7 +25,7 @@ const DepartmentPage = () => {
                         <p className="page-description">{t("department.subtitle")}</p>
                     </div>
 
-                    <Button className="flex items-center space-x-2" onClick={openAdd}>
+                    <Button className="flex items-center space-x-2" variant="primary" onClick={openAdd}>
                         <Plus className="h-4 w-4" />
                         <span>{t("department.actions.add.label")}</span>
                     </Button>

@@ -17,11 +17,15 @@ export const DocumentTypeUIModals = () => {
 
     function handleCloseDelete() {
         closeDelete();
-        setCurrentDocumentType(null);
+        clear();
     }
     function handleCloseEdit() {
         closeEdit();
-        setCurrentDocumentType(null);
+        clear();
+    }
+
+    function clear() {
+        setTimeout(() => setCurrentDocumentType(null), 1000);
     }
 
     return (

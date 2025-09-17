@@ -1,8 +1,8 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AddDepartmentForm from "@/templates/departments/forms/AddDepartmentForm";
 import { useCreateDepartment } from "@/hooks/queries/useDepartmentMutations";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface Props {
     open: boolean,
@@ -30,20 +30,20 @@ const AddDepartmentFormDialog = ({
     }, [isSuccess, onOpenChange, reset]);
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='card-header-bg'>
-                <DialogHeader>
-                    <DialogTitle>{t("department.forms.add.title")}</DialogTitle>
-                    <DialogDescription>{t("department.forms.add.subtitle")}</DialogDescription>
-                </DialogHeader>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent className='card-header-bg'>
+                <SheetHeader>
+                    <SheetTitle>{t("department.forms.add.title")}</SheetTitle>
+                    <SheetDescription>{t("department.forms.add.subtitle")}</SheetDescription>
+                </SheetHeader>
                 <AddDepartmentForm
                     onSubmit={createDepartment}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
                 />
-            </DialogContent>
-        </Dialog>)
+            </SheetContent>
+        </Sheet>)
 };
 
 export default AddDepartmentFormDialog
