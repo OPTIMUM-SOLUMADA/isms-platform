@@ -8,6 +8,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean,
@@ -18,6 +19,7 @@ const AddDocumentTypeDialog = ({
     onOpenChange
 }: Props) => {
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     const {
         mutate: create,
@@ -48,6 +50,7 @@ const AddDocumentTypeDialog = ({
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
+                    userId={user?.id}
                 />
             </SheetContent>
         </Sheet>

@@ -1055,7 +1055,9 @@
         "ERR_RESET_TOKEN_EXPIRED": "Le lien de réinitialisation du mot de passe a expiré",
         "ERR_INVALID_RESET_TOKEN": "Le lien de réinitialisation du mot de passe est invalide",
         "ERR_USER_EXISTS": "Un utilisateur avec cet email existe déjà. Veuillez en choisir un autre.",
-        "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre."
+        "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre.",
+        "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "Un type de document avec ce nom existe déjà. Veuillez en choisir un autre.",
+        "ERR_CANNOT_DELETE_YOURSELF": "Vous ne pouvez pas supprimer votre propre compte"
     },
     "zod": {
         "errors": {

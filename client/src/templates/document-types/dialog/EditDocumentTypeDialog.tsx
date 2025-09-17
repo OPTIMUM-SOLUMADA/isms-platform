@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useUpdateDocumentType } from "@/hooks/queries/useDocumentTypeMutations";
 import EditDocumentTypeForm, { type EditDocumentTypeFormData } from "../forms/EditDocumentTypeForm";
 import type { DocumentType } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     documentType: DocumentType;
@@ -22,6 +23,7 @@ const EditDocumentTypeDialog = ({
     onOpenChange
 }: Props) => {
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     const {
         mutate: update,
@@ -52,6 +54,7 @@ const EditDocumentTypeDialog = ({
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
+                    userId={user?.id}
                 />
             </SheetContent>
         </Sheet>

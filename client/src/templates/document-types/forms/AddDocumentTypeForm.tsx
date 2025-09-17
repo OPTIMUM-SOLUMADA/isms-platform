@@ -12,18 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 const addSchema = z.object({
+    userId: z.string().optional(),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
 
 export type AddDocumentTypeFormData = z.infer<typeof addSchema>;
 
-type AddDocumentTypeFormProps = CustomFormProps<AddDocumentTypeFormData>;
+type AddDocumentTypeFormProps = CustomFormProps<AddDocumentTypeFormData> & {
+    userId?: string;
+};
 
 const AddDocumentTypeForm = ({
     onSubmit,
     onCancel,
     isPending = false,
+    userId,
     error
 }: AddDocumentTypeFormProps) => {
     const { t } = useTranslation();
@@ -31,6 +35,7 @@ const AddDocumentTypeForm = ({
     const form = useForm<AddDocumentTypeFormData>({
         resolver: zodResolver(addSchema),
         defaultValues: {
+            userId,
             name: "",
             description: "",
         },

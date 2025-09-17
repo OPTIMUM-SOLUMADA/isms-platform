@@ -9,6 +9,9 @@ import DocumentsHoverCard from "@/templates/documents/hovercard/DocumentsHoverCa
 import type { DocumentType as DocType } from "@/types";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
 import CellNoValue from "@/components/CellNoValue";
+import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { formatDate } from "@/lib/date";
 
 
 // UserTable component using the reusable DataTable
@@ -23,6 +26,7 @@ const Table = ({
 }: TableProps) => {
     const { t } = useTranslation();
     const { openDelete, setCurrentDocumentType, openEdit } = useDocumentTypeUIStore();
+    const { user: activeUser } = useAuth();
 
     // Define columns for UserTable
     const columns: ColumnDef<DocType>[] = useMemo(() => [
@@ -62,6 +66,27 @@ const Table = ({
                 );
             }
         },
+        {
+            accessorKey: "createdBy",
+            header: t("department.table.columns.createdBy"),
+            size: 60,
+            cell: ({ row }) => {
+                const user = row.original.createdBy;
+                return user ? (
+                    <UserHoverCard user={user} currentUserId={activeUser?.id} />
+                ) : (
+                    <CellNoValue />
+                );
+            }
+        },
+        {
+            accessorKey: "createdAt",
+            header: t("department.table.columns.createdAt"),
+            size: 60,
+            cell: ({ row }) => {
+                return <span className="text-muted-foreground">{formatDate(row.original.createdAt)}</span>;
+            }
+        },
 
         {
             id: "actions",
@@ -99,7 +124,7 @@ const Table = ({
             enableSorting: false,
             enableHiding: false,
         },
-    ], [t, openDelete, setCurrentDocumentType, openEdit]);
+    ], [t, openDelete, setCurrentDocumentType, openEdit, activeUser]);
 
     return (
         <DataTable
