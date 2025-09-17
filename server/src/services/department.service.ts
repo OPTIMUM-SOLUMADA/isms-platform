@@ -12,9 +12,12 @@ const depIncludes: Prisma.DepartmentInclude = {
     },
     members: {
         select: {
+            id: true,
             name: true,
             email: true,
-            id: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
         },
     },
     createdBy: {

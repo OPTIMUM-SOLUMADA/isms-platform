@@ -37,7 +37,7 @@ const Table = ({
             cell: ({ row }) => {
                 const department = row.original;
                 return (
-                    <span>{department.name}</span>
+                    <span className="font-semibold text-primary">{department.name}</span>
                 );
             },
         },

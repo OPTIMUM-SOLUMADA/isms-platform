@@ -46,7 +46,7 @@ export function UserHoverCard({
         <HoverCard>
             <HoverCardTrigger asChild className={cn("hover:cursor-default group", className)}>
                 {children ?? (
-                    <div className="flex items-center gap-1 cursor-pointer font-medium text-primary hover:text-theme-2 bg-theme-2-muted/10 px-1 rounded hover:underline">
+                    <div className="flex items-center gap-1 cursor-pointer font-medium text-primary hover:text-theme-2 px-1 rounded hover:underline">
                         <UserAvatar className="size-4" id={user.id} name={user.name} />
                         {user.name}
                     </div>

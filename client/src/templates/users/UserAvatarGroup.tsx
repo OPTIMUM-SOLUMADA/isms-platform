@@ -1,12 +1,10 @@
 import React from "react";
 import { cn } from "@/lib/utils"; // ta fonction classNames
-import { UserAvatar } from "./user-avatar"; // ton composant avatar ShadCN
+import { UserAvatar } from "../../components/user-avatar"; // ton composant avatar ShadCN
+import { UserHoverCard } from "./hovercard/UserHoverCard";
+import { useAuth } from "@/contexts/AuthContext";
+import type { User } from "@/types";
 
-interface User {
-    id: string;
-    name: string;
-    avatarUrl?: string;
-}
 
 interface Props {
     users: User[];
@@ -21,16 +19,20 @@ export const UserAvatarGroup: React.FC<Props> = ({
 }) => {
     const visibleUsers = users.slice(0, maxVisible);
     const restCount = users.length - maxVisible;
+    const { user: activeUser } = useAuth();
 
     return (
         <div className={cn("flex items-center -space-x-2", className)}>
-            {visibleUsers.map((user) => (
-                <UserAvatar
-                    key={user.id}
-                    id={user.id}
-                    name={user.name}
-                    className="size-6 border-2 border-background"
-                />
+            {visibleUsers.map((user, index) => (
+                <UserHoverCard user={user} key={index} currentUserId={activeUser?.id}>
+                    <div>
+                        <UserAvatar
+                            id={user.id}
+                            name={user.name}
+                            className="size-6 border-2 border-background"
+                        />
+                    </div>
+                </UserHoverCard>
             ))}
 
             {restCount > 0 && (
