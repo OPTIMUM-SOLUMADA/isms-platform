@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { DocumentTypeService } from '@/services/documenttype.service';
+import { Prisma } from '@prisma/client';
 
 const service = new DocumentTypeService();
 
@@ -14,6 +15,14 @@ export class DocumentTypeController {
             });
             return res.status(201).json(clause);
         } catch (error: any) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    return res.status(400).json({
+                        error: error.message,
+                        code: 'ERR_DOCUMENTTYPE_DUPLICATED_NAME',
+                    });
+                }
+            }
             return res.status(400).json({ error: error.message });
         }
     }
@@ -39,10 +48,22 @@ export class DocumentTypeController {
 
     async update(req: Request, res: Response) {
         try {
-            const type = await service.update(req.params.id!, req.body);
+            const { name, description } = req.body;
+            const type = await service.update(req.params.id!, {
+                name,
+                description,
+            });
             if (!type) return res.status(404).json({ error: 'Type not found' });
             return res.json(type);
         } catch (error: any) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    return res.status(400).json({
+                        error: error.message,
+                        code: 'ERR_DOCUMENTTYPE_DUPLICATED_NAME',
+                    });
+                }
+            }
             return res.status(400).json({ error: error.message });
         }
     }

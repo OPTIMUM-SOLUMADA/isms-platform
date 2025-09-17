@@ -13,22 +13,17 @@ export class DepartmentController {
                 description,
                 ...(userId && { createdBy: { connect: { id: userId } } }),
             });
-            res.status(201).json(department);
+            return res.status(201).json(department);
         } catch (err) {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 if (err.code === 'P2002') {
-                    res.status(400).json({
+                    return res.status(400).json({
                         error: err.message,
                         code: 'ERR_DEPARTMENT_DUPLICATED_NAME',
                     });
-                } else {
-                    res.status(400).json({
-                        error: err.message,
-                    });
                 }
-            } else {
-                res.status(500).json({ error: (err as Error).message });
             }
+            return res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -53,11 +48,18 @@ export class DepartmentController {
                 name,
                 description,
             });
-            console.log('updat', updated);
 
-            res.json(updated);
+            return res.json(updated);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                if (err.code === 'P2002') {
+                    return res.status(400).json({
+                        error: err.message,
+                        code: 'ERR_DEPARTMENT_DUPLICATED_NAME',
+                    });
+                }
+            }
+            return res.status(400).json({ error: (err as Error).message });
         }
     }
 
