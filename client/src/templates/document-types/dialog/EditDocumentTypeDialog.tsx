@@ -1,8 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet"
 import { useTranslation } from "react-i18next";
-import { useCreateDocumentType } from "@/hooks/queries/useDocumentTypeMutations";
-import { AddDocumentTypeFormData } from "../forms/AddDocumentTypeForm";
-import EditDocumentTypeForm from "../forms/EditDocumentTypeForm";
+import { useUpdateDocumentType } from "@/hooks/queries/useDocumentTypeMutations";
+import EditDocumentTypeForm, { type EditDocumentTypeFormData } from "../forms/EditDocumentTypeForm";
 import type { DocumentType } from "@/types";
 
 interface Props {
@@ -18,13 +24,15 @@ const EditDocumentTypeDialog = ({
     const { t } = useTranslation();
 
     const {
-        mutate: create,
+        mutate: update,
         isPending,
         error,
-    } = useCreateDocumentType();
+    } = useUpdateDocumentType();
 
-    const handleCreate = (data: AddDocumentTypeFormData) => {
-        create(data, {
+    const handleUpdate = (data: EditDocumentTypeFormData) => {
+        const { id, ...rest } = data;
+
+        update({ id, data: rest }, {
             onSuccess: () => {
                 onOpenChange(false);
             }
@@ -32,21 +40,21 @@ const EditDocumentTypeDialog = ({
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='card-header-bg'>
-                <DialogHeader>
-                    <DialogTitle>{t("documentType.forms.add.title")}</DialogTitle>
-                    <DialogDescription>{t("documentType.forms.add.subtitle")}</DialogDescription>
-                </DialogHeader>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent className='card-header-bg'>
+                <SheetHeader>
+                    <SheetTitle>{t("documentType.forms.add.title")}</SheetTitle>
+                    <SheetDescription>{t("documentType.forms.add.subtitle")}</SheetDescription>
+                </SheetHeader>
                 <EditDocumentTypeForm
                     defaultValue={documentType}
-                    onSubmit={handleCreate}
+                    onSubmit={handleUpdate}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
                 />
-            </DialogContent>
-        </Dialog>
+            </SheetContent>
+        </Sheet>
     )
 };
 

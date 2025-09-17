@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 const editSchema = z.object({
+    id: z.string(),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
@@ -34,6 +35,7 @@ const EditDocumentTypeForm = ({
     const form = useForm<EditDocumentTypeFormData>({
         resolver: zodResolver(editSchema),
         defaultValues: {
+            id: defaultValue.id,
             name: defaultValue.name,
             description: defaultValue.description,
         },

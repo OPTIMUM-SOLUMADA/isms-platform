@@ -25,7 +25,7 @@ const DocumentTypePage = () => {
                         <p className="page-description">{t("documentType.subtitle")}</p>
                     </div>
 
-                    <Button className="flex items-center space-x-2" onClick={openAdd}>
+                    <Button className="flex items-center space-x-2" variant="primary" onClick={openAdd}>
                         <Plus className="h-4 w-4" />
                         <span>{t("documentType.actions.add.label")}</span>
                     </Button>

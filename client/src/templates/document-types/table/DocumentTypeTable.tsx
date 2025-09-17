@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusCircle, Edit, Trash, Building2, Minus } from "lucide-react";
+import { PlusCircle, Edit, Trash, FileType2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import DocumentsHoverCard from "@/templates/documents/hovercard/DocumentsHoverCard";
 import type { DocumentType as DocType } from "@/types";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
+import CellNoValue from "@/components/CellNoValue";
 
 
 // UserTable component using the reusable DataTable
@@ -40,22 +41,24 @@ const Table = ({
             accessorKey: "description",
             header: t("documentType.table.columns.description"),
             cell: ({ row }) => {
-                const department = row.original;
-                return (
-                    <span>{department.description}</span>
+                const { description } = row.original;
+                return description ? (
+                    <span>{description}</span>
+                ) : (
+                    <CellNoValue />
                 );
             },
         },
         {
             accessorKey: "documents",
             header: t("documentType.table.columns.documents"),
-            size: 60,
+            size: 40,
             cell: ({ row }) => {
                 const docs = row.original.documents;
                 return docs.length > 0 ? (
                     <DocumentsHoverCard documents={docs} />
                 ) : (
-                    <Minus className="h-4 w-4 text-muted-foreground" />
+                    <CellNoValue />
                 );
             }
         },
@@ -100,16 +103,16 @@ const Table = ({
 
     return (
         <DataTable
-            title={t("user.table.title")}
+            title={t("documentType.table.title")}
             columns={columns}
             data={data}
             enableSearch
             searchableColumnId="name"
             enableRowSelection
             renderNoData={() => (
-                <Card className="shadow-none flex-grow">
+                <Card className="shadow-none flex-grow w-full h-full">
                     <CardContent className="p-12 text-center">
-                        <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                        <FileType2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">{t("documentType.table.empty.title")}</h3>
                         <p className="text-gray-500 mb-4">{t("documentType.table.empty.message")}</p>
                         <Button>

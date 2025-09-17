@@ -10,6 +10,7 @@ export const DocumentTypeUIModals = () => {
         isDeleteOpen,
         isEditOpen,
         closeDelete,
+        closeEdit,
         currentDocumentType,
         setCurrentDocumentType
     } = useDocumentTypeUIStore();
@@ -19,7 +20,7 @@ export const DocumentTypeUIModals = () => {
         setCurrentDocumentType(null);
     }
     function handleCloseEdit() {
-        closeDelete();
+        closeEdit();
         setCurrentDocumentType(null);
     }
 
