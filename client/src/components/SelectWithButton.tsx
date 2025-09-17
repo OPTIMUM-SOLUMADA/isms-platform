@@ -35,6 +35,12 @@ interface SelectWithButtonProps {
     hasError?: boolean;
 }
 
+function normalize(str: string) {
+    return str
+        .normalize("NFD") // split letters + accents
+        .replace(/[\u0300-\u036f]/g, "") // remove accents
+        .toLowerCase()
+}
 
 export function SelectWithButton({
     items,
@@ -52,10 +58,17 @@ export function SelectWithButton({
 
     const filteredItems = useMemo(() => {
         if (!search) return items;
-        return items.filter((item) =>
-            item.label.toLowerCase().includes(search.toLowerCase())
-        );
+
+        const queryTokens = normalize(search).split(/\s+/).filter(Boolean);
+
+        return items.filter((item) => {
+            const text = normalize(item.label);
+            // every token in query must be somewhere in the text
+            return queryTokens.every((token) => text.includes(token));
+        });
     }, [items, search]);
+
+    console.log(filteredItems)
 
     return (
         <div className="*:not-first:mt-2">
@@ -97,15 +110,16 @@ export function SelectWithButton({
                             onKeyDown={(e) => e.stopPropagation()} // prevent blur
                         />
                         <CommandList>
-                            {filteredItems.length === 0 && <CommandEmpty>{t("components.selectWithButton.noResults")}</CommandEmpty>}
+                            <CommandEmpty>{t("components.selectWithButton.noResults")}</CommandEmpty>
 
                             <CommandGroup>
-                                {filteredItems.map((item) => (
+                                {items.map((item) => (
                                     <CommandItem
                                         key={item.value}
-                                        value={item.value}
-                                        onSelect={(currentValue) => {
-                                            onChange(currentValue === value ? "" : currentValue)
+                                        value={item.label}
+                                        keywords={item.label.split(" ")}
+                                        onSelect={() => {
+                                            onChange(item.value === value ? "" : item.value)
                                             setOpen(false)
                                         }}
                                     >
