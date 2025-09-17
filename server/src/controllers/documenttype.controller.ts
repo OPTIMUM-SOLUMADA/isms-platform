@@ -36,6 +36,7 @@ export class DocumentTypeController {
     async update(req: Request, res: Response) {
         try {
             const type = await service.update(req.params.id!, req.body);
+            if (!type) return res.status(404).json({ error: 'Type not found' });
             return res.json(type);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
@@ -44,7 +45,8 @@ export class DocumentTypeController {
 
     async delete(req: Request, res: Response) {
         try {
-            await service.delete(req.params.id!);
+            const deletedDocumentType = await service.delete(req.params.id!);
+            if (!deletedDocumentType) return res.status(404).json({ error: 'Type not found' });
             return res.status(204).send();
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
