@@ -37,7 +37,12 @@ export const API_CONFIG = {
             UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
         },
         ISO_CLAUSES: "/iso-clauses",
-        DOCUMENT_TYPES: "/document-types",
+        DOCUMENT_TYPES: {
+            BASE: "/document-types",
+            GET: (id: string | number) => `/document-types/${id}`,
+            UPDATE: (id: string | number) => `/document-types/${id}`,
+            DELETE: (id: string | number) => `/document-types/${id}`,
+        },
         EXCEL_IMAGE: "/excel/image",
     },
 } as const;

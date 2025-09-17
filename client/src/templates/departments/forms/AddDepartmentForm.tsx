@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ErrorCodeField from "@/components/ErrorCodeField";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 const addDepartmentSchema = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -71,7 +72,7 @@ const AddDepartmentForm = ({
                         <FormItem>
                             <FormLabel>{t("department.forms.add.description.label")}</FormLabel>
                             <FormControl>
-                                <Input placeholder={t("department.forms.add.description.placeholder")} {...field} />
+                                <Textarea placeholder={t("department.forms.add.description.placeholder")} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

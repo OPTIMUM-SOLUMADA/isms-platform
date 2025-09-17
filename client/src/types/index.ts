@@ -68,7 +68,8 @@ export type DocumentType = {
   id: string;
   name: string;
   description: string;
-  // isoClauseNumber: string;
+
+  documents: Document[];
 
   createdAt: string;
   updatedAt: string;

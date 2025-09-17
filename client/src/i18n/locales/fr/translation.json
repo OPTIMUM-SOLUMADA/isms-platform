@@ -860,6 +860,150 @@
             }
         }
     },
+    "documentType": {
+        "title": "Gestion des types de documents",
+        "subtitle": "Gérer les types de documents et leurs attributs",
+        "hovercard": {
+            "title": "Détails du type de document",
+            "description": "Description du type de document",
+            "attributes": "{{count}} attributs",
+            "noAttributes": "Aucun attribut",
+            "createdBy": "Créé par",
+            "createdAt": "Créé le",
+            "actions": {
+                "edit": {
+                    "label": "Modifier"
+                }
+            }
+        },
+        "table": {
+            "title": "Liste des types de documents",
+            "columns": {
+                "name": "Nom",
+                "description": "Description",
+                "attributes": "Attributs",
+                "documents": "Documents",
+                "createdBy": "Créé par",
+                "createdAt": "Créé le",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": {
+                    "label": "Modifier"
+                },
+                "delete": {
+                    "label": "Supprimer"
+                }
+            },
+            "empty": {
+                "title": "Aucun type de document trouvé",
+                "message": "Essayez d'ajouter un nouveau type de document.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter un type de document"
+                    }
+                }
+            }
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter un type de document"
+            }
+        },
+        "forms": {
+            "add": {
+                "title": "Ajouter un type de document",
+                "subtitle": "Remplir les informations du type de document",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du type de document"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du type de document"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Ajouter",
+                        "loading": "Ajout en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                },
+                "toast": {
+                    "success": {
+                        "title": "Succès",
+                        "description": "Le type de document a été ajouté avec succès"
+                    },
+                    "error": {
+                        "title": "Erreur",
+                        "description": "Une erreur s'est produite lors de l'ajout du type de document. Veuillez réessayer."
+                    }
+                }
+            },
+            "edit": {
+                "title": "Modifier le type de document",
+                "subtitle": "Modifier les informations du type de document",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du type de document"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du type de document"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                },
+                "toast": {
+                    "success": {
+                        "title": "Succès",
+                        "description": "Le type de document a été modifié avec succès"
+                    },
+                    "error": {
+                        "title": "Erreur",
+                        "description": "Une erreur s'est produite lors de la modification du type de document. Veuillez réessayer."
+                    }
+                }
+            },
+            "delete": {
+                "toast": {
+                    "success": {
+                        "title": "Succès",
+                        "description": "Le type de document a été supprimé avec succès"
+                    },
+                    "error": {
+                        "title": "Erreur",
+                        "description": "Une erreur s'est produite lors de la suppression du type de document. Veuillez réessayer."
+                    }
+                },
+                "dialog": {
+                    "title": "Supprimer le type de document",
+                    "message": "La suppression de ce type de document supprimera également toutes les informations associées suivantes :",
+                    "relatedItems": {
+                        "attributes": "Tous les attributs associés à ce type de document.",
+                        "documents": "Tous les documents associés à ce type de document."
+                    },
+                    "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer ce type de document car :",
+                    "hasDocuments": "Il y a des documents associés à ce type de document. Veuillez réassigner ou supprimer ces documents avant de supprimer le type de document.",
+                    "canBeDeleted": "Le type de document peut être supprimé sans risque car il n'a aucun document associé."
+                }
+            }
+        }
+    },
     "role": {
         "options": {
             "admin": "Administrateur",
@@ -1078,6 +1222,10 @@
             "departments": {
                 "label": "Départements",
                 "description": "Gestion des départements"
+            },
+            "documentTypes": {
+                "label": "Types de documents",
+                "description": "Gestion des types de documents"
             }
         }
     },
