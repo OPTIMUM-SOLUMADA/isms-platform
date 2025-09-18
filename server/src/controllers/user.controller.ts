@@ -144,12 +144,12 @@ export class UserController {
             if (req.query.role) filter.role = req.query.role;
             if (req.query.isActive) filter.isActive = req.query.isActive === 'true';
 
-            const users = await service.listUsers({
+            const data = await service.listUsers({
                 filter,
                 page: Number(page),
                 limit: Number(limit),
             });
-            res.json(users);
+            res.json(data);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }
