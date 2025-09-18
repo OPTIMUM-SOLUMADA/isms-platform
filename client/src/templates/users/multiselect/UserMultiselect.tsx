@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from "react"
+import { useEffect, useId, useState } from "react"
 import { ChevronDownIcon, PlusIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -26,7 +26,7 @@ import type { User } from "@/types"
 import { usePermissions } from "@/hooks/use-permissions"
 import { useUserUIStore } from "@/stores/user/useUserUIStore"
 import useUserStore from "@/stores/user/useUserStore"
-import { useSearchUsers } from "@/hooks/queries/useUserMutations"
+import { useFetchUsersByIds, useSearchUsers } from "@/hooks/queries/useUserMutations"
 
 interface UserMultiSelectProps {
     data: User[];
@@ -48,10 +48,7 @@ export default function UserMultiSelect({
     const { setQuery } = useUserStore();
     const { data: users = data, isLoading } = useSearchUsers();
 
-    const selectedUsers = useMemo(
-        () => data.filter((user) => value.includes(user.id)),
-        [value, data]
-    );
+    const { data: selectedUsers = [] } = useFetchUsersByIds(value);
 
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();

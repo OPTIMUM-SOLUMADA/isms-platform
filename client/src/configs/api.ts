@@ -20,6 +20,7 @@ export const API_CONFIG = {
             INVITE: (id: string | number) => `/users/${id}/invite`,
             DEACTIVATE: (id: string | number) => `/users/${id}/deactivate`,
             ACTIVATE: (id: string | number) => `/users/${id}/activate`,
+            GET_USER_BY_IDS: "/users/by-ids",
             SEARCH: "/users/search",
         },
         DEPARTMENTS: {

@@ -160,9 +160,23 @@ export class UserController {
             const { q = '' } = req.query;
             const normalizedQ = q.toString().trim().toLowerCase();
             const users = await service.searchUsers(normalizedQ);
-            console.log(users, normalizedQ);
             res.json(users);
         } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async getUserByIds(req: Request, res: Response) {
+        try {
+            const { ids = '' } = req.query;
+            const idsSet = ids
+                .toString()
+                .split(',')
+                .filter((e) => e);
+            const users = await service.getUsersByIds(idsSet);
+            res.json(users);
+        } catch (err) {
+            console.log(err);
             res.status(400).json({ error: (err as Error).message });
         }
     }

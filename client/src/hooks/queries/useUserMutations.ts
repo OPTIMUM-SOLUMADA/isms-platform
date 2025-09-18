@@ -7,7 +7,7 @@ import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 import { ApiAxiosError } from "@/types/api";
 import useUserStore from "@/stores/user/useUserStore";
 import { User } from "@/types";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDebounce } from "../use-debounce";
 
 // -----------------------------
@@ -38,6 +38,17 @@ export const useSearchUsers = () => {
         enabled: !!debounceQuery,
     });
 };
+
+export const useFetchUsersByIds = (ids: string[]) => {
+    const stableIds = useMemo(() => ids, [ids]);
+    return useQuery<User[], ApiAxiosError>({
+        queryKey: ["users", "useFetchUsersByIds", ids],
+        queryFn: async () => (await userService.getUserByIds(stableIds)).data,
+        // staleTime: 1000 * 5,
+        enabled: stableIds.length > 0,
+    });
+};
+
 
 // -----------------------------
 // Create User

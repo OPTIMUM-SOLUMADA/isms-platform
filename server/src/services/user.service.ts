@@ -149,4 +149,23 @@ export class UserService {
             },
         });
     }
+
+    async getUsersByIds(ids: string[]) {
+        return prisma.user.findMany({
+            where: { id: { in: ids } },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isActive: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+    }
 }
