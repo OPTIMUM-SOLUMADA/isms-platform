@@ -85,6 +85,17 @@ export class DepartmentController {
         }
     }
 
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const departments = await service.search(normalizedQ);
+            res.json(departments);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
     initialize = async (req: Request, res: Response) => {
         try {
             const departments = await service.init();

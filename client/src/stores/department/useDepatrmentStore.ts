@@ -13,6 +13,9 @@ interface DepartmentState {
     // pagination
     pagination: Pagination;
     setPagination: (pagination: Pagination) => void;
+    // search
+    query: string;
+    setQuery: (query: string) => void;
 }
 
 const useDepartmentStore = create<DepartmentState>((set) => ({
@@ -26,6 +29,9 @@ const useDepartmentStore = create<DepartmentState>((set) => ({
 
     pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
     setPagination: (pagination) => set({ pagination }),
+
+    query: '',
+    setQuery: (query) => set({ query }),
 }));
 
 export default useDepartmentStore;

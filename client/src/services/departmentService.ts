@@ -13,4 +13,5 @@ export const depService = {
     create: async (data: AddDepartmentFormData) => axios.post(api.BASE, data),
     update: async (userId: string, data: any) => axios.put(api.GET(userId), data),
     delete: async (userId: string) => axios.delete(api.GET(userId)),
+    search: async (query: string) => axios.get(api.SEARCH, { params: { q: query } }),
 }

@@ -100,6 +100,23 @@ export class DepartmentService {
         };
     }
 
+    async search(query: string) {
+        return prisma.department.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+            },
+            take: 20,
+        });
+    }
+
     async init() {
         // Add default departments if not exists
         const departments = [

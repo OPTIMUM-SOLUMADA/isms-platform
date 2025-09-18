@@ -9,6 +9,7 @@ import { Department } from "@/types";
 import { useTranslation } from "react-i18next";
 import { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
 import { isEqual } from "lodash";
+import { useDebounce } from "../use-debounce";
 
 // -----------------------------
 // Fetch Departments
@@ -34,6 +35,18 @@ export const useFetchDepartments = () => {
     }, [query.data, setDepartments, setPagination, pagination]);
 
     return query;
+};
+
+// Search
+export const useSearchDepartments = () => {
+    const { query } = useDepartmentStore();
+    const debounceQuery = useDebounce(query, 500);
+    return useQuery<Department[], ApiAxiosError>({
+        queryKey: ["departements", "search", debounceQuery],
+        queryFn: async () => (await depService.search(debounceQuery)).data,
+        staleTime: 1000 * 30,
+        // enabled: !!debounceQuery,
+    });
 };
 
 // -----------------------------
