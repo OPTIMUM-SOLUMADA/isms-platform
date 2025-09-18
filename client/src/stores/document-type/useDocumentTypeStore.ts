@@ -12,10 +12,8 @@ type DocumentTypeStore = {
     removeDocumentType: (id: string) => void;
     pushDocumentType: (docType: DocumentType) => void;
 
-    page: number;
-    setPage: (page: number) => void;
-    limit: number;
-    setLimit: (limit: number) => void;
+    query: string;
+    setQuery: (page: string) => void;
 
     // pagination
     pagination: Pagination;
@@ -37,10 +35,8 @@ export const useDocumentTypeStore = create<DocumentTypeStore>((set) => ({
 
     removeDocumentType: (id) => set((state) => ({ documentTypes: state.documentTypes.filter((dt) => dt.id !== id) })),
 
-    page: 1,
-    setPage: (page) => set({ page }),
-    limit: 50,
-    setLimit: (limit) => set({ limit }),
+    query: "",
+    setQuery: (query) => set({ query }),
 
     pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
     setPagination: (pagination) => set({ pagination }),

@@ -9,6 +9,7 @@ import { useDocumentTypeStore } from "@/stores/document-type/useDocumentTypeStor
 import { AddDocumentTypeFormData } from "@/templates/document-types/forms/AddDocumentTypeForm";
 import { EditDocumentTypeFormData } from "@/templates/document-types/forms/EditDocumentTypeForm";
 import { isEqual } from "lodash";
+import { useDebounce } from "../use-debounce";
 
 // -----------------------------
 // Fetch Document Types
@@ -33,6 +34,18 @@ export const useFetchDocumentTypes = () => {
     }, [query.data, setDocumentTypes, pagination, setPagination]);
 
     return query;
+};
+
+// Search
+export const useSearchDocumentTypes = () => {
+    const { query } = useDocumentTypeStore();
+    const debounceQuery = useDebounce(query, 500);
+    return useQuery<DocumentType[], ApiAxiosError>({
+        queryKey: ["documentTypes", "search", debounceQuery],
+        queryFn: async () => (await documentTypeService.search(debounceQuery)).data,
+        staleTime: 1000 * 30,
+        // enabled: !!debounceQuery,
+    });
 };
 
 // -----------------------------

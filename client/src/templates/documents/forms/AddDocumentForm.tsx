@@ -33,11 +33,11 @@ import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
-import { SelectWithButton } from "@/components/SelectWithButton";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
 import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
 import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
+import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -81,7 +81,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
       isPending = false,
       onSubmit,
       error,
-      types = [],
       users = [],
     },
     ref
@@ -186,12 +185,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.type.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <SelectWithButton
+                    <DocumentTypeSelect
                       placeholder={t("document.add.form.fields.type.placeholder")}
-                      items={types.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
                       onChange={field.onChange}
                       value={field.value}
                       addLabel={t("documentType.actions.add.label")}

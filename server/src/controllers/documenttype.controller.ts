@@ -82,6 +82,17 @@ export class DocumentTypeController {
         }
     }
 
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const types = await service.search(normalizedQ);
+            return res.json(types);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
     async initialize(req: Request, res: Response) {
         try {
             const types = await service.init();

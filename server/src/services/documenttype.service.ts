@@ -96,6 +96,22 @@ export class DocumentTypeService {
         };
     }
 
+    async search(query: string) {
+        return prisma.documentType.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+            },
+        });
+    }
+
     async init() {
         const documentTypesList = [
             { name: 'Policy', description: '' },
