@@ -9,6 +9,7 @@ import useUserStore from "@/stores/user/useUserStore";
 import { User } from "@/types";
 import { useEffect, useMemo } from "react";
 import { useDebounce } from "../use-debounce";
+import { isEqual } from "lodash";
 
 // -----------------------------
 // Fetch Users
@@ -16,18 +17,20 @@ import { useDebounce } from "../use-debounce";
 export const useFetchUsers = () => {
     const { pagination, setUsers, setPagination } = useUserStore();
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["users", pagination],
+        queryKey: ["users", pagination.page, pagination.limit],
         queryFn: () => userService.list({ ...pagination }),
         staleTime: 1000 * 60 * 5,
     });
 
     useEffect(() => {
         if (query.data) {
-            const { users, pagination } = query.data.data;
+            const { users, pagination: newP } = query.data.data;
             setUsers(users);
-            setPagination(pagination);
+            if (!isEqual(pagination, newP)) {
+                setPagination(pagination);
+            }
         };
-    }, [query.data, setUsers, setPagination]);
+    }, [query.data, setUsers, setPagination, pagination]);
 
     return query;
 };

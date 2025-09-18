@@ -36,6 +36,7 @@ import Required from "@/components/Required";
 import { SelectWithButton } from "@/components/SelectWithButton";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
+import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -274,12 +275,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.isoClause.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <SelectWithButton
+                    <ISOSelectLookup
                       placeholder={t("document.add.form.fields.isoClause.placeholder")}
-                      items={isoClauses.map((item) => ({
-                        value: item.id,
-                        label: `${item.code} ${item.name}`,
-                      }))}
                       onChange={field.onChange}
                       value={field.value}
                       addLabel={t("documentType.actions.add.label")}

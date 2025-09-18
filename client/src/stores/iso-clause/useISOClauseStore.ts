@@ -12,11 +12,8 @@ interface IsoClausestate {
     isoClause: ISOClause | null;
     setIsoClause: (doc: ISOClause | null) => void;
 
-    page: number;
-    setPage: (page: number) => void;
-
-    limit: number;
-    setLimit: (limit: number) => void;
+    query: string;
+    setQuery: (page: string) => void;
 
     // CRUD
     push: (doc: ISOClause) => void;
@@ -35,11 +32,8 @@ const useISOClauseStore = create<IsoClausestate>((set) => ({
     isoClause: null,
     setIsoClause: (doc) => set({ isoClause: doc }),
 
-    page: 1,
-    setPage: (page) => set({ page }),
-
-    limit: 50,
-    setLimit: (limit) => set({ limit }),
+    query: '',
+    setQuery: (query) => set({ query }),
 
     push: (doc) => set((state) => ({ isoClauses: [...state.isoClauses, doc] })),
     replace: (id, newDoc) => set((state) => ({ isoClauses: state.isoClauses.map((doc) => (doc.id === id ? newDoc : doc)) })),

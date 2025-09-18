@@ -9,6 +9,7 @@ import useISOClauseStore from "@/stores/iso-clause/useISOClauseStore";
 import { AddISOClauseFormData } from "@/templates/iso-clauses/forms/AddISOClauseForm";
 import { EditISOClauseFormData } from "@/templates/iso-clauses/forms/EditISOClauseForm";
 import { isEqual } from "lodash";
+import { useDebounce } from "../use-debounce";
 
 // -----------------------------
 // Fetch Document Types
@@ -34,6 +35,19 @@ export const useFetchISOClauses = () => {
 
     return query;
 };
+
+// Search
+export const useSearchIsoClauses = () => {
+    const { query } = useISOClauseStore();
+    const debounceQuery = useDebounce(query, 500);
+    return useQuery<ISOClause[], ApiAxiosError>({
+        queryKey: ["isoClauses", "search", debounceQuery],
+        queryFn: async () => (await isoClauseService.search(debounceQuery)).data,
+        staleTime: 1000 * 30,
+        // enabled: !!debounceQuery,
+    });
+};
+
 
 // -----------------------------
 // Get Document Type by ID

@@ -33,6 +33,7 @@ interface SelectWithButtonProps {
     onButtonClick?: () => void; // when add button clicked
     className?: string;
     hasError?: boolean;
+    onChangeSearch?: (value: string) => void
 }
 
 function normalize(str: string) {
@@ -51,6 +52,7 @@ export function SelectWithButton({
     onButtonClick,
     className,
     hasError = false,
+    onChangeSearch
 }: SelectWithButtonProps) {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("");
@@ -102,12 +104,13 @@ export function SelectWithButton({
                     className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
                     align="start"
                 >
-                    <Command>
+                    <Command {...onChangeSearch && { filter: () => 1 }}>
                         <CommandInput
                             placeholder={t("components.selectWithButton.search.placeholder")}
                             value={search}
                             onValueChange={setSearch}
                             onKeyDown={(e) => e.stopPropagation()} // prevent blur
+                            onInput={(e) => onChangeSearch?.(e.currentTarget.value)}
                         />
                         <CommandList>
                             <CommandEmpty>{t("components.selectWithButton.noResults")}</CommandEmpty>

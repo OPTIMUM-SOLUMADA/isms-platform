@@ -82,6 +82,17 @@ export class ISOClauseController {
         }
     }
 
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const clauses = await service.search(normalizedQ);
+            return res.json(clauses);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
     async initialize(req: Request, res: Response) {
         try {
             const clauses = await service.init();

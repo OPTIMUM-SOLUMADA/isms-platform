@@ -104,6 +104,27 @@ export class ISOClauseService {
         };
     }
 
+    async search(query: string) {
+        return prisma.iSOClause.findMany({
+            where: {
+                ...(query && {
+                    OR: [
+                        { code: { contains: query, mode: 'insensitive' } },
+                        { name: { contains: query, mode: 'insensitive' } },
+                        { description: { contains: query, mode: 'insensitive' } },
+                    ],
+                }),
+            },
+            select: {
+                id: true,
+                code: true,
+                name: true,
+                description: true,
+            },
+            take: 20,
+        });
+    }
+
     async init() {
         const isoClausesList = [
             {
