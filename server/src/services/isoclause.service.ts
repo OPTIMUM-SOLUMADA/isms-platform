@@ -71,6 +71,39 @@ export class ISOClauseService {
         });
     }
 
+    async list({
+        filter,
+        page = 1,
+        limit = 20,
+        orderBy = { createdAt: 'desc' },
+    }: {
+        filter?: Prisma.ISOClauseWhereInput;
+        page?: number;
+        limit?: number;
+        orderBy?: Prisma.ISOClauseOrderByWithRelationInput;
+    }) {
+        const total = await prisma.iSOClause.count();
+        const iSOClauses = await prisma.iSOClause.findMany({
+            include: includes,
+            where: filter || {},
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+        });
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            iSOClauses,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+            },
+        };
+    }
+
     async init() {
         const isoClausesList = [
             {

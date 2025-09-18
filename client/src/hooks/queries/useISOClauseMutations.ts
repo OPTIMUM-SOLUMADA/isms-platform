@@ -8,22 +8,29 @@ import { isoClauseService } from "@/services/isoClauseService";
 import useISOClauseStore from "@/stores/iso-clause/useISOClauseStore";
 import { AddISOClauseFormData } from "@/templates/iso-clauses/forms/AddISOClauseForm";
 import { EditISOClauseFormData } from "@/templates/iso-clauses/forms/EditISOClauseForm";
+import { isEqual } from "lodash";
 
 // -----------------------------
 // Fetch Document Types
 // -----------------------------
 export const useFetchISOClauses = () => {
-    const { page, limit, setIsoClauses } = useISOClauseStore();
+    const { pagination, setPagination, setIsoClauses } = useISOClauseStore();
 
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["isoClauses", page, limit],
-        queryFn: () => isoClauseService.list({ page, limit }),
+        queryKey: ["isoClauses", pagination.page, pagination.limit],
+        queryFn: () => isoClauseService.list(pagination),
         staleTime: 1000 * 60 * 2,
     });
 
     useEffect(() => {
-        if (query.data) setIsoClauses(query.data.data);
-    }, [query.data, setIsoClauses]);
+        if (query.data) {
+            const { iSOClauses, pagination: newP } = query.data.data;
+            setIsoClauses(iSOClauses);
+            if (!isEqual(pagination, newP)) {
+                setPagination(newP);
+            }
+        }
+    }, [query.data, setIsoClauses, pagination, setPagination]);
 
     return query;
 };
@@ -45,6 +52,7 @@ export const useCreateISOClause = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { push } = useISOClauseStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, AddISOClauseFormData>({
         mutationFn: async (data) => {
@@ -58,6 +66,7 @@ export const useCreateISOClause = () => {
             });
             const newISO = res.data as ISOClause;
             push(newISO);
+            queryClient.invalidateQueries({ queryKey: ["isoClauses"] });
         },
         onError: () => {
             toast({
@@ -90,6 +99,7 @@ export const useUpdateISOClause = () => {
             });
             replace(vars.id, updatedDocType);
             queryClient.invalidateQueries({ queryKey: ["documentTypes"] });
+            queryClient.invalidateQueries({ queryKey: ["isoClauses"] });
         },
         onError: () => {
             toast({

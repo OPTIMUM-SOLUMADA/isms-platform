@@ -28,9 +28,13 @@ export class ISOClauseController {
         }
     }
 
-    async findAll(_req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         try {
-            const clauses = await service.findAll();
+            const { page = '1', limit = '20' } = req.query;
+            const clauses = await service.list({
+                page: Number(page),
+                limit: Number(limit),
+            });
             return res.json(clauses);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
