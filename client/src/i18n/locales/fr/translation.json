@@ -1319,7 +1319,9 @@
                 "placeholder": "Sélectionner des utilisateurs",
                 "search": "Rechercher des utilisateurs...",
                 "empty": "Aucun utilisateur trouvé.",
-                "addNew": "Ajouter un nouvel utilisateur"
+                "addNew": "Ajouter un nouvel utilisateur",
+                "loading": "Chargement des utilisateurs...",
+                "searching": "Recherche des utilisateurs..."
             }
         },
         "document": {

@@ -13,6 +13,10 @@ import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import useUserStore from '@/stores/user/useUserStore';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 import useDocumentTypeStore from '@/stores/document-type/useDocumentTypeStore';
+import { useFetchDepartments } from '@/hooks/queries/useDepartmentMutations';
+import { useFetchDocumentTypes } from '@/hooks/queries/useDocumentTypeMutations';
+import { useFetchUsers } from '@/hooks/queries/useUserMutations';
+import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -22,6 +26,12 @@ export default function DocumentAddPage() {
   const { users } = useUserStore();
   const { departments } = useDepartmentStore();
   const { create, isCreating } = useDocument();
+
+  // data need to be fetched
+  useFetchDepartments();
+  useFetchDocumentTypes();
+  useFetchUsers();
+  useFetchISOClauses();
 
   const formRef = useRef<AddDocumentFormRef>(null);
 

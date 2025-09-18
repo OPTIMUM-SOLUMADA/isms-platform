@@ -26,8 +26,8 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { userRoleColors } from '@/constants/color';
 import useUserStore from '@/stores/user/useUserStore';
-import { useUser } from '@/contexts/UserContext';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
+import { useFetchUsers } from '@/hooks/queries/useUserMutations';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -40,7 +40,7 @@ export default function UserManagementPage() {
   const { hasActionPermission } = usePermissions();
 
   const { users } = useUserStore();
-  const { isLoading } = useUser();
+  const { isLoading } = useFetchUsers();
 
   const { departments } = useDepartmentStore();
 

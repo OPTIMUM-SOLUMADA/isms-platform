@@ -23,12 +23,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ReviewForm from "@/templates/reviews/forms/ReviewForm";
-import { useUser } from "@/contexts/UserContext";
 import { useDocument } from "@/contexts/DocumentContext";
 // import { ReviewFormData } from "@/templates/forms/Review/ReviewForm";
 import { useToast } from "@/hooks/use-toast";
 import { useViewer } from "@/contexts/DocumentReviewContext";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "@/stores/user/useUserStore";
 
 export default function ReviewWorkflowPage() {
 
@@ -38,7 +38,7 @@ export default function ReviewWorkflowPage() {
   const [filterPriority] = useState("all");
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { users } = useUser();
+  const { users } = useUserStore();
   const { documents } = useDocument();
 
   const { toast } = useToast();

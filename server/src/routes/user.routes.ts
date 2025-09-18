@@ -6,6 +6,11 @@ import { userCreateSchema } from '@/validators/user.validator';
 const router = express.Router();
 const controller = new UserController();
 
+// search users
+router.get('/search', controller.search.bind(controller));
+// get user by ids
+router.get('/by-ids', controller.getUserByIds.bind(controller));
+
 router.post('/', validate(userCreateSchema), controller.create.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', controller.update.bind(controller));

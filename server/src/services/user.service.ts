@@ -93,11 +93,78 @@ export class UserService {
         });
     }
 
-    async listUsers(filter?: Prisma.UserWhereInput) {
+    async searchUsers(query: string) {
         return prisma.user.findMany({
-            ...(filter ? { where: filter } : {}),
-            include: {
-                ...userIncludes,
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { email: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isActive: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+            take: 10,
+        });
+    }
+
+    async listUsers({
+        filter,
+        page = 1,
+        limit = 20,
+        orderBy = { createdAt: 'desc' },
+    }: {
+        filter?: Prisma.UserWhereInput;
+        page?: number;
+        limit?: number;
+        orderBy?: Prisma.UserOrderByWithRelationInput;
+    }) {
+        return prisma.user.findMany({
+            where: filter || {},
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isActive: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+    }
+
+    async getUsersByIds(ids: string[]) {
+        return prisma.user.findMany({
+            where: { id: { in: ids } },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isActive: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
         });
     }
