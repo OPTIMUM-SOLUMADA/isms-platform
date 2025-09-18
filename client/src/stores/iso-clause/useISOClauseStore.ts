@@ -16,6 +16,11 @@ interface IsoClausestate {
 
     limit: number;
     setLimit: (limit: number) => void;
+
+    // CRUD
+    push: (doc: ISOClause) => void;
+    replace: (id: string, newDoc: ISOClause) => void;
+    remove: (id: string) => void;
 }
 
 const useISOClauseStore = create<IsoClausestate>((set) => ({
@@ -30,6 +35,10 @@ const useISOClauseStore = create<IsoClausestate>((set) => ({
 
     limit: 50,
     setLimit: (limit) => set({ limit }),
+
+    push: (doc) => set((state) => ({ isoClauses: [...state.isoClauses, doc] })),
+    replace: (id, newDoc) => set((state) => ({ isoClauses: state.isoClauses.map((doc) => (doc.id === id ? newDoc : doc)) })),
+    remove: (id) => set((state) => ({ isoClauses: state.isoClauses.filter((doc) => doc.id !== id) })),
 }));
 
 export default useISOClauseStore;

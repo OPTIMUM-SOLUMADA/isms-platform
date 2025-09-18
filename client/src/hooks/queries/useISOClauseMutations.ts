@@ -5,10 +5,9 @@ import type { ApiAxiosError } from "@/types/api";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { isoClauseService } from "@/services/isoClauseService";
-import { useDocumentTypeStore } from "@/stores/document-type/useDocumentTypeStore";
-import { AddDocumentTypeFormData } from "@/templates/document-types/forms/AddDocumentTypeForm";
-import { EditDocumentTypeFormData } from "@/templates/document-types/forms/EditDocumentTypeForm";
 import useISOClauseStore from "@/stores/iso-clause/useISOClauseStore";
+import { AddISOClauseFormData } from "@/templates/iso-clauses/forms/AddISOClauseForm";
+import { EditISOClauseFormData } from "@/templates/iso-clauses/forms/EditISOClauseForm";
 
 // -----------------------------
 // Fetch Document Types
@@ -32,7 +31,7 @@ export const useFetchISOClauses = () => {
 // -----------------------------
 // Get Document Type by ID
 // -----------------------------
-export const useGetDocumentType = () => {
+export const useGetISOClause = () => {
     return useMutation<ISOClause, ApiAxiosError, { id: string }>({
         mutationFn: async ({ id }) => (await isoClauseService.getById(id)).data,
         mutationKey: ["isoClauses", "get"],
@@ -42,29 +41,28 @@ export const useGetDocumentType = () => {
 // -----------------------------
 // Create Document Type
 // -----------------------------
-export const useCreateDocumentType = () => {
+export const useCreateISOClause = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
-    const { setDocumentTypes, documentTypes } = useDocumentTypeStore();
-    const queryClient = useQueryClient();
+    const { push } = useISOClauseStore();
 
-    return useMutation<DocumentType, ApiAxiosError, AddDocumentTypeFormData>({
+    return useMutation<any, ApiAxiosError, AddISOClauseFormData>({
         mutationFn: async (data) => {
-            return (await isoClauseService.create(data)).data;
+            return isoClauseService.create(data);
         },
-        onSuccess: (newDocType) => {
+        onSuccess: (res) => {
             toast({
-                title: t("documentType.forms.add.toast.success.title"),
-                description: t("documentType.forms.add.toast.success.description"),
+                title: t("isoClause.forms.add.toast.success.title"),
+                description: t("isoClause.forms.add.toast.success.description"),
                 variant: "success",
             });
-            setDocumentTypes([...documentTypes, newDocType]);
-            queryClient.invalidateQueries({ queryKey: ["documentTypes"] });
+            const newISO = res.data as ISOClause;
+            push(newISO);
         },
         onError: () => {
             toast({
-                title: t("documentType.forms.add.toast.error.title"),
-                description: t("documentType.forms.add.toast.error.description"),
+                title: t("isoClause.forms.add.toast.error.title"),
+                description: t("isoClause.forms.add.toast.error.description"),
                 variant: "destructive",
             });
         },
@@ -74,30 +72,29 @@ export const useCreateDocumentType = () => {
 // -----------------------------
 // Update Document Type
 // -----------------------------
-export const useUpdateDocumentType = () => {
+export const useUpdateISOClause = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
-    const setDocumentTypes = useDocumentTypeStore((s) => s.setDocumentTypes);
-    const docTypes = useDocumentTypeStore((s) => s.documentTypes);
+    const { replace } = useISOClauseStore();
     const queryClient = useQueryClient();
 
-    return useMutation<DocumentType, ApiAxiosError, { id: string; data: Partial<EditDocumentTypeFormData> }>({
+    return useMutation<ISOClause, ApiAxiosError, { id: string; data: Partial<EditISOClauseFormData> }>({
         mutationFn: async ({ id, data }) => {
             return (await isoClauseService.update(id, data)).data;
         },
         onSuccess: (updatedDocType, vars) => {
             toast({
-                title: t("documentType.forms.edit.toast.success.title"),
-                description: t("documentType.forms.edit.toast.success.description"),
+                title: t("isoClause.forms.edit.toast.success.title"),
+                description: t("isoClause.forms.edit.toast.success.description"),
                 variant: "success",
             });
-            setDocumentTypes(docTypes.map((d) => (d.id === vars.id ? updatedDocType : d)));
+            replace(vars.id, updatedDocType);
             queryClient.invalidateQueries({ queryKey: ["documentTypes"] });
         },
         onError: () => {
             toast({
-                title: t("documentType.forms.edit.toast.error.title"),
-                description: t("documentType.forms.edit.toast.error.description"),
+                title: t("isoClause.forms.edit.toast.error.title"),
+                description: t("isoClause.forms.edit.toast.error.description"),
                 variant: "destructive",
             });
         },
@@ -107,28 +104,27 @@ export const useUpdateDocumentType = () => {
 // -----------------------------
 // Delete Document Type
 // -----------------------------
-export const useDeleteDocumentType = () => {
+export const useDeleteISOClause = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
-    const setDocumentTypes = useDocumentTypeStore((s) => s.setDocumentTypes);
-    const docTypes = useDocumentTypeStore((s) => s.documentTypes);
+    const { remove } = useISOClauseStore();
     const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: async ({ id }) => await isoClauseService.delete(id),
         onSuccess: (_, vars) => {
             toast({
-                title: t("documentType.forms.delete.toast.success.title"),
-                description: t("documentType.forms.delete.toast.success.description"),
+                title: t("isoClause.forms.delete.toast.success.title"),
+                description: t("isoClause.forms.delete.toast.success.description"),
                 variant: "success",
             });
-            setDocumentTypes(docTypes.filter((d) => d.id !== vars.id));
-            queryClient.invalidateQueries({ queryKey: ["documentTypes"] });
+            remove(vars.id);
+            queryClient.invalidateQueries({ queryKey: ["isoClauses"] });
         },
         onError: () => {
             toast({
-                title: t("documentType.forms.delete.toast.error.title"),
-                description: t("documentType.forms.delete.toast.error.description"),
+                title: t("isoClause.forms.delete.toast.error.title"),
+                description: t("isoClause.forms.delete.toast.error.description"),
                 variant: "destructive",
             });
         },

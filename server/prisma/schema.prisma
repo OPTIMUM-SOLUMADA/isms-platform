@@ -85,6 +85,7 @@ model User {
   invitationsSent      Invitation[]   @relation("InvitationsSent")
   createdDocumentTypes DocumentType[] @relation("CreatedDocumentTypes")
   createdDepartments   Department[]   @relation("CreatedDepartments")
+  createdISOClauses    ISOClause[]    @relation("CreatedISOClauses")
 
   @@index([email, isActive])
   @@index([role])
@@ -213,6 +214,9 @@ model ISOClause {
   name        String
   description String?
   documents   Document[]
+
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation(name: "CreatedISOClauses", fields: [createdById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

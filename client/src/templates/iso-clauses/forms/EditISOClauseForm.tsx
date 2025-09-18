@@ -11,40 +11,46 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-const addSchema = z.object({
+const schema = z.object({
+    id: z.string(),
     userId: z.string().optional(),
     code: z.string().nonempty(i18n.t("zod.errors.required")),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
 
-export type AddISOClauseFormData = z.infer<typeof addSchema>;
+export type EditISOClauseFormData = z.infer<typeof schema>;
 
-type AddISOClauseFormProps = CustomFormProps<AddISOClauseFormData> & {
+type EditISOClauseFormProps = CustomFormProps<EditISOClauseFormData> & {
     userId?: string;
+    defaultValue: Partial<EditISOClauseFormData>;
 };
 
-const AddISOClauseForm = ({
+const EditISOClauseForm = ({
+    defaultValue,
     onSubmit,
     onCancel,
     isPending = false,
     userId,
     error
-}: AddISOClauseFormProps) => {
+}: EditISOClauseFormProps) => {
     const { t } = useTranslation();
 
-    const form = useForm<AddISOClauseFormData>({
-        resolver: zodResolver(addSchema),
+    const form = useForm<EditISOClauseFormData>({
+        resolver: zodResolver(schema),
         defaultValues: {
             userId,
-            code: "",
-            name: "",
-            description: "",
+            id: defaultValue.id,
+            code: defaultValue.code,
+            name: defaultValue.name,
+            description: defaultValue.description,
         },
     })
 
     const {
-        handleSubmit
+        handleSubmit,
+        formState: { isDirty },
+        reset
     } = form;
 
     return (
@@ -56,10 +62,10 @@ const AddISOClauseForm = ({
                     name='name'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("isoClause.forms.add.name.label")}</FormLabel>
+                            <FormLabel>{t("isoClause.forms.edit.name.label")}</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t("isoClause.forms.add.name.placeholder")}
+                                    placeholder={t("isoClause.forms.edit.name.placeholder")}
                                     {...field}
                                     type="text"
                                     className="border rounded-lg px-3 py-2 w-full"
@@ -76,10 +82,10 @@ const AddISOClauseForm = ({
                     name='code'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("isoClause.forms.add.code.label")}</FormLabel>
+                            <FormLabel>{t("isoClause.forms.edit.code.label")}</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t("isoClause.forms.add.code.placeholder")}
+                                    placeholder={t("isoClause.forms.edit.code.placeholder")}
                                     {...field}
                                     type="text"
                                     className="border rounded-lg px-3 py-2 w-full"
@@ -97,9 +103,9 @@ const AddISOClauseForm = ({
                     name='description'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("isoClause.forms.add.description.label")}</FormLabel>
+                            <FormLabel>{t("isoClause.forms.edit.description.label")}</FormLabel>
                             <FormControl>
-                                <Textarea placeholder={t("isoClause.forms.add.description.placeholder")} {...field} />
+                                <Textarea placeholder={t("isoClause.forms.edit.description.placeholder")} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -111,21 +117,32 @@ const AddISOClauseForm = ({
                 <ErrorCodeField code={error} />
 
                 {/* actions */}
-                <div className="flex justify-end items-center gap-2 mt-6">
-                    <LoadingButton
-                        type="submit"
-                        loadingText={t('isoClause.forms.add.actions.submit.loading')}
-                        isLoading={isPending}
-                    >
-                        {t('isoClause.forms.add.actions.submit.label')}
-                    </LoadingButton>
+                <div className="flex justify-between items-center gap-2 mt-6">
                     <Button
                         type="button"
-                        variant="ghost"
-                        onClick={onCancel}
+                        variant="outline"
+                        onClick={() => reset(defaultValue)}
+                        disabled={!isDirty}
                     >
-                        {t('isoClause.forms.add.actions.cancel.label')}
+                        {t('isoClause.forms.edit.actions.reset.label')}
                     </Button>
+                    <div className="flex gap-2 items-center">
+                        <LoadingButton
+                            type="submit"
+                            loadingText={t('isoClause.forms.edit.actions.submit.loading')}
+                            isLoading={isPending}
+                            disabled={!isDirty}
+                        >
+                            {t('isoClause.forms.edit.actions.submit.label')}
+                        </LoadingButton>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={onCancel}
+                        >
+                            {t('isoClause.forms.edit.actions.cancel.label')}
+                        </Button>
+                    </div>
                 </div>
 
             </form>
@@ -134,4 +151,4 @@ const AddISOClauseForm = ({
 
 }
 
-export default AddISOClauseForm
+export default EditISOClauseForm

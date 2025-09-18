@@ -9,6 +9,15 @@ const includes: Prisma.ISOClauseInclude = {
             fileUrl: true,
         },
     },
+    createdBy: {
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+        },
+    },
 };
 
 export class ISOClauseService {
