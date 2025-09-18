@@ -14,7 +14,7 @@ import { useDebounce } from "../use-debounce";
 // Fetch Users
 // -----------------------------
 export const useFetchUsers = () => {
-    const { pagination, setUsers } = useUserStore();
+    const { pagination, setUsers, setPagination } = useUserStore();
     const query = useQuery<any, ApiAxiosError>({
         queryKey: ["users", pagination],
         queryFn: () => userService.list({ ...pagination }),
@@ -22,8 +22,12 @@ export const useFetchUsers = () => {
     });
 
     useEffect(() => {
-        if (query.data) setUsers(query.data.data);
-    }, [query.data, setUsers]);
+        if (query.data) {
+            const { users, pagination } = query.data.data;
+            setUsers(users);
+            setPagination(pagination);
+        };
+    }, [query.data, setUsers, setPagination]);
 
     return query;
 };

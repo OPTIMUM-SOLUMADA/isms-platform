@@ -129,7 +129,9 @@ export class UserService {
         limit?: number;
         orderBy?: Prisma.UserOrderByWithRelationInput;
     }) {
-        return prisma.user.findMany({
+        const total = await prisma.user.count();
+
+        const users = await prisma.user.findMany({
             where: filter || {},
             skip: (page - 1) * limit,
             take: limit,
@@ -148,6 +150,18 @@ export class UserService {
                 },
             },
         });
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            users,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+            },
+        };
     }
 
     async getUsersByIds(ids: string[]) {

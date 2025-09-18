@@ -24,6 +24,7 @@ import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useUserUIStore } from "@/stores/user/useUserUIStore";
 import { UserActivationSwitch } from "../actions/UserActivationSwitch";
+import useUserStore from "@/stores/user/useUserStore";
 
 interface UserActionsCell {
     user: User;
@@ -105,6 +106,7 @@ const Table = ({
 }: UserTableProps) => {
     const { t } = useTranslation();
     const { user: currentUser } = useAuth();
+    const { pagination, setPagination } = useUserStore();
 
     // Define columns for UserTable
     const userColumns: ColumnDef<User>[] = useMemo(() => [
@@ -205,6 +207,11 @@ const Table = ({
             )}
             className="flex-grow"
             isLoading={isLoading}
+            // pagination
+            page={pagination.page}
+            pageSize={pagination.limit}
+            totalCount={pagination.totalPages}
+            onPageChange={(page) => setPagination({ ...pagination, page })}
         />
     );
 }
