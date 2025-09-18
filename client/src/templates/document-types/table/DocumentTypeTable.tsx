@@ -12,6 +12,7 @@ import CellNoValue from "@/components/CellNoValue";
 import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
+import useDocumentTypeStore from "@/stores/document-type/useDocumentTypeStore";
 
 
 // UserTable component using the reusable DataTable
@@ -27,6 +28,7 @@ const Table = ({
     const { t } = useTranslation();
     const { openDelete, setCurrentDocumentType, openEdit } = useDocumentTypeUIStore();
     const { user: activeUser } = useAuth();
+    const { pagination, setPagination } = useDocumentTypeStore();
 
     // Define columns for UserTable
     const columns: ColumnDef<DocType>[] = useMemo(() => [
@@ -149,6 +151,11 @@ const Table = ({
             )}
             className="flex-grow"
             isLoading={isLoading}
+            // pagination
+            page={pagination.page}
+            pageSize={pagination.limit}
+            totalCount={pagination.totalPages}
+            onPageChange={(page) => setPagination({ ...pagination, page })}
         />
     );
 }

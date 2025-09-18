@@ -63,6 +63,39 @@ export class DocumentTypeService {
         });
     }
 
+    async list({
+        filter,
+        page = 1,
+        limit = 20,
+        orderBy = { createdAt: 'desc' },
+    }: {
+        filter?: Prisma.DocumentTypeWhereInput;
+        page?: number;
+        limit?: number;
+        orderBy?: Prisma.DocumentTypeOrderByWithRelationInput;
+    }) {
+        const total = await prisma.documentType.count();
+        const documentTypes = await prisma.documentType.findMany({
+            include: includes,
+            where: filter || {},
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+        });
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            documentTypes,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+            },
+        };
+    }
+
     async init() {
         const documentTypesList = [
             { name: 'Policy', description: '' },

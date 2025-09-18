@@ -27,9 +27,13 @@ export class DocumentTypeController {
         }
     }
 
-    async findAll(_req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         try {
-            const types = await service.findAll();
+            const { limit = '50', page = '1' } = req.query;
+            const types = await service.list({
+                page: Number(page),
+                limit: Number(limit),
+            });
             return res.json(types);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });

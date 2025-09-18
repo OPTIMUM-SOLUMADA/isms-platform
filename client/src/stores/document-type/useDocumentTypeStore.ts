@@ -1,4 +1,5 @@
 import type { DocumentType } from '@/types';
+import { Pagination } from '@/types/pagination';
 import { create } from 'zustand';
 
 type DocumentTypeStore = {
@@ -15,6 +16,10 @@ type DocumentTypeStore = {
     setPage: (page: number) => void;
     limit: number;
     setLimit: (limit: number) => void;
+
+    // pagination
+    pagination: Pagination;
+    setPagination: (pagination: Pagination) => void;
 };
 
 export const useDocumentTypeStore = create<DocumentTypeStore>((set) => ({
@@ -36,6 +41,9 @@ export const useDocumentTypeStore = create<DocumentTypeStore>((set) => ({
     setPage: (page) => set({ page }),
     limit: 50,
     setLimit: (limit) => set({ limit }),
+
+    pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
+    setPagination: (pagination) => set({ pagination }),
 }));
 
 export default useDocumentTypeStore;

@@ -8,22 +8,29 @@ import { documentTypeService } from "@/services/documenttypeService";
 import { useDocumentTypeStore } from "@/stores/document-type/useDocumentTypeStore";
 import { AddDocumentTypeFormData } from "@/templates/document-types/forms/AddDocumentTypeForm";
 import { EditDocumentTypeFormData } from "@/templates/document-types/forms/EditDocumentTypeForm";
+import { isEqual } from "lodash";
 
 // -----------------------------
 // Fetch Document Types
 // -----------------------------
 export const useFetchDocumentTypes = () => {
-    const { page, limit, setDocumentTypes } = useDocumentTypeStore();
+    const { pagination, setPagination, setDocumentTypes } = useDocumentTypeStore();
 
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["documentTypes", page, limit],
-        queryFn: () => documentTypeService.list({ page, limit }),
+        queryKey: ["documentTypes", pagination.page, pagination.limit],
+        queryFn: () => documentTypeService.list(pagination),
         staleTime: 1000 * 60 * 2,
     });
 
     useEffect(() => {
-        if (query.data) setDocumentTypes(query.data.data);
-    }, [query.data, setDocumentTypes]);
+        if (query.data) {
+            const { documentTypes, pagination: newP } = query.data.data;
+            setDocumentTypes(documentTypes);
+            if (!isEqual(pagination, newP)) {
+                setPagination(newP);
+            }
+        }
+    }, [query.data, setDocumentTypes, pagination, setPagination]);
 
     return query;
 };
