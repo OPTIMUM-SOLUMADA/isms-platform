@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Department } from "@/types";
+import type { Pagination } from "@/types/pagination";
 
 interface DepartmentState {
     departments: Department[];
@@ -9,6 +10,9 @@ interface DepartmentState {
     // CRUD
     deleteDepartment: (id: string) => void;
     replaceDepartement: (id: string, department: Department) => void;
+    // pagination
+    pagination: Pagination;
+    setPagination: (pagination: Pagination) => void;
 }
 
 const useDepartmentStore = create<DepartmentState>((set) => ({
@@ -18,7 +22,10 @@ const useDepartmentStore = create<DepartmentState>((set) => ({
     setCurrentDepartment: (department) => set({ currentDepartment: department }),
 
     deleteDepartment: (id: string) => set((state) => ({ departments: state.departments.filter((dep) => dep.id !== id) })),
-    replaceDepartement: (id: string, department: Department) => set((state) => ({ departments: state.departments.map((dep) => dep.id === id ? department : dep) }))
+    replaceDepartement: (id: string, department: Department) => set((state) => ({ departments: state.departments.map((dep) => dep.id === id ? department : dep) })),
+
+    pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
+    setPagination: (pagination) => set({ pagination }),
 }));
 
 export default useDepartmentStore;

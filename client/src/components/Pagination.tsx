@@ -3,18 +3,16 @@ import { Button } from "./ui/button";
 
 export const Pagination = ({
     page,
-    pageSize,
     totalCount,
     onPageChange,
 }: {
     table: any;
     page: number;
-    pageSize: number;
     totalCount: number;
     onPageChange: (page: number) => void;
 }) => {
     const { t } = useTranslation();
-    const pageCount = Math.ceil(totalCount / pageSize);
+    const pageCount = totalCount;
 
     const maxButtons = 5;
 
@@ -56,30 +54,25 @@ export const Pagination = ({
         </div>
     );
 };
-
 const getPageButtons = (currentPage: number, totalPages: number, maxButtons = 3) => {
     const pages: (number | "…")[] = [];
 
-    if (totalPages <= maxButtons) {
+    if (totalPages <= maxButtons + 2) {
         for (let i = 1; i <= totalPages; i++) pages.push(i);
         return pages;
     }
 
     const half = Math.floor(maxButtons / 2);
-    let start = Math.max(currentPage - half, 1);
-    let end = Math.min(currentPage + half, totalPages);
+    const start = Math.max(currentPage - half, 2);
+    const end = Math.min(currentPage + half, totalPages - 1);
 
-    // Adjust if near edges
-    if (currentPage <= half) end = maxButtons;
-    if (currentPage + half > totalPages) start = totalPages - maxButtons + 1;
-
-    if (start > 1) pages.push(1);
-    if (start > 2) pages.push("…");
+    if (start > 2) pages.push(1, "…");
+    else pages.push(1);
 
     for (let i = start; i <= end; i++) pages.push(i);
 
-    if (end < totalPages - 1) pages.push("…");
-    if (end < totalPages) pages.push(totalPages);
+    if (end < totalPages - 1) pages.push("…", totalPages);
+    else pages.push(totalPages);
 
     return pages;
 };

@@ -61,6 +61,7 @@ export const useCreateUser = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { pushUser } = useUserStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, AddUserFormData>({
         mutationFn: (data) => userService.create(data),
@@ -72,6 +73,7 @@ export const useCreateUser = () => {
             });
             const newUser = res.data as User;
             pushUser(newUser);
+            queryClient.invalidateQueries({ queryKey: ["users"] });
         },
         onError: () => {
             toast({
