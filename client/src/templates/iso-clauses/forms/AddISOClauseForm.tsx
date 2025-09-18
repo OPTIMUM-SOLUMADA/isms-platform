@@ -11,44 +11,40 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-const editDepartmentSchema = z.object({
-    id: z.string(),
+const addSchema = z.object({
     userId: z.string().optional(),
+    code: z.string().nonempty(i18n.t("zod.errors.required")),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
 
-export type EditDepartmentFormData = z.infer<typeof editDepartmentSchema>;
+export type AddISOClauseFormData = z.infer<typeof addSchema>;
 
-type EditDepartmentFormProps = CustomFormProps<EditDepartmentFormData> & {
-    defaultValues: Partial<EditDepartmentFormData>;
+type AddISOClauseFormProps = CustomFormProps<AddISOClauseFormData> & {
     userId?: string;
 };
 
-const EditDepartmentForm = ({
-    defaultValues,
+const AddISOClauseForm = ({
     onSubmit,
     onCancel,
     isPending = false,
     userId,
     error
-}: EditDepartmentFormProps) => {
+}: AddISOClauseFormProps) => {
     const { t } = useTranslation();
 
-    const form = useForm<EditDepartmentFormData>({
-        resolver: zodResolver(editDepartmentSchema),
+    const form = useForm<AddISOClauseFormData>({
+        resolver: zodResolver(addSchema),
         defaultValues: {
-            id: defaultValues.id,
-            userId: userId,
-            name: defaultValues.name,
-            description: defaultValues.description,
+            userId,
+            code: "",
+            name: "",
+            description: "",
         },
-    });
+    })
 
     const {
-        handleSubmit,
-        reset,
-        formState: { isDirty }
+        handleSubmit
     } = form;
 
     return (
@@ -60,10 +56,30 @@ const EditDepartmentForm = ({
                     name='name'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("department.forms.edit.name.label")}</FormLabel>
+                            <FormLabel>{t("isoClause.forms.add.name.label")}</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={t("department.forms.edit.name.placeholder")}
+                                    placeholder={t("isoClause.forms.add.name.placeholder")}
+                                    {...field}
+                                    type="text"
+                                    className="border rounded-lg px-3 py-2 w-full"
+                                    hasError={!!error}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                {/* name */}
+                <FormField
+                    control={form.control}
+                    name='code'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t("isoClause.forms.add.code.label")}</FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder={t("isoClause.forms.add.code.placeholder")}
                                     {...field}
                                     type="text"
                                     className="border rounded-lg px-3 py-2 w-full"
@@ -81,9 +97,9 @@ const EditDepartmentForm = ({
                     name='description'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t("department.forms.edit.description.label")}</FormLabel>
+                            <FormLabel>{t("isoClause.forms.add.description.label")}</FormLabel>
                             <FormControl>
-                                <Textarea placeholder={t("department.forms.edit.description.placeholder")} {...field} />
+                                <Textarea placeholder={t("isoClause.forms.add.description.placeholder")} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -95,32 +111,21 @@ const EditDepartmentForm = ({
                 <ErrorCodeField code={error} />
 
                 {/* actions */}
-                <div className="flex justify-between items-center gap-2 mt-6">
+                <div className="flex justify-end items-center gap-2 mt-6">
+                    <LoadingButton
+                        type="submit"
+                        loadingText={t('isoClause.forms.add.actions.submit.loading')}
+                        isLoading={isPending}
+                    >
+                        {t('isoClause.forms.add.actions.submit.label')}
+                    </LoadingButton>
                     <Button
                         type="button"
-                        variant="outline"
-                        onClick={() => reset(defaultValues)}
-                        disabled={!isDirty}
+                        variant="ghost"
+                        onClick={onCancel}
                     >
-                        {t('department.forms.edit.actions.reset.label')}
+                        {t('isoClause.forms.add.actions.cancel.label')}
                     </Button>
-                    <div className="flex gap-2 items-center">
-                        <LoadingButton
-                            type="submit"
-                            loadingText={t('department.forms.edit.actions.submit.loading')}
-                            isLoading={isPending}
-                            disabled={!isDirty}
-                        >
-                            {t('department.forms.edit.actions.submit.label')}
-                        </LoadingButton>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={onCancel}
-                        >
-                            {t('department.forms.edit.actions.cancel.label')}
-                        </Button>
-                    </div>
                 </div>
 
             </form>
@@ -129,4 +134,4 @@ const EditDepartmentForm = ({
 
 }
 
-export default EditDepartmentForm
+export default AddISOClauseForm

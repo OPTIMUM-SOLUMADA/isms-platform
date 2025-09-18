@@ -1,15 +1,37 @@
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { ISOClause, Prisma } from '@prisma/client';
 
+const includes: Prisma.ISOClauseInclude = {
+    documents: {
+        select: {
+            id: true,
+            title: true,
+            fileUrl: true,
+        },
+    },
+    createdBy: {
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+        },
+    },
+};
+
 export class ISOClauseService {
     async create(data: Prisma.ISOClauseCreateInput): Promise<ISOClause> {
         return prisma.iSOClause.create({
             data,
+            include: includes,
         });
     }
 
     async findAll(): Promise<ISOClause[]> {
-        const clauses = await prisma.iSOClause.findMany();
+        const clauses = await prisma.iSOClause.findMany({
+            include: includes,
+        });
 
         const isoClausesList = clauses.sort((a, b) => {
             // take the part after the dot and convert to number
@@ -24,14 +46,13 @@ export class ISOClauseService {
     async findByCode(code: string): Promise<ISOClause | null> {
         return prisma.iSOClause.findUnique({
             where: { code },
-            include: { documents: true },
         });
     }
 
     async findById(id: string): Promise<ISOClause | null> {
         return prisma.iSOClause.findUnique({
             where: { id },
-            include: { documents: true },
+            include: includes,
         });
     }
 
@@ -39,12 +60,14 @@ export class ISOClauseService {
         return prisma.iSOClause.update({
             where: { id },
             data,
+            include: includes,
         });
     }
 
     async delete(id: string): Promise<ISOClause> {
         return prisma.iSOClause.delete({
             where: { id },
+            include: includes,
         });
     }
 

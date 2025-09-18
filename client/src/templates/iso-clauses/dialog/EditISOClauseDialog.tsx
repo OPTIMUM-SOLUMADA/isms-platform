@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { useCreateDocumentType } from "@/hooks/queries/useDocumentTypeMutations";
-import AddDocumentTypeForm, { AddDocumentTypeFormData } from "../forms/AddDocumentTypeForm";
 import {
     Sheet,
     SheetContent,
@@ -9,26 +7,32 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/AuthContext";
+import { useUpdateISOClause } from "@/hooks/queries/useISOClauseMutations";
+import EditISOClauseForm, { EditISOClauseFormData } from "../forms/EditISOClauseForm";
+import { ISOClause } from "@/types";
 
 interface Props {
-    open: boolean,
-    onOpenChange: (open: boolean) => void
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    isoClause: ISOClause;
 }
-const AddDocumentTypeDialog = ({
+const EditISOClauseDialog = ({
     open,
-    onOpenChange
+    onOpenChange,
+    isoClause,
 }: Props) => {
     const { t } = useTranslation();
     const { user } = useAuth();
 
     const {
-        mutate: create,
+        mutate: update,
         isPending,
         error,
-    } = useCreateDocumentType();
+    } = useUpdateISOClause();
 
-    const handleCreate = (data: AddDocumentTypeFormData) => {
-        create(data, {
+    const handleUpdate = (data: EditISOClauseFormData) => {
+        const { id, ...rest } = data;
+        update({ id, data: rest }, {
             onSuccess: () => {
                 onOpenChange(false);
             }
@@ -39,14 +43,15 @@ const AddDocumentTypeDialog = ({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>{t("documentType.forms.add.title")}</SheetTitle>
+                    <SheetTitle>{t("isoClause.forms.edit.title")}</SheetTitle>
                     <SheetDescription>
-                        {t("documentType.forms.add.subtitle")}
+                        {t("isoClause.forms.edit.subtitle")}
                     </SheetDescription>
                 </SheetHeader>
 
-                <AddDocumentTypeForm
-                    onSubmit={handleCreate}
+                <EditISOClauseForm
+                    defaultValue={isoClause}
+                    onSubmit={handleUpdate}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
@@ -57,5 +62,5 @@ const AddDocumentTypeDialog = ({
     )
 };
 
-export default AddDocumentTypeDialog
+export default EditISOClauseDialog
 

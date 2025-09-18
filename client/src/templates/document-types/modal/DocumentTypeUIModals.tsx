@@ -10,17 +10,22 @@ export const DocumentTypeUIModals = () => {
         isDeleteOpen,
         isEditOpen,
         closeDelete,
+        closeEdit,
         currentDocumentType,
         setCurrentDocumentType
     } = useDocumentTypeUIStore();
 
     function handleCloseDelete() {
         closeDelete();
-        setCurrentDocumentType(null);
+        clear();
     }
     function handleCloseEdit() {
-        closeDelete();
-        setCurrentDocumentType(null);
+        closeEdit();
+        clear();
+    }
+
+    function clear() {
+        setTimeout(() => setCurrentDocumentType(null), 1000);
     }
 
     return (

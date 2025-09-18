@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { useISOClause } from '@/contexts/ISOClauseContext';
-import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
@@ -17,12 +16,13 @@ import ItemNotFound from '../ItemNotFound';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import useUserStore from '@/stores/user/useUserStore';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
+import useDocumentTypeStore from '@/stores/document-type/useDocumentTypeStore';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
     const { updateDocument, isUpdating } = useDocument();
     const { clauses } = useISOClause();
-    const { types } = useDocumentType();
+    const { documentTypes } = useDocumentTypeStore();
     const { users } = useUserStore();
     const { departments } = useDepartmentStore();
     const navigate = useNavigate();
@@ -101,7 +101,7 @@ export default function DocumentEditPage() {
                             doc={doc!}
                             ref={formRef}
                             isoClauses={clauses}
-                            types={types}
+                            types={documentTypes}
                             users={users}
                             departments={departments}
                             onSubmit={handleUpdateDocument}

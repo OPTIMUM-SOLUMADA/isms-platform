@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { useCreateDocumentType } from "@/hooks/queries/useDocumentTypeMutations";
-import AddDocumentTypeForm, { AddDocumentTypeFormData } from "../forms/AddDocumentTypeForm";
 import {
     Sheet,
     SheetContent,
@@ -9,12 +7,14 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/AuthContext";
+import { useCreateISOClause } from "@/hooks/queries/useISOClauseMutations";
+import AddISOClauseForm, { AddISOClauseFormData } from "../forms/AddISOClauseForm";
 
 interface Props {
     open: boolean,
     onOpenChange: (open: boolean) => void
 }
-const AddDocumentTypeDialog = ({
+const AddISOClauseDialog = ({
     open,
     onOpenChange
 }: Props) => {
@@ -25,9 +25,9 @@ const AddDocumentTypeDialog = ({
         mutate: create,
         isPending,
         error,
-    } = useCreateDocumentType();
+    } = useCreateISOClause();
 
-    const handleCreate = (data: AddDocumentTypeFormData) => {
+    const handleCreate = (data: AddISOClauseFormData) => {
         create(data, {
             onSuccess: () => {
                 onOpenChange(false);
@@ -39,13 +39,13 @@ const AddDocumentTypeDialog = ({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>{t("documentType.forms.add.title")}</SheetTitle>
+                    <SheetTitle>{t("isoClause.forms.add.title")}</SheetTitle>
                     <SheetDescription>
-                        {t("documentType.forms.add.subtitle")}
+                        {t("isoClause.forms.add.subtitle")}
                     </SheetDescription>
                 </SheetHeader>
 
-                <AddDocumentTypeForm
+                <AddISOClauseForm
                     onSubmit={handleCreate}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
@@ -57,5 +57,5 @@ const AddDocumentTypeDialog = ({
     )
 };
 
-export default AddDocumentTypeDialog
+export default AddISOClauseDialog
 

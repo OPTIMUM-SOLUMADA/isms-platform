@@ -214,8 +214,8 @@ export function DataTable<TData, TValue>({
 
             <CardContent className="flex-1 flex flex-col flex-grow">
                 <div className="rounded-lg border overflow-hidden flex flex-col flex-grow bg-white">
-                    <div className="flex-grow overflow-auto rounded-lg">
-                        <Table className="w-full">
+                    <div className="flex-grow overflow-auto rounded-lg flex flex-col">
+                        <Table className={cn("w-full", !table.getRowModel().rows?.length && "grow")}>
                             <TableHeader>
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id}>

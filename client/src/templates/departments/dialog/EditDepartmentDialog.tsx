@@ -1,8 +1,9 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTranslation } from "react-i18next";
 import EditDepartmentForm, { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
 import { useUpdateDepartment } from "@/hooks/queries/useDepartmentMutations";
 import type { Department } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean;
@@ -22,6 +23,8 @@ const EditDepartmentFormDialog = ({
         error,
     } = useUpdateDepartment();
 
+    const { user } = useAuth();
+
     function handleUpdate(data: EditDepartmentFormData) {
         createDepartment(data, {
             onSuccess: () => {
@@ -31,21 +34,22 @@ const EditDepartmentFormDialog = ({
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='card-header-bg'>
-                <DialogHeader>
-                    <DialogTitle>{t("department.forms.edit.title")}</DialogTitle>
-                    <DialogDescription>{t("department.forms.edit.subtitle")}</DialogDescription>
-                </DialogHeader>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent className='card-header-bg'>
+                <SheetHeader>
+                    <SheetTitle>{t("department.forms.edit.title")}</SheetTitle>
+                    <SheetDescription>{t("department.forms.edit.subtitle")}</SheetDescription>
+                </SheetHeader>
                 <EditDepartmentForm
                     defaultValues={department}
                     onSubmit={handleUpdate}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
+                    userId={user?.id}
                 />
-            </DialogContent>
-        </Dialog>)
+            </SheetContent>
+        </Sheet>)
 };
 
 export default EditDepartmentFormDialog

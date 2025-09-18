@@ -36,7 +36,12 @@ export const API_CONFIG = {
             PUBLISH: (id: string | number) => `/documents/publish/${id}`,
             UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
         },
-        ISO_CLAUSES: "/iso-clauses",
+        ISO_CLAUSES: {
+            BASE: "/iso-clauses",
+            GET: (id: string | number) => `/iso-clauses/${id}`,
+            UPDATE: (id: string | number) => `/iso-clauses/${id}`,
+            DELETE: (id: string | number) => `/iso-clauses/${id}`,
+        },
         DOCUMENT_TYPES: {
             BASE: "/document-types",
             GET: (id: string | number) => `/document-types/${id}`,

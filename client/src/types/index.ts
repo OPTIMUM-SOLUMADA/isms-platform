@@ -71,6 +71,9 @@ export type DocumentType = {
 
   documents: Document[];
 
+  createdId?: string;
+  createdBy?: User;
+
   createdAt: string;
   updatedAt: string;
 };
@@ -193,6 +196,8 @@ export type Department = {
   description: string;
   members: User[];
   documents: Document[];
+  createdId?: string;
+  createdBy?: User;
 
   createdAt: string;
   updatedAt: string;
@@ -208,8 +213,11 @@ export interface CustomFormProps<T> {
 export interface ISOClause {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   code: string;
+
+  createdBy?: User;
+  createdById?: string;
 
   documents: Document[];
   createdAt: string;
