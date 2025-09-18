@@ -32,7 +32,7 @@ const useUserStore = create<UserState>((set) => ({
     replaceUser: (id, user) => set((state) => ({ users: state.users.map((u) => (u.id === id ? { ...u, ...user } : u)) })),
     clearUsers: () => set({ users: [] }),
 
-    pagination: { page: 1, limit: 1, total: 0, totalPages: 0 },
+    pagination: { page: 1, limit: 5, total: 0, totalPages: 0 },
     setPagination: (pagination) => set({ pagination }),
 
     query: '',
