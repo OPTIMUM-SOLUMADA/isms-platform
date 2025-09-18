@@ -9,6 +9,9 @@ interface UserState {
     removeUser: (id: string) => void;
     replaceUser: (id: string, user: User) => void;
     clearUsers: () => void;
+    // Search
+    query: string;
+    setQuery: (query: string) => void;
 
     pagination: UserPagination;
     setPagination: (pagination: UserPagination) => void;
@@ -22,8 +25,11 @@ const useUserStore = create<UserState>((set) => ({
     replaceUser: (id, user) => set((state) => ({ users: state.users.map((u) => (u.id === id ? { ...u, ...user } : u)) })),
     clearUsers: () => set({ users: [] }),
 
-    pagination: { page: 1, limit: 10 },
+    pagination: { page: 1, limit: 20 },
     setPagination: (pagination) => set({ pagination }),
+
+    query: '',
+    setQuery: (query) => set({ query }),
 }));
 
 export default useUserStore;

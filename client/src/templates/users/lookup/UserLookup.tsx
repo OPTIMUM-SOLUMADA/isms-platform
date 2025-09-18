@@ -22,6 +22,8 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { userRoleColors } from "@/constants/color";
 import { User } from "@/types";
+import useUserStore from "@/stores/user/useUserStore";
+import { useSearchUsers } from "@/hooks/queries/useUserMutations";
 
 interface UserLookupProps {
     data?: User[];
@@ -41,6 +43,11 @@ export default function UserLookup({
     const [open, setOpen] = useState<boolean>(false);
     const selectedUser = useMemo(() => data.find((user) => user.id === value), [value, data]);
     const { t } = useTranslation();
+
+    const { setQuery, query } = useUserStore();
+    const { data: users = data } = useSearchUsers();
+
+    console.log("query", query)
 
     return (
         <div className="*:not-first:mt-2">
@@ -90,11 +97,11 @@ export default function UserLookup({
                     align="start"
                 >
                     <Command>
-                        <CommandInput placeholder={t("components.lookup.user.search")} />
+                        <CommandInput placeholder={t("components.lookup.user.search")} onInput={(e) => setQuery(e.currentTarget.value)} />
                         <CommandList>
                             <CommandEmpty>{t("components.lookup.user.empty")}</CommandEmpty>
                             <CommandGroup className="max-h-52 overflow-y-auto">
-                                {data.map((user) => (
+                                {users.map((user) => (
                                     <CommandItem
                                         key={user.id}
                                         value={user.name}

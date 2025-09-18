@@ -8,6 +8,7 @@ import { ApiAxiosError } from "@/types/api";
 import useUserStore from "@/stores/user/useUserStore";
 import { User } from "@/types";
 import { useEffect } from "react";
+import { useDebounce } from "../use-debounce";
 
 // -----------------------------
 // Fetch Users
@@ -25,6 +26,17 @@ export const useFetchUsers = () => {
     }, [query.data, setUsers]);
 
     return query;
+};
+
+export const useSearchUsers = () => {
+    const { query } = useUserStore();
+    const debounceQuery = useDebounce(query, 500);
+    return useQuery<User[], ApiAxiosError>({
+        queryKey: ["users", "search", debounceQuery],
+        queryFn: async () => (await userService.search(debounceQuery)).data,
+        // staleTime: 1000 * 30,
+        enabled: !!debounceQuery,
+    });
 };
 
 // -----------------------------

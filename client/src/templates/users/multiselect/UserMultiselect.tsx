@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useState } from "react"
 import { ChevronDownIcon, PlusIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -25,6 +25,8 @@ import { userRoleColors } from "@/constants/color"
 import type { User } from "@/types"
 import { usePermissions } from "@/hooks/use-permissions"
 import { useUserUIStore } from "@/stores/user/useUserUIStore"
+import useUserStore from "@/stores/user/useUserStore"
+import { useSearchUsers } from "@/hooks/queries/useUserMutations"
 
 interface UserMultiSelectProps {
     data: User[];
@@ -43,6 +45,9 @@ export default function UserMultiSelect({
     const [open, setOpen] = useState<boolean>(false);
     const { openAdd } = useUserUIStore();
 
+    const { setQuery } = useUserStore();
+    const { data: users = data, isLoading } = useSearchUsers();
+
     const selectedUsers = useMemo(
         () => data.filter((user) => value.includes(user.id)),
         [value, data]
@@ -57,7 +62,11 @@ export default function UserMultiSelect({
         } else {
             onValueChange?.([...value, userId])
         }
-    }
+    };
+
+    useEffect(() => {
+        return () => setQuery("");
+    }, [setQuery]);
 
     return (
         <div className="*:not-first:mt-2">
@@ -115,12 +124,17 @@ export default function UserMultiSelect({
                     className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
                     align="start"
                 >
-                    <Command>
-                        <CommandInput placeholder={t("components.multiselect.user.search")} />
+                    <Command filter={() => 1}>
+                        <CommandInput placeholder={t("components.multiselect.user.search")} onInput={(e) => setQuery(e.currentTarget.value)} />
                         <CommandList>
-                            <CommandEmpty>{t("components.multiselect.user.empty")}</CommandEmpty>
+                            <CommandEmpty>
+                                {isLoading ?
+                                    t("components.multiselect.user.searching") :
+                                    t("components.multiselect.user.empty")
+                                }
+                            </CommandEmpty>
                             <CommandGroup className="max-h-52 overflow-y-auto">
-                                {data.map((user) => {
+                                {users.map((user) => {
                                     const isSelected = value.includes(user.id)
                                     return (
                                         <CommandItem
