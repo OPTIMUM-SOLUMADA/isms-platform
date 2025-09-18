@@ -282,8 +282,60 @@ export function DataTable<TData, TValue>({
                             {t("components.table.pagination.next")}
                         </Button>
                     </div>
+                    <Pagination table={table} />
                 </div>
             </CardContent>
         </Card>
     );
 }
+
+export const Pagination = ({ table }: { table: any }) => {
+    const currentPage = table.getState().pagination.pageIndex;
+    const pageCount = table.getPageCount();
+
+    const { t } = useTranslation();
+
+    const maxButtons = 5; // max visible buttons
+    let startPage = Math.max(currentPage - Math.floor(maxButtons / 2), 0);
+    let endPage = startPage + maxButtons;
+
+    if (endPage > pageCount) {
+        endPage = pageCount;
+        startPage = Math.max(endPage - maxButtons, 0);
+    }
+
+    const pages = Array.from({ length: endPage - startPage }, (_, i) => startPage + i);
+
+    return (
+        <div className="flex items-center space-x-2">
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+            >
+                {t("components.table.pagination.previous")}
+            </Button>
+
+            {pages.map((page) => (
+                <Button
+                    key={page}
+                    size="sm"
+                    variant={page === currentPage ? "default" : "outline"}
+                    onClick={() => table.setPageIndex(page)}
+                >
+                    {page + 1}
+                </Button>
+            ))}
+
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+            >
+                {t("components.table.pagination.next")}
+            </Button>
+        </div>
+    );
+};
