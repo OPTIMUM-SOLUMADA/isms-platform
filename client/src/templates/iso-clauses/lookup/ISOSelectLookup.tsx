@@ -40,6 +40,15 @@ const ISOSelectLookup = ({
         return () => setQuery('');
     }, [setQuery]);
 
+
+    // If the prop value changes (edit mode), update selected
+    useEffect(() => {
+        if (value) {
+            const found = options.find(o => o.id === value);
+            if (found) setSelected(found);
+        }
+    }, [value, options]);
+
     return (
         <SelectWithButton
             placeholder={placeholder}
