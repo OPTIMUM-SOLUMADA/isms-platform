@@ -33,9 +33,11 @@ import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
-import { SelectWithButton } from "@/components/SelectWithButton";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
+import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
+import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
+import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -48,7 +50,7 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).optional(),
+  reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
     .min(1, { message: i18n.t("components.fileUpload.errors.required") })
@@ -79,10 +81,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
       isPending = false,
       onSubmit,
       error,
-      isoClauses = [],
-      types = [],
       users = [],
-      departments = [],
     },
     ref
   ) => {
@@ -186,12 +185,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.type.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <SelectWithButton
+                    <DocumentTypeSelect
                       placeholder={t("document.add.form.fields.type.placeholder")}
-                      items={types.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
                       onChange={field.onChange}
                       value={field.value}
                       addLabel={t("documentType.actions.add.label")}
@@ -246,12 +241,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.department.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <SelectWithButton
+                    <DepartmentSelect
                       placeholder={t("document.add.form.fields.department.placeholder")}
-                      items={departments.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
                       onChange={field.onChange}
                       value={field.value}
                       addLabel={t("department.actions.add.label")}
@@ -274,12 +265,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.isoClause.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <SelectWithButton
+                    <ISOSelectLookup
                       placeholder={t("document.add.form.fields.isoClause.placeholder")}
-                      items={isoClauses.map((item) => ({
-                        value: item.id,
-                        label: `${item.code} ${item.name}`,
-                      }))}
                       onChange={field.onChange}
                       value={field.value}
                       addLabel={t("documentType.actions.add.label")}
@@ -356,7 +343,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewers.label")}
+                    {t("document.add.form.fields.reviewers.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect

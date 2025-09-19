@@ -1,12 +1,7 @@
 import { create } from "zustand";
 import type { User } from "@/types";
+import type { Pagination } from "@/types/pagination";
 
-type Pagination = {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-};
 
 interface UserState {
     users: User[];

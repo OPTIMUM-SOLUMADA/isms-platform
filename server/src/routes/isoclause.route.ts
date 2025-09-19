@@ -6,6 +6,9 @@ import { validate } from '@/middlewares/validate';
 const router = Router();
 const controller = new ISOClauseController();
 
+// search iso clauses
+router.get('/search', controller.search.bind(controller));
+
 router.post('/', validate(isoClauseCreateSchema), controller.create.bind(controller));
 router.post('/initialize', controller.initialize.bind(controller));
 router.get('/', controller.findAll.bind(controller));

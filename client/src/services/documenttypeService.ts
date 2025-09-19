@@ -10,5 +10,6 @@ export const documentTypeService = {
     getById: async (id: string) => axios.get(api.GET(id)),
     create: async (data: AddDepartmentFormData) => axios.post(api.BASE, { ...data }),
     update: async (id: string, data: any) => axios.put(api.UPDATE(id), { ...data }),
-    delete: async (id: string) => axios.delete(api.DELETE(id))
+    delete: async (id: string) => axios.delete(api.DELETE(id)),
+    search: async (query: string) => axios.get(api.SEARCH, { params: { q: query } }),
 }

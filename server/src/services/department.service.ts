@@ -67,9 +67,53 @@ export class DepartmentService {
         return prisma.department.delete({ where: { id } });
     }
 
-    async listDepartments() {
-        return prisma.department.findMany({
+    async listDepartments({
+        filter,
+        page = 1,
+        limit = 20,
+        orderBy = { createdAt: 'desc' },
+    }: {
+        filter?: Prisma.DepartmentWhereInput;
+        page?: number;
+        limit?: number;
+        orderBy?: Prisma.DepartmentOrderByWithRelationInput;
+    }) {
+        const total = await prisma.department.count();
+        const departments = await prisma.department.findMany({
             include: depIncludes,
+            where: filter || {},
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+        });
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            departments,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+            },
+        };
+    }
+
+    async search(query: string) {
+        return prisma.department.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+            },
+            take: 20,
         });
     }
 

@@ -13,6 +13,7 @@ import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { formatDate } from "@/lib/date";
 import { useAuth } from "@/contexts/AuthContext";
 import CellNoValue from "@/components/CellNoValue";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 
 // UserTable component using the reusable DataTable
@@ -28,6 +29,8 @@ const Table = ({
     const { t } = useTranslation();
     const { openDelete, setCurrentDepartment, openEdit } = useDepartmentUI();
     const { user: activeUser } = useAuth();
+
+    const { pagination, setPagination } = useDepartmentStore();
 
     // Define columns for UserTable
     const departmentColumns: ColumnDef<Department>[] = useMemo(() => [
@@ -165,6 +168,11 @@ const Table = ({
             )}
             className="flex-grow"
             isLoading={isLoading}
+            // pagination
+            page={pagination.page}
+            pageSize={pagination.limit}
+            totalCount={pagination.totalPages}
+            onPageChange={(page) => setPagination({ ...pagination, page })}
         />
     );
 }

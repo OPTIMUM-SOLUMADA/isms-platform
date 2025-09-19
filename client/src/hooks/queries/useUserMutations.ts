@@ -17,17 +17,18 @@ import { isEqual } from "lodash";
 export const useFetchUsers = () => {
     const { pagination, setUsers, setPagination } = useUserStore();
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["users", pagination],
+        queryKey: ["users", pagination.page, pagination.limit],
         queryFn: () => userService.list({ ...pagination }),
         staleTime: 1000 * 60 * 5,
     });
 
     useEffect(() => {
         if (query.data) {
-            const { users, pagination : newP } = query.data.data;
+            const { users, pagination: newP } = query.data.data;
             setUsers(users);
-            if(!isEqual(pagination, newP))
-            setPagination(pagination);
+            if (!isEqual(pagination, newP)) {
+                setPagination(pagination);
+            }
         };
     }, [query.data, setUsers, setPagination, pagination]);
 
@@ -75,7 +76,7 @@ export const useCreateUser = () => {
             });
             const newUser = res.data as User;
             pushUser(newUser);
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ["users"] });
         },
         onError: () => {
             toast({
