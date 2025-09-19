@@ -9,6 +9,7 @@ import useUserStore from "@/stores/user/useUserStore";
 import { User } from "@/types";
 import { useEffect, useMemo } from "react";
 import { useDebounce } from "../use-debounce";
+import { isEqual } from "lodash";
 
 // -----------------------------
 // Fetch Users
@@ -23,11 +24,12 @@ export const useFetchUsers = () => {
 
     useEffect(() => {
         if (query.data) {
-            const { users, pagination } = query.data.data;
+            const { users, pagination : newP } = query.data.data;
             setUsers(users);
+            if(!isEqual(pagination, newP))
             setPagination(pagination);
         };
-    }, [query.data, setUsers, setPagination]);
+    }, [query.data, setUsers, setPagination, pagination]);
 
     return query;
 };
@@ -61,6 +63,7 @@ export const useCreateUser = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { pushUser } = useUserStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, AddUserFormData>({
         mutationFn: (data) => userService.create(data),
@@ -72,6 +75,7 @@ export const useCreateUser = () => {
             });
             const newUser = res.data as User;
             pushUser(newUser);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         },
         onError: () => {
             toast({
@@ -90,6 +94,7 @@ export const useUpdateUser = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { replaceUser } = useUserStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, UpdateUserFormData>({
         mutationFn: ({ id, ...rest }) => userService.update(id, rest),
@@ -100,6 +105,7 @@ export const useUpdateUser = () => {
                 variant: "success",
             });
             replaceUser(variables.id, res.data);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         },
     });
 };
@@ -112,6 +118,8 @@ export const useDeleteUser = () => {
     const { t } = useTranslation();
     const { removeUser } = useUserStore();
 
+    const queryClient = useQueryClient();
+
     return useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: ({ id }) => userService.delete(id),
         onSuccess: (_, variables) => {
@@ -121,6 +129,7 @@ export const useDeleteUser = () => {
                 variant: "success",
             });
             removeUser(variables.id);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         },
     });
 };
@@ -148,10 +157,10 @@ export const useSendInvitation = () => {
 
     return useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: ({ id }) => userService.sendInvitation(id),
-        onSuccess: () => {
+        onSuccess: (res) => {
             toast({
                 title: t("components.toast.success.title"),
-                description: t("components.toast.success.user.invited"),
+                description: t("components.toast.success.user.invited", { email: res.data.email }),
                 variant: "success",
             });
         },
