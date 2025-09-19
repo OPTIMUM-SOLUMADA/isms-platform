@@ -74,7 +74,22 @@ export class DepartmentController {
 
     async list(req: Request, res: Response) {
         try {
-            const departments = await service.listDepartments();
+            const { limit = '50', page = '1' } = req.query;
+            const departments = await service.listDepartments({
+                page: Number(page),
+                limit: Number(limit),
+            });
+            res.json(departments);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const departments = await service.search(normalizedQ);
             res.json(departments);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });

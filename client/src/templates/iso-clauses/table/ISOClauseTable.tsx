@@ -12,6 +12,7 @@ import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { useISOClauseUIStore } from "@/stores/iso-clause/useISOClauseUIStore";
+import useISOClauseStore from "@/stores/iso-clause/useISOClauseStore";
 
 
 // UserTable component using the reusable DataTable
@@ -27,6 +28,8 @@ const Table = ({
     const { t } = useTranslation();
     const { openDelete, setCurrentISOClause, openEdit } = useISOClauseUIStore();
     const { user: activeUser } = useAuth();
+
+    const { pagination, setPagination } = useISOClauseStore();
 
     // Define columns for UserTable
     const columns: ColumnDef<ISOClause>[] = useMemo(() => [
@@ -162,6 +165,11 @@ const Table = ({
             )}
             className="flex-grow"
             isLoading={isLoading}
+            // pagination
+            page={pagination.page}
+            pageSize={pagination.limit}
+            totalCount={pagination.totalPages}
+            onPageChange={(page) => setPagination({ ...pagination, page })}
         />
     );
 }

@@ -27,9 +27,13 @@ export class DocumentTypeController {
         }
     }
 
-    async findAll(_req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         try {
-            const types = await service.findAll();
+            const { limit = '50', page = '1' } = req.query;
+            const types = await service.list({
+                page: Number(page),
+                limit: Number(limit),
+            });
             return res.json(types);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
@@ -73,6 +77,17 @@ export class DocumentTypeController {
             const deletedDocumentType = await service.delete(req.params.id!);
             if (!deletedDocumentType) return res.status(404).json({ error: 'Type not found' });
             return res.status(204).send();
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const types = await service.search(normalizedQ);
+            return res.json(types);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
         }

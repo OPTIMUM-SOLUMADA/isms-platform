@@ -9,6 +9,9 @@ import { validate } from '@/middlewares/validate';
 const router = Router();
 const controller = new DocumentTypeController();
 
+// Search document types
+router.get('/search', controller.search.bind(controller));
+
 router.post('/', validate(documentTypeCreateSchema), controller.create.bind(controller));
 router.post('/initialize', controller.initialize.bind(controller));
 router.get('/', controller.findAll.bind(controller));

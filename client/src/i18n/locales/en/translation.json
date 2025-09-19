@@ -16,8 +16,8 @@
         },
         "actions": {
           "submit": {
-            "label": "Log in",
-            "loading": "Logging in..."
+            "label": "Sign in",
+            "loading": "Signing in..."
           }
         },
         "rememberMe": "Remember me",
@@ -37,7 +37,7 @@
         },
         "actions": {
           "submit": {
-            "label": "Receive link",
+            "label": "Get link",
             "loading": "Sending..."
           },
           "back": {
@@ -59,7 +59,7 @@
       "invitation": {
         "welcome": "Welcome to the ISMS portal",
         "setPassword": "Please set your password to start using your account.",
-        "definePassword": "Define your password"
+        "definePassword": "Set your password"
       },
       "form": {
         "password": {
@@ -68,10 +68,10 @@
         },
         "confirmPassword": {
           "label": "Confirm password",
-          "placeholder": "Re-type password"
+          "placeholder": "Re-enter password"
         },
         "keepSignedIn": {
-          "label": "Log in automatically"
+          "label": "Stay signed in"
         },
         "actions": {
           "submit": {
@@ -80,7 +80,7 @@
           }
         },
         "errors": {
-          "INVALID_PASSWORD": "Incorrect password",
+          "INVALID_PASSWORD": "Invalid password",
           "UNKNOWN": "An unknown error occurred"
         }
       },
@@ -130,13 +130,13 @@
     }
   },
   "review": {
-    "title": "Document Revisions",
-    "subtitle": "Manage document revisions",
+    "title": "Document reviews",
+    "subtitle": "Manage document reviews",
     "button": {
-      "buttonNewReview": "new evaluation",
+      "buttonNewReview": "New review",
       "viewDoc": "View document",
       "addComment": "Comment",
-      "assignReview": "Assign revision",
+      "assignReview": "Assign a review",
       "save": "Save",
       "cancel": "Cancel"
     },
@@ -146,29 +146,29 @@
     "approved": "Approved",
     "completed": "Completed",
     "overdue": "Overdue",
-    "search": "Search for documents, assignees, or reviewers...",
-    "searchPlaceholder": "Search for a document",
-    "documentEmpty": "No documents found",
+    "search": "Search documents, assignees or reviewers...",
+    "searchPlaceholder": "Search a document",
+    "documentEmpty": "No document found",
     "all": "All",
     "rejected": "Rejected",
-    "inReview": "Reviewing",
+    "inReview": "In review",
     "reviewer": "Reviewer",
-    "due": "to",
+    "due": "due",
     "comment": "Comment",
     "form": {
       "newReview": "Assign document review",
       "documentReview": "Document to review",
-      "documentReviewPlaceholder": "Select document to review",
+      "documentReviewPlaceholder": "Select the document to review",
       "dueDate": "Due date",
       "comment": "Comment",
-      "assigneReviewer": "Assign reviewer",
-      "reviewerPlaceholder": "Add reviewer",
+      "assigneReviewer": "Assign the reviewer",
+      "reviewerPlaceholder": "Add a reviewer",
       "errorMessage": "Please fill in all fields"
     },
     "errors": {
       "document": "Please select a document",
       "reviewer": "Please select a reviewer",
-      "date": "choose a date"
+      "date": "Choose a date"
     }
   },
   "compliance": {
@@ -176,20 +176,20 @@
     "subtitle": ""
   },
   "user": {
-    "title": "User Management",
+    "title": "User management",
     "subtitle": "Manage user accounts and roles",
     "view": {
-      "title": "User Details",
-      "subtitle": "User Information",
+      "title": "User details",
+      "subtitle": "User information",
       "detail": {
+        "title": "User information",
         "name": "Name",
         "email": "Email",
         "role": "Role",
         "department": "Department",
         "status": "Status",
-        "createdBy": "Created By",
-        "createdAt": "Created On",
-        "lastUpdated": "Last Updated"
+        "createdAt": "Created at",
+        "createdBy": "Created by"
       },
       "actions": {
         "edit": {
@@ -198,7 +198,8 @@
         "delete": {
           "label": "Delete"
         }
-      }
+      },
+      "notFound": "User not found"
     },
     "stats": {
       "total": {
@@ -210,8 +211,8 @@
         "value": "{{count}} administrators"
       },
       "viewer": {
-        "title": "Visitors",
-        "value": "{{count}} visitors"
+        "title": "Viewers",
+        "value": "{{count}} viewers"
       },
       "reviewer": {
         "title": "Reviewers",
@@ -225,7 +226,7 @@
     "filters": {
       "search": {
         "label": "Search by name or email",
-        "placeholder": "Search for a user..."
+        "placeholder": "Search a user..."
       },
       "role": {
         "label": "Filter by role",
@@ -242,34 +243,34 @@
     },
     "forms": {
       "add": {
-        "title": "Add user",
-        "subtitle": "Fill in user information",
+        "title": "Add a user",
+        "subtitle": "Fill in the user information",
         "email": {
           "label": "Email address",
           "placeholder": "isms@example.com"
         },
         "name": {
           "label": "Name",
-          "placeholder": "User Name"
+          "placeholder": "User's name"
         },
         "role": {
           "label": "Role",
-          "placeholder": "User Role",
+          "placeholder": "User role",
           "options": {
             "admin": "Administrator",
-            "viewer": "Visitor",
+            "viewer": "Viewer",
             "reviewer": "Reviewer"
           }
         },
         "department": {
           "label": "Department",
-          "placeholder": "User Department"
+          "placeholder": "User's department"
         },
         "sendInvitation": {
-          "label": "Send invitation link via email"
+          "label": "Send invitation link by email"
         },
         "status": {
-          "label": "Status of the user"
+          "label": "User status"
         },
         "actions": {
           "submit": {
@@ -282,28 +283,28 @@
         }
       },
       "update": {
-        "title": "Edit User",
-        "subtitle": "Edit User Information",
+        "title": "Edit a user",
+        "subtitle": "Update the user information",
         "email": {
-          "label": "Email Address",
+          "label": "Email address",
           "placeholder": "isms@example.com"
         },
         "name": {
           "label": "Name",
-          "placeholder": "User Name"
+          "placeholder": "User's name"
         },
         "role": {
           "label": "Role",
-          "placeholder": "User Role",
+          "placeholder": "User role",
           "options": {
             "admin": "Administrator",
-            "viewer": "Visitor",
+            "viewer": "Viewer",
             "reviewer": "Reviewer"
           }
         },
         "department": {
           "label": "Department",
-          "placeholder": "User Department"
+          "placeholder": "User's department"
         },
         "actions": {
           "submit": {
@@ -317,7 +318,7 @@
       }
     },
     "table": {
-      "title": "User List",
+      "title": "User list",
       "columns": {
         "name": "Name",
         "email": "Email",
@@ -329,22 +330,22 @@
       "actions": {
         "edit": "Edit",
         "delete": "Delete",
-        "view": "View Details",
-        "reinvite": "Resend Invitation"
+        "view": "View details",
+        "reinvite": "Resend invitation"
       },
       "empty": {
-        "title": "No users found",
-        "message": "Try modifying the filters or adding a new user.",
+        "title": "No user found",
+        "message": "Try changing filters or adding a new user.",
         "actions": {
           "add": {
-            "label": "Add User"
+            "label": "Add a user"
           }
         }
       }
     },
     "delete": {
       "dialog": {
-        "message": "Deleting this user will also remove all the following associated information:",
+        "message": "Deleting this user will also remove the following associated information:",
         "relatedItems": {
           "documents": "All documents owned by {{name}} and their versions.",
           "reviews": "All reviews completed by {{name}}.",
@@ -352,22 +353,22 @@
           "pendingReviews": "All pending reviews assigned to {{name}}."
         },
         "cannotDeleteDescription": "However, you cannot delete this user because:",
-        "canBeDeleted": "The user can be safely deleted.",
+        "canBeDeleted": "The user can be deleted safely.",
         "actions": {
           "notPermitted": "You cannot delete your own account.",
-          "hasDocuments": "This user owns documents. Please reassign or delete these documents before deleting the user."
+          "hasDocuments": "This user owns documents. Please reassign or delete those documents before deleting the user."
         }
       }
     },
     "activate": {
       "dialog": {
-        "title": "Activate User",
+        "title": "Activate user",
         "message": "Are you sure you want to change this user's status?",
         "important": "Important: If you activate this user, they will be able to log in to the system.",
         "actions": {
           "confirm": {
             "label": "Yes, activate",
-            "loading": "Changing status..."
+            "loading": "Changing..."
           },
           "cancel": {
             "label": "No, cancel"
@@ -377,13 +378,13 @@
     },
     "deactivate": {
       "dialog": {
-        "title": "Deactivate User",
+        "title": "Deactivate user",
         "message": "Are you sure you want to change this user's status?",
         "important": "Important: If you deactivate this user, they will no longer be able to log in to the system.",
         "actions": {
           "confirm": {
             "label": "Yes, deactivate",
-            "loading": "Changing status..."
+            "loading": "Changing..."
           },
           "cancel": {
             "label": "No, cancel"
@@ -393,8 +394,8 @@
     },
     "reinvite": {
       "dialog": {
-        "title": "Resend an invitation",
-        "message": "Are you sure you want to resend an invitation to this user?",
+        "title": "Resend invitation",
+        "message": "Are you sure you want to resend the invitation to this user?",
         "description": "An invitation email containing a link to set their password will be sent to <strong>{{email}}</strong>.",
         "actions": {
           "cancel": {
@@ -409,15 +410,15 @@
     },
     "actions": {
       "add": {
-        "label": "Add New User"
+        "label": "Add a new user"
       },
       "sendInvitation": {
-        "label": "Send Invitation Link"
+        "label": "Send invitation link"
       }
     },
     "role": {
       "admin": "Administrator",
-      "viewer": "Visitor",
+      "viewer": "Viewer",
       "reviewer": "Reviewer",
       "contributor": "Contributor"
     },
@@ -426,15 +427,15 @@
       "inactive": "Inactive"
     },
     "hovercard": {
-      "title": "User Details",
+      "title": "User details",
       "department": "Department",
-      "createdAt": "Created On",
+      "createdAt": "Created at",
       "actions": {
         "edit": {
           "label": "Edit"
         },
         "view": {
-          "label": "View More Details"
+          "label": "View more details"
         },
         "contact": {
           "label": "Contact"
@@ -446,53 +447,53 @@
     }
   },
   "document": {
-    "title": "Document Management",
+    "title": "Document management",
     "subtitle": "Manage documents and their versions",
     "add": {
-      "title": "New Document",
-      "subtitle": "Save a new document to the system",
+      "title": "New document",
+      "subtitle": "Register a new document in the system",
       "form": {
         "title": "Please fill in the document information",
         "fields": {
           "name": {
             "label": "Name",
-            "placeholder": "Document Name"
+            "placeholder": "Document name"
           },
           "description": {
             "label": "Description",
-            "placeholder": "Document Description"
+            "placeholder": "Document description"
           },
           "status": {
             "label": "Status",
-            "placeholder": "Document Status"
+            "placeholder": "Document status"
           },
           "nextReviews": {
-            "label": "Next Revision"
+            "label": "Next review"
           },
           "reviewFrequency": {
-            "label": "Revision Frequency",
-            "placeholder": "Revision Frequency"
+            "label": "Review frequency",
+            "placeholder": "Review frequency"
           },
           "reviewFrequencyUnit": {
-            "label": "Frequency Unit",
+            "label": "Frequency unit",
             "placeholder": "Select a unit",
             "options": {
               "daily": "Daily",
               "weekly": "Weekly",
               "monthly": "Monthly",
               "quarterly": "Quarterly",
-              "semi_annual": "Semi-Annually",
-              "yearly": "Annually",
-              "biennial": "Biennially",
-              "as_needed": "As Needed"
+              "semi_annual": "Semi-annual",
+              "yearly": "Yearly",
+              "biennial": "Biennial",
+              "as_needed": "As needed"
             }
           },
           "owners": {
             "label": "Owners",
-            "placeholder": "Owner Name"
+            "placeholder": "Owner name"
           },
           "type": {
-            "label": "Document Type",
+            "label": "Document type",
             "placeholder": "Select a type"
           },
           "reviewers": {
@@ -504,12 +505,12 @@
             "placeholder": "Select a department"
           },
           "isoClause": {
-            "label": "ISO Clause",
+            "label": "ISO clause",
             "placeholder": "Select an ISO clause"
           },
           "file": {
             "label": "File",
-            "selected": "Selected File",
+            "selected": "File selected",
             "dragOrClick": "Drag or click here to choose a file"
           }
         },
@@ -529,7 +530,7 @@
       "toast": {
         "success": {
           "title": "Success",
-          "description": "The document was added successfully"
+          "description": "The document has been added successfully"
         },
         "error": {
           "title": "Error",
@@ -538,8 +539,8 @@
       }
     },
     "edit": {
-      "title": "Edit Document",
-      "subtitle": "Edit Document Information",
+      "title": "Edit document",
+      "subtitle": "Modify the document information",
       "fetching": "Fetching document data...",
       "loading": "Loading document...",
       "form": {
@@ -560,7 +561,7 @@
       "toast": {
         "success": {
           "title": "Success",
-          "description": "The document was updated successfully"
+          "description": "The document has been updated successfully"
         },
         "error": {
           "title": "Error",
@@ -573,7 +574,7 @@
       "toast": {
         "success": {
           "title": "Success",
-          "description": "The document was deleted successfully"
+          "description": "The document has been deleted successfully"
         },
         "error": {
           "title": "Error",
@@ -589,14 +590,14 @@
         },
         "cannotDeleteDescription": "However, you cannot delete this document because:",
         "documentPublished": "The document is published. Please unpublish it before deleting.",
-        "canBeDeleted": "The document can be safely deleted."
+        "canBeDeleted": "The document can be deleted safely."
       }
     },
     "publish": {
       "toast": {
         "success": {
           "title": "Success",
-          "description": "Document published successfully"
+          "description": "The document has been published successfully"
         },
         "error": {
           "title": "Error",
@@ -608,7 +609,7 @@
       "toast": {
         "success": {
           "title": "Success",
-          "description": "Document unpublished successfully"
+          "description": "The document has been unpublished successfully"
         },
         "error": {
           "title": "Error",
@@ -618,7 +619,7 @@
     },
     "stats": {
       "total": {
-        "title": "Total Documents",
+        "title": "Total documents",
         "value": "{{count}} documents"
       },
       "draft": {
@@ -626,7 +627,7 @@
         "value": "{{count}} drafts"
       },
       "inReview": {
-        "title": "In Review",
+        "title": "In review",
         "value": "{{count}} in review"
       },
       "approved": {
@@ -640,8 +641,8 @@
     },
     "filter": {
       "search": {
-        "label": "Search by name, owner, or ISO clause",
-        "placeholder": "Search for a document..."
+        "label": "Search by name, owner or ISO clause",
+        "placeholder": "Search a document..."
       },
       "status": {
         "label": "Filter by status",
@@ -661,7 +662,7 @@
       }
     },
     "table": {
-      "title": "Document List",
+      "title": "Document list",
       "columns": {
         "name": "Name",
         "type": "Type",
@@ -669,35 +670,35 @@
         "status": "Status",
         "owner": "Owner",
         "version": "Version",
-        "nextReview": "Next Review",
-        "reviewDue": "Review Date",
-        "reviewFrequency": "Review Frequency",
-        "lastUpdated": "Last Updated",
+        "nextReview": "Next review",
+        "reviewDue": "Review date",
+        "reviewFrequency": "Review frequency",
+        "lastUpdated": "Last updated",
         "actions": "Actions"
       },
       "actions": {
         "edit": "Edit",
         "delete": "Delete",
-        "view": "View Details",
+        "view": "View details",
         "publish": "Publish",
         "unpublish": "Unpublish",
         "download": "Download"
       },
       "empty": {
-        "title": "No documents found",
-        "message": "Try modifying filters or adding a new document.",
+        "title": "No document found",
+        "message": "Try changing filters or adding a new document.",
         "actions": {
           "add": {
-            "label": "Add Document"
+            "label": "Add a document"
           }
         }
       }
     },
     "view": {
-      "title": "Document Details",
-      "subtitle": "Document Description",
+      "title": "Document details",
+      "subtitle": "Document description",
       "detail": {
-        "title": "Document Information",
+        "title": "Document information",
         "name": "Name",
         "description": "Description",
         "type": "Type",
@@ -705,18 +706,18 @@
         "status": "Status",
         "owner": "Owners",
         "version": "Version",
-        "nextReview": "Next Review",
-        "reviewDue": "Review Date",
-        "reviewFrequency": "Review Frequency",
-        "lastUpdated": "Last Updated",
-        "createdBy": "Created By",
-        "createdAt": "Created On",
+        "nextReview": "Next review",
+        "reviewDue": "Review date",
+        "reviewFrequency": "Review frequency",
+        "lastUpdated": "Last updated",
+        "createdBy": "Created by",
+        "createdAt": "Created at",
         "reviewers": "Reviewers",
         "department": "Department"
       },
       "tabs": {
-        "preview": "File Preview",
-        "changeLogs": "Change Log"
+        "preview": "File preview",
+        "changeLogs": "Change logs"
       },
       "actions": {
         "edit": {
@@ -726,11 +727,11 @@
           "label": "Delete"
         },
         "download": {
-          "label": "Download File",
+          "label": "Download file",
           "loading": "Downloading..."
         },
         "assignReviewer": {
-          "label": "Assign Reviewer"
+          "label": "Assign a reviewer"
         },
         "publish": {
           "label": "Publish this document"
@@ -742,99 +743,439 @@
     },
     "actions": {
       "publish": {
-        "label": "Publish Document"
+        "label": "Publish a document"
       },
       "unpublish": {
-        "label": "Unpublish Document"
+        "label": "Unpublish a document"
       },
       "download": {
-        "label": "Download Document"
+        "label": "Download the document"
       }
     }
   },
   "department": {
-    "title": "Department Management",
+    "title": "Department management",
     "subtitle": "Manage departments and their users",
     "hovercard": {
-      "title": "Department Details",
-      "description": "Department Description",
+      "title": "Department details",
+      "description": "Department description",
       "members": "{{count}} members",
       "noMembers": "No members",
-      "createdBy": "Created By",
-      "createdAt": "Created On",
+      "createdBy": "Created by",
+      "createdAt": "Created at",
       "actions": {
         "edit": {
           "label": "Edit"
         },
         "view": {
-          "label": "View Users"
+          "label": "View users"
         }
       }
     },
     "forms": {
       "add": {
-        "title": "Add Department",
-        "subtitle": "Fill out department details",
+        "title": "Add a department",
+        "subtitle": "Fill in the department information",
         "name": {
           "label": "Name",
-          "placeholder": "Department Name"
+          "placeholder": "Department name"
         },
         "description": {
           "label": "Description",
-          "placeholder": "Department Description"
+          "placeholder": "Department description"
         },
         "actions": {
+          "submit": {
+            "label": "Add"
+          }
+        }
+      },
+      "edit": {
+        "title": "Edit department",
+        "subtitle": "Modify the department information",
+        "name": {
+          "label": "Name",
+          "placeholder": "Department name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Department description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
           "cancel": {
             "label": "Cancel"
           },
-          "submit": {
-            "label": "Submit"
+          "reset": {
+            "label": "Reset"
+          }
+        }
+      }
+    },
+    "table": {
+      "title": "Department list",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "members": "Members",
+        "documents": "Documents",
+        "createdBy": "Created by",
+        "createdAt": "Created at",
+        "updatedAt": "Updated at",
+        "updatedBy": "Updated by",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View users"
+      },
+      "empty": {
+        "title": "No department found",
+        "message": "Try adding a new department.",
+        "actions": {
+          "add": {
+            "label": "Add a department"
           }
         }
       }
     },
     "actions": {
       "add": {
-        "label": "Add Department"
+        "label": "Add a department"
+      },
+      "delete": {
+        "dialog": {
+          "title": "Delete department",
+          "message": "Deleting this department will also remove the following associated information:",
+          "hasMembers": "You cannot delete this department because it has assigned users. Please reassign or remove those users before deleting the department.",
+          "hasDocuments": "You cannot delete this department because it has associated documents. Please reassign or remove those documents before deleting the department.",
+          "canBeDeleted": "The department can be deleted safely because it has no assigned users or documents.",
+          "relatedItems": {
+            "users": "All users assigned to this department.",
+            "douments": "All documents associated with this department."
+          }
+        }
+      }
+    }
+  },
+  "documentType": {
+    "title": "Document types management",
+    "subtitle": "Manage document types and their attributes",
+    "hovercard": {
+      "title": "Document type details",
+      "description": "Document type description",
+      "attributes": "{{count}} attributes",
+      "noAttributes": "No attributes",
+      "createdBy": "Created by",
+      "createdAt": "Created at",
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        }
+      }
+    },
+    "table": {
+      "title": "Document type list",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "attributes": "Attributes",
+        "documents": "Documents",
+        "createdBy": "Created by",
+        "createdAt": "Created at",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "delete": {
+          "label": "Delete"
+        }
+      },
+      "empty": {
+        "title": "No document type found",
+        "message": "Try adding a new document type.",
+        "actions": {
+          "add": {
+            "label": "Add a document type"
+          }
+        }
+      }
+    },
+    "actions": {
+      "add": {
+        "label": "Add a document type"
+      }
+    },
+    "forms": {
+      "add": {
+        "title": "Add a document type",
+        "subtitle": "Fill in the document type information",
+        "name": {
+          "label": "Name",
+          "placeholder": "Document type name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Document type description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Add",
+            "loading": "Adding..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        },
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The document type has been added successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while adding the document type. Please try again."
+          }
+        }
+      },
+      "edit": {
+        "title": "Edit document type",
+        "subtitle": "Modify the document type information",
+        "name": {
+          "label": "Name",
+          "placeholder": "Document type name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Document type description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        },
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The document type has been updated successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while updating the document type. Please try again."
+          }
+        }
+      },
+      "delete": {
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The document type has been deleted successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while deleting the document type. Please try again."
+          }
+        },
+        "dialog": {
+          "title": "Delete document type",
+          "message": "Deleting this document type will also remove the following associated information:",
+          "relatedItems": {
+            "attributes": "All attributes associated with this document type.",
+            "documents": "All documents associated with this document type."
+          },
+          "cannotDeleteDescription": "However, you cannot delete this document type because:",
+          "hasDocuments": "There are documents associated with this document type. Please reassign or delete those documents before deleting the document type.",
+          "canBeDeleted": "The document type can be deleted safely because it has no associated documents."
+        }
+      }
+    }
+  },
+  "isoClause": {
+    "title": "ISO clauses management",
+    "subtitle": "Manage ISO clauses and their descriptions",
+    "table": {
+      "title": "ISO clauses list",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "description": "Description",
+        "documents": "Documents",
+        "createdBy": "Created by",
+        "createdAt": "Created at",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": {
+          "label": "Edit"
+        },
+        "delete": {
+          "label": "Delete"
+        }
+      },
+      "empty": {
+        "title": "No ISO clause found",
+        "message": "Try adding a new ISO clause.",
+        "actions": {
+          "add": {
+            "label": "Add an ISO clause"
+          }
+        }
+      }
+    },
+    "actions": {
+      "add": {
+        "label": "Add an ISO clause"
+      }
+    },
+    "forms": {
+      "add": {
+        "title": "Add an ISO clause",
+        "subtitle": "Fill in the ISO clause information",
+        "name": {
+          "label": "Name",
+          "placeholder": "ISO clause name"
+        },
+        "code": {
+          "label": "Code",
+          "placeholder": "ex: A.5"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "ISO clause description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Add",
+            "loading": "Adding..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        },
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The ISO clause has been added successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while adding the ISO clause. Please try again."
+          }
+        }
+      },
+      "edit": {
+        "title": "Edit ISO clause",
+        "subtitle": "Modify the ISO clause information",
+        "name": {
+          "label": "Name",
+          "placeholder": "ISO clause name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "ISO clause description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        },
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The ISO clause has been updated successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while updating the ISO clause. Please try again."
+          }
+        }
+      },
+      "delete": {
+        "dialog": {
+          "title": "Delete ISO clause",
+          "message": "Deleting this ISO clause will also remove the following associated information:",
+          "relatedItems": {
+            "documents": "All documents associated with this ISO clause."
+          },
+          "cannotDeleteDescription": "However, you cannot delete this ISO clause because:",
+          "hasDocuments": "There are documents associated with this ISO clause. Please reassign or delete those documents before deleting the ISO clause.",
+          "canBeDeleted": "The ISO clause can be deleted safely because it has no associated documents."
+        },
+        "toast": {
+          "success": {
+            "title": "Success",
+            "description": "The ISO clause has been deleted successfully"
+          },
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while deleting the ISO clause. Please try again."
+          }
+        }
       }
     }
   },
   "role": {
     "options": {
       "admin": "Administrator",
-      "viewer": "Visitor",
+      "viewer": "Viewer",
       "reviewer": "Reviewer",
       "contributor": "Contributor"
     },
     "actions": {
       "add": {
-        "label": "Add Role"
+        "label": "Add a role"
       }
     }
   },
   "unauthorized": {
-    "title": "Unauthorized Access",
+    "title": "Unauthorized access",
     "subtitle": "You do not have the necessary permissions to access this page.",
     "message": "Please contact the administrator if you believe this is an error.",
     "actions": {
       "goBack": {
-        "label": "Go back to previous page"
+        "label": "Return to the previous page"
       },
       "contactAdmin": {
-        "label": "Contact Administrator"
+        "label": "Contact the administrator"
       }
     }
   },
   "notFound": {
-    "title": "Page Not Found",
+    "title": "Page not found",
     "subtitle": "The page you are looking for does not exist.",
     "message": "Check the URL or return to the homepage.",
     "actions": {
       "goHome": {
-        "label": "Go to Homepage"
+        "label": "Go to the homepage"
       },
       "contactSupport": {
-        "label": "Contact Support"
+        "label": "Contact support"
       }
     }
   },
@@ -845,21 +1186,24 @@
     "ERR_USER_INACTIVE": "You cannot log in because your account is disabled. Please contact the administrator.",
     "ERR_INVALID_REFRESH_TOKEN": "Invalid refresh token",
     "ERR_INVALID_TOKEN": "Invalid token",
-    "ERR_RESET_TOKEN_EXPIRED": "Password reset link has expired",
+    "ERR_RESET_TOKEN_EXPIRED": "The password reset link has expired",
     "ERR_INVALID_RESET_TOKEN": "The password reset link is invalid",
     "ERR_USER_EXISTS": "A user with this email already exists. Please choose another.",
-    "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another."
+    "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another.",
+    "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "A document type with this name already exists. Please choose another.",
+    "ERR_CANNOT_DELETE_YOURSELF": "You cannot delete your own account",
+    "ERR_ISOCODE_DUPLICATED_NAME": "An ISO clause with this name already exists. Please choose another."
   },
   "zod": {
     "errors": {
       "password": {
-        "min": "Password must contain at least {{limit}} characters",
-        "regex": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+        "min": "The password must contain at least {{limit}} characters",
+        "regex": "The password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
         "required": "Password is required"
       },
       "confirmPassword": {
-        "min": "Please enter password confirmation",
-        "matches": "Password confirmation does not match password"
+        "min": "Please enter the password confirmation",
+        "matches": "Password confirmation does not match the password"
       },
       "email": {
         "email": "Please enter a valid email address"
@@ -875,8 +1219,8 @@
   },
   "components": {
     "deleteDialog": {
-      "title": "Delete {{entity}}?",
-      "description": "Are you sure you want to delete {{entity}}? This action is irreversible.",
+      "title": "Confirm deletion of \"{{entity}}\"",
+      "description": "You are about to permanently delete this item. This action is irreversible.",
       "actions": {
         "confirm": {
           "label": "Yes, delete",
@@ -897,14 +1241,19 @@
           "invited": "Invitation sent successfully to {{email}}"
         },
         "document": {
-          "created": "Revision created successfully",
-          "updated": "Revision updated successfully",
-          "deleted": "Revision deleted successfully"
+          "created": "Review created successfully",
+          "updated": "Review updated successfully",
+          "deleted": "Review deleted successfully"
+        },
+        "department": {
+          "deleted": "Department deleted successfully",
+          "added": "Department added successfully",
+          "updated": "Department updated successfully"
         }
       },
       "error": {
         "title": "Error",
-        "description": "An error occurred during {{action}}. Please try again."
+        "description": "An error occurred while {{action}}. Please try again."
       }
     },
     "table": {
@@ -941,8 +1290,8 @@
     },
     "fileUpload": {
       "title": {
-        "plural": "Import files",
-        "singular": "Import a file"
+        "plural": "Upload files",
+        "singular": "Upload a file"
       },
       "dragAndDrop": "Drag and drop files here or",
       "browseFiles": "Browse files",
@@ -950,7 +1299,7 @@
       "uploading": "Uploading...",
       "uploaded": "{{count}} file(s) uploaded",
       "errors": {
-        "fileTooLarge": "File is too large. Maximum size: {{size}}",
+        "fileTooLarge": "The file is too large. Maximum size: {{size}}",
         "invalidFileType": "Invalid file type. Allowed types: {{types}}",
         "required": "Please select a file to upload"
       }
@@ -960,17 +1309,19 @@
         "label": "User",
         "placeholder": "Select a user",
         "search": "Search for a user...",
-        "empty": "No users found.",
-        "addNew": "Add new user"
+        "empty": "No user found.",
+        "addNew": "Add a new user"
       }
     },
     "multiselect": {
       "user": {
         "label": "Users",
         "placeholder": "Select users",
-        "search": "Search for users...",
-        "empty": "No users found.",
-        "addNew": "Add new user"
+        "search": "Search users...",
+        "empty": "No user found.",
+        "addNew": "Add a new user",
+        "loading": "Loading users...",
+        "searching": "Searching users..."
       }
     },
     "document": {
@@ -980,38 +1331,52 @@
         "browse": "Browse files",
         "fileRejected": "The file \"{{name}}\" was rejected"
       }
+    },
+    "selectWithButton": {
+      "noResults": "No results found",
+      "search": {
+        "placeholder": "Search..."
+      }
     }
   },
   "navigation": {
     "dashboard": {
       "label": "Dashboard",
-      "description": "Overview and Key Indicators"
+      "description": "Overview and key metrics"
     },
     "documents": {
       "label": "Documents",
-      "description": "Policies and Procedures Repository"
+      "description": "Repository of policies and procedures"
     },
     "reviews": {
       "label": "Reviews",
-      "description": "Validation Process Management"
+      "description": "Manage approval workflows"
     },
     "compliance": {
       "label": "Compliance",
-      "description": "ISO 27001 Compliance Status Tracking"
+      "description": "Track ISO 27001 compliance status"
     },
     "users": {
       "label": "Users",
-      "description": "Roles and Access Management"
+      "description": "Manage roles and access"
     },
     "auditLog": {
-      "label": "Audit Log",
-      "description": "Change Tracking and Traceability"
+      "label": "Audit log",
+      "description": "Track and trace changes"
     },
     "others": {
-      "title": "Other Menus",
+      "title": "Other menus",
       "departments": {
         "label": "Departments",
-        "description": "Department Management"
+        "description": "Manage departments"
+      },
+      "documentTypes": {
+        "label": "Document types",
+        "description": "Manage document types"
+      },
+      "isoClauses": {
+        "label": "ISO clauses",
+        "description": "Manage ISO clauses"
       }
     }
   },
@@ -1039,7 +1404,7 @@
     "document": {
       "status": {
         "draft": "Draft",
-        "in_review": "In Review",
+        "in_review": "In review",
         "approved": "Approved",
         "expired": "Expired"
       },
@@ -1048,7 +1413,7 @@
         "description": "The document you are looking for does not exist.",
         "actions": {
           "goBack": {
-            "label": "Return to document list"
+            "label": "Return to the document list"
           },
           "contactSupport": {
             "label": "Contact support"
@@ -1067,9 +1432,9 @@
         "stay": "Stay on this page after saving"
       },
       "edit": {
-        "stay": "Stay on this page after editing"
+        "stay": "Stay on this page after updating"
       },
-      "requiredIndicatorInfo": "Fields marked with a <span>*</span> are required"
+      "requiredIndicatorInfo": "Fields marked with <span>*</span> are required"
     },
     "error": {
       "tryAgain": "Try again",

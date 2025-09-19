@@ -28,6 +28,7 @@ export const API_CONFIG = {
             GET: (id: string | number) => `/departments/${id}`,
             UPDATE: (id: string | number) => `/departments/${id}`,
             DELETE: (id: string | number) => `/departments/${id}`,
+            SEARCH: "/departments/search",
         },
         DOCUMENTS: {
             BASE: "/documents",
@@ -43,12 +44,14 @@ export const API_CONFIG = {
             GET: (id: string | number) => `/iso-clauses/${id}`,
             UPDATE: (id: string | number) => `/iso-clauses/${id}`,
             DELETE: (id: string | number) => `/iso-clauses/${id}`,
+            SEARCH: "/iso-clauses/search",
         },
         DOCUMENT_TYPES: {
             BASE: "/document-types",
             GET: (id: string | number) => `/document-types/${id}`,
             UPDATE: (id: string | number) => `/document-types/${id}`,
             DELETE: (id: string | number) => `/document-types/${id}`,
+            SEARCH: "/document-types/search",
         },
         EXCEL_IMAGE: "/excel/image",
     },

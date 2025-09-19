@@ -28,9 +28,13 @@ export class ISOClauseController {
         }
     }
 
-    async findAll(_req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         try {
-            const clauses = await service.findAll();
+            const { page = '1', limit = '20' } = req.query;
+            const clauses = await service.list({
+                page: Number(page),
+                limit: Number(limit),
+            });
             return res.json(clauses);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
@@ -73,6 +77,17 @@ export class ISOClauseController {
         try {
             await service.delete(req.params.id!);
             return res.status(204).send();
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const clauses = await service.search(normalizedQ);
+            return res.json(clauses);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
         }

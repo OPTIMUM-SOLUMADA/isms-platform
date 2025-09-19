@@ -280,11 +280,10 @@ export function DataTable<TData, TValue>({
                             total: table.getFilteredRowModel().rows.length,
                         })}
                     </div>
-                    {page !== undefined && pageSize !== undefined && totalCount !== undefined && onPageChange && (
+                    {page !== undefined && totalCount !== undefined && onPageChange && (
                         <Pagination
                             table={table}
                             page={page}
-                            pageSize={pageSize}
                             totalCount={totalCount}
                             onPageChange={onPageChange}
                         />

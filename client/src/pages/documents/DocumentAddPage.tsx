@@ -4,7 +4,6 @@ import AddDocumentForm, { AddDocumentFormRef, type AddDocumentFormData } from '@
 import { useNavigate } from 'react-router-dom';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
-import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
@@ -17,11 +16,12 @@ import { useFetchDepartments } from '@/hooks/queries/useDepartmentMutations';
 import { useFetchDocumentTypes } from '@/hooks/queries/useDocumentTypeMutations';
 import { useFetchUsers } from '@/hooks/queries/useUserMutations';
 import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
+import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { clauses } = useISOClause();
+  const { isoClauses } = useISOClauseStore();
   const { documentTypes } = useDocumentTypeStore();
   const { users } = useUserStore();
   const { departments } = useDepartmentStore();
@@ -73,7 +73,7 @@ export default function DocumentAddPage() {
           <CardContent className='pt-4 lg:px-20 px-10 bg-white'>
             <AddDocumentForm
               ref={formRef}
-              isoClauses={clauses}
+              isoClauses={isoClauses}
               types={documentTypes}
               users={users}
               departments={departments}
