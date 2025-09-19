@@ -33,6 +33,9 @@ import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
+import { SelectWithButton } from "@/components/SelectWithButton";
+import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
+import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -90,6 +93,9 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
     const navigate = useNavigate();
 
     const [stay, setStay] = useLocalStorage("editDocumentFormStay", false);
+
+    const { openAdd: openAddDepartmentModal } = useDepartmentUI();
+    const { openAdd: openAddDocumentTypeModal } = useDocumentTypeUIStore();
 
     const form = useForm<EditDocumentFormData>({
       resolver: zodResolver(documentSchema),
@@ -183,22 +189,18 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     {t("document.add.form.fields.type.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
+                    <SelectWithButton
+                      placeholder={t("document.add.form.fields.type.placeholder")}
+                      items={types.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={field.onChange}
                       value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.add.form.fields.type.placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {types.map((item, index) => (
-                          <SelectItem key={index} value={item.id}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      addLabel={t("documentType.actions.add.label")}
+                      hasError={!!fieldState.error}
+                      onButtonClick={openAddDocumentTypeModal}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -247,22 +249,19 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     {t("document.add.form.fields.department.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
+
+                    <SelectWithButton
+                      placeholder={t("document.add.form.fields.department.placeholder")}
+                      items={departments.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={field.onChange}
                       value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.add.form.fields.department.placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {departments.map((item, index) => (
-                          <SelectItem key={index} value={item.id}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      addLabel={t("department.actions.add.label")}
+                      hasError={!!fieldState.error}
+                      onButtonClick={openAddDepartmentModal}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,22 +278,18 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     {t("document.add.form.fields.isoClause.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
+                    <SelectWithButton
+                      placeholder={t("document.add.form.fields.isoClause.placeholder")}
+                      items={isoClauses.map((item) => ({
+                        value: item.id,
+                        label: `${item.code} ${item.name}`,
+                      }))}
+                      onChange={field.onChange}
                       value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.add.form.fields.isoClause.placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {isoClauses.map((item, index) => (
-                          <SelectItem key={index} value={item.id}>
-                            {item.code} - {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      addLabel={t("documentType.actions.add.label")}
+                      hasError={!!fieldState.error}
+                      onButtonClick={openAddDocumentTypeModal}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

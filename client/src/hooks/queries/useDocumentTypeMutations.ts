@@ -80,7 +80,7 @@ export const useUpdateDocumentType = () => {
     const docTypes = useDocumentTypeStore((s) => s.documentTypes);
     const queryClient = useQueryClient();
 
-    return useMutation<DocumentType, ApiAxiosError, { id: string; data: EditDocumentTypeFormData }>({
+    return useMutation<DocumentType, ApiAxiosError, { id: string; data: Partial<EditDocumentTypeFormData> }>({
         mutationFn: async ({ id, data }) => {
             return (await documentTypeService.update(id, data)).data;
         },

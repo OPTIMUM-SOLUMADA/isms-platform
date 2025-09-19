@@ -1,15 +1,29 @@
 import { Request, Response } from 'express';
 import { ISOClauseService } from '@/services/isoclause.service';
+import { Prisma } from '@prisma/client';
 
 const service = new ISOClauseService();
 
 export class ISOClauseController {
     async create(req: Request, res: Response) {
         try {
-            const { name, description, code } = req.body;
-            const clause = await service.create({ name, description, code });
+            const { name, description, code, userId } = req.body;
+            const clause = await service.create({
+                name,
+                description,
+                code,
+                ...(userId && { createdBy: { connect: { id: userId } } }),
+            });
             return res.status(201).json(clause);
         } catch (error: any) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    return res.status(400).json({
+                        error: error.message,
+                        code: 'ERR_ISOCODE_DUPLICATED_NAME',
+                    });
+                }
+            }
             return res.status(400).json({ error: error.message });
         }
     }
@@ -35,9 +49,22 @@ export class ISOClauseController {
 
     async update(req: Request, res: Response) {
         try {
-            const clause = await service.update(req.params.id!, req.body);
+            const { name, description, code } = req.body;
+            const clause = await service.update(req.params.id!, {
+                name,
+                description,
+                code,
+            });
             return res.json(clause);
         } catch (error: any) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    return res.status(400).json({
+                        error: error.message,
+                        code: 'ERR_ISOCODE_DUPLICATED_NAME',
+                    });
+                }
+            }
             return res.status(400).json({ error: error.message });
         }
     }

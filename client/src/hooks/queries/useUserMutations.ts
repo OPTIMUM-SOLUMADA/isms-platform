@@ -7,13 +7,14 @@ import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 import { ApiAxiosError } from "@/types/api";
 import useUserStore from "@/stores/user/useUserStore";
 import { User } from "@/types";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useDebounce } from "../use-debounce";
 
 // -----------------------------
 // Fetch Users
 // -----------------------------
 export const useFetchUsers = () => {
-    const { pagination, setUsers } = useUserStore();
+    const { pagination, setUsers, setPagination } = useUserStore();
     const query = useQuery<any, ApiAxiosError>({
         queryKey: ["users", pagination],
         queryFn: () => userService.list({ ...pagination }),
@@ -21,11 +22,37 @@ export const useFetchUsers = () => {
     });
 
     useEffect(() => {
-        if (query.data) setUsers(query.data.data);
-    }, [query.data, setUsers]);
+        if (query.data) {
+            const { users, pagination } = query.data.data;
+            setUsers(users);
+            setPagination(pagination);
+        };
+    }, [query.data, setUsers, setPagination]);
 
     return query;
 };
+
+export const useSearchUsers = () => {
+    const { query } = useUserStore();
+    const debounceQuery = useDebounce(query, 500);
+    return useQuery<User[], ApiAxiosError>({
+        queryKey: ["users", "search", debounceQuery],
+        queryFn: async () => (await userService.search(debounceQuery)).data,
+        // staleTime: 1000 * 30,
+        enabled: !!debounceQuery,
+    });
+};
+
+export const useFetchUsersByIds = (ids: string[]) => {
+    const stableIds = useMemo(() => ids, [ids]);
+    return useQuery<User[], ApiAxiosError>({
+        queryKey: ["users", "useFetchUsersByIds", ids],
+        queryFn: async () => (await userService.getUserByIds(stableIds)).data,
+        // staleTime: 1000 * 5,
+        enabled: stableIds.length > 0,
+    });
+};
+
 
 // -----------------------------
 // Create User

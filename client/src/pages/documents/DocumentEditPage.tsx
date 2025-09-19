@@ -2,8 +2,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
-import { useISOClause } from '@/contexts/ISOClauseContext';
-import { useDocumentType } from '@/contexts/DocumentTypeContext';
 import { useDocument } from '@/contexts/DocumentContext';
 import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
@@ -17,15 +15,27 @@ import ItemNotFound from '../ItemNotFound';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import useUserStore from '@/stores/user/useUserStore';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
+import useDocumentTypeStore from '@/stores/document-type/useDocumentTypeStore';
+import { useFetchDepartments } from '@/hooks/queries/useDepartmentMutations';
+import { useFetchDocumentTypes } from '@/hooks/queries/useDocumentTypeMutations';
+import { useFetchUsers } from '@/hooks/queries/useUserMutations';
+import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
+import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
     const { updateDocument, isUpdating } = useDocument();
-    const { clauses } = useISOClause();
-    const { types } = useDocumentType();
+    const { isoClauses } = useISOClauseStore();
+    const { documentTypes } = useDocumentTypeStore();
     const { users } = useUserStore();
     const { departments } = useDepartmentStore();
     const navigate = useNavigate();
+
+    // data need to be fetched
+    useFetchDepartments();
+    useFetchDocumentTypes();
+    useFetchUsers();
+    useFetchISOClauses();
 
     const params = useParams();
 
@@ -100,8 +110,8 @@ export default function DocumentEditPage() {
                         <EditDocumentForm
                             doc={doc!}
                             ref={formRef}
-                            isoClauses={clauses}
-                            types={types}
+                            isoClauses={isoClauses}
+                            types={documentTypes}
                             users={users}
                             departments={departments}
                             onSubmit={handleUpdateDocument}

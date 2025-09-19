@@ -138,13 +138,45 @@ export class UserController {
 
     async list(req: Request, res: Response) {
         try {
+            // Get queries params
+            const { limit = '50', page = '1' } = req.query;
             const filter: any = {};
             if (req.query.role) filter.role = req.query.role;
             if (req.query.isActive) filter.isActive = req.query.isActive === 'true';
 
-            const users = await service.listUsers(filter);
+            const data = await service.listUsers({
+                filter,
+                page: Number(page),
+                limit: Number(limit),
+            });
+            res.json(data);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async search(req: Request, res: Response) {
+        try {
+            const { q = '' } = req.query;
+            const normalizedQ = q.toString().trim().toLowerCase();
+            const users = await service.searchUsers(normalizedQ);
             res.json(users);
         } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async getUserByIds(req: Request, res: Response) {
+        try {
+            const { ids = '' } = req.query;
+            const idsSet = ids
+                .toString()
+                .split(',')
+                .filter((e) => e);
+            const users = await service.getUsersByIds(idsSet);
+            res.json(users);
+        } catch (err) {
+            console.log(err);
             res.status(400).json({ error: (err as Error).message });
         }
     }

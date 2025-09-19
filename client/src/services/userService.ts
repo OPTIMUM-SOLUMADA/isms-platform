@@ -35,4 +35,6 @@ export const userService = {
     sendInvitation: async (id: string) => axios.post(api.INVITE(id)),
     activate: async (id: string) => axios.patch(api.ACTIVATE(id)),
     deactivate: async (id: string) => axios.patch(api.DEACTIVATE(id)),
+    search: async (q: string) => axios.get(api.SEARCH, { params: { q } }),
+    getUserByIds: async (ids: string[]) => axios.get(api.GET_USER_BY_IDS, { params: { ids: ids.join(',') } }),
 }

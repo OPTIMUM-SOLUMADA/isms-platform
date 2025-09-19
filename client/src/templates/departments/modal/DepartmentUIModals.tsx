@@ -4,15 +4,28 @@ import DeleteDepartmentDialog from "../dialog/DeleteDepartmentDialog";
 import EditDepartmentFormDialog from "../dialog/EditDepartmentDialog";
 
 export const DepartmentUIModals = () => {
-  const { isAddOpen, closeAdd, isDeleteOpen, isEditOpen, closeDelete, currentDepartment, setCurrentDepartment } = useDepartmentUI();
+  const {
+    isAddOpen,
+    closeAdd,
+    isDeleteOpen,
+    isEditOpen,
+    closeDelete,
+    currentDepartment,
+    closeEdit,
+    setCurrentDepartment,
+  } = useDepartmentUI();
 
   function handleCloseDelete() {
     closeDelete();
-    setCurrentDepartment(null);
+    clear();
   }
   function handleCloseEdit() {
-    closeDelete();
-    setCurrentDepartment(null);
+    closeEdit();
+    clear();
+  }
+
+  function clear() {
+    setTimeout(() => setCurrentDepartment(null), 1000);
   }
 
   return (

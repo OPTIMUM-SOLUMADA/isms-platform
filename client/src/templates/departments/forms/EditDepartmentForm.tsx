@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const editDepartmentSchema = z.object({
     id: z.string(),
+    userId: z.string().optional(),
     name: z.string().nonempty(i18n.t("zod.errors.required")),
     description: z.string().optional(),
 });
@@ -21,6 +22,7 @@ export type EditDepartmentFormData = z.infer<typeof editDepartmentSchema>;
 
 type EditDepartmentFormProps = CustomFormProps<EditDepartmentFormData> & {
     defaultValues: Partial<EditDepartmentFormData>;
+    userId?: string;
 };
 
 const EditDepartmentForm = ({
@@ -28,6 +30,7 @@ const EditDepartmentForm = ({
     onSubmit,
     onCancel,
     isPending = false,
+    userId,
     error
 }: EditDepartmentFormProps) => {
     const { t } = useTranslation();
@@ -35,11 +38,12 @@ const EditDepartmentForm = ({
     const form = useForm<EditDepartmentFormData>({
         resolver: zodResolver(editDepartmentSchema),
         defaultValues: {
-            id: defaultValues.id || "",
-            name: defaultValues.name || "",
-            description: defaultValues.description || "",
+            id: defaultValues.id,
+            userId: userId,
+            name: defaultValues.name,
+            description: defaultValues.description,
         },
-    })
+    });
 
     const {
         handleSubmit,

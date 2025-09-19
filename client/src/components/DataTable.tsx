@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { ChevronDown, ArrowUpDown, Trash2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TableSkeletonRow from "./TableSkeletonRow";
+import { Pagination } from "./Pagination";
 
 // ============================================================================
 // Reusable DataTable
@@ -40,10 +41,12 @@ import TableSkeletonRow from "./TableSkeletonRow";
 export type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    totalCount?: number; // total items for server pagination
+    page?: number;       // current page (1-indexed)
+    pageSize?: number;   // page size
+    onPageChange?: (page: number) => void; // called when user clicks next/prev/page
     /** Optional: Which column id to bind the top-right search box to (global if omitted) */
     searchableColumnId?: string;
-    /** Optional: initial page size (default 10) */
-    pageSize?: number;
     /** Optional: enable checkbox row selection */
     enableRowSelection?: boolean;
     /** Optional: controlled className */
@@ -62,7 +65,10 @@ export function DataTable<TData, TValue>({
     columns,
     data,
     searchableColumnId,
+    totalCount = 0,
+    page = 1,
     pageSize = 10,
+    onPageChange,
     enableRowSelection = false,
     enableSearch = false,
     className,
@@ -214,8 +220,8 @@ export function DataTable<TData, TValue>({
 
             <CardContent className="flex-1 flex flex-col flex-grow">
                 <div className="rounded-lg border overflow-hidden flex flex-col flex-grow bg-white">
-                    <div className="flex-grow overflow-auto rounded-lg">
-                        <Table className="w-full">
+                    <div className="flex-grow overflow-auto rounded-lg flex flex-col">
+                        <Table className={cn("w-full", !table.getRowModel().rows?.length && "grow")}>
                             <TableHeader>
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id}>
@@ -274,14 +280,15 @@ export function DataTable<TData, TValue>({
                             total: table.getFilteredRowModel().rows.length,
                         })}
                     </div>
-                    <div className="space-x-2">
-                        <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                            {t("components.table.pagination.previous")}
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                            {t("components.table.pagination.next")}
-                        </Button>
-                    </div>
+                    {page !== undefined && pageSize !== undefined && totalCount !== undefined && onPageChange && (
+                        <Pagination
+                            table={table}
+                            page={page}
+                            pageSize={pageSize}
+                            totalCount={totalCount}
+                            onPageChange={onPageChange}
+                        />
+                    )}
                 </div>
             </CardContent>
         </Card>

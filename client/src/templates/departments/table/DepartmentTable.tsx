@@ -1,14 +1,18 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusCircle, Edit, Trash, Building2, Minus } from "lucide-react";
+import { PlusCircle, Edit, Trash, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import type { Department } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { UserAvatarGroup } from "@/components/UserAvatarGroup";
+import { UserAvatarGroup } from "@/templates/users/UserAvatarGroup";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import DocumentsHoverCard from "@/templates/documents/hovercard/DocumentsHoverCard";
+import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
+import { formatDate } from "@/lib/date";
+import { useAuth } from "@/contexts/AuthContext";
+import CellNoValue from "@/components/CellNoValue";
 
 
 // UserTable component using the reusable DataTable
@@ -23,17 +27,18 @@ const Table = ({
 }: DepartmentTableProps) => {
     const { t } = useTranslation();
     const { openDelete, setCurrentDepartment, openEdit } = useDepartmentUI();
+    const { user: activeUser } = useAuth();
 
     // Define columns for UserTable
     const departmentColumns: ColumnDef<Department>[] = useMemo(() => [
         {
             accessorKey: "name",
             header: t("department.table.columns.name"),
-            size: 100,
+            size: 140,
             cell: ({ row }) => {
                 const department = row.original;
                 return (
-                    <span>{department.name}</span>
+                    <span className="font-semibold text-primary">{department.name}</span>
                 );
             },
         },
@@ -41,9 +46,11 @@ const Table = ({
             accessorKey: "description",
             header: t("department.table.columns.description"),
             cell: ({ row }) => {
-                const department = row.original;
-                return (
-                    <span>{department.description}</span>
+                const { description } = row.original;
+                return description ? (
+                    <span>{description}</span>
+                ) : (
+                    <CellNoValue />
                 );
             },
         },
@@ -53,9 +60,12 @@ const Table = ({
             cell: ({ row }) => {
                 const users = row.original.members;
                 return users.length > 0 ? (
-                    <UserAvatarGroup users={users} />
+                    <div className="flex items-center gap-1">
+                        <UserAvatarGroup users={users} />
+                        <span className="text-muted-foreground text-xs">({users.length})</span>
+                    </div>
                 ) : (
-                    <Minus className="h-4 w-4 text-muted-foreground" />
+                    <CellNoValue />
                 );
             }
         },
@@ -68,8 +78,29 @@ const Table = ({
                 return docs.length > 0 ? (
                     <DocumentsHoverCard documents={docs} />
                 ) : (
-                    <Minus className="h-4 w-4 text-muted-foreground" />
+                    <CellNoValue />
                 );
+            }
+        },
+        {
+            accessorKey: "createdBy",
+            header: t("department.table.columns.createdBy"),
+            size: 60,
+            cell: ({ row }) => {
+                const user = row.original.createdBy;
+                return user ? (
+                    <UserHoverCard user={user} currentUserId={activeUser?.id} />
+                ) : (
+                    <CellNoValue />
+                );
+            }
+        },
+        {
+            accessorKey: "createdAt",
+            header: t("department.table.columns.createdAt"),
+            size: 60,
+            cell: ({ row }) => {
+                return <span className="text-muted-foreground">{formatDate(row.original.createdAt)}</span>;
             }
         },
 
@@ -109,11 +140,11 @@ const Table = ({
             enableSorting: false,
             enableHiding: false,
         },
-    ], [t, openDelete, setCurrentDepartment, openEdit]);
+    ], [t, openDelete, setCurrentDepartment, openEdit, activeUser]);
 
     return (
         <DataTable
-            title={t("user.table.title")}
+            title={t("documentType.table.title")}
             columns={departmentColumns}
             data={data}
             enableSearch
