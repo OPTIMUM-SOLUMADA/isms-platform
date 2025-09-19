@@ -40,7 +40,7 @@ export default function LoginForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "njatotianafiononana@gmail.com",
-            password: "Njato!0011",
+            password: "Nj@to0012",
             rememberMe: false
         },
         reValidateMode: "onChange"

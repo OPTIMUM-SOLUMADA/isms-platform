@@ -38,7 +38,7 @@ export const useDocumentTypeStore = create<DocumentTypeStore>((set) => ({
     query: "",
     setQuery: (query) => set({ query }),
 
-    pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
+    pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
     setPagination: (pagination) => set({ pagination }),
 }));
 

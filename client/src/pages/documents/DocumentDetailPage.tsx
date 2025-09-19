@@ -13,7 +13,8 @@ import {
   Download,
   Rocket,
   Archive,
-  Users
+  Users,
+  Building2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
@@ -46,6 +47,7 @@ import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
+import DepartmentHoverCard from "@/templates/departments/hovercard/DepartmentHoverCard";
 
 const tabs = [
   {
@@ -89,6 +91,8 @@ export default function DocumentDetailPage() {
     isError,
     refetch
   } = useGetDocument(params.id);
+
+  console.log(document)
 
   const { openDelete, setCurrentDocument } = useDocumentUI();
 
@@ -178,7 +182,7 @@ export default function DocumentDetailPage() {
             <CardTitle>{t("document.view.detail.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex items-center gap-2">
                 <UserIcon numberOfUsers={document.owners.length} />
                 <span className="font-medium">{t("document.view.detail.owner")}:</span>
@@ -209,6 +213,15 @@ export default function DocumentDetailPage() {
                 <span className="font-medium">{t("document.view.detail.version")}:</span>
                 <Badge variant="outline">{document.versions.find((v) => v.isCurrent)?.version}</Badge>
               </div>
+              {/* Department */}
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("document.view.detail.department")}:</span>
+                <div className="flex items-center gap-1">
+                  <DepartmentHoverCard department={document.department} />
+                </div>
+              </div>
+              {/* Last Updated */}
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.lastUpdated")}:</span>
@@ -223,10 +236,21 @@ export default function DocumentDetailPage() {
                   }, 'en-US')}
                 </span>
               </div>
+              {/* Review Frequency */}
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("document.view.detail.reviewFrequency")}:</span>
+                <div className="flex items-center gap-1">
+                  <span>{t(`document.add.form.fields.reviewFrequencyUnit.options.${document.reviewFrequency?.toLowerCase()}`)}</span>
+                </div>
+              </div>
+              {/* Next Review */}
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{t("document.view.detail.nextReview")}:</span>
-                <span>{"N/A"}</span>
+                {document.nextReviewDate && (
+                  <span>{formatDate(document.nextReviewDate, { day: "numeric", month: "short", year: "numeric" }, 'en-US')}</span>
+                )}
               </div>
             </div>
           </CardContent>
@@ -288,13 +312,13 @@ export default function DocumentDetailPage() {
 
 export const useGetDocument = (id: string | undefined) => {
   return useQuery<Document, ApiAxiosError>({
-    queryKey: ["document", id],
+    queryKey: ["documents", id],
     queryFn: async () => {
       if (!id) throw new Error("Document ID is required");
       const res = await documentService.getById(id);
       return res.data;
     },
-    enabled: !!id, // only fetch if id exists
+    // enabled: !!id, // only fetch if id exists
     staleTime: 1000 * 60 * 5, // optional: cache 5 minutes
   });
 };
