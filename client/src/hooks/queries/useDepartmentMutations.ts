@@ -79,6 +79,7 @@ export const useUpdateDepartment = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { replaceDepartement } = useDepartmentStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, EditDepartmentFormData>({
         mutationFn: ({ id, ...rest }) => depService.update(id, rest),
@@ -89,6 +90,7 @@ export const useUpdateDepartment = () => {
                 variant: "success",
             });
             replaceDepartement(variables.id, res.data);
+            queryClient.invalidateQueries({ queryKey: ["departements"] });
         },
     });
 };

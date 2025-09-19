@@ -50,7 +50,7 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).optional(),
+  reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
     .min(1, { message: i18n.t("components.fileUpload.errors.required") })
@@ -343,7 +343,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               render={({ field, fieldState }) => (
                 <FormItem className="col-span-2">
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.reviewers.label")}
+                    {t("document.add.form.fields.reviewers.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
