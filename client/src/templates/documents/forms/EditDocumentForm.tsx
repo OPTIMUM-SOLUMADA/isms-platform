@@ -50,7 +50,7 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).optional(),
+  reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
     .refine((files) => files.every((file) => file.size <= maxFileSize), {

@@ -95,6 +95,7 @@ export const useUpdateUser = () => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const { replaceUser } = useUserStore();
+    const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, UpdateUserFormData>({
         mutationFn: ({ id, ...rest }) => userService.update(id, rest),
@@ -105,6 +106,7 @@ export const useUpdateUser = () => {
                 variant: "success",
             });
             replaceUser(variables.id, res.data);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         },
     });
 };
@@ -117,6 +119,8 @@ export const useDeleteUser = () => {
     const { t } = useTranslation();
     const { removeUser } = useUserStore();
 
+    const queryClient = useQueryClient();
+
     return useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: ({ id }) => userService.delete(id),
         onSuccess: (_, variables) => {
@@ -126,6 +130,7 @@ export const useDeleteUser = () => {
                 variant: "success",
             });
             removeUser(variables.id);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         },
     });
 };
@@ -153,10 +158,10 @@ export const useSendInvitation = () => {
 
     return useMutation<any, ApiAxiosError, { id: string }>({
         mutationFn: ({ id }) => userService.sendInvitation(id),
-        onSuccess: () => {
+        onSuccess: (res) => {
             toast({
                 title: t("components.toast.success.title"),
-                description: t("components.toast.success.user.invited"),
+                description: t("components.toast.success.user.invited", { email: res.data.email }),
                 variant: "success",
             });
         },
