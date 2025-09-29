@@ -26,6 +26,7 @@ export class UserController {
 
             const user = await service.createUser({
                 ...rest,
+                isActive: false,
                 department: {
                     connect: {
                         id: departmentId,
@@ -79,6 +80,50 @@ export class UserController {
                 res.json(user);
             }
         } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async sendEmailVerification(req: Request, res: Response) {
+        try {
+            const user = await service.getUseByIdNoInclude(req.params.id!);
+            if (!user) {
+                res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+            } else {
+                // Check if user already has password hash set
+                if (user.isActive) {
+                    res.status(400).json({
+                        error: 'User is already active',
+                        code: 'ERR_USER_ALREADY_ACTIVE',
+                    });
+                    return;
+                } else {
+                    const token = await jwtService.generateEmailInvitationToken(user);
+
+                    // template html
+                    const html = await EmailTemplate.emailVerification({
+                        userName: user.name!,
+                        orgName: env.ORG_NAME,
+                        verificationLink: `${env.CORS_ORIGIN}/verify-account/${token}`,
+                        year: new Date().getFullYear().toString(),
+                        headerDescription: '',
+                        role: user.role,
+                    });
+
+                    // Send email
+                    await emailService.sendMail({
+                        to: user.email,
+                        subject: 'Email Verification',
+                        html,
+                    });
+
+                    res.status(200).json({
+                        message: 'Email sent successfully',
+                    });
+                }
+            }
+        } catch (err) {
+            console.error(err);
             res.status(400).json({ error: (err as Error).message });
         }
     }

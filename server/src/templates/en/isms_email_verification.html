@@ -1,0 +1,30 @@
+<!--
+  ISMS Account Verification Email — Responsive Email Template (single-file)
+  Notes:
+  - Same look & feel as invitation/reset-password email.
+  - Replace placeholders: {{userName}}, {{orgName}}, {{role}}, {{verificationLink}}, {{year}}
+-->
+<div class="content" style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333;">
+    <p style="font-size:20px;margin-bottom:16px;text-align:center;">Hello {{userName}},</p>
+
+    <p>
+        You've been invited to join <strong>{{orgName}}</strong> as {{role}}.
+        To get started, we need to verify your email address.
+        Please click the button below to confirm your account and gain full access.
+    </p>
+
+    <div style="margin:24px 0;text-align:center;">
+        <a href="{{verificationLink}}" target="_blank" class="btn main">
+            Verify My Account
+        </a>
+    </div>
+
+    <p style="font-size:14px;line-height:1.5;margin-bottom:8px;">
+        This verification link is valid for 7 days.
+        If it expires, you can request a new verification email from an administrator.
+    </p>
+
+    <p style="font-size:14px;line-height:1.5;margin-top:24px;">
+        If you weren't expecting this email, you can safely ignore it.
+    </p>
+</div>

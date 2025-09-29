@@ -41,4 +41,13 @@ export const EmailTemplate = {
             viewDocLink: string;
         } & CommonData,
     ) => renderTemplate('en', 'isms_reviewer_reminder', data),
+
+    // invitation
+    emailVerification: (
+        data: {
+            verificationLink: string;
+            role: string;
+            userName: string;
+        } & CommonData,
+    ) => renderTemplate('en', 'isms_email_verification', data),
 };

@@ -53,6 +53,17 @@ export class JwtService {
         });
     }
 
+    generateEmailInvitationToken(user: User) {
+        return jwt.sign({ user: l(user) }, env.JWT_ACCESS_SECRET, {
+            expiresIn: env.JWT_CHANGE_PWD_EXPIRES_IN as any,
+            issuer: env.JWT_ISSUER,
+        });
+    }
+
+    verifyEmailInvitationToken = (token: string) => {
+        return jwt.verify(token, env.JWT_ACCESS_SECRET) as Payload;
+    };
+
     verifyPasswordResetToken = (token: string) => {
         return jwt.verify(token, env.JWT_ACCESS_SECRET) as Payload;
     };

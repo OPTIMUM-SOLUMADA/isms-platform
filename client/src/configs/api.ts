@@ -11,6 +11,7 @@ export const API_CONFIG = {
             VERIFY: "/auth/verify",
             LOGOUT: "/auth/logout",
             VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
+            VERIFY_ACCOUNT: "/auth/verify-account",
         },
         USERS: {
             BASE: "/users",
