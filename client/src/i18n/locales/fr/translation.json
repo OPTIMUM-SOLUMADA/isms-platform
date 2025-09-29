@@ -94,6 +94,32 @@
                     "label": "Revenir au connexion"
                 }
             }
+        },
+        "accountVerification": {
+            "title": "Vérification du compte",
+            "subtitle": "Vérifiez votre compte pour l’activer",
+            "hint": "Cliquez sur le bouton ci-dessous pour vérifier votre compte. Une fois vérifié, vous pourrez réinitialiser votre mot de passe et accéder au portail ISMS.",
+            "button": {
+                "label": "Vérifier mon compte",
+                "sending": "Vérification en cours..."
+            },
+            "actions": {
+                "verify": {
+                    "label": "Vérifier mon compte",
+                    "loading": "Vérification en cours..."
+                },
+                "login": {
+                    "label": "Se connecter"
+                }
+            },
+            "verified": {
+                "title": "Compte vérifié !",
+                "message": "Votre compte a bien été vérifié.\nVous pouvez maintenant réinitialiser votre mot de passe et accéder au portail ISMS.",
+                "hint": "Cliquez sur le bouton ci-dessus pour définir votre mot de passe.",
+                "actions": {
+                    "definePassword": "Définir votre mot de passe"
+                }
+            }
         }
     },
     "dashboard": {
@@ -1192,7 +1218,8 @@
         "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "Un type de document avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_CANNOT_DELETE_YOURSELF": "Vous ne pouvez pas supprimer votre propre compte",
-        "ERR_ISOCODE_DUPLICATED_NAME": "Une Clause/Control Number avec ce nom existe déjà. Veuillez en choisir un autre."
+        "ERR_ISOCODE_DUPLICATED_NAME": "Une Clause/Control Number avec ce nom existe déjà. Veuillez en choisir un autre.",
+        "ERR_USER_ALREADY_VERIFIED": "Cet utilisateur a été déjà verifié"
     },
     "zod": {
         "errors": {

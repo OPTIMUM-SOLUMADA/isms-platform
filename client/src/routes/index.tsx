@@ -19,6 +19,7 @@ import { PageSkeleton } from "@/components/page-skeleton";
 import DepartmentPage from "@/pages/departments/DepartmentPage";
 import DocumentTypePage from "@/pages/document-types/DocumentTypePage";
 import ISOClausePage from "@/pages/ISOClausePage";
+import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -47,6 +48,7 @@ const routeConfig: AppRoute[] = [
     { path: "/login", element: <LoginPage />, type: "public" },
     { path: "/forgot-password", element: <ForgotPasswordPage />, type: "public" },
     { path: "/reset-password", element: <ResetPasswordPage />, type: "public" },
+    { path: "/verify-account/:token", element: <VerifyAccountPage />, type: "public" },
     {
         path: "/",
         type: "protected",

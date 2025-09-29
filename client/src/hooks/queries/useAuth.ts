@@ -4,7 +4,11 @@ import type { LoginFormData } from "@/templates/auth/forms/LoginForm";
 import type { ApiAxiosError } from "@/types/api";
 
 export const useLogin = () => useMutation({
-    mutationFn: (payload: LoginFormData) => AuthService.login(payload.email, payload.password),
+    mutationFn: (payload: LoginFormData) => AuthService.login({
+        email: payload.email,
+        password: payload.password,
+        rememberMe: payload.rememberMe
+    }),
 });
 
 export const useLogout = () => useMutation({
@@ -21,4 +25,8 @@ export const useChangePassword = () => useMutation<any, ApiAxiosError, { passwor
 
 export const useResetPassword = () => useMutation<any, ApiAxiosError, { email: string }>({
     mutationFn: (payload: { email: string }) => AuthService.resetPassword(payload.email),
+});
+
+export const useVerifyAccount = () => useMutation<any, ApiAxiosError, { token: string }>({
+    mutationFn: (payload: { token: string }) => AuthService.verifyAccount(payload.token),
 });

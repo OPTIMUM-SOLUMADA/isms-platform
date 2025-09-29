@@ -23,6 +23,10 @@ const AuthService = {
     verifyResetToken: async (resetToken: string) => {
         return axios.post(API.ENDPOINTS.AUTH.VERIFY_RESET_TOKEN, { resetToken });
     },
+
+    verifyAccount: async (token: string) => {
+        return axios.post(API.ENDPOINTS.AUTH.VERIFY_ACCOUNT, { token });
+    },
 }
 
 export default AuthService;

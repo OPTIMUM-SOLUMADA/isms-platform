@@ -13,6 +13,7 @@ import excelRoutes from './routes/excel.routes';
 import invitationRoutes from './routes/invitation.routes';
 import { env } from './configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from './configs/upload';
+import { PUBLIC_PATH } from './configs/public';
 
 const app = express();
 
@@ -29,6 +30,9 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization'],
     }),
 );
+
+// Public folder
+app.use(express.static(PUBLIC_PATH));
 
 // make uploads folder to be public
 app.use(UPLOAD_URL, express.static(UPLOAD_PATH));

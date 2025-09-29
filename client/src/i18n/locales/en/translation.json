@@ -94,6 +94,32 @@
           "label": "Return to login"
         }
       }
+    },
+    "accountVerification": {
+      "title": "Account verification",
+      "subtitle": "Verify your account to activate it",
+      "hint": "Click the button below to verify your account. Once verified, you will be able to reset your password and access the ISMS portal.",
+      "button": {
+        "label": "Verify my account",
+        "sending": "Verifying..."
+      },
+      "actions": {
+        "verify": {
+          "label": "Verify my account",
+          "loading": "Verifying..."
+        },
+        "login": {
+          "label": "Login"
+        }
+      },
+      "verified": {
+        "title": "Account verified!",
+        "message": "Your account has been successfully verified.\nYou can now reset your password and access the ISMS portal.",
+        "hint": "Click the button above to set your password.",
+        "actions": {
+          "definePassword": "Set your password"
+        }
+      }
     }
   },
   "dashboard": {
@@ -1192,7 +1218,8 @@
     "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another.",
     "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "A document type with this name already exists. Please choose another.",
     "ERR_CANNOT_DELETE_YOURSELF": "You cannot delete your own account",
-    "ERR_ISOCODE_DUPLICATED_NAME": "An Clause/Control Number with this name already exists. Please choose another."
+    "ERR_ISOCODE_DUPLICATED_NAME": "An Clause/Control Number with this name already exists. Please choose another.",
+    "ERR_USER_ALREADY_VERIFIED": "This user has already been verified"
   },
   "zod": {
     "errors": {
