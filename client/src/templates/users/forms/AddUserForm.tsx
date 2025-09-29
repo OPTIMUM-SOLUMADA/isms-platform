@@ -22,7 +22,7 @@ const addUserSchema = z.object({
     role: z.enum(roles),
     departmentId: z.string().nonempty(i18n.t("zod.errors.department.required")),
     sendInvitationLink: z.boolean().optional().default(true),
-    isActive: z.boolean().optional().default(true),
+    isActive: z.boolean().optional().default(false),
 });
 
 export type AddUserFormData = z.infer<typeof addUserSchema>;
@@ -144,7 +144,7 @@ const AddUserForm = ({
                     control={form.control}
                     name='isActive'
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className='hidden invisible opacity-0'>
                             <FormControl>
                                 <div className="flex items-center justify-between space-x-2">
                                     <Label htmlFor="isActive">
