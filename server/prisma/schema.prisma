@@ -25,8 +25,7 @@ model Department {
 
   // managerId String? @db.ObjectId
   // manager   User[]   @relation("ManagedDepartment")
-  roles       DepartmentRole[] @relation()  // chaque département a ses propres rôles
-  members     DepartmentMember[] // utilisateurs liés à ce département via des rôles
+  roles DepartmentRole[] @relation() // chaque département a ses propres rôles
 
   createdById String? @db.ObjectId
   createdBy   User?   @relation(name: "CreatedDepartments", fields: [createdById], references: [id], onDelete: SetNull)
@@ -34,48 +33,28 @@ model Department {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   documents Document[] @relation("DepartmentDocuments")
+  members   User[]     @relation("DepartmentMembers")
   // User      User[]
 
   @@map("departments")
 }
 
 model DepartmentRole {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  name          String        @unique
-  description   String?
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
+  description String?
 
-  departmentId  String        @db.ObjectId
-  department    Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId String     @db.ObjectId
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
 
-  members       DepartmentMember[]   // utilisateurs ayant ce rôle
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation("DepartmentRolesCreated", fields: [createdById], references: [id], onDelete: SetNull)
 
-  createdById   String? @db.ObjectId
-  createdBy     User?   @relation("DepartmentRolesCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  @@unique([departmentId, name])     // un rôle est unique par département
+  @@unique([departmentId, name]) // un rôle est unique par département
   @@map("department_roles")
-}
-
-model DepartmentMember {
-  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String          @db.ObjectId
-  roleId             String          @db.ObjectId
-  departmentId       String          @db.ObjectId
-
-  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role               DepartmentRole? @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  department         Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  
-  createdById        String? @db.ObjectId
-  createdBy          User?   @relation("DepartmentMembersCreated", fields: [createdById], references: [id], onDelete: SetNull)
-
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  @@unique([userId, roleId]) //un user ne peut avoir qu'un rôle dans un département
-  @@map("department_members")
 }
 
 // ===========================================================================================
@@ -114,22 +93,21 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  departmentId String?     @db.ObjectId
+  department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
   metadata                Json?
-  documentOwners          DocumentOwner[]    @relation("DocumentOwnerUser")
+  documentAuthors         DocumentAuthor[]   @relation("DocumentAuthorUser")
   documentReviewers       DocumentReviewer[] @relation("DocumentReviewerUser")
   assignedDocumentReviews DocumentReview[]   @relation("Assigner")
 
   // Reverse relations: must break referential action cycles
-  createdUsers             User[]              @relation("CreatedUsers")
-  invitationsSent          Invitation[]        @relation("InvitationsSent")
-  createdDocumentTypes     DocumentType[]      @relation("CreatedDocumentTypes")
-  createdDepartments       Department[]        @relation("CreatedDepartments")
-  createdDepartmentRoles   DepartmentRole[]    @relation("DepartmentRolesCreated")
-  createdDepartmentMembers DepartmentMember[]  @relation("DepartmentMembersCreated")
-  createdISOClauses        ISOClause[]         @relation("CreatedISOClauses")
-
-  //Nouvelle relation pivot vers les départements
-  departmentMemberships    DepartmentMember[]
+  createdUsers           User[]           @relation("CreatedUsers")
+  invitationsSent        Invitation[]     @relation("InvitationsSent")
+  createdDocumentTypes   DocumentType[]   @relation("CreatedDocumentTypes")
+  createdDepartments     Department[]     @relation("CreatedDepartments")
+  createdDepartmentRoles DepartmentRole[] @relation("DepartmentRolesCreated")
+  createdISOClauses      ISOClause[]      @relation("CreatedISOClauses")
 
   @@index([email, isActive])
   @@index([role])
@@ -196,6 +174,12 @@ enum ReviewFrequency {
   AS_NEEDED
 }
 
+enum Classification {
+  CONFIDENTIAL
+  INTERNAL_USE_ONLY
+  PUBLIC
+}
+
 model Document {
   id              String           @id @default(auto()) @map("_id") @db.ObjectId
   title           String
@@ -209,13 +193,17 @@ model Document {
   published       Boolean   @default(false)
   publicationDate DateTime?
 
-  departmentId String  @db.ObjectId
-  categoryId   String? @db.ObjectId
+  classification Classification @default(CONFIDENTIAL)
+
+  departmentId String        @db.ObjectId
+  categoryId   String?       @db.ObjectId
+  ownerId      String        @db.ObjectId
+  owner        DocumentOwner @relation(name: "DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  department    Department?        @relation("DepartmentDocuments", fields: [departmentId], references: [id], onDelete: Restrict)
+  department    Department         @relation("DepartmentDocuments", fields: [departmentId], references: [id], onDelete: Restrict)
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
@@ -223,22 +211,36 @@ model Document {
   approvals     DocumentApproval[]
   notifications Notification[]
   auditlogs     AuditLog[]
-  owners        DocumentOwner[]    @relation("DocumentOwnerDocument")
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
+
+  authors DocumentAuthor[] @relation("DocumentAuthorDocument")
 
   @@index([title])
   @@map("documents")
 }
 
 model DocumentOwner {
+  id   String  @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  logo String?
+
+  documents Document[] @relation("DocumentOwner")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("document_owners")
+}
+
+model DocumentAuthor {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   documentId String @db.ObjectId
   userId     String @db.ObjectId
 
-  document Document @relation(name: "DocumentOwnerDocument", fields: [documentId], references: [id], onDelete: Cascade)
-  user     User     @relation(name: "DocumentOwnerUser", fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(name: "DocumentAuthorDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(name: "DocumentAuthorUser", fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("document_owners")
+  @@map("document_authors")
 }
 
 model DocumentReviewer {

@@ -70,23 +70,33 @@ export class DocumentReviewService {
     }
 
     async findAll(): Promise<DocumentReview[]> {
-        try {
-            return await prisma.documentReview.findMany({
-                include: {
-                    document: {
-                        include: {
-                            versions: true,
-                            isoClause: true,
+        return await prisma.documentReview.findMany({
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        status: true,
+                        isoClause: {
+                            select: {
+                                name: true,
+                                code: true,
+                            },
+                        },
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                            },
                         },
                     },
-                    reviewer: true,
                 },
-                orderBy: { reviewDate: 'desc' },
-            });
-        } catch (error) {
-            console.error('Error fetching document reviews:', error);
-            throw new Error('Unable to fetch document reviews');
-        }
+                reviewer: true,
+            },
+            orderBy: { reviewDate: 'desc' },
+        });
     }
 
     async update(id: string, data: Prisma.DocumentReviewUpdateInput): Promise<DocumentReview> {

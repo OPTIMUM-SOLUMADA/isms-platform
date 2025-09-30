@@ -7,15 +7,15 @@ import {
 } from '@prisma/client';
 import prisma from '@/database/prisma';
 import { UserService } from './user.service';
-import { DocumentOwnerService } from './documentowner.service';
+import { DocumentAuthorService } from './documentauthor.service';
 
 export class DocumentService {
     protected userService: UserService;
-    protected documentOwnerService: DocumentOwnerService;
+    protected documentAuthorService: DocumentAuthorService;
     protected documentInclude: Prisma.DocumentInclude;
     constructor() {
         this.userService = new UserService();
-        this.documentOwnerService = new DocumentOwnerService();
+        this.documentAuthorService = new DocumentAuthorService();
         this.documentInclude = {
             approvals: true,
             auditlogs: true,
@@ -24,7 +24,7 @@ export class DocumentService {
             reviews: true,
             versions: true,
             type: true,
-            owners: {
+            authors: {
                 include: {
                     user: {
                         select: {
@@ -60,7 +60,7 @@ export class DocumentService {
         });
     }
 
-    async createDocumentWithOwnersAndReviewers(
+    async createDocumentWithDetails(
         data: Prisma.DocumentCreateInput,
         ownerIds: string[],
         reviewerIds: string[],
@@ -77,7 +77,7 @@ export class DocumentService {
             // create reviewers
             await tx.documentReviewer.createMany({ data: reviewersData });
             // create owners
-            await tx.documentOwner.createMany({ data: ownersData });
+            await tx.documentAuthor.createMany({ data: ownersData });
             // return document
             return tx.document.findUnique({
                 where: { id: doc.id },
@@ -86,7 +86,7 @@ export class DocumentService {
         });
     }
 
-    async updateDocumentWithOwnersAndReviewers(
+    async updateDocumentWithDetails(
         id: string,
         data: Prisma.DocumentUpdateInput,
         ownerIds: string[],
@@ -108,13 +108,13 @@ export class DocumentService {
             });
 
             // Replace owners (delete old, insert new)
-            await tx.documentOwner.deleteMany({ where: { documentId: id } });
+            await tx.documentAuthor.deleteMany({ where: { documentId: id } });
             const ownersData = ownerIds.map((userId) => ({
                 documentId: id,
                 userId,
             }));
             if (ownersData.length) {
-                await tx.documentOwner.createMany({ data: ownersData });
+                await tx.documentAuthor.createMany({ data: ownersData });
             }
 
             // Remove reviewers (delete old, insert new)

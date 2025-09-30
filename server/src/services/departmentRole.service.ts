@@ -1,32 +1,5 @@
 import prisma from '@/database/prisma';
-// import { Prisma } from '@prisma/client';
 
-// const roleIncludes: Prisma.DepartmentRoleInclude = {
-//     department: {
-//         select: {
-//             id: true,
-//             name: true,
-//             description: true,
-//         },
-//     },
-//     members: {
-//         select: {
-//             id: true,
-//             role: true,
-//             department: true,
-//             createdAt: true,
-//         },
-//     },
-//     createdBy: {
-//         select: {
-//             id: true,
-//             name: true,
-//             email: true,
-//             role: true,
-//             createdAt: true,
-//         },
-//     },
-// };
 export class DepartmentRoleService {
     async addRoles(departmentId: string, roles: { name: string; description?: string }[]) {
         console.log('add fonction');
@@ -68,14 +41,14 @@ export class DepartmentRoleService {
 
     async findAll() {
         return prisma.departmentRole.findMany({
-            include: { department: true, members: true },
+            include: { department: true },
         });
     }
 
     async listDepartmentsRole({ id, page, limit }: { id: string; page: number; limit: number }) {
         return prisma.departmentRole.findMany({
             where: { departmentId: id },
-            include: { department: true, members: true },
+            include: { department: true },
             skip: (page - 1) * limit,
             take: limit,
         });
@@ -83,7 +56,7 @@ export class DepartmentRoleService {
     async findById(id: string) {
         return prisma.departmentRole.findUnique({
             where: { id },
-            include: { department: true, members: true },
+            include: { department: true },
         });
     }
 

@@ -95,7 +95,7 @@ export class ISOClauseController {
 
     async initialize(req: Request, res: Response) {
         try {
-            const clauses = await service.init();
+            const clauses = await service.initialize();
             return res.json(clauses);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });

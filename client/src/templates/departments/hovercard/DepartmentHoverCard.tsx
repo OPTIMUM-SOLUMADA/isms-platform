@@ -13,6 +13,8 @@ const DepartmentHoverCard = ({
 }: DepartmentHoverCardProps) => {
   const { t } = useTranslation();
 
+  if (!department) return null;
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -29,7 +31,7 @@ const DepartmentHoverCard = ({
               <Building2 className="h-5 w-5 text-gray-600" />
             </div>
             <div>
-              <p className="font-semibold">{department.name}</p>
+              <p className="font-semibold">{department?.name}</p>
               {department.description && (
                 <p className="text-xs text-muted-foreground">{department.description}</p>
               )}
