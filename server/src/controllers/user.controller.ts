@@ -143,10 +143,21 @@ export class UserController {
 
     async update(req: Request, res: Response) {
         try {
-            const updated = await service.updateUser(req.params.id!, req.body);
+            const { name, email, role, departmentId } = req.body;
+            const updated = await service.updateUser(req.params.id!, {
+                name,
+                email,
+                role,
+                department: {
+                    connect: {
+                        id: departmentId,
+                    },
+                },
+            });
             res.json(updated);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            console.log(err);
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 

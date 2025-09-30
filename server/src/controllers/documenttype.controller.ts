@@ -95,7 +95,7 @@ export class DocumentTypeController {
 
     async initialize(req: Request, res: Response) {
         try {
-            const types = await service.init();
+            const types = await service.initialize();
             return res.json(types);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });

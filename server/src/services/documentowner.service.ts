@@ -1,52 +1,90 @@
-import { DocumentOwner, User } from '@prisma/client';
+import { DocumentOwner, Prisma } from '@prisma/client';
 import prisma from '@/database/prisma';
+
+const include: Prisma.DocumentOwnerInclude = {
+    documents: {
+        select: {
+            id: true,
+            title: true,
+            versions: {
+                where: { isCurrent: true },
+                select: {
+                    version: true,
+                    fileUrl: true,
+                },
+            },
+            fileUrl: true,
+        },
+    },
+};
 
 export class DocumentOwnerService {
     /**
-     * Add one or multiple owners to a document
+     * Create a new DocumentOwner
+     * @param name Owner's name
      */
-    static async addOwners(documentId: string, userIds: string[]): Promise<DocumentOwner[]> {
-        const data = userIds.map((userId) => ({
-            documentId,
-            userId,
-        }));
-        return prisma.documentOwner.createMany({ data }).then(async () => {
-            // Return the actual records
-            return prisma.documentOwner.findMany({
-                where: { documentId, userId: { in: userIds } },
-                include: { user: true },
+    async create(name: string): Promise<DocumentOwner> {
+        return prisma.documentOwner.create({
+            data: { name },
+        });
+    }
+
+    /**
+     * Find a DocumentOwner by ID
+     * @param id Owner ID
+     */
+    async findById(id: string): Promise<DocumentOwner | null> {
+        return prisma.documentOwner.findUnique({
+            where: { id },
+            include, // include related documents
+        });
+    }
+
+    /**
+     * Get all DocumentOwners
+     */
+    async findAll(): Promise<DocumentOwner[]> {
+        return prisma.documentOwner.findMany({
+            include,
+        });
+    }
+
+    /**
+     * Update a DocumentOwner's name
+     * @param id Owner ID
+     * @param name New name
+     */
+    async updateName(id: string, data: Prisma.DocumentOwnerUpdateInput): Promise<DocumentOwner> {
+        return prisma.documentOwner.update({
+            where: { id },
+            data: { ...data },
+        });
+    }
+
+    /**
+     * Delete a DocumentOwner
+     * @param id Owner ID
+     */
+    async delete(id: string): Promise<DocumentOwner> {
+        return prisma.documentOwner.delete({
+            where: { id },
+        });
+    }
+
+    /**
+     * Initialize default values
+     * Only adds if table is empty
+     */
+    async initialize(defaultOwners: string[] = ['SOLUMADA']): Promise<void> {
+        const count = await prisma.documentOwner.count();
+        if (count === 0) {
+            const createData = defaultOwners.map((name) => ({ name }));
+            await prisma.documentOwner.createMany({
+                data: createData,
             });
-        });
-    }
-
-    /**
-     * Remove owners from a document
-     */
-    static async removeOwners(documentId: string, userIds: string[]): Promise<number> {
-        const result = await prisma.documentOwner.deleteMany({
-            where: { documentId, userId: { in: userIds } },
-        });
-        return result.count;
-    }
-
-    /**
-     * Get all owners of a document
-     */
-    static async getOwners(documentId: string): Promise<User[]> {
-        const owners = await prisma.documentOwner.findMany({
-            where: { documentId },
-            include: { user: true },
-        });
-        return owners.map((o) => o.user);
-    }
-
-    /**
-     * Replace all owners of a document
-     */
-    static async setOwners(documentId: string, userIds: string[]): Promise<DocumentOwner[]> {
-        // Remove all existing owners first
-        await prisma.documentOwner.deleteMany({ where: { documentId } });
-        // Add new ones
-        return this.addOwners(documentId, userIds);
+            console.log('Default DocumentOwners inserted');
+        } else {
+            console.log('DocumentOwners table already initialized');
+        }
     }
 }

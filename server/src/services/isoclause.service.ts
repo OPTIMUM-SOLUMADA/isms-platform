@@ -125,7 +125,13 @@ export class ISOClauseService {
         });
     }
 
-    async init() {
+    async initialize() {
+        const count = await prisma.iSOClause.count();
+        if (count > 0) {
+            console.log('ISO Clauses table already initialized');
+            return [];
+        }
+
         const isoClausesList = [
             {
                 code: 'A.5',
@@ -196,7 +202,6 @@ export class ISOClauseService {
         ];
 
         const result: ISOClause[] = [];
-
         for (const isoClause of isoClausesList) {
             const existing = await this.findByCode(isoClause.code);
             if (!existing) {
@@ -208,6 +213,8 @@ export class ISOClauseService {
                 result.push(created);
             }
         }
+
+        console.log('Default ISO Clauses inserted');
 
         return result;
     }

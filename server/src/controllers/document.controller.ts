@@ -25,14 +25,15 @@ export class DocumentController {
                 department,
                 isoClause,
                 reviewers,
-                owners,
+                authors,
                 reviewFrequency,
                 userId,
+                owner,
             } = req.body;
 
             const fileUrl = req.file ? req.file.filename : null;
 
-            const createdDoc = await this.service.createDocumentWithOwnersAndReviewers(
+            const createdDoc = await this.service.createDocumentWithDetails(
                 {
                     title,
                     description,
@@ -41,6 +42,7 @@ export class DocumentController {
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                    ...(owner && { owner: { connect: { id: owner } } }),
                     fileUrl: fileUrl,
                     // create document version
                     versions: {
@@ -51,7 +53,7 @@ export class DocumentController {
                         },
                     },
                 },
-                owners.split(','),
+                authors.split(','),
                 reviewers.split(','),
             );
 
@@ -96,12 +98,13 @@ export class DocumentController {
                 title,
                 description,
                 status,
-                owners,
+                authors,
                 type,
                 department,
                 isoClause,
                 reviewers,
                 reviewFrequency,
+                owner,
             } = req.body;
 
             // find document
@@ -117,7 +120,7 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : undefined;
 
-            const updatedDocument = await this.service.updateDocumentWithOwnersAndReviewers(
+            const updatedDocument = await this.service.updateDocumentWithDetails(
                 documentId!,
                 {
                     ...(title && { title }),
@@ -127,9 +130,10 @@ export class DocumentController {
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                    ...(owner && { owner: { connect: { id: owner } } }),
                     ...(fileUrl && { fileUrl }),
                 },
-                owners.split(','),
+                authors.split(','),
                 reviewers.split(','),
             );
 

@@ -2,24 +2,11 @@ import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
 
 const userIncludes: Prisma.UserInclude = {
-    departmentMemberships: {
-        include: {
-            department: true,
-            role: true,
-            createdBy: {
-                select: {
-                    name: true,
-                    email: true,
-                    id: true,
-                },
-            },
-        },
-    },
     documentReviews: true,
     documentApprovals: true,
     notifications: true,
     auditLogs: true,
-    documentOwners: {
+    documentAuthors: {
         select: {
             document: {
                 select: {
@@ -109,23 +96,6 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                departmentMemberships: {
-                    select: {
-                        id: true,
-                        department: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                        role: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
             },
             take: 10,
         });
@@ -155,23 +125,6 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                departmentMemberships: {
-                    select: {
-                        id: true,
-                        department: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                        role: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
             },
         });
 
@@ -197,23 +150,6 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                departmentMemberships: {
-                    select: {
-                        id: true,
-                        department: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                        role: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
             },
         });
     }
