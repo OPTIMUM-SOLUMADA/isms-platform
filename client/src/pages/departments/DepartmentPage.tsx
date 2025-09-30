@@ -7,11 +7,15 @@ import { DepartmentTable } from '@/templates/departments/table/DepartmentTable';
 import WithTitle from '@/templates/layout/WithTitle';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom';
 
 const DepartmentPage = () => {
     const { t } = useTranslation();
     const { departments } = useDepartmentStore();
+    console.log("dap", departments);
+    
     const { openAdd } = useDepartmentUI();
+    const navigate = useNavigate()
 
     const { isLoading } = useFetchDepartments();
 
@@ -34,6 +38,7 @@ const DepartmentPage = () => {
                 <Card className='flex-grow flex flex-col'>
                     <DepartmentTable
                         data={departments}
+                        onView={(department) => navigate(`/departments/view/${department.id}`)}
                         isLoading={isLoading}
                     />
                 </Card>
