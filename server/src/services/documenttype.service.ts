@@ -112,13 +112,17 @@ export class DocumentTypeService {
         });
     }
 
-    async init() {
+    async initialize() {
+        const count = await prisma.documentType.count();
+        if (count > 0) {
+            console.log('DocumentTypes table already initialized');
+            return [];
+        }
+
         const documentTypesList = [
             { name: 'Policy', description: '' },
             { name: 'Procedure', description: '' },
-            { name: 'Plan', description: '' },
-            { name: 'Guide', description: '' },
-            { name: 'Framework', description: '' },
+            { name: 'Record', description: '' },
         ];
 
         const result: DocumentType[] = [];
@@ -133,6 +137,8 @@ export class DocumentTypeService {
                 result.push(created);
             }
         }
+
+        console.log('Default DocumentTypes inserted');
 
         return result;
     }

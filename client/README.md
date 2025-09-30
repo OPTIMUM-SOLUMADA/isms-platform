@@ -18,7 +18,6 @@
 ├── styles/
 ├── templates/
 ├── types/
-├── App.css
 ├── App.tsx
 ├── main.tsx
 ```
@@ -43,10 +42,9 @@
 | `routes/`     | Routing configuration and definitions (React Router).                                                      |
 | `services/`   | API calls, domain logic, or external integrations.                                                         |
 | `stores/`     | Centralized state management (Zustand).                                                                    |
-| `styles/`     | Global CSS, SCSS, Tailwind configs, theme files.                                                           |
+| `styles/`     | Global CSS, SCSS, theme files.                                                                             |
 | `templates/`  | Predefined layout skeletons or page templates.                                                             |
 | `types/`      | Shared TypeScript interfaces and type declarations.                                                        |
-| `App.css`     | Styles for the root `App.tsx` component.                                                                   |
 | `App.tsx`     | Root React component — sets up providers, routes, and layout.                                              |
 | `main.tsx`    | Application entry point — mounts React app to the DOM.                                                     |
 
