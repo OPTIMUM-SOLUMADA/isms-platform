@@ -19,6 +19,7 @@ import { PageSkeleton } from "@/components/page-skeleton";
 import DepartmentPage from "@/pages/departments/DepartmentPage";
 import DocumentTypePage from "@/pages/document-types/DocumentTypePage";
 import ISOClausePage from "@/pages/ISOClausePage";
+import DepartmentDetail from "@/pages/departments/DepartmentDetail";
 import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
 
 // Lazy load pages
@@ -26,7 +27,9 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const DocumentRepositoryPage = lazy(() => import('@/pages/documents/DocumentRepositoryPage'));
 const DocumentAddPage = lazy(() => import('@/pages/documents/DocumentAddPage'));
 const DocumentEditPage = lazy(() => import('@/pages/documents/DocumentEditPage'));
-const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage'))
+const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage'));
+
+// const DepartmentDetail = lazy(() => import('@/pages/departments/DepartmentDetail'));
 
 const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
@@ -136,7 +139,10 @@ const routeConfig: AppRoute[] = [
             {
                 path: "departments",
                 permission: "documents.page.access",
-                children: [{ index: true, element: <DepartmentPage /> }],
+                children: [
+                    { index: true, element: <DepartmentPage /> },
+                    { path: "view/:id", element: <DepartmentDetail /> },
+                ],
             },
             // Document types
             {

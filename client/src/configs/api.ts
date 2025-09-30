@@ -30,6 +30,10 @@ export const API_CONFIG = {
             UPDATE: (id: string | number) => `/departments/${id}`,
             DELETE: (id: string | number) => `/departments/${id}`,
             SEARCH: "/departments/search",
+            GET_ROLES: (id: string | number) => `/departments/${id}/roles`,
+            SEARCH_ROLES: "/users/search",
+            // UPDATE_ROLES: (id: string | number) => `/departments/${id}/roles`,
+            // DELETE_ROLES: (id: string | number) => `/departments/${id}/roles`,
         },
         DOCUMENTS: {
             BASE: "/documents",

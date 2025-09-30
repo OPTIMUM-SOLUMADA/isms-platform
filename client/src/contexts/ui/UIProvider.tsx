@@ -1,3 +1,4 @@
+import { DepartmentRoleUIModals } from "@/templates/departments/modal/DepartmentRoleUIModals";
 import { DepartmentUIModals } from "@/templates/departments/modal/DepartmentUIModals";
 import { DocumentTypeUIModals } from "@/templates/document-types/modal/DocumentTypeUIModals";
 import { DocumentUIModals } from "@/templates/documents/modals/DocumentUIModals";
@@ -17,6 +18,8 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
             <DocumentUIModals />
             {/* Department modals */}
             <DepartmentUIModals />
+            {/* Department Role modals */}
+            <DepartmentRoleUIModals />
             {/* Document type modals */}
             <DocumentTypeUIModals />
             {/* ISOClause modals */}

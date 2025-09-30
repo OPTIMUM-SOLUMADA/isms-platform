@@ -292,6 +292,10 @@
                     "label": "Departement",
                     "placeholder": "Departement de l'utilisateur"
                 },
+                "fonction": {
+                    "label": "Fonction",
+                    "placeholder": "Ajout fonction"
+                },
                 "sendInvitation": {
                     "label": "Envoyer le lien d'invitation par email"
                 },
@@ -885,6 +889,102 @@
                         "douments": "Tous les documents associés à ce département."
                     }
                 }
+            }
+        }
+    },
+    "departmentRole": {
+        "title": "Gestion des fonctions",
+        "subtitle": "Gérer les fonctions",
+        "hovercard": {
+            "title": "Détails du fonction",
+            "description": "Description du fonction",
+            "members": "{{count}} membres",
+            "noMembers": "Aucun membre",
+            "createdBy": "Créé par",
+            "createdAt": "Créé le",
+            "actions": {
+                "edit": {
+                    "label": "Modifier"
+                },
+                "view": {
+                    "label": "Voir les utilisateurs"
+                }
+            }
+        },
+        "forms": {
+            "add": {
+                "title": "Ajouter une fonction",
+                "subtitle": "Remplir les informations du fonction",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du fonction"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du fonction"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Ajouter"
+                    }
+                }
+            },
+            "edit": {
+                "title": "Modifier la fonction",
+                "subtitle": "Modifier les informations du fonction",
+                "name": {
+                    "label": "Nom",
+                    "placeholder": "Nom du fonction"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Description du fonction"
+                },
+                "actions": {
+                    "submit": {
+                        "label": "Modifier",
+                        "loading": "Modification en cours..."
+                    },
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "reset": {
+                        "label": "Réinitialiser"
+                    }
+                }
+            }
+        },
+        "table": {
+            "title": "Liste des fonctions",
+            "columns": {
+                "name": "Nom",
+                "description": "Description",
+                "members": "Membres",
+                "documents": "Documents",
+                "createdBy": "Créé par",
+                "createdAt": "Créé le",
+                "updatedAt": "Modifié le",
+                "updatedBy": "Modifié par",
+                "actions": "Actions"
+            },
+            "actions": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "view": "Voir les utilisateurs"
+            },
+            "empty": {
+                "title": "Aucune fonction trouvée",
+                "message": "Essayez d'ajouter une nouvelle fonction.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter une fonction"
+                    }
+                }
+            }
+        },
+        "actions": {
+            "add": {
+                "label": "Ajouter une fonction"
             }
         }
     },

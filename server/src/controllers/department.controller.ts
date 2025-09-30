@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 import { DepartmentService } from '@/services/department.service';
 import { Prisma } from '@prisma/client';
+import { DepartmentRoleService } from '@/services/departmentRole.service';
 
 const service = new DepartmentService();
+const serviceRole = new DepartmentRoleService();
 
 export class DepartmentController {
     async create(req: Request, res: Response) {
         try {
             const { name, description, userId } = req.body;
+
             const department = await service.createDepartment({
                 name,
                 description,
@@ -100,6 +103,53 @@ export class DepartmentController {
         try {
             const departments = await service.init();
             res.json(departments);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    };
+
+    async getRoles(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            if (!id) return res.status(400).json({ error: 'Id is required' });
+            const { limit = '50', page = '1' } = req.query;
+            const departments = await serviceRole.listDepartmentsRole({
+                id,
+                page: Number(page),
+                limit: Number(limit),
+            });
+            console.log('id', id);
+            console.log('deapr', departments);
+            return res.json(departments);
+        } catch (err) {
+            return res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    addRoles = async (req: Request, res: Response) => {
+        try {
+            const { roles } = req.body;
+            const department = await serviceRole.addRoles(req.params.id!, roles);
+            res.json(department);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    };
+
+    updateRoles = async (req: Request, res: Response) => {
+        try {
+            const { roles } = req.body;
+            const department = await serviceRole.updateRoles(req.params.id!, roles);
+            res.json(department);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    };
+
+    removeRoles = async (req: Request, res: Response) => {
+        try {
+            const department = await serviceRole.removeRoles(req.body.id);
+            res.json(department);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
         }
