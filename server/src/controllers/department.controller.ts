@@ -113,26 +113,38 @@ export class DepartmentController {
             const { id } = req.params;
             if (!id) return res.status(400).json({ error: 'Id is required' });
             const { limit = '50', page = '1' } = req.query;
-            const departments = await serviceRole.listDepartmentsRole({
-                id,
+            const data = await serviceRole.list({
+                filter: { departmentId: id },
                 page: Number(page),
                 limit: Number(limit),
             });
-            console.log('id', id);
-            console.log('deapr', departments);
-            return res.json(departments);
+            return res.json(data);
         } catch (err) {
-            return res.status(400).json({ error: (err as Error).message });
+            return res.status(500).json({ error: (err as Error).message });
         }
     }
 
     addRoles = async (req: Request, res: Response) => {
         try {
-            const { roles } = req.body;
-            const department = await serviceRole.addRoles(req.params.id!, roles);
-            res.json(department);
+            const { name, description, userId } = req.body;
+            const department = await serviceRole.addRoles({
+                name,
+                description,
+                createdBy: { connect: { id: userId } },
+                department: { connect: { id: req.params.id! } },
+            });
+            return res.json(department);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            console.log((err as any).message);
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                if (err.code === 'P2002') {
+                    return res.status(400).json({
+                        error: err.message,
+                        code: 'ERR_DEPARTMENT_ROLE_DUPLICATED_NAME',
+                    });
+                }
+            }
+            return res.status(500).json({ error: (err as Error).message });
         }
     };
 
