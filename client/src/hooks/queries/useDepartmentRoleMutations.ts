@@ -55,13 +55,13 @@ export const useSearchDepartmentRoles = () => {
 // -----------------------------
 // Create DepartmentRole
 // -----------------------------
-export const useCreateDepartmentRole = () => {
+export const useCreateDepartmentRole = (departmentId: string) => {
     const { toast } = useToast();
     const { setDepartmentRoles, departmentRoles } = useDepartmentRoleStore();
     const queryClient = useQueryClient();
 
     return useMutation<any, ApiAxiosError, AddDepartmentRoleFormData>({
-        mutationFn: async (data) => await depService.createRole(id, data),
+        mutationFn: async (data) => await depService.createRole(departmentId, data),
             onSuccess: (res) => {
                 console.log("departmentRoles", res);
                 toast({

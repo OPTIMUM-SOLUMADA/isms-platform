@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AddDepartmentRoleForm from "@/templates/departments/forms/AddDepartmentRoleForm";
-import { useCreateDepartment } from "@/hooks/queries/useDepartmentMutations";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCreateDepartmentRole } from "@/hooks/queries/useDepartmentRoleMutations";
 
 interface Props {
     open: boolean,
@@ -16,12 +16,12 @@ const AddDepartmentRoleFormDialog = ({
     const { t } = useTranslation();
 
     const {
-        mutateAsync: createDepartment,
+        mutateAsync: createDepartmentRole,
         isPending,
         isSuccess,
         error,
         reset
-    } = useCreateDepartment();
+    } = useCreateDepartmentRole();
 
     const { user } = useAuth();
 
@@ -40,7 +40,7 @@ const AddDepartmentRoleFormDialog = ({
                     <SheetDescription>{t("departmentRole.forms.add.subtitle")}</SheetDescription>
                 </SheetHeader>
                 <AddDepartmentRoleForm
-                    onSubmit={createDepartment}
+                    onSubmit={createDepartmentRole}
                     error={error?.response?.data.code}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
