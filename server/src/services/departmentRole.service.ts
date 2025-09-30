@@ -2,6 +2,8 @@ import prisma from '@/database/prisma';
 
 export class DepartmentRoleService {
     async addRoles(departmentId: string, roles: { name: string; description?: string }[]) {
+        console.log('add fonction');
+
         // Vérifie si le département existe
         const department = await prisma.department.findUnique({
             where: { id: departmentId },

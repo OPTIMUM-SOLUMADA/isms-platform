@@ -37,7 +37,7 @@ export default function DepartmentDetail() {
   // const [department, setDepartment] = useState<Department>({});
   const [department, setDepartment] = useState<Department | null>(null);
   const [departmentRole, setDepartmentRole] = useState<DepartmentRole[]>([]);
-  console.log("depar", id);
+  console.log("depar=====", id);
   const { openAdd } = useDepartmentRoleUI()
   useEffect(() => {
       if (!id) return;
@@ -119,7 +119,7 @@ export default function DepartmentDetail() {
             </div>
           </div>
 
-)}
+        )}
         </CardContent>
       </Card>
       <Card className='flex-grow flex flex-col'>

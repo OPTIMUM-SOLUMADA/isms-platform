@@ -1,4 +1,3 @@
-import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import AddDepartmentRoleFormDialog from "../dialog/AddDepartmentRoleDialog";
 import DeleteDepartmentRoleDialog from "../dialog/DeleteDepartmentRoleDialog";
 import EditDepartmentRoleFormDialog from "../dialog/EditDepartmentRoleDialog";
@@ -16,6 +15,8 @@ export const DepartmentRoleUIModals = () => {
     setCurrentDepartmentRole,
   } = useDepartmentRoleUI();
 
+  console.log("currentDepartmentRole", isAddOpen);
+  
   function handleCloseDelete() {
     closeDelete();
     clear();
