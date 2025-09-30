@@ -5,6 +5,7 @@ import { useUserUIStore } from "@/stores/user/useUserUIStore";
 import { DeactivateUserDialog } from "../dialog/DeactivateUserDialog";
 import { ActivateUserDialog } from "../dialog/ActivateUserDialog";
 import { InviteUserConfirmDialog } from "../dialog/InviteUserDialog";
+import { useFetchDepartments } from "@/hooks/queries/useDepartmentMutations";
 
 export const UserUIModals = () => {
     const {
@@ -20,6 +21,8 @@ export const UserUIModals = () => {
         openDelete,
         closeDelete,
     } = useUserUIStore();
+
+    useFetchDepartments();
 
     return (
         <>

@@ -26,5 +26,7 @@ router.post(
     validate(verifyResetTokenSchema),
     authController.verifyPasswordResetToken,
 );
+// Verify account
+router.post('/verify-account', authController.verifyAccount);
 
 export default router;

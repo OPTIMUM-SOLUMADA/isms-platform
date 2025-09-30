@@ -94,6 +94,32 @@
           "label": "Return to login"
         }
       }
+    },
+    "accountVerification": {
+      "title": "Account verification",
+      "subtitle": "Verify your account to activate it",
+      "hint": "Click the button below to verify your account. Once verified, you will be able to reset your password and access the ISMS portal.",
+      "button": {
+        "label": "Verify my account",
+        "sending": "Verifying..."
+      },
+      "actions": {
+        "verify": {
+          "label": "Verify my account",
+          "loading": "Verifying..."
+        },
+        "login": {
+          "label": "Login"
+        }
+      },
+      "verified": {
+        "title": "Account verified!",
+        "message": "Your account has been successfully verified.\nYou can now reset your password and access the ISMS portal.",
+        "hint": "Click the button above to set your password.",
+        "actions": {
+          "definePassword": "Set your password"
+        }
+      }
     }
   },
   "dashboard": {
@@ -509,8 +535,8 @@
             "placeholder": "Select a department"
           },
           "isoClause": {
-            "label": "ISO clause",
-            "placeholder": "Select an ISO clause"
+            "label": "Clause/Control Number",
+            "placeholder": "Select an Clause/Control Number"
           },
           "file": {
             "label": "File",
@@ -645,7 +671,7 @@
     },
     "filter": {
       "search": {
-        "label": "Search by name, owner or ISO clause",
+        "label": "Search by name, owner or Clause/Control Number",
         "placeholder": "Search a document..."
       },
       "status": {
@@ -661,8 +687,8 @@
         "placeholder": "All owners"
       },
       "isoClause": {
-        "label": "Filter by ISO clause",
-        "placeholder": "All ISO clauses"
+        "label": "Filter by Clause/Control Number",
+        "placeholder": "All Clause/Control Numbers"
       }
     },
     "table": {
@@ -670,7 +696,7 @@
       "columns": {
         "name": "Name",
         "type": "Type",
-        "isoClause": "ISO Clause / Control",
+        "isoClause": "Clause/Control Number / Control",
         "status": "Status",
         "owner": "Owner",
         "version": "Version",
@@ -706,7 +732,7 @@
         "name": "Name",
         "description": "Description",
         "type": "Type",
-        "isoClause": "ISO Clause / Control",
+        "isoClause": "Clause/Control Number / Control",
         "status": "Status",
         "owner": "Owners",
         "version": "Version",
@@ -1095,10 +1121,10 @@
     }
   },
   "isoClause": {
-    "title": "ISO clauses management",
-    "subtitle": "Manage ISO clauses and their descriptions",
+    "title": "Clause/Control Numbers management",
+    "subtitle": "Manage Clause/Control Numbers and their descriptions",
     "table": {
-      "title": "ISO clauses list",
+      "title": "Clause/Control Numbers list",
       "columns": {
         "name": "Name",
         "code": "Code",
@@ -1117,27 +1143,27 @@
         }
       },
       "empty": {
-        "title": "No ISO clause found",
-        "message": "Try adding a new ISO clause.",
+        "title": "No Clause/Control Number found",
+        "message": "Try adding a new Clause/Control Number.",
         "actions": {
           "add": {
-            "label": "Add an ISO clause"
+            "label": "Add an Clause/Control Number"
           }
         }
       }
     },
     "actions": {
       "add": {
-        "label": "Add an ISO clause"
+        "label": "Add an Clause/Control Number"
       }
     },
     "forms": {
       "add": {
-        "title": "Add an ISO clause",
-        "subtitle": "Fill in the ISO clause information",
+        "title": "Add an Clause/Control Number",
+        "subtitle": "Fill in the Clause/Control Number information",
         "name": {
           "label": "Name",
-          "placeholder": "ISO clause name"
+          "placeholder": "Clause/Control Number name"
         },
         "code": {
           "label": "Code",
@@ -1145,7 +1171,7 @@
         },
         "description": {
           "label": "Description",
-          "placeholder": "ISO clause description"
+          "placeholder": "Clause/Control Number description"
         },
         "actions": {
           "submit": {
@@ -1162,24 +1188,24 @@
         "toast": {
           "success": {
             "title": "Success",
-            "description": "The ISO clause has been added successfully"
+            "description": "The Clause/Control Number has been added successfully"
           },
           "error": {
             "title": "Error",
-            "description": "An error occurred while adding the ISO clause. Please try again."
+            "description": "An error occurred while adding the Clause/Control Number. Please try again."
           }
         }
       },
       "edit": {
-        "title": "Edit ISO clause",
-        "subtitle": "Modify the ISO clause information",
+        "title": "Edit Clause/Control Number",
+        "subtitle": "Modify the Clause/Control Number information",
         "name": {
           "label": "Name",
-          "placeholder": "ISO clause name"
+          "placeholder": "Clause/Control Number name"
         },
         "description": {
           "label": "Description",
-          "placeholder": "ISO clause description"
+          "placeholder": "Clause/Control Number description"
         },
         "actions": {
           "submit": {
@@ -1196,33 +1222,33 @@
         "toast": {
           "success": {
             "title": "Success",
-            "description": "The ISO clause has been updated successfully"
+            "description": "The Clause/Control Number has been updated successfully"
           },
           "error": {
             "title": "Error",
-            "description": "An error occurred while updating the ISO clause. Please try again."
+            "description": "An error occurred while updating the Clause/Control Number. Please try again."
           }
         }
       },
       "delete": {
         "dialog": {
-          "title": "Delete ISO clause",
-          "message": "Deleting this ISO clause will also remove the following associated information:",
+          "title": "Delete Clause/Control Number",
+          "message": "Deleting this Clause/Control Number will also remove the following associated information:",
           "relatedItems": {
-            "documents": "All documents associated with this ISO clause."
+            "documents": "All documents associated with this Clause/Control Number."
           },
-          "cannotDeleteDescription": "However, you cannot delete this ISO clause because:",
-          "hasDocuments": "There are documents associated with this ISO clause. Please reassign or delete those documents before deleting the ISO clause.",
-          "canBeDeleted": "The ISO clause can be deleted safely because it has no associated documents."
+          "cannotDeleteDescription": "However, you cannot delete this Clause/Control Number because:",
+          "hasDocuments": "There are documents associated with this Clause/Control Number. Please reassign or delete those documents before deleting the Clause/Control Number.",
+          "canBeDeleted": "The Clause/Control Number can be deleted safely because it has no associated documents."
         },
         "toast": {
           "success": {
             "title": "Success",
-            "description": "The ISO clause has been deleted successfully"
+            "description": "The Clause/Control Number has been deleted successfully"
           },
           "error": {
             "title": "Error",
-            "description": "An error occurred while deleting the ISO clause. Please try again."
+            "description": "An error occurred while deleting the Clause/Control Number. Please try again."
           }
         }
       }
@@ -1280,7 +1306,8 @@
     "ERR_DEPARTMENT_DUPLICATED_NAME": "A department with this name already exists. Please choose another.",
     "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "A document type with this name already exists. Please choose another.",
     "ERR_CANNOT_DELETE_YOURSELF": "You cannot delete your own account",
-    "ERR_ISOCODE_DUPLICATED_NAME": "An ISO clause with this name already exists. Please choose another."
+    "ERR_ISOCODE_DUPLICATED_NAME": "An Clause/Control Number with this name already exists. Please choose another.",
+    "ERR_USER_ALREADY_VERIFIED": "This user has already been verified"
   },
   "zod": {
     "errors": {
@@ -1463,8 +1490,8 @@
         "description": "Manage document types"
       },
       "isoClauses": {
-        "label": "ISO clauses",
-        "description": "Manage ISO clauses"
+        "label": "Clause/Control Numbers",
+        "description": "Manage Clause/Control Numbers"
       }
     }
   },

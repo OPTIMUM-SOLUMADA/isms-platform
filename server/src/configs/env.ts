@@ -53,6 +53,7 @@ export const envSchema = z.object({
         .optional()
         .default(587),
     SMTP_USER: z.string().optional(),
+    SMTP_USER_NOREPLY: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_SECURE: z.string().optional().default('false'),
 
@@ -77,6 +78,7 @@ const envServer = envSchema.safeParse({
     SMTP_HOST: process.env.SMTP_HOST,
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USER: process.env.SMTP_USER,
+    SMTP_USER_NOREPLY: process.env.SMTP_USER_NOREPLY,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_SECURE: process.env.SMTP_SECURE,
     ORG_NAME: process.env.ORG_NAME,

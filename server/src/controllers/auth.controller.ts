@@ -280,4 +280,60 @@ export class AuthController {
             }
         }
     };
+
+    verifyAccount = async (req: Request, res: Response) => {
+        const { token } = req.body;
+        try {
+            const verified = await jwtService.verifyEmailInvitationToken(token);
+            const userId = verified.user.id;
+            const user = await userService.getUserById(userId);
+            if (!user) {
+                res.status(404).json({
+                    error: 'User not found',
+                    code: 'ERR_USER_NOT_FOUND',
+                });
+                return;
+            }
+
+            if (user.isActive) {
+                await userService.updateUser(user.id, {
+                    passwordResetToken: null,
+                });
+                res.status(400).json({
+                    message: 'User already verified',
+                    code: 'ERR_USER_ALREADY_VERIFIED',
+                });
+                return;
+            }
+
+            // create reset password
+            const passwordResetToken = await jwtService.generatePasswordChangeToken(user);
+            await userService.updateUser(user.id, {
+                isActive: true,
+                passwordResetToken,
+            });
+
+            res.status(200).json({
+                token: passwordResetToken,
+            });
+        } catch (err) {
+            console.error('Error account verification token:', err);
+            if (err instanceof jwt.TokenExpiredError) {
+                res.status(400).json({
+                    error: 'Reset token has expired',
+                    code: 'ERR_RESET_TOKEN_EXPIRED',
+                });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                res.status(400).json({
+                    error: 'Invalid reset token',
+                    code: 'ERR_INVALID_RESET_TOKEN',
+                });
+            } else {
+                res.status(500).json({
+                    error: 'Server error verifying token',
+                    code: 'ERR_SERVER_ERROR',
+                });
+            }
+        }
+    };
 }

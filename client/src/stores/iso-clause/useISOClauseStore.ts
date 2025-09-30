@@ -39,7 +39,7 @@ const useISOClauseStore = create<IsoClausestate>((set) => ({
     replace: (id, newDoc) => set((state) => ({ isoClauses: state.isoClauses.map((doc) => (doc.id === id ? newDoc : doc)) })),
     remove: (id) => set((state) => ({ isoClauses: state.isoClauses.filter((doc) => doc.id !== id) })),
 
-    pagination: { page: 1, limit: 11, total: 0, totalPages: 0 },
+    pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
     setPagination: (pagination) => set({ pagination }),
 }));
 

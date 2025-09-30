@@ -18,7 +18,7 @@ router.delete('/:id', controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
 
 // invite user
-router.post('/:id/invite', controller.sendInvitation.bind(controller));
+router.post('/:id/invite', controller.sendEmailVerification.bind(controller));
 // deactivate user
 router.patch('/:id/deactivate', controller.deactivate.bind(controller));
 // activate user

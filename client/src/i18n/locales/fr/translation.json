@@ -94,6 +94,32 @@
                     "label": "Revenir au connexion"
                 }
             }
+        },
+        "accountVerification": {
+            "title": "Vérification du compte",
+            "subtitle": "Vérifiez votre compte pour l’activer",
+            "hint": "Cliquez sur le bouton ci-dessous pour vérifier votre compte. Une fois vérifié, vous pourrez réinitialiser votre mot de passe et accéder au portail ISMS.",
+            "button": {
+                "label": "Vérifier mon compte",
+                "sending": "Vérification en cours..."
+            },
+            "actions": {
+                "verify": {
+                    "label": "Vérifier mon compte",
+                    "loading": "Vérification en cours..."
+                },
+                "login": {
+                    "label": "Se connecter"
+                }
+            },
+            "verified": {
+                "title": "Compte vérifié !",
+                "message": "Votre compte a bien été vérifié.\nVous pouvez maintenant réinitialiser votre mot de passe et accéder au portail ISMS.",
+                "hint": "Cliquez sur le bouton ci-dessus pour définir votre mot de passe.",
+                "actions": {
+                    "definePassword": "Définir votre mot de passe"
+                }
+            }
         }
     },
     "dashboard": {
@@ -509,8 +535,8 @@
                         "placeholder": "Séléctionner un département"
                     },
                     "isoClause": {
-                        "label": "Clause ISO",
-                        "placeholder": "Séléctionner une clause ISO"
+                        "label": "Clause/Control Number",
+                        "placeholder": "Séléctionner une Clause/Control Number"
                     },
                     "file": {
                         "label": "Fichier",
@@ -645,7 +671,7 @@
         },
         "filter": {
             "search": {
-                "label": "Rechercher par nom, propriétaire ou clause ISO",
+                "label": "Rechercher par nom, propriétaire ou Clause/Control Number",
                 "placeholder": "Rechercher un document..."
             },
             "status": {
@@ -661,7 +687,7 @@
                 "placeholder": "Tous les propriétaires"
             },
             "isoClause": {
-                "label": "Filtrer par clause ISO",
+                "label": "Filtrer par Clause/Control Number",
                 "placeholder": "Toutes les clauses ISO"
             }
         },
@@ -670,7 +696,7 @@
             "columns": {
                 "name": "Nom",
                 "type": "Type",
-                "isoClause": "Clause ISO / Control",
+                "isoClause": "Clause/Control Number / Control",
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
@@ -706,7 +732,7 @@
                 "name": "Nom",
                 "description": "Description",
                 "type": "Type",
-                "isoClause": "Clause ISO / Control",
+                "isoClause": "Clause/Control Number / Control",
                 "status": "Statut",
                 "owner": "Propriétaires",
                 "version": "Version",
@@ -1129,27 +1155,27 @@
                 }
             },
             "empty": {
-                "title": "Aucune clause ISO trouvée",
-                "message": "Essayez d'ajouter une nouvelle clause ISO.",
+                "title": "Aucune Clause/Control Number trouvée",
+                "message": "Essayez d'ajouter une nouvelle Clause/Control Number.",
                 "actions": {
                     "add": {
-                        "label": "Ajouter une clause ISO"
+                        "label": "Ajouter une Clause/Control Number"
                     }
                 }
             }
         },
         "actions": {
             "add": {
-                "label": "Ajouter une clause ISO"
+                "label": "Ajouter une Clause/Control Number"
             }
         },
         "forms": {
             "add": {
-                "title": "Ajouter une clause ISO",
-                "subtitle": "Remplir les informations de la clause ISO",
+                "title": "Ajouter une Clause/Control Number",
+                "subtitle": "Remplir les informations de la Clause/Control Number",
                 "name": {
                     "label": "Nom",
-                    "placeholder": "Nom de la clause ISO"
+                    "placeholder": "Nom de la Clause/Control Number"
                 },
                 "code": {
                     "label": "Code",
@@ -1157,7 +1183,7 @@
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Description de la clause ISO"
+                    "placeholder": "Description de la Clause/Control Number"
                 },
                 "actions": {
                     "submit": {
@@ -1174,24 +1200,24 @@
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La clause ISO a été ajoutée avec succès"
+                        "description": "La Clause/Control Number a été ajoutée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de l'ajout de la clause ISO. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de l'ajout de la Clause/Control Number. Veuillez réessayer."
                     }
                 }
             },
             "edit": {
-                "title": "Modifier la clause ISO",
-                "subtitle": "Modifier les informations de la clause ISO",
+                "title": "Modifier la Clause/Control Number",
+                "subtitle": "Modifier les informations de la Clause/Control Number",
                 "name": {
                     "label": "Nom",
-                    "placeholder": "Nom de la clause ISO"
+                    "placeholder": "Nom de la Clause/Control Number"
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Description de la clause ISO"
+                    "placeholder": "Description de la Clause/Control Number"
                 },
                 "actions": {
                     "submit": {
@@ -1208,33 +1234,33 @@
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La clause ISO a été modifiée avec succès"
+                        "description": "La Clause/Control Number a été modifiée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de la modification de la clause ISO. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de la modification de la Clause/Control Number. Veuillez réessayer."
                     }
                 }
             },
             "delete": {
                 "dialog": {
-                    "title": "Supprimer la clause ISO",
-                    "message": "La suppression de cette clause ISO supprimera également toutes les informations associées suivantes :",
+                    "title": "Supprimer la Clause/Control Number",
+                    "message": "La suppression de cette Clause/Control Number supprimera également toutes les informations associées suivantes :",
                     "relatedItems": {
-                        "documents": "Tous les documents associés à cette clause ISO."
+                        "documents": "Tous les documents associés à cette Clause/Control Number."
                     },
-                    "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer cette clause ISO car :",
-                    "hasDocuments": "Il y a des documents associés à cette clause ISO. Veuillez réassigner ou supprimer ces documents avant de supprimer la clause ISO.",
-                    "canBeDeleted": "La clause ISO peut être supprimée sans risque car elle n'a aucun document associé."
+                    "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer cette Clause/Control Number car :",
+                    "hasDocuments": "Il y a des documents associés à cette Clause/Control Number. Veuillez réassigner ou supprimer ces documents avant de supprimer la Clause/Control Number.",
+                    "canBeDeleted": "La Clause/Control Number peut être supprimée sans risque car elle n'a aucun document associé."
                 },
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La clause ISO a été supprimée avec succès"
+                        "description": "La Clause/Control Number a été supprimée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de la suppression de la clause ISO. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de la suppression de la Clause/Control Number. Veuillez réessayer."
                     }
                 }
             }
@@ -1292,7 +1318,8 @@
         "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "Un type de document avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_CANNOT_DELETE_YOURSELF": "Vous ne pouvez pas supprimer votre propre compte",
-        "ERR_ISOCODE_DUPLICATED_NAME": "Une clause ISO avec ce nom existe déjà. Veuillez en choisir un autre."
+        "ERR_ISOCODE_DUPLICATED_NAME": "Une Clause/Control Number avec ce nom existe déjà. Veuillez en choisir un autre.",
+        "ERR_USER_ALREADY_VERIFIED": "Cet utilisateur a été déjà verifié"
     },
     "zod": {
         "errors": {

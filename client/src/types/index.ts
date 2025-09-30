@@ -47,6 +47,8 @@ export type Document = {
   publicationDate?: string | null;
   reviewersId: string[];
 
+  department: Department;
+
   categoryId: string;
 
   createdAt: string;
