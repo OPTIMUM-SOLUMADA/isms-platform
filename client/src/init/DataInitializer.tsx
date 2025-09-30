@@ -4,7 +4,7 @@ import { useFetchISOClauses } from "@/hooks/queries/useISOClauseMutations";
 import { useFetchUsers } from "@/hooks/queries/useUserMutations";
 
 export function DataInitializer() {
-
+    useFetchDepartmentsRole();
     useFetchDepartments();
     useFetchDocumentTypes();
     useFetchISOClauses();

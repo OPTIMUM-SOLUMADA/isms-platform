@@ -266,6 +266,10 @@
           "label": "Department",
           "placeholder": "User's department"
         },
+        "fonction": {
+          "label": "Fonction",
+          "placeholder": "Add fonction"
+        },
         "sendInvitation": {
           "label": "Send invitation link by email"
         },
@@ -859,6 +863,90 @@
             "douments": "All documents associated with this department."
           }
         }
+      }
+    }
+  },
+  "departmentRole": {
+    "title": "Fonction management",
+    "subtitle": "Manage fonction",
+    "hovercard": {
+      "title": "Fonction details",
+      "description": "Fonction description"
+    },
+    "forms": {
+      "add": {
+        "title": "Add a fonction",
+        "subtitle": "Fill in the fonction information",
+        "name": {
+          "label": "Name",
+          "placeholder": "Fonction name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Fonction description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Add"
+          }
+        }
+      },
+      "edit": {
+        "title": "Edit fonction",
+        "subtitle": "Modify the fonction information",
+        "name": {
+          "label": "Name",
+          "placeholder": "Fonction name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Fonction description"
+        },
+        "actions": {
+          "submit": {
+            "label": "Update",
+            "loading": "Updating..."
+          },
+          "cancel": {
+            "label": "Cancel"
+          },
+          "reset": {
+            "label": "Reset"
+          }
+        }
+      }
+    },
+    "table": {
+      "title": "Fonction list",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "members": "Members",
+        "documents": "Documents",
+        "createdBy": "Created by",
+        "createdAt": "Created at",
+        "updatedAt": "Updated at",
+        "updatedBy": "Updated by",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View users"
+      },
+      "empty": {
+        "title": "No Fonction found",
+        "message": "Try adding a new fonction.",
+        "actions": {
+          "add": {
+            "label": "Add a fonction"
+          }
+        }
+      }
+    },
+    "actions": {
+      "add": {
+        "label": "Add a fonction"
       }
     }
   },

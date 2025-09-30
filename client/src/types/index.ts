@@ -203,6 +203,21 @@ export type Department = {
   updatedAt: string;
 };
 
+export type DepartmentRole = {
+  id: string;
+  name: string;
+  description: string;
+  departmentId: string;
+  departmentMembers: departmentMember[];
+}
+
+export type departmentMember = {
+  id: string;
+  userId: string;
+  departmentId: string;
+  roleId: string;
+}
+
 export interface CustomFormProps<T> {
   onCancel?: () => void;
   onSubmit: (data: T) => void;

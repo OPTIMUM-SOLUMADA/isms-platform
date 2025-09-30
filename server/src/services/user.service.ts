@@ -2,9 +2,11 @@ import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
 
 const userIncludes: Prisma.UserInclude = {
-    department: {
+    departmentMemberships: {
         include: {
-            members: {
+            department: true,
+            role: true,
+            createdBy: {
                 select: {
                     name: true,
                     email: true,
@@ -107,10 +109,21 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                department: {
+                departmentMemberships: {
                     select: {
                         id: true,
-                        name: true,
+                        department: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
                     },
                 },
             },
@@ -142,10 +155,21 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                department: {
+                departmentMemberships: {
                     select: {
                         id: true,
-                        name: true,
+                        department: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
                     },
                 },
             },
@@ -173,10 +197,21 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
-                department: {
+                departmentMemberships: {
                     select: {
                         id: true,
-                        name: true,
+                        department: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
                     },
                 },
             },
