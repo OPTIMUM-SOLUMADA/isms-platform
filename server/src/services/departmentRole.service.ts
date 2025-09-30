@@ -1,41 +1,23 @@
 import prisma from '@/database/prisma';
+import { Prisma } from '@prisma/client';
+
+const include: Prisma.DepartmentRoleInclude = {
+    createdBy: {
+        select: {
+            id: true,
+            name: true,
+            role: true,
+            createdAt: true,
+            email: true,
+        },
+    },
+};
 
 export class DepartmentRoleService {
-    async addRoles(departmentId: string, roles: { name: string; description?: string }[]) {
-        console.log('add fonction');
-
-        // Vérifie si le département existe
-        const department = await prisma.department.findUnique({
-            where: { id: departmentId },
-        });
-
-        if (!department) {
-            throw new Error('Department not found');
-        }
-        const isExist = await prisma.departmentRole.findUnique({
-            where: {
-                name: DepartmentRoleService.name,
-            },
-        });
-        if (isExist) {
-            throw new Error('Role already exist');
-        }
-
-        // Crée plusieurs rôles pour ce département
-        await prisma.departmentRole.createMany({
-            data: roles.map((role) => ({
-                name: role.name,
-                description: role.description ?? '',
-                departmentId,
-            })),
-        });
-
-        // Retourne le département avec ses rôles mis à jour
-        return prisma.department.findUnique({
-            where: { id: departmentId },
-            include: {
-                roles: true, // <-- inclure les rôles
-            },
+    async addRoles(data: Prisma.DepartmentRoleCreateInput) {
+        console.log(data);
+        return prisma.departmentRole.create({
+            data,
         });
     }
 
@@ -69,5 +51,39 @@ export class DepartmentRoleService {
 
     async removeRoles(id: string) {
         return prisma.departmentRole.delete({ where: { id } });
+    }
+
+    async list({
+        filter,
+        page = 1,
+        limit = 20,
+        orderBy = { createdAt: 'desc' },
+    }: {
+        filter?: Prisma.DepartmentRoleWhereInput;
+        page?: number;
+        limit?: number;
+        orderBy?: Prisma.DepartmentRoleOrderByWithRelationInput;
+    }) {
+        const total = await prisma.departmentRole.count();
+
+        const departmentRoles = await prisma.departmentRole.findMany({
+            where: filter || {},
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+            include,
+        });
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            departmentRoles,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+            },
+        };
     }
 }

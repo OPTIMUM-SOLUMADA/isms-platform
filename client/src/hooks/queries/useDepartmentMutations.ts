@@ -49,6 +49,16 @@ export const useSearchDepartments = () => {
     });
 };
 
+
+// Fetch department role by id
+export const useFetchDepartment = (id?: string) => useQuery<any, ApiAxiosError>({
+    queryKey: ["departements", id],
+    queryFn: () => depService.getById(id!),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+});
+
+
 // -----------------------------
 // Create Department
 // -----------------------------

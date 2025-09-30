@@ -17,12 +17,14 @@ import { AddDepartmentRoleFormData } from "@/templates/departments/forms/AddDepa
 // -----------------------------
 // Fetch DepartmentRoles
 // -----------------------------
-export const useFetchDepartmentRoles = () => {
+export const useFetchDepartmentRoles = (id?: string) => {
     const { setDepartmentRoles, setPagination, pagination } = useDepartmentRoleStore();
+    console.log("pagination", pagination);
     const query = useQuery<any, ApiAxiosError>({
-        queryKey: ["departements", pagination.page, pagination.limit],
-        queryFn: () => depService.getRoles(pagination),
+        queryKey: ["departements", pagination.page, pagination.limit, id],
+        queryFn: () => depService.getRoles(id!),
         staleTime: 1000 * 60 * 5,
+        enabled: !!id,
     });
 
     useEffect(() => {
@@ -39,6 +41,15 @@ export const useFetchDepartmentRoles = () => {
 
     return query;
 };
+
+
+// Fetch department role by id
+export const useFetchDepartmentRole = (id?: string) => useQuery<any, ApiAxiosError>({
+    queryKey: ["departmentRole", id],
+    queryFn: () => depService.getRoles(id!),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+});
 
 // Search
 export const useSearchDepartmentRoles = () => {
@@ -62,17 +73,17 @@ export const useCreateDepartmentRole = (departmentId: string) => {
 
     return useMutation<any, ApiAxiosError, AddDepartmentRoleFormData>({
         mutationFn: async (data) => await depService.createRole(departmentId, data),
-            onSuccess: (res) => {
-                console.log("departmentRoles", res);
-                toast({
-                    title: "Success",
-                    description: "DepartmentRole created successfully",
-                    variant: "success",
-                });
-                const newDep = res.data as DepartmentRole;
-                setDepartmentRoles([...departmentRoles, newDep]);
-                queryClient.invalidateQueries({ queryKey: ["departements"] });
-            },
+        onSuccess: (res) => {
+            console.log("departmentRoles", res);
+            toast({
+                title: "Success",
+                description: "DepartmentRole created successfully",
+                variant: "success",
+            });
+            const newDep = res.data as DepartmentRole;
+            setDepartmentRoles([...departmentRoles, newDep]);
+            queryClient.invalidateQueries({ queryKey: ["departements"] });
+        },
     });
 };
 

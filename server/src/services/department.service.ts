@@ -14,6 +14,7 @@ const depIncludes: Prisma.DepartmentInclude = {
         select: {
             id: true,
             role: true,
+            name: true,
             department: true,
             createdAt: true,
         },

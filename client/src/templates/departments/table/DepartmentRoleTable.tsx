@@ -6,7 +6,6 @@ import { DataTable } from "@/components/DataTable";
 import type { DepartmentRole } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { UserAvatarGroup } from "@/templates/users/UserAvatarGroup";
 import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { formatDate } from "@/lib/date";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,21 +58,6 @@ const Table = ({
                     <CellNoValue />
                 );
             },
-        },
-        {
-            accessorKey: "users",
-            header: t("departmentRole.table.columns.members"),
-            cell: ({ row }) => {
-                const users = row.original.members;
-                return users.length > 0 ? (
-                    <div className="flex items-center gap-1">
-                        <UserAvatarGroup users={users} />
-                        <span className="text-muted-foreground text-xs">({users.length})</span>
-                    </div>
-                ) : (
-                    <CellNoValue />
-                );
-            }
         },
         {
             accessorKey: "createdBy",

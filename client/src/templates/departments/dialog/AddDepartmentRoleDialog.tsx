@@ -4,6 +4,7 @@ import AddDepartmentRoleForm from "@/templates/departments/forms/AddDepartmentRo
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateDepartmentRole } from "@/hooks/queries/useDepartmentRoleMutations";
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 
 interface Props {
     open: boolean,
@@ -15,13 +16,15 @@ const AddDepartmentRoleFormDialog = ({
 }: Props) => {
     const { t } = useTranslation();
 
+    const { currentDepartment } = useDepartmentStore();
+
     const {
         mutateAsync: createDepartmentRole,
         isPending,
         isSuccess,
         error,
         reset
-    } = useCreateDepartmentRole();
+    } = useCreateDepartmentRole(currentDepartment?.id as string);
 
     const { user } = useAuth();
 

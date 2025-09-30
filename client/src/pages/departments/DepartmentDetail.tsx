@@ -1,64 +1,44 @@
 import { Button } from "@/components/ui/button";
-import { Department, DepartmentRole } from "@/types";
 import { Calendar, Layers, Plus, User } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { depService } from "@/services/departmentService";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "@/lib/date";
-// import { DepartmentTable } from "@/templates/departments/table/DepartmentTable";
 import { useDepartmentRoleUI } from "@/stores/department/useDepartmentRoleUI";
 import { DepartmentRoleTable } from "@/templates/departments/table/DepartmentRoleTable";
-
-// interface DepartmentDetailProps {
-//   department: Department;
-//   roles: DepartmentRole[];
-//   addRoles: (roles: { name: string; description?: string }[]) => void;
-//   updateRoles: (
-//     id: string,
-//     data: { name?: string; description?: string }
-//   ) => void;
-//   removeRoles: (id: string) => void;
-// }
-// interface Department {
-//   id: string;
-//   name: string;
-//   description?: string;
-//   createdBy : { name: string; email: string; role: string; createdAt: string };
-//   createdAt: string;
-// }
+import useDepartmentStore from "@/stores/department/useDepatrmentStore";
+import { useFetchDepartmentRoles } from "@/hooks/queries/useDepartmentRoleMutations";
+import { useFetchDepartment } from "@/hooks/queries/useDepartmentMutations";
 
 export default function DepartmentDetail() {
 
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  // const [department, setDepartment] = useState<Department>({});
-  const [department, setDepartment] = useState<Department | null>(null);
-  const [departmentRole, setDepartmentRole] = useState<DepartmentRole[]>([]);
-  console.log("depar=====", id);
-  const { openAdd } = useDepartmentRoleUI()
-  useEffect(() => {
-      if (!id) return;
-      async function fetchDepartment() {
-          try {
-              const allDepart = await depService.getById(id!);
-              const allRoles = await depService.getRoles(id!);
-              const depart = allDepart.data;
-              setDepartment(depart);
-              setDepartmentRole(allRoles.data);
+  const { setCurrentDepartment } = useDepartmentStore();
 
-              console.log("all", allRoles.data);
-              
-          } catch (error) {
-              console.error('Error fetching department data:', error);
-          }
-      }     
-      fetchDepartment()  
-      
-  }, [id])
-    
+  const { openAdd } = useDepartmentRoleUI();
+
+  const { data, isLoading } = useFetchDepartmentRoles(id);
+  const { data: departmentRes } = useFetchDepartment(id);
+
+  const department = departmentRes?.data;
+
+  const departmentRoles = data?.data?.departmentRoles || [];
+
+  useEffect(() => {
+    if (department) {
+      setCurrentDepartment(department);
+    }
+
+    return () => {
+      setCurrentDepartment(null);
+    }
+  }, [department, setCurrentDepartment]);
+
+  if (isLoading) return <>Loading...</>;
+
   return (
     <div className="md:flex-row justify-between items-start md:items-center gap-4">
 
@@ -84,49 +64,49 @@ export default function DepartmentDetail() {
         <CardContent>
           {department && (
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{t("department.forms.add.name.placeholder")}:</span>
-              {department.name}
-            </div>
-            <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{t("documentType.table.columns.description")}:</span>
-              {department.description}
-            </div>
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{t("documentType.table.columns.createdBy")}:</span>
-              <div className="flex items-center gap-1">{department.createdBy?.name}</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{t("documentType.table.columns.createdAt")}:</span>
-              <div className="flex items-center gap-1">
-                <span>
-                  {formatDate(department.createdAt, {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    minute: "numeric",
-                    hour: "numeric",
-                    second: "numeric",
-                  }, 'en-US')}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("department.forms.add.name.placeholder")}:</span>
+                {department.name}
               </div>
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("documentType.table.columns.description")}:</span>
+                {department.description}
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("documentType.table.columns.createdBy")}:</span>
+                <div className="flex items-center gap-1">{department.createdBy?.name}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{t("documentType.table.columns.createdAt")}:</span>
+                <div className="flex items-center gap-1">
+                  <span>
+                    {formatDate(department.createdAt, {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      minute: "numeric",
+                      hour: "numeric",
+                      second: "numeric",
+                    }, 'en-US')}
+                  </span>
+                </div>
 
+              </div>
             </div>
-          </div>
 
-        )}
+          )}
         </CardContent>
       </Card>
       <Card className='flex-grow flex flex-col'>
-        <DepartmentRoleTable 
-        data={departmentRole}
+        <DepartmentRoleTable
+          data={departmentRoles}
         />
       </Card>
     </div>
-    );
+  );
 }

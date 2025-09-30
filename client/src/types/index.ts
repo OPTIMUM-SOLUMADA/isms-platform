@@ -210,7 +210,10 @@ export type DepartmentRole = {
   name: string;
   description: string;
   departmentId: string;
+  createdBy: User;
   departmentMembers: departmentMember[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type departmentMember = {
