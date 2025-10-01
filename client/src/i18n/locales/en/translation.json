@@ -708,7 +708,7 @@
       "columns": {
         "name": "Name",
         "type": "Type",
-        "isoClause": "Clause/Control Number / Control",
+        "isoClause": "Clause/Control Number",
         "status": "Status",
         "owner": "Owner",
         "version": "Version",
@@ -744,9 +744,12 @@
         "name": "Name",
         "description": "Description",
         "type": "Type",
-        "isoClause": "Clause/Control Number / Control",
+        "isoClause": "Clause/Control Number",
         "status": "Status",
-        "owner": "Owners",
+        "owners": "Owners",
+        "owner": "Owner",
+        "classification": "Classification",
+        "authors": "Authors",
         "version": "Version",
         "nextReview": "Next review",
         "reviewDue": "Review date",
@@ -755,7 +758,10 @@
         "createdBy": "Created by",
         "createdAt": "Created at",
         "reviewers": "Reviewers",
-        "department": "Department"
+        "department": "Department",
+        "ownership": "Ownership & People",
+        "metadata": "Metadata",
+        "compliance": "Compliance"
       },
       "tabs": {
         "preview": "File preview",

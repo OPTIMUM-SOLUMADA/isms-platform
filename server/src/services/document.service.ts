@@ -24,6 +24,14 @@ export class DocumentService {
             reviews: true,
             versions: true,
             type: true,
+            owner: {
+                select: {
+                    id: true,
+                    name: true,
+                    logo: true,
+                    createdAt: true,
+                },
+            },
             authors: {
                 include: {
                     user: {

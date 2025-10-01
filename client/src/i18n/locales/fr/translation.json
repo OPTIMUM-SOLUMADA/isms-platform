@@ -708,7 +708,7 @@
             "columns": {
                 "name": "Nom",
                 "type": "Type",
-                "isoClause": "Clause/Control Number / Control",
+                "isoClause": "Clause/Control Number",
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
@@ -744,9 +744,12 @@
                 "name": "Nom",
                 "description": "Description",
                 "type": "Type",
-                "isoClause": "Clause/Control Number / Control",
+                "isoClause": "Clause/Control Number",
                 "status": "Statut",
-                "owner": "Propriétaires",
+                "ownesr": "Propriétaires",
+                "owner": "Propriétaire",
+                "classification": "Classification",
+                "authors": "Auteurs",
                 "version": "Version",
                 "nextReview": "Prochaine révision",
                 "reviewDue": "Date de révision",
@@ -755,7 +758,10 @@
                 "createdBy": "Créé par",
                 "createdAt": "Créé le",
                 "reviewers": "Reviseurs",
-                "department": "Département"
+                "department": "Département",
+                "ownership": "Propriété",
+                "metadata": "Métadonnées",
+                "compliance": "Conformité"
             },
             "tabs": {
                 "preview": "Aperçu du fichier",

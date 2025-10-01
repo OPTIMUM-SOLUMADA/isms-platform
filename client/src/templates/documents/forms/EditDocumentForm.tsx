@@ -39,6 +39,7 @@ import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
 import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
 import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
 import { classifications } from "@/constants/classification";
+import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -364,20 +365,13 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     {t("document.add.form.fields.owner.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
+                    <OwnerLookup
+                      placeholder={t("document.add.form.fields.classification.placeholder")}
+                      onChange={field.onChange}
                       value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger hasError={!!fieldState.error}>
-                        <SelectValue placeholder={t('document.add.form.fields.classification.placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={"SOLUMADA"}>
-                          SOLUMADA
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      addLabel={t("documentType.classification.add.label")}
+                      hasError={!!fieldState.error}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

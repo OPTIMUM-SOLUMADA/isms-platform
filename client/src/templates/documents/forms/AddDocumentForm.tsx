@@ -308,7 +308,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       value={field.value}
                       addLabel={t("documentType.isoClause.add.label")}
                       hasError={!!fieldState.error}
-                    // onButtonClick={openAddDocumentTypeModal}
                     />
                   </FormControl>
                   <FormMessage />
@@ -335,7 +334,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       value={field.value}
                       addLabel={t("documentType.classification.add.label")}
                       hasError={!!fieldState.error}
-                    // onButtonClick={openAddDocumentTypeModal}
                     />
                   </FormControl>
                   <FormMessage />
