@@ -522,9 +522,21 @@
                         "label": "Propriétaires",
                         "placeholder": "Nom du propriétaire"
                     },
+                    "owner": {
+                        "label": "Propriétaire",
+                        "placeholder": "Sélectionner un propriétaire"
+                    },
+                    "authors": {
+                        "label": "Auteurs",
+                        "placeholder": "Sélectionner des auteurs"
+                    },
                     "type": {
                         "label": "Type du document",
                         "placeholder": "Séléctionner un type"
+                    },
+                    "classification": {
+                        "label": "Classification",
+                        "placeholder": "Séléctionner une classification"
                     },
                     "reviewers": {
                         "label": "Reviseurs",
@@ -1546,6 +1558,11 @@
                         "label": "Contacter le support"
                     }
                 }
+            },
+            "classification": {
+                "confidential": "Confidentiel",
+                "internal_use_only": "Usage interne seulement",
+                "public": "Publique"
             }
         },
         "user": {

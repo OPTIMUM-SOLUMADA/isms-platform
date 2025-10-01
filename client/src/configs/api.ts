@@ -58,6 +58,10 @@ export const API_CONFIG = {
             DELETE: (id: string | number) => `/document-types/${id}`,
             SEARCH: "/document-types/search",
         },
+        OWNERS: {
+            BASE: "/owners",
+            GET: (id: string | number) => `/owners/${id}`,
+        },
         EXCEL_IMAGE: "/excel/image",
     },
 } as const;

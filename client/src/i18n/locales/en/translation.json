@@ -522,9 +522,21 @@
             "label": "Owners",
             "placeholder": "Owner name"
           },
+          "owner": {
+            "label": "Owner",
+            "placeholder": "Select owner"
+          },
+          "authors": {
+            "label": "Authors",
+            "placeholder": "Select authors"
+          },
           "type": {
             "label": "Document type",
             "placeholder": "Select a type"
+          },
+          "classification": {
+            "label": "Classification",
+            "placeholder": "Select a classification"
           },
           "reviewers": {
             "label": "Reviewers",
@@ -1534,6 +1546,11 @@
             "label": "Contact support"
           }
         }
+      },
+      "classification": {
+        "confidential": "Confidential",
+        "internal_use_only": "Internal use only",
+        "public": "Public"
       }
     },
     "user": {
