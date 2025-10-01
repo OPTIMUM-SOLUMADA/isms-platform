@@ -34,10 +34,12 @@ import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileU
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
-import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
 import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
 import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
 import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
+import { Classification, classifications } from "@/constants/classification";
+import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
+import useOwnerStore from "@/stores/owner/userOwnserStore";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -46,11 +48,13 @@ const documentSchema = cz.z.object({
   description: z.string().optional(),
   status: z.enum(DocumentStatuses),
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
-  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+  owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
+  classification: z.string().nonempty(i18n.t("zod.errors.required")),
+  authors: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
     .min(1, { message: i18n.t("components.fileUpload.errors.required") })
@@ -89,6 +93,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const navigate = useNavigate();
 
     const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
+    const { owners } = useOwnerStore();
 
     const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),
@@ -96,12 +101,14 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         title: "",
         description: "",
         status: documentStatus.DRAFT,
-        owners: [],
+        owner: owners[0]?.id || "",
         isoClause: "",
         reviewers: [],
+        authors: [],
         files: [],
         type: "",
         department: "",
+        classification: Classification.PUBLIC,
         reviewFrequency: Frequencies.DAILY,
       },
       mode: "onChange",
@@ -120,8 +127,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     }));
 
     const { openAdd: openAddDepartmentModal } = useDepartmentUI();
-    const { openAdd: openAddDocumentTypeModal } = useDocumentTypeUIStore();
-
 
     return (
       <Form {...form}>
@@ -173,7 +178,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
             {/* Types ID */}
             <FormField
@@ -191,7 +196,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       value={field.value}
                       addLabel={t("documentType.actions.add.label")}
                       hasError={!!fieldState.error}
-                      onButtonClick={openAddDocumentTypeModal}
+                    // onButtonClick={openAddDocumentTypeModal}
                     />
                   </FormControl>
                   <FormMessage />
@@ -221,6 +226,38 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                         {Object.entries(documentStatus).map(([status, index]) => (
                           <SelectItem key={index} value={status}>
                             {t(`common.document.status.${status.toLowerCase()}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Classification */}
+            <FormField
+              control={form.control}
+              name="classification"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.classification.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger hasError={!!fieldState.error}>
+                        <SelectValue placeholder={t('document.add.form.fields.classification.placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classifications.map((item, index) => (
+                          <SelectItem key={index} value={item}>
+                            {t(`common.document.classification.${item.toLowerCase()}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -269,9 +306,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       placeholder={t("document.add.form.fields.isoClause.placeholder")}
                       onChange={field.onChange}
                       value={field.value}
-                      addLabel={t("documentType.actions.add.label")}
+                      addLabel={t("documentType.isoClause.add.label")}
                       hasError={!!fieldState.error}
-                      onButtonClick={openAddDocumentTypeModal}
                     />
                   </FormControl>
                   <FormMessage />
@@ -280,16 +316,39 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owners"
+              name="owner"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owners.label")} <Required />
+                    {t("document.add.form.fields.owner.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <OwnerLookup
+                      placeholder={t("document.add.form.fields.classification.placeholder")}
+                      onChange={field.onChange}
+                      value={field.value}
+                      addLabel={t("documentType.classification.add.label")}
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Authors */}
+            <FormField
+              control={form.control}
+              name="authors"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.authors.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect

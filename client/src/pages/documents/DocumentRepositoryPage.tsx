@@ -53,7 +53,7 @@ export default function DocumentRepositoryPage() {
     const matchesStatus = filterStatus === 'all' || doc.status === filterStatus;
     const matchesType = filterType === 'all' || doc.categoryId === filterType;
     const matchesClause = filterClause === 'all' || doc.isoClauseId === filterClause;
-    const matchesOwner = filterOwner === 'all' || doc.owners.some(owner => owner.user.id === filterOwner);
+    const matchesOwner = filterOwner === 'all' || doc.authors.some(author => author.user.id === filterOwner);
     return matchesSearch && matchesStatus && matchesType && matchesClause && matchesOwner;
   });
 
@@ -138,10 +138,10 @@ export default function DocumentRepositoryPage() {
               <div className="flex flex-col sm:flex-row gap-2">
                 <Select value={filterOwner} onValueChange={setFilterOwner}>
                   <SelectTrigger className="w-full sm:w-40 hidden">
-                    <SelectValue placeholder={t("document.filter.owner.title")} />
+                    <SelectValue placeholder={t("document.filter.authors.title")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("document.filter.owner.placeholder")}</SelectItem>
+                    <SelectItem value="all">{t("document.filter.authors.placeholder")}</SelectItem>
                     {users.map((user, index) => (
                       <SelectItem key={index} value={user.id}>
                         <div className='flex items-center gap-2'>

@@ -29,6 +29,7 @@ export class DocumentController {
                 reviewFrequency,
                 userId,
                 owner,
+                classification,
             } = req.body;
 
             const fileUrl = req.file ? req.file.filename : null;
@@ -39,6 +40,7 @@ export class DocumentController {
                     description,
                     status,
                     reviewFrequency,
+                    classification,
                     ...(type && { type: { connect: { id: type } } }),
                     ...(department && { department: { connect: { id: department } } }),
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
@@ -105,6 +107,7 @@ export class DocumentController {
                 reviewers,
                 reviewFrequency,
                 owner,
+                classification,
             } = req.body;
 
             // find document
@@ -132,6 +135,7 @@ export class DocumentController {
                     ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                     ...(owner && { owner: { connect: { id: owner } } }),
                     ...(fileUrl && { fileUrl }),
+                    classification,
                 },
                 authors.split(','),
                 reviewers.split(','),

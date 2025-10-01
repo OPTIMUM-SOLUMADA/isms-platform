@@ -1,7 +1,8 @@
-import { ReviewFrequency } from '@prisma/client';
+import { Classification, ReviewFrequency } from '@prisma/client';
 import Joi from 'joi';
 
 const reviewFrequencyValues = Object.values(ReviewFrequency);
+const classificationValues = Object.values(Classification);
 
 export const documentCreateSchema = Joi.object({
     title: Joi.string().required().messages({
@@ -24,7 +25,12 @@ export const documentCreateSchema = Joi.object({
         .valid(...reviewFrequencyValues)
         .optional(),
 
-    owners: Joi.array().items(Joi.string()).min(1).required().messages({
+    owner: Joi.string().min(1).required().messages({
+        'string.empty': 'Owner is required',
+        'any.required': 'Owner is required',
+    }),
+
+    authors: Joi.array().items(Joi.string()).min(1).required().messages({
         'string.empty': 'Owners is required',
         'any.required': 'Owners is required',
     }),
@@ -48,4 +54,12 @@ export const documentCreateSchema = Joi.object({
         'array.min': 'At least one reviewer is required',
         'any.required': 'Reviewers are required',
     }),
+
+    classification: Joi.string()
+        .valid(...Object.values(classificationValues))
+        .required()
+        .messages({
+            'string.empty': 'Classification is required',
+            'any.required': 'Classification is required',
+        }),
 });

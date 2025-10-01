@@ -17,6 +17,7 @@ import { useFetchDocumentTypes } from '@/hooks/queries/useDocumentTypeMutations'
 import { useFetchUsers } from '@/hooks/queries/useUserMutations';
 import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
+import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function DocumentAddPage() {
   useFetchDocumentTypes();
   useFetchUsers();
   useFetchISOClauses();
+  useFetchOwners();
 
   const formRef = useRef<AddDocumentFormRef>(null);
 

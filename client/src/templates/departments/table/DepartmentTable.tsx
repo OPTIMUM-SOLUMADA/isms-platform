@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/date";
 import { useAuth } from "@/contexts/AuthContext";
 import CellNoValue from "@/components/CellNoValue";
 import useDepartmentStore from "@/stores/department/useDepatrmentStore";
+import { Link } from "react-router-dom";
 
 
 // UserTable component using the reusable DataTable
@@ -34,8 +35,6 @@ const Table = ({
 
     const { pagination, setPagination } = useDepartmentStore();
 
-    console.log("data", data);
-    
     // Define columns for UserTable
     const departmentColumns: ColumnDef<Department>[] = useMemo(() => [
         {
@@ -45,7 +44,9 @@ const Table = ({
             cell: ({ row }) => {
                 const department = row.original;
                 return (
-                    <span className="font-semibold text-primary">{department.name}</span>
+                    <Link to={`/departments/view/${department.id}`}>
+                        <span className="font-semibold text-primary">{department.name}</span>
+                    </Link>
                 );
             },
         },
@@ -114,7 +115,7 @@ const Table = ({
         {
             id: "actions",
             header: t("department.table.columns.actions"),
-            size: 60,
+            size: 100,
             cell: ({ row }) => {
                 const department = row.original;
                 return (
