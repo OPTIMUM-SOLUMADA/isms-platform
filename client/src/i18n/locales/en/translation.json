@@ -1364,6 +1364,11 @@
           "deleted": "Department deleted successfully",
           "added": "Department added successfully",
           "updated": "Department updated successfully"
+        },
+        "departmentRole": {
+          "deleted": "Fonction deleted successfully",
+          "added": "Fonction added successfully",
+          "updated": "Fonction updated successfully"
         }
       },
       "error": {

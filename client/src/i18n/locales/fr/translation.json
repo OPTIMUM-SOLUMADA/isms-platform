@@ -1376,6 +1376,11 @@
                     "deleted": "Département supprimé avec succès",
                     "added": "Département ajouté avec succès",
                     "updated": "Département mis à jour avec succès"
+                },
+                "departmentRole": {
+                    "deleted": "Fonction supprimé avec succès",
+                    "added": "Fonction ajouté avec succès",
+                    "updated": "Fonction mis à jour avec succès"
                 }
             },
             "error": {
