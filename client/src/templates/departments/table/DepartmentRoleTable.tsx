@@ -95,17 +95,6 @@ const Table = ({
                             size="sm"
                             onClick={() => {
                                 setCurrentDepartmentRole(departmentRole);
-                                onView?.(departmentRole);
-                            }}
-                        >
-                            <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setCurrentDepartmentRole(departmentRole);
                                 openEdit();
                             }}
                         >
@@ -144,10 +133,6 @@ const Table = ({
                         <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">{t("departmentRole.table.empty.title")}</h3>
                         <p className="text-gray-500 mb-4">{t("departmentRole.table.empty.message")}</p>
-                        {/* <Button>
-                            <PlusCircle className="h-4 w-4 mr-2" />
-                            {t("departmentRole.table.empty.actions.add.label")}
-                        </Button> */}
                     </CardContent>
                 </Card>
             )}

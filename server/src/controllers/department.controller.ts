@@ -152,6 +152,7 @@ export class DepartmentController {
         try {
             const { roles } = req.body;
             const department = await serviceRole.updateRoles(req.params.id!, roles);
+
             res.json(department);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });

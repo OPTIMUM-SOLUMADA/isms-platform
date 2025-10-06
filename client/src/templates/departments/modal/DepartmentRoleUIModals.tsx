@@ -14,8 +14,6 @@ export const DepartmentRoleUIModals = () => {
     closeEdit,
     setCurrentDepartmentRole,
   } = useDepartmentRoleUI();
-
-  console.log("currentDepartmentRole", isAddOpen);
   
   function handleCloseDelete() {
     closeDelete();
