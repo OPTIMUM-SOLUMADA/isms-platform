@@ -522,9 +522,21 @@
             "label": "Owners",
             "placeholder": "Owner name"
           },
+          "owner": {
+            "label": "Owner",
+            "placeholder": "Select owner"
+          },
+          "authors": {
+            "label": "Authors",
+            "placeholder": "Select authors"
+          },
           "type": {
             "label": "Document type",
             "placeholder": "Select a type"
+          },
+          "classification": {
+            "label": "Classification",
+            "placeholder": "Select a classification"
           },
           "reviewers": {
             "label": "Reviewers",
@@ -696,7 +708,7 @@
       "columns": {
         "name": "Name",
         "type": "Type",
-        "isoClause": "Clause/Control Number / Control",
+        "isoClause": "Clause/Control Number",
         "status": "Status",
         "owner": "Owner",
         "version": "Version",
@@ -732,9 +744,12 @@
         "name": "Name",
         "description": "Description",
         "type": "Type",
-        "isoClause": "Clause/Control Number / Control",
+        "isoClause": "Clause/Control Number",
         "status": "Status",
-        "owner": "Owners",
+        "owners": "Owners",
+        "owner": "Owner",
+        "classification": "Classification",
+        "authors": "Authors",
         "version": "Version",
         "nextReview": "Next review",
         "reviewDue": "Review date",
@@ -743,7 +758,10 @@
         "createdBy": "Created by",
         "createdAt": "Created at",
         "reviewers": "Reviewers",
-        "department": "Department"
+        "department": "Department",
+        "ownership": "Ownership & People",
+        "metadata": "Metadata",
+        "compliance": "Compliance"
       },
       "tabs": {
         "preview": "File preview",
@@ -1539,6 +1557,11 @@
             "label": "Contact support"
           }
         }
+      },
+      "classification": {
+        "confidential": "Confidential",
+        "internal_use_only": "Internal use only",
+        "public": "Public"
       }
     },
     "user": {

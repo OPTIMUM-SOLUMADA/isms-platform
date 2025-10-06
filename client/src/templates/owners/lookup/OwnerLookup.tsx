@@ -1,7 +1,7 @@
-import { SelectWithButton } from '@/components/SelectWithButton'
-import { useSearchIsoClauses } from '@/hooks/queries/useISOClauseMutations';
-import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
-import { ISOClause } from '@/types';
+import { SelectWithButton } from '@/components/SelectWithButton';
+import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
+import useOwnerStore from '@/stores/owner/userOwnserStore';
+import { DocumentOwner } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
     addLabel?: string;
 }
 
-const ISOSelectLookup = ({
+const OwnerLookup = ({
     placeholder,
     onChange = () => { },
     value,
@@ -22,24 +22,22 @@ const ISOSelectLookup = ({
     onButtonClick
 }: Props) => {
 
-    const { data: searchResults = [] } = useSearchIsoClauses();
-    const { setQuery } = useISOClauseStore();
+    useFetchOwners();
+    const { setQuery, owners } = useOwnerStore();
 
-    const [selected, setSelected] = useState<ISOClause | null>(null);
-
+    const [selected, setSelected] = useState<DocumentOwner | null>(null);
 
     // Merge selected option into results if missing
     const options = useMemo(() => {
-        if (!selected) return searchResults ?? [];
-        return searchResults?.some(o => o.id === selected.id)
-            ? searchResults
-            : [selected, ...(searchResults ?? [])];
-    }, [searchResults, selected]);
+        if (!selected) return owners ?? [];
+        return owners?.some(o => o.id === selected.id)
+            ? owners
+            : [selected, ...(owners ?? [])];
+    }, [owners, selected]);
 
     useEffect(() => {
         return () => setQuery('');
     }, [setQuery]);
-
 
     // If the prop value changes (edit mode), update selected
     useEffect(() => {
@@ -52,9 +50,9 @@ const ISOSelectLookup = ({
     return (
         <SelectWithButton
             placeholder={placeholder}
-            items={options.map(({ code, name, id }) => ({
+            items={options.map(({ name, id }) => ({
                 value: id,
-                label: `${code} ${name}`,
+                label: name,
             }))}
             onChange={(id) => {
                 onChange(id);
@@ -66,8 +64,9 @@ const ISOSelectLookup = ({
             hasError={hasError}
             onButtonClick={onButtonClick}
             onChangeSearch={setQuery}
+            allowSearch={false}
         />
     )
 }
 
-export default ISOSelectLookup
+export default OwnerLookup;

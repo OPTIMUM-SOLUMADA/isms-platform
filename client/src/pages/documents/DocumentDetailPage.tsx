@@ -14,7 +14,8 @@ import {
   Rocket,
   Archive,
   Users,
-  Building2
+  Building2,
+  BookLock,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
@@ -91,8 +92,6 @@ export default function DocumentDetailPage() {
     isError,
     refetch
   } = useGetDocument(params.id);
-
-  console.log(document)
 
   const { openDelete, setCurrentDocument } = useDocumentUI();
 
@@ -182,77 +181,102 @@ export default function DocumentDetailPage() {
             <CardTitle>{t("document.view.detail.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2">
-                <UserIcon numberOfUsers={document.owners.length} />
-                <span className="font-medium">{t("document.view.detail.owner")}:</span>
-                <div className="flex items-center gap-1">
-                  {document.owners.map((o, index) => (
-                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
-                  ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {/* Ownership & People */}
+              <div className="border p-2 space-y-3">
+                <h3 className="font-semibold">{t("document.view.detail.ownership")}</h3>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.owner")}</span>
+                  <span className="font-medium">{document.owner?.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <UserIcon numberOfUsers={document.authors.length} />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.authors")}</span>
+                  <div className="flex gap-1">
+                    {document.authors.map((o, i) => (
+                      <UserHoverCard key={i} user={o.user} currentUserId={user?.id} />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <UserIcon numberOfUsers={document.reviewers.length} />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.reviewers")}</span>
+                  <div className="flex gap-1">
+                    {document.reviewers.map((o, i) => (
+                      <UserHoverCard key={i} user={o.user} currentUserId={user?.id} />
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <UserIcon numberOfUsers={document.reviewers.length} />
-                <span className="font-medium">{t("document.view.detail.reviewers")}:</span>
-                <div className="flex items-center gap-1">
-                  {document.reviewers.map((o, index) => (
-                    <UserHoverCard key={index} user={o.user} currentUserId={user?.id} />
-                  ))}
+
+              {/* Status & Metadata */}
+              <div className="border p-2 space-y-3">
+                <h3 className="font-semibold">{t("document.view.detail.metadata")}</h3>
+
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.status")}</span>
+                  <Badge className={documentStatusColors[document.status.toLowerCase()]}>
+                    {t(`common.document.status.${document.status.toLowerCase()}`)}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.version")}</span>
+                  <Badge variant="outline">
+                    {document.versions.find((v) => v.isCurrent)?.version}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.lastUpdated")}</span>
+                  <span className="font-medium">
+                    {formatDate(document.updatedAt, { day: "numeric", month: "short", year: "numeric" }, "en-US")}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.reviewFrequency")}</span>
+                  <span className="font-medium">
+                    {t(`document.add.form.fields.reviewFrequencyUnit.options.${document.reviewFrequency?.toLowerCase()}`)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.nextReview")}</span>
+                  <span className="font-medium">
+                    {document.nextReviewDate &&
+                      formatDate(document.nextReviewDate, { day: "numeric", month: "short", year: "numeric" }, "en-US")}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <BadgeCheck className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.status")}:</span>
-                <Badge className={`${documentStatusColors[document.status.toLowerCase()]}`}>
-                  {t(`common.document.status.${document.status.toLowerCase()}`)}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Layers className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.version")}:</span>
-                <Badge variant="outline">{document.versions.find((v) => v.isCurrent)?.version}</Badge>
-              </div>
-              {/* Department */}
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.department")}:</span>
-                <div className="flex items-center gap-1">
+
+              {/* Compliance */}
+              <div className="border p-2 space-y-3 lg:col-span-1">
+                <h3 className="font-semibold">{t("document.view.detail.compliance")}</h3>
+                <div className="flex items-center gap-2">
+                  <BookLock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.isoClause")}</span>
+                  <span className="font-medium">{document.isoClause?.code}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BookLock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.classification")}</span>
+                  <span className="font-medium">{t(`common.document.classification.${document.classification.toLowerCase()}`)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("document.view.detail.department")}</span>
                   <DepartmentHoverCard department={document.department} />
                 </div>
               </div>
-              {/* Last Updated */}
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.lastUpdated")}:</span>
-                <span>
-                  {formatDate(document.updatedAt, {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    minute: "numeric",
-                    hour: "numeric",
-                    second: "numeric",
-                  }, 'en-US')}
-                </span>
-              </div>
-              {/* Review Frequency */}
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.reviewFrequency")}:</span>
-                <div className="flex items-center gap-1">
-                  <span>{t(`document.add.form.fields.reviewFrequencyUnit.options.${document.reviewFrequency?.toLowerCase()}`)}</span>
-                </div>
-              </div>
-              {/* Next Review */}
-              <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("document.view.detail.nextReview")}:</span>
-                {document.nextReviewDate && (
-                  <span>{formatDate(document.nextReviewDate, { day: "numeric", month: "short", year: "numeric" }, 'en-US')}</span>
-                )}
-              </div>
             </div>
+
           </CardContent>
         </Card>
 
@@ -318,7 +342,7 @@ export const useGetDocument = (id: string | undefined) => {
       const res = await documentService.getById(id);
       return res.data;
     },
-    // enabled: !!id, // only fetch if id exists
-    staleTime: 1000 * 60 * 5, // optional: cache 5 minutes
+    enabled: !!id, // only fetch if id exists
+    staleTime: 1000 * 60, // optional: cache 5 minutes
   });
 };

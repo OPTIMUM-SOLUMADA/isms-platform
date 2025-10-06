@@ -522,9 +522,21 @@
                         "label": "Propriétaires",
                         "placeholder": "Nom du propriétaire"
                     },
+                    "owner": {
+                        "label": "Propriétaire",
+                        "placeholder": "Sélectionner un propriétaire"
+                    },
+                    "authors": {
+                        "label": "Auteurs",
+                        "placeholder": "Sélectionner des auteurs"
+                    },
                     "type": {
                         "label": "Type du document",
                         "placeholder": "Séléctionner un type"
+                    },
+                    "classification": {
+                        "label": "Classification",
+                        "placeholder": "Séléctionner une classification"
                     },
                     "reviewers": {
                         "label": "Reviseurs",
@@ -696,7 +708,7 @@
             "columns": {
                 "name": "Nom",
                 "type": "Type",
-                "isoClause": "Clause/Control Number / Control",
+                "isoClause": "Clause/Control Number",
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
@@ -732,9 +744,12 @@
                 "name": "Nom",
                 "description": "Description",
                 "type": "Type",
-                "isoClause": "Clause/Control Number / Control",
+                "isoClause": "Clause/Control Number",
                 "status": "Statut",
-                "owner": "Propriétaires",
+                "ownesr": "Propriétaires",
+                "owner": "Propriétaire",
+                "classification": "Classification",
+                "authors": "Auteurs",
                 "version": "Version",
                 "nextReview": "Prochaine révision",
                 "reviewDue": "Date de révision",
@@ -743,7 +758,10 @@
                 "createdBy": "Créé par",
                 "createdAt": "Créé le",
                 "reviewers": "Reviseurs",
-                "department": "Département"
+                "department": "Département",
+                "ownership": "Propriété",
+                "metadata": "Métadonnées",
+                "compliance": "Conformité"
             },
             "tabs": {
                 "preview": "Aperçu du fichier",
@@ -1551,6 +1569,11 @@
                         "label": "Contacter le support"
                     }
                 }
+            },
+            "classification": {
+                "confidential": "Confidentiel",
+                "internal_use_only": "Usage interne seulement",
+                "public": "Publique"
             }
         },
         "user": {

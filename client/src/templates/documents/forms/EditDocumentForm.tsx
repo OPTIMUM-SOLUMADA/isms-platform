@@ -38,6 +38,8 @@ import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUI
 import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
 import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
 import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
+import { classifications } from "@/constants/classification";
+import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -46,11 +48,13 @@ const documentSchema = cz.z.object({
   description: z.string().optional(),
   status: z.enum(DocumentStatuses),
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
-  owners: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+  owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   department: z.string().nonempty(i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
+  classification: z.string().nonempty(i18n.t("zod.errors.required")),
+  authors: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   files: z
     .array(z.custom<File>())
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
@@ -102,13 +106,15 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         title: doc.title,
         description: doc.description!,
         status: doc.status,
-        owners: doc.owners.map(owner => owner.user.id),
+        owner: doc.ownerId,
+        authors: doc.authors.map(author => author.user.id),
         isoClause: doc.isoClauseId,
         reviewers: doc.reviewers.map(reviewer => reviewer.user.id),
         files: [],
         type: doc.categoryId,
         department: doc.departmentId,
         reviewFrequency: doc.reviewFrequency!,
+        classification: doc.classification,
       },
       mode: "onChange",
     });
@@ -176,7 +182,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
             {/* Types ID */}
             <FormField
@@ -224,6 +230,38 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                         {Object.entries(documentStatus).map(([status, index]) => (
                           <SelectItem key={index} value={status}>
                             {t(`common.document.status.${status.toLowerCase()}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Classification */}
+            <FormField
+              control={form.control}
+              name="classification"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.classification.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger hasError={!!fieldState.error}>
+                        <SelectValue placeholder={t('document.add.form.fields.classification.placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classifications.map((item, index) => (
+                          <SelectItem key={index} value={item}>
+                            {t(`common.document.classification.${item.toLowerCase()}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -320,11 +358,34 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             {/* Owner */}
             <FormField
               control={form.control}
-              name="owners"
+              name="owner"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="font-medium">
-                    {t("document.add.form.fields.owners.label")} <Required />
+                    {t("document.add.form.fields.owner.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <OwnerLookup
+                      placeholder={t("document.add.form.fields.classification.placeholder")}
+                      onChange={field.onChange}
+                      value={field.value}
+                      addLabel={t("documentType.classification.add.label")}
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Authors */}
+            <FormField
+              control={form.control}
+              name="authors"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.authors.label")} <Required />
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect

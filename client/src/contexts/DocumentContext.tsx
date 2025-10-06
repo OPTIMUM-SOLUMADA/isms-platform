@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import type { Document } from "@/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
 import { ApiAxiosError } from "@/types/api";
 import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm";
@@ -86,6 +86,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     const [currentDocument, _setCurrentDocument] = useState<Document | null>(null);
     const { toast } = useToast();
     const { t } = useTranslation();
+    const queryClient = useQueryClient();
 
     const setCurrentDocument = useCallback((document: Document) => {
         _setCurrentDocument(document);
@@ -195,6 +196,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "success",
             });
             setDocuments(prev => prev.map(document => document.id === data.id ? data : document));
+            queryClient.invalidateQueries({ queryKey: ["departements"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -216,6 +218,9 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "success",
             });
             setDocuments(prev => prev.filter(document => document.id !== id));
+            queryClient.invalidateQueries({ queryKey: ["departements"] });
+            // Invalidate a single document by id
+            queryClient.invalidateQueries({ queryKey: ["documents"] });
         },
         onError: (err) => {
             console.error(err.response?.data);

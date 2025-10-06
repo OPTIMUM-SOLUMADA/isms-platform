@@ -18,7 +18,7 @@ const DepartmentHoverCard = ({
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Button variant="link" className="px-0">
+        <Button variant="link" className="p-0 min-h-4">
           {department.name}
         </Button>
       </HoverCardTrigger>

@@ -108,7 +108,7 @@ const Table = ({
             size: 220,
             cell: ({ row }) => {
                 const doc = row.original;
-                const users = row.original.owners?.map((o) => o.user);
+                const users = row.original.authors?.map((o) => o.user);
                 return (
                     <button
                         type="button"

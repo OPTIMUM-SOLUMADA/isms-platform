@@ -1,15 +1,15 @@
-import { DocumentOwnerService } from '@/services/documentowner.service';
 import { DocumentTypeService } from '@/services/documenttype.service';
 import { ISOClauseService } from '@/services/isoclause.service';
+import { OwnerService } from '@/services/owner.service';
 
 export const initData = async () => {
-    const ownserService = new DocumentOwnerService();
+    const ownerService = new OwnerService();
     const documentTypeService = new DocumentTypeService();
     const clauseService = new ISOClauseService();
 
     try {
         console.log('[init] Initializing data...');
-        await ownserService.initialize(['SOLUMADA']);
+        await ownerService.initialize();
         await documentTypeService.initialize();
         await clauseService.initialize();
     } catch (err) {

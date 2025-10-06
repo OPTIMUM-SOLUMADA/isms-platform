@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { CheckIcon, ChevronDownIcon, PlusIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from "react-i18next";
 
 export interface SelectItemType {
@@ -33,14 +33,8 @@ interface SelectWithButtonProps {
     onButtonClick?: () => void; // when add button clicked
     className?: string;
     hasError?: boolean;
-    onChangeSearch?: (value: string) => void
-}
-
-function normalize(str: string) {
-    return str
-        .normalize("NFD") // split letters + accents
-        .replace(/[\u0300-\u036f]/g, "") // remove accents
-        .toLowerCase()
+    onChangeSearch?: (value: string) => void;
+    allowSearch?: boolean;
 }
 
 export function SelectWithButton({
@@ -52,25 +46,12 @@ export function SelectWithButton({
     onButtonClick,
     className,
     hasError = false,
-    onChangeSearch
+    onChangeSearch,
+    allowSearch = true,
 }: SelectWithButtonProps) {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("");
     const { t } = useTranslation();
-
-    const filteredItems = useMemo(() => {
-        if (!search) return items;
-
-        const queryTokens = normalize(search).split(/\s+/).filter(Boolean);
-
-        return items.filter((item) => {
-            const text = normalize(item.label);
-            // every token in query must be somewhere in the text
-            return queryTokens.every((token) => text.includes(token));
-        });
-    }, [items, search]);
-
-    console.log(filteredItems)
 
     return (
         <div className="*:not-first:mt-2">
@@ -105,13 +86,15 @@ export function SelectWithButton({
                     align="start"
                 >
                     <Command {...onChangeSearch && { filter: () => 1 }}>
-                        <CommandInput
-                            placeholder={t("components.selectWithButton.search.placeholder")}
-                            value={search}
-                            onValueChange={setSearch}
-                            onKeyDown={(e) => e.stopPropagation()} // prevent blur
-                            onInput={(e) => onChangeSearch?.(e.currentTarget.value)}
-                        />
+                        {allowSearch && (
+                            <CommandInput
+                                placeholder={t("components.selectWithButton.search.placeholder")}
+                                value={search}
+                                onValueChange={setSearch}
+                                onKeyDown={(e) => e.stopPropagation()} // prevent blur
+                                onInput={(e) => onChangeSearch?.(e.currentTarget.value)}
+                            />
+                        )}
                         <CommandList>
                             <CommandEmpty>{t("components.selectWithButton.noResults")}</CommandEmpty>
 

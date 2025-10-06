@@ -32,6 +32,7 @@ export type ComplianceClause = {
 };
 
 type DocumentStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "EXPIRED";
+export type DocumentClassification = "CONFIDENTIAL" | "PUBLIC" | "INTERNAL_USE_ONLY";
 
 export type Document = {
   id: string;
@@ -50,13 +51,16 @@ export type Document = {
   department: Department;
 
   categoryId: string;
+  ownerId: string;
+  classification: DocumentClassification;
 
   createdAt: string;
   updatedAt: string;
 
   // Relations
   isoClause: ISOClause;
-  owners: [{ user: User }];
+  authors: [{ user: User }];
+  owner: DocumentOwner;
   reviewers: [{ user: User }];
   type: DocumentType;
   versions: DocumentVersion[];
@@ -65,6 +69,12 @@ export type Document = {
   notifications: Notification[];
   auditlogs: AuditLog[];
 };
+
+
+export type DocumentOwner = {
+  id: string;
+  name: string;
+}
 
 export type DocumentType = {
   id: string;
