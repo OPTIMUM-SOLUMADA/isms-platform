@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Info } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
 import type { DepartmentRole } from "@/types";
@@ -61,18 +61,18 @@ const DeleteDepartmentRoleDialog = ({
                         {t("components.deleteDialog.description", { entity: departmentRole.name })}
                         <div className="mt-3 text-primary">
 
-                            <p className="text-primary">
-                                {t("department.actions.delete.dialog.message")}
+                            {/* <p className="text-primary">
+                                {t("departmentRole.actions.delete.dialog.message")}
                             </p>
 
                             <ul className="mt-3 space-y-1 list-disc list-inside text-sm text-muted-foreground">
-                                <li>{t("department.actions.delete.dialog.relatedItems.users")}</li>
-                                <li>{t("department.actions.delete.dialog.relatedItems.douments")}</li>
-                            </ul>
-                                <p className="mt-3 text-theme-1 font-semibold flex items-center gap-2">
+                                {/* <li>{t("department.actions.delete.dialog.relatedItems.users")}</li> * /}
+                                <li>{t("departmentRole.actions.delete.dialog.relatedItems.douments")}</li>
+                            </ul> */}
+                                {/* <p className="mt-3 text-theme-1 font-semibold flex items-center gap-2">
                                     <Info className="w-4 h-4 shrink-0" />
                                     {t("department.actions.delete.dialog.canBeDeleted")}
-                                </p>
+                                </p> */}
                         </div>
                     </DialogDescription>
                 </DialogHeader>
