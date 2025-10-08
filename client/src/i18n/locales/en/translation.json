@@ -991,6 +991,19 @@
     "actions": {
       "add": {
         "label": "Add a fonction"
+      },
+      "delete": {
+        "dialog": {
+          "title": "Delete fonction",
+          "message": "Deleting this fonction will also remove the following associated information:",
+          "hasMembers": "You cannot delete this fonction because it has assigned users. Please reassign or remove those users before deleting the fonction.",
+          "hasDocuments": "You cannot delete this fonction because it has associated documents. Please reassign or remove those documents before deleting the fonction.",
+          "canBeDeleted": "The fonction can be deleted safely because it has no assigned users or documents.",
+          "relatedItems": {
+            "users": "All users assigned to this fonction.",
+            "douments": "All documents associated with this fonction."
+          }
+        }
       }
     }
   },

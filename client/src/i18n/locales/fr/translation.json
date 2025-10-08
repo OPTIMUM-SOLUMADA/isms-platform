@@ -1003,6 +1003,19 @@
         "actions": {
             "add": {
                 "label": "Ajouter une fonction"
+            },
+            "delete": {
+                "dialog": {
+                    "title": "Supprimer la fonction",
+                    "message": "La suppression de ce fonction supprimera également toutes les informations associées suivantes :",
+                    "hasMembers": "Vous ne pouvez pas supprimer ce fonction car il a des utilisateurs assignés. Veuillez réassigner ou supprimer ces utilisateurs avant de supprimer le fonction.",
+                    "hasDocuments": "Vous ne pouvez pas supprimer ce fonction car il a des documents associés. Veuillez réassigner ou supprimer ces documents avant de supprimer le fonction.",
+                    "canBeDeleted": "Le fonction peut être supprimé sans risque car il n'a aucun utilisateur ni document assigné.",
+                    "relatedItems": {
+                        "users": "Tous les utilisateurs assignés à ce fonction.",
+                        "douments": "Tous les documents associés à ce fonction."
+                    }
+                }
             }
         }
     },

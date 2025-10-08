@@ -161,7 +161,10 @@ export class DepartmentController {
 
     removeRoles = async (req: Request, res: Response) => {
         try {
-            const department = await serviceRole.removeRoles(req.body.id);
+            if (!req.params.id) {
+                throw new Error('Missing parameter: id');
+            }
+            const department = await serviceRole.removeRoles(req.params.id);
             res.json(department);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
