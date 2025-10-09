@@ -21,6 +21,7 @@ import DocumentTypePage from "@/pages/document-types/DocumentTypePage";
 import ISOClausePage from "@/pages/ISOClausePage";
 import DepartmentDetail from "@/pages/departments/DepartmentDetail";
 import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
+import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -157,6 +158,12 @@ const routeConfig: AppRoute[] = [
                 children: [{ index: true, element: <ISOClausePage /> }],
             },
 
+            // Document editor page
+            {
+                path: "document-editor/:documentId/:type",
+                permission: "documents.page.access",
+                children: [{ index: true, element: <DocumentEditorPage /> }],
+            },
             // Special pages
             { path: "unauthorized", element: <UnauthorizedPage /> },
             { path: "*", element: <NotFoundPage /> },
