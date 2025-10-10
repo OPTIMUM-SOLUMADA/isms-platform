@@ -1,6 +1,31 @@
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
 
+const includes: Prisma.DocumentReviewInclude = {
+    document: {
+        select: {
+            id: true,
+            title: true,
+            status: true,
+            isoClause: {
+                select: {
+                    name: true,
+                    code: true,
+                },
+            },
+            versions: {
+                where: { isCurrent: true },
+                select: {
+                    version: true,
+                    createdAt: true,
+                    fileUrl: true,
+                },
+            },
+        },
+    },
+    reviewer: true,
+};
+
 export class DocumentReviewService {
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
         return prisma.documentReview.create({
@@ -141,6 +166,15 @@ export class DocumentReviewService {
             where: {
                 id: reviewId,
             },
+        });
+    }
+
+    async getReviewsByUserId(userId: string) {
+        return prisma.documentReview.findMany({
+            where: {
+                reviewerId: userId,
+            },
+            include: includes,
         });
     }
 }

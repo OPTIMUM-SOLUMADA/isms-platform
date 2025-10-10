@@ -7,7 +7,7 @@ import { reviewStageIcons } from "@/constants/icon";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
 import ReviewItem from "@/templates/reviews/ReviewItem";
-import { useFetchReviews } from "@/hooks/queries/useReviewMutation";
+import { useFetchMyReviews } from "@/hooks/queries/useReviewMutation";
 
 type Tab = 'in_review' | 'approved' | 'expired' | 'all';
 
@@ -17,7 +17,7 @@ export default function ReviewWorkflowPage() {
   const [filterPriority] = useState("all");
   const { t } = useTranslation();
 
-  const { data = [] } = useFetchReviews();
+  const { data = [] } = useFetchMyReviews();
 
   const workflowStages = [
     { id: "PENDING", label: "review.pendingReview", color: "gray" },

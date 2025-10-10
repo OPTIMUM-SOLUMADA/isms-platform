@@ -100,4 +100,14 @@ export class DocumentReviewController {
             return res.status(400).json({ error: error.message });
         }
     }
+
+    async getMyReviews(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const reviews = await service.getReviewsByUserId(userId!);
+            return res.json(reviews);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 }

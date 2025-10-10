@@ -15,6 +15,7 @@ import {
     CollapsibleTrigger,
     CollapsibleContent,
 } from "@/components/ui/collapsible";
+import { UserHoverCard } from "../users/hovercard/UserHoverCard";
 
 interface WrapperProps extends PropsWithChildren {
     condition: boolean;
@@ -80,10 +81,12 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-sm text-gray-700">
                                 <div className="flex items-center gap-2">
                                     <User className="h-4 w-4 text-gray-500" />
-                                    <span className="font-medium">
+                                    <div className="font-medium flex items-center">
                                         {t("review.reviewer")}:{" "}
-                                        <span className="font-normal">{item.reviewer.name}</span>
-                                    </span>
+                                        {item.reviewer && (
+                                            <UserHoverCard user={item.reviewer} />
+                                        )}
+                                    </div>
                                 </div>
 
                                 {formattedDate && (

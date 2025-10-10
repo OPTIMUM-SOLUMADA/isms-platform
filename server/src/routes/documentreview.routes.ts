@@ -17,7 +17,8 @@ router.put(
     validate(documentReviewMakeDecisionSchema),
     controller.makeDecision.bind(controller),
 );
-
+// Get my reviews
+router.get('/my-reviews/:userId', controller.getMyReviews.bind(controller));
 router.post('/', validate(documentReviewCreateSchema), controller.create.bind(controller));
 router.get('/', controller.findAll.bind(controller));
 router.get('/:id', controller.findById.bind(controller));
