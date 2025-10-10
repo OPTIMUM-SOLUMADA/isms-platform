@@ -1,6 +1,44 @@
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
 
+const includes: Prisma.DocumentReviewInclude = {
+    document: {
+        select: {
+            id: true,
+            title: true,
+            status: true,
+            isoClause: {
+                select: {
+                    name: true,
+                    code: true,
+                },
+            },
+            versions: {
+                where: { isCurrent: true },
+                select: {
+                    version: true,
+                    createdAt: true,
+                    fileUrl: true,
+                },
+            },
+            authors: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                            createdAt: true,
+                        },
+                    },
+                },
+            },
+        },
+    },
+    reviewer: true,
+};
+
 export class DocumentReviewService {
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
         return prisma.documentReview.create({
@@ -106,11 +144,40 @@ export class DocumentReviewService {
         });
     }
 
-    async assignReviewersToDocument(documentId: string, reviewerIds: string[], userId?: string) {
+    async assignReviewersToDocument(
+        documentId: string,
+        reviewerIds: string[],
+        userId?: string,
+        reviewDate?: Date | null,
+    ) {
         return prisma.documentReview.createMany({
             data: reviewerIds.map((reviewerId) => ({
                 documentId: documentId,
                 reviewerId: reviewerId,
+                reviewDate: reviewDate || null,
+                ...(userId ? { assignedById: userId } : {}),
+            })),
+        });
+    }
+    async updateAssignedReviewersToDocument(
+        documentId: string,
+        reviewerIds: string[],
+        userId?: string,
+        reviewDate?: Date | null,
+    ) {
+        // Delete reviews where reviewDate is greater than now
+        await prisma.documentReview.deleteMany({
+            where: {
+                documentId: documentId,
+                reviewDate: { gt: new Date() },
+            },
+        });
+
+        return prisma.documentReview.createMany({
+            data: reviewerIds.map((reviewerId) => ({
+                documentId: documentId,
+                reviewerId: reviewerId,
+                reviewDate: reviewDate || null,
                 ...(userId ? { assignedById: userId } : {}),
             })),
         });
@@ -118,7 +185,7 @@ export class DocumentReviewService {
 
     async submitReviewDecision(
         reviewId: string,
-        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision'>,
+        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision' | 'isCompleted'>,
     ) {
         return prisma.documentReview.update({
             where: { id: reviewId },
@@ -141,6 +208,15 @@ export class DocumentReviewService {
             where: {
                 id: reviewId,
             },
+        });
+    }
+
+    async getReviewsByUserId(userId: string) {
+        return prisma.documentReview.findMany({
+            where: {
+                reviewerId: userId,
+            },
+            include: includes,
         });
     }
 }

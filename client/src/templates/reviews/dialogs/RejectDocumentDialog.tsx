@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
-import { Textarea } from "@/components/ui/textarea";
-import type { Document } from "@/types";
+import type { DocumentReview } from "@/types";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,6 +24,10 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { useSubmitReview } from "@/hooks/queries/useReviewMutation";
+import { useToast } from "@/hooks/use-toast";
+import RTERichText from "@/components/RTERichText";
+import { isEmptyHtml } from "@/lib/rte";
 
 const rejectSchema = z.object({
     comment: z
@@ -38,20 +41,22 @@ type RejectFormValues = z.infer<typeof rejectSchema>;
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    document: Document;
-    onReject?: (comment: string) => Promise<void> | void;
-    isLoading?: boolean;
+    item: DocumentReview;
+    onSuccess?: () => void;
 }
 
 const RejectDocumentDialog = ({
     open = false,
     onOpenChange,
-    document,
-    onReject,
-    isLoading = false,
+    item,
+    onSuccess,
 }: Props) => {
     const { t } = useTranslation();
     const { setCurrentDocument } = useDocumentUI();
+    const { toast } = useToast();
+    const { document } = item;
+
+    const { mutate: submitReview, isPending } = useSubmitReview(item.id);
 
     const form = useForm<RejectFormValues>({
         resolver: zodResolver(rejectSchema),
@@ -69,10 +74,28 @@ const RejectDocumentDialog = ({
     }
 
     async function handleSubmit(values: RejectFormValues) {
-        if (onReject) {
-            await onReject(values.comment);
-            handleOpenChange(false);
-        }
+        submitReview({
+            decision: "REJECT",
+            comment: values.comment,
+        }, {
+
+            onSuccess: () => {
+                toast({
+                    title: t("reviewApproval.dialogs.reject.toast.success.title"),
+                    description: t("reviewApproval.dialogs.reject.toast.success.description"),
+                    variant: "success"
+                });
+                handleOpenChange(false);
+                onSuccess?.();
+            },
+            onError: () => {
+                toast({
+                    title: t("reviewApproval.dialogs.reject.toast.error.title"),
+                    description: t("reviewApproval.dialogs.reject.toast.error.description"),
+                    variant: "success"
+                });
+            }
+        });
     }
 
     return (
@@ -106,12 +129,11 @@ const RejectDocumentDialog = ({
                                         {t("reviewApproval.dialogs.reject.form.reason.label")}
                                     </FormLabel>
                                     <FormControl>
-                                        <Textarea
+                                        <RTERichText
                                             placeholder={t(
                                                 "reviewApproval.dialogs.reject.form.reason.placeholder"
                                             )}
-                                            rows={4}
-                                            {...field}
+                                            onChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -133,8 +155,8 @@ const RejectDocumentDialog = ({
 
                             <LoadingButton
                                 type="submit"
-                                isLoading={isLoading}
-                                disabled={!commentValue?.trim()}
+                                isLoading={isPending}
+                                disabled={isEmptyHtml(commentValue)}
                                 loadingText={t(
                                     "reviewApproval.dialogs.reject.actions.confirm.loading"
                                 )}

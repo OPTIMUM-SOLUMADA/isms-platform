@@ -5,9 +5,6 @@ import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DocumentReviewService } from '@/services/documentreview.service';
-// import { GOOGLE_DRIVE_JSON_PATH } from '@/configs/path';
-import fs from 'fs';
-import svc from '@/configs/google-service';
 
 export class DocumentController {
     private service: DocumentService;
@@ -41,19 +38,14 @@ export class DocumentController {
                 throw new Error('File is required');
             }
 
-            const url = await svc.generateAuthUrl();
-            console.log(url);
+            // const buffer = fs.readFileSync(file.path);
 
-            const buffer = fs.readFileSync(file.path);
-
-            // Upload to Google Drive
-            const result = await svc.uploadFileFromBuffer(buffer, {
-                name: file.originalname,
-                mimeType: file.mimetype,
-                parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
-            });
-
-            console.log(result);
+            // // Upload to Google Drive
+            // const result = await svc.uploadFileFromBuffer(buffer, {
+            //     name: file.originalname,
+            //     mimeType: file.mimetype,
+            //     parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+            // });
 
             const fileUrl = req.file ? req.file.filename : null;
 
@@ -88,6 +80,7 @@ export class DocumentController {
                     createdDoc.id,
                     reviewers.split(','),
                     userId,
+                    createdDoc.nextReviewDate,
                 );
             }
 
@@ -163,6 +156,16 @@ export class DocumentController {
                 authors.split(','),
                 reviewers.split(','),
             );
+
+            // Assign reviews to reviewers
+            if (updatedDocument && updatedDocument.reviewers.length > 0) {
+                await this.reviewService.updateAssignedReviewersToDocument(
+                    updatedDocument.id,
+                    reviewers.split(','),
+                    updatedDocument.ownerId,
+                    updatedDocument.nextReviewDate,
+                );
+            }
 
             if (fileUrl) {
                 // Delete old file

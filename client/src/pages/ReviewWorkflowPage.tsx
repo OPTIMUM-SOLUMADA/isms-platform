@@ -1,40 +1,23 @@
 import { useState } from "react";
 import { GitBranch, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { reviewStageIcons } from "@/constants/icon";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import ReviewForm from "@/templates/reviews/forms/ReviewForm";
-import { useDocument } from "@/contexts/DocumentContext";
-import useUserStore from "@/stores/user/useUserStore";
 import ReviewItem from "@/templates/reviews/ReviewItem";
-import { useFetchReviews } from "@/hooks/queries/useReviewMutation";
+import { useFetchMyReviews } from "@/hooks/queries/useReviewMutation";
+
+type Tab = 'in_review' | 'approved' | 'expired' | 'all';
 
 export default function ReviewWorkflowPage() {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState<Tab>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPriority] = useState("all");
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const { users } = useUserStore();
-  const { documents } = useDocument();
 
-  // const { toast } = useToast();
-  // const { viewers, createViewer } = useViewer();
-
-  const { data = [] } = useFetchReviews();
-
-  console.log(data);
+  const { data = [] } = useFetchMyReviews();
 
   const workflowStages = [
     { id: "PENDING", label: "review.pendingReview", color: "gray" },
@@ -45,18 +28,20 @@ export default function ReviewWorkflowPage() {
 
   // Avant ton filter
   const viewersWithExtra = data.map((item) => {
-    let stage: string;
+    let stage: string = "IN_REVIEW";
 
     if (!item.isCompleted) {
       stage = "IN_REVIEW"; // pas encore fini
-    } else if (item.isCompleted && item.decision === "APPROVE") {
+    } else if (item.decision === "APPROVE") {
       stage = "APPROVED"; // terminé + approuvé
-    } else {
+    } else if (item.decision === "REJECT" && item.comment) {
+      stage = "REJECTED";
+    } else if (item.reviewDate && item.reviewDate < new Date().toISOString()) {
       stage = "EXPIRED"; // terminé + rejeté
     }
 
     // tu peux mettre une logique métier pour priority
-    const priority = "normal"; // ou "high", "low" selon tes règles
+    const priority = "normal";
 
     return {
       ...item,
@@ -70,7 +55,7 @@ export default function ReviewWorkflowPage() {
       item.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.reviewer.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesTab = activeTab === "all" || item.stage === activeTab;
+    const matchesTab = activeTab === "all" || item.stage === activeTab.toUpperCase();
     const matchesPriority =
       filterPriority === "all" || item.priority === filterPriority;
 
@@ -82,55 +67,19 @@ export default function ReviewWorkflowPage() {
     return Icon;
   };
 
-  // const handleCreateReview = useCallback(
-  //   async (newReview: any) => {
-  //     const res = await createViewer(newReview);
-
-  //     if (res) {
-  //       toast({
-  //         title: t("components.toast.success.title"),
-  //         description: t("components.toast.success.document.created"),
-  //         variant: "success",
-  //       });
-  //       setOpen(false);
-  //     }
-  //   },
-  //   [createViewer, setOpen, toast, t]
-  // );
-
   return (
     <WithTitle>
-      <div className="space-y-6">
+      <div className="space-y-6 flex flex-col grow">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="page-title">{t("review.title")}</h1>
             <p className="page-description">{t("review.subtitle")}</p>
           </div>
-
-          {/* ----------- Modal Trigger ---------- */}
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center space-x-2">
-                <GitBranch className="h-4 w-4" />
-                <span>{t("review.button.buttonNewReview")}</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t("review.form.newReview")}</DialogTitle>
-              </DialogHeader>
-              {/* <ReviewForm
-                documents={documents}
-                users={users}
-                // onSubmit={handleCreateReview}
-              /> */}
-            </DialogContent>
-          </Dialog>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid-cols-1 md:grid-cols-4 gap-4 hidden">
           {workflowStages.map((stage) => {
 
             const count = data.filter(
@@ -179,26 +128,31 @@ export default function ReviewWorkflowPage() {
         </Card>
 
         {/* Workflow Tabs */}
-        <Card>
+        <Card className="flex flex-col grow">
           <CardContent className="mt-5">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={v => setActiveTab(v as Tab)}>
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">
                   {t("review.all")} ({data.length})
                 </TabsTrigger>
-                <TabsTrigger value="in-review">
-                  {t("review.inReview")} (
-                  {data.filter((i) => i.status === "IN_REVIEW").length})
+                <TabsTrigger value="in_review">
+                  {t("review.pending")} (
+                  {data.filter((i) => !i.isCompleted).length})
                 </TabsTrigger>
                 <TabsTrigger value="approved">
                   {t("review.approved")} (
-                  {data.filter((i) => i.status === "APPROVED").length})
+                  {data.filter((i) => i.decision === 'APPROVE').length})
                 </TabsTrigger>
                 <TabsTrigger value="rejected">
                   {t("review.rejected")} (
-                  {data.filter((i) => i.status === "EXPIRED").length})
+                  {data.filter((i) => i.decision === 'REJECT').length})
+                </TabsTrigger>
+                <TabsTrigger value="expired">
+                  {t("review.overdue")} (
+                  {data.filter((i) => i.reviewDate! < new Date().toISOString()).length})
                 </TabsTrigger>
               </TabsList>
+
               <div className="mt-6">
                 <div className="space-y-4">
                   {filteredItems.map((item, index) => (

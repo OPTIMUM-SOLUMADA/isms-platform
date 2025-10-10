@@ -1,3 +1,4 @@
+import BackButton from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
@@ -6,10 +7,11 @@ import ApproveDocumentDialog from '@/templates/reviews/dialogs/ApproveDocumentDi
 import RejectDocumentDialog from '@/templates/reviews/dialogs/RejectDocumentDialog';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const ReviewApprovalPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { reviewId } = useParams();
     const [openApproval, setOpenApproval] = useState(false);
     const [openReject, setOpenReject] = useState(false);
@@ -22,8 +24,32 @@ const ReviewApprovalPage = () => {
         </div>
     );
 
+    // Is already completed
+    if (data?.isCompleted) return (
+        <div>
+            <h4 className="text-center">
+                This review has already been approved
+            </h4>
+        </div>
+    );
+
+    function handleApproveSuccess() {
+        navigate('/reviews', { replace: true });
+    }
+
+    function handleRejectSuccess() {
+        navigate('/reviews', { replace: true })
+    }
+
     return (
         <WithTitle title={t('reviewApproval.title')}>
+            <div className="mb-2 flex items-center gap-2">
+                <BackButton />
+                <div>
+                    <h1 className="page-title">{t("reviewApproval.title")}</h1>
+                    <p className="page-description">{data?.document?.title}</p>
+                </div>
+            </div>
             <Card className="flex-grow flex flex-col p-0">
                 <CardContent className='flex flex-col grow p-0'>
                     <iframe
@@ -41,6 +67,8 @@ const ReviewApprovalPage = () => {
                         >
                             {t('reviewApproval.actions.approve.label')}
                         </Button>
+
+                        {/* Reject */}
                         <Button
                             type='button'
                             variant='destructive'
@@ -52,20 +80,22 @@ const ReviewApprovalPage = () => {
                 </CardContent>
             </Card>
 
-            {data?.document && (
-                <ApproveDocumentDialog
-                    document={data.document}
-                    open={openApproval}
-                    onOpenChange={setOpenApproval}
-                />
-            )}
+            {data && (
+                <>
+                    <ApproveDocumentDialog
+                        item={data}
+                        open={openApproval}
+                        onOpenChange={setOpenApproval}
+                        onSuccess={handleApproveSuccess}
+                    />
 
-            {data?.document && (
-                <RejectDocumentDialog
-                    document={data.document}
-                    open={openReject}
-                    onOpenChange={setOpenReject}
-                />
+                    <RejectDocumentDialog
+                        item={data}
+                        open={openReject}
+                        onOpenChange={setOpenReject}
+                        onSuccess={handleRejectSuccess}
+                    />
+                </>
             )}
         </WithTitle>
     )

@@ -179,6 +179,8 @@
     "rejected": "Rejected",
     "inReview": "In review",
     "reviewer": "Reviewer",
+    "authors": "Authors",
+    "version": "Current version",
     "due": "due",
     "comment": "Comment",
     "form": {

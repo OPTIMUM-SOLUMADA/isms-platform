@@ -11,6 +11,14 @@ import { DocumentReviewController } from '@/controllers/documentreview.controlle
 const router = Router();
 const controller = new DocumentReviewController();
 
+// make decision
+router.put(
+    '/make-decision/:id',
+    validate(documentReviewMakeDecisionSchema),
+    controller.makeDecision.bind(controller),
+);
+// Get my reviews
+router.get('/my-reviews/:userId', controller.getMyReviews.bind(controller));
 router.post('/', validate(documentReviewCreateSchema), controller.create.bind(controller));
 router.get('/', controller.findAll.bind(controller));
 router.get('/:id', controller.findById.bind(controller));
@@ -18,12 +26,5 @@ router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(
 
 // mark as completed
 router.patch('/mark-as-completed/:id', controller.markAsCompleted.bind(controller));
-
-// make decision
-router.post(
-    '/make-decision/:id',
-    validate(documentReviewMakeDecisionSchema),
-    controller.makeDecision.bind(controller),
-);
 
 export default router;

@@ -11,26 +11,59 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
-import type { Document } from "@/types";
+import type { DocumentReview } from "@/types";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
+import { useSubmitReview } from "@/hooks/queries/useReviewMutation";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    document: Document;
+    item: DocumentReview;
+    onSuccess?: () => void;
 }
 
 const ApproveDocumentDialog = ({
     open = false,
     onOpenChange,
-    document,
+    item,
+    onSuccess,
 }: Props) => {
     const { t } = useTranslation();
     const { setCurrentDocument } = useDocumentUI();
+    const { toast } = useToast();
+
+    const { document } = item;
+
+    const { mutate: submitReview, isPending } = useSubmitReview(item.id);
 
     function handleOpenChange(value: boolean) {
         if (!value) setCurrentDocument(null);
         onOpenChange(value);
+    }
+
+    function handleApprove() {
+        submitReview({
+            decision: "APPROVE",
+            comment: "",
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: t("reviewApproval.dialogs.approve.toast.success.title"),
+                    description: t("reviewApproval.dialogs.approve.toast.success.description"),
+                    variant: "success"
+                });
+                handleOpenChange(false);
+                onSuccess?.();
+            },
+            onError: () => {
+                toast({
+                    title: t("reviewApproval.dialogs.approve.toast.error.title"),
+                    description: t("reviewApproval.dialogs.approve.toast.error.description"),
+                    variant: "destructive"
+                });
+            }
+        });
     }
 
     return (
@@ -57,9 +90,8 @@ const ApproveDocumentDialog = ({
                         {t("reviewApproval.dialogs.approve.actions.cancel.label")}
                     </Button>
                     <LoadingButton
-                        onClick={() => {
-                        }}
-                        isLoading={false}
+                        onClick={handleApprove}
+                        isLoading={isPending}
                         loadingText={t("reviewApproval.dialogs.approve.actions.confirm.loading")}
                     >
                         {t("reviewApproval.dialogs.approve.actions.confirm.label")}

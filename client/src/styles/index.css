@@ -101,3 +101,12 @@ a:hover {
     @apply text-sm text-muted-foreground font-normal;
   }
 }
+
+@layer components {
+  .text-editor {
+    font-family: inherit;
+  }
+  .text-editor .ql-container {
+    min-height: 200px;
+  }
+}
