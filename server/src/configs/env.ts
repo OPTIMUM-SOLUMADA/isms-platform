@@ -58,6 +58,10 @@ export const envSchema = z.object({
     SMTP_SECURE: z.string().optional().default('false'),
 
     ORG_NAME: z.string().optional().default('ISMS Solumada'),
+    // GOOGLE
+    GOOGLE_CLIENT_ID: z.string().optional().default(''),
+    GOOGLE_CLIENT_SECRET: z.string().optional().default(''),
+    GOOGLE_REDIRECT_URI: z.string().optional().default(''),
 });
 
 const envServer = envSchema.safeParse({
@@ -82,6 +86,9 @@ const envServer = envSchema.safeParse({
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_SECURE: process.env.SMTP_SECURE,
     ORG_NAME: process.env.ORG_NAME,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
 });
 
 if (!envServer.success) {

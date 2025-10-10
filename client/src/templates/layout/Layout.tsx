@@ -1,12 +1,17 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 function Layout() {
     const { user } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useLocalStorage(`sidebar-open-${user?.id}`, true);
+    const { pathname } = useLocation();
+
+    const expand = useMemo(() => pathname.startsWith('/document-editor/'), [pathname]);
 
     return (
         <div className="h-screen bg-muted flex">
@@ -21,7 +26,7 @@ function Layout() {
                 />
 
                 <main className="flex-1 overflow-y-auto p-6 flex flex-col flex-grow">
-                    <div className="max-w-8xl mx-auto flex flex-col flex-grow w-full h-full">
+                    <div className={cn("max-w-8xl mx-auto flex flex-col flex-grow w-full h-full", expand && "max-w-full")}>
                         <Outlet />
                     </div>
                 </main>

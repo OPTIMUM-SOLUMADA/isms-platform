@@ -7,7 +7,6 @@ import { useCallback, useRef } from 'react';
 import BackButton from '@/components/BackButton';
 import EditDocumentForm, { EditDocumentFormData, EditDocumentFormRef } from '@/templates/documents/forms/EditDocumentForm';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetDocument } from './DocumentDetailPage';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { RequiredIndicatorInfo } from '@/components/Required';
 import CircleLoading from '@/components/loading/CircleLoading';
@@ -21,6 +20,8 @@ import { useFetchDocumentTypes } from '@/hooks/queries/useDocumentTypeMutations'
 import { useFetchUsers } from '@/hooks/queries/useUserMutations';
 import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
+import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
+import { useGetDocument } from '@/hooks/queries/useDocumentMutations';
 
 export default function DocumentEditPage() {
     const { t } = useTranslation();
@@ -36,6 +37,7 @@ export default function DocumentEditPage() {
     useFetchDocumentTypes();
     useFetchUsers();
     useFetchISOClauses();
+    useFetchOwners();
 
     const params = useParams();
 
@@ -107,16 +109,18 @@ export default function DocumentEditPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className='pt-4 lg:px-20 px-10 bg-white'>
-                        <EditDocumentForm
-                            doc={doc!}
-                            ref={formRef}
-                            isoClauses={isoClauses}
-                            types={documentTypes}
-                            users={users}
-                            departments={departments}
-                            onSubmit={handleUpdateDocument}
-                            isPending={isUpdating}
-                        />
+                        {doc && (
+                            <EditDocumentForm
+                                doc={doc}
+                                ref={formRef}
+                                isoClauses={isoClauses}
+                                types={documentTypes}
+                                users={users}
+                                departments={departments}
+                                onSubmit={handleUpdateDocument}
+                                isPending={isUpdating}
+                            />
+                        )}
                     </CardContent>
                 </Card>
 

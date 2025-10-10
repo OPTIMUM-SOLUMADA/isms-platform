@@ -47,6 +47,13 @@ export const ExcelViewer: React.FC<ZoomableIframeProps> = ({
     };
 
     return (
+        <iframe
+            src="https://docs.google.com/spreadsheets/d/10hBayP1L6PLz469KAK6cbtzRWXEoGbzm/edit?usp=drive_web&ouid=104020429096532563212&rtpof=true"
+            className="border-none shadow-lg bg-white overflow-hidden w-full h-[1280px]"
+        />
+    );
+
+    return (
         <div
             className="grow overflow-hidden w-full relative border min-h-[400px] flex justify-center items-center"
         >
@@ -68,6 +75,7 @@ export const ExcelViewer: React.FC<ZoomableIframeProps> = ({
                     />
                 </Space>
             )}
+
         </div>
     );
 };

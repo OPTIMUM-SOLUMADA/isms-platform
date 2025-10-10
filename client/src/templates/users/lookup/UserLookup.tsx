@@ -24,6 +24,7 @@ import { userRoleColors } from "@/constants/color";
 import { User } from "@/types";
 import useUserStore from "@/stores/user/useUserStore";
 import { useSearchUsers } from "@/hooks/queries/useUserMutations";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface UserLookupProps {
     data?: User[];
@@ -44,10 +45,10 @@ export default function UserLookup({
     const selectedUser = useMemo(() => data.find((user) => user.id === value), [value, data]);
     const { t } = useTranslation();
 
-    const { setQuery, query } = useUserStore();
+    const { setQuery } = useUserStore();
     const { data: users = data } = useSearchUsers();
 
-    console.log("query", query)
+    const { hasActionPermission } = usePermissions();
 
     return (
         <div className="*:not-first:mt-2">
@@ -141,21 +142,25 @@ export default function UserLookup({
                                     </CommandItem>
                                 ))}
                             </CommandGroup>
-                            <CommandSeparator />
-                            <CommandGroup>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start font-normal"
-                                >
-                                    <PlusIcon
-                                        size={16}
-                                        className="opacity-60 mr-2"
-                                        aria-hidden="true"
-                                    />
-                                    {t("components.lookup.user.addNew")}
-                                </Button>
-                            </CommandGroup>
+                            {hasActionPermission('user.create') && (
+                                <>
+                                    <CommandSeparator />
+                                    <CommandGroup>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="w-full justify-start font-normal"
+                                        >
+                                            <PlusIcon
+                                                size={16}
+                                                className="opacity-60 mr-2"
+                                                aria-hidden="true"
+                                            />
+                                            {t("components.lookup.user.addNew")}
+                                        </Button>
+                                    </CommandGroup>
+                                </>
+                            )}
                         </CommandList>
                     </Command>
                 </PopoverContent>

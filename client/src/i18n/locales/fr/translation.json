@@ -201,6 +201,59 @@
         "title": "Conformité",
         "subtitle": ""
     },
+    "reviewApproval": {
+        "title": "Approbation de document",
+        "subtitle": "Examiner et approuver les documents",
+        "dialogs": {
+            "reject": {
+                "title": "Rejeter le document",
+                "message": "Êtes-vous sûr de vouloir rejeter ce document ?",
+                "form": {
+                    "reason": {
+                        "label": "Raison du rejet",
+                        "placeholder": "Saisissez la raison du rejet..."
+                    }
+                },
+                "description": "Veuillez fournir une raison pour le rejet du document.",
+                "actions": {
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "confirm": {
+                        "label": "Rejeter",
+                        "loading": "Rejet en cours..."
+                    }
+                }
+            },
+            "approve": {
+                "title": "Approuver le document",
+                "message": "Êtes-vous sûr de vouloir approuver ce document ?",
+                "description": "Vous êtes sur le point d’approuver le document <strong>{{entity}}</strong>. Une fois approuvé, le document sera marqué comme examiné et passera à l’étape suivante du processus.",
+                "actions": {
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "confirm": {
+                        "label": "Oui, approuver",
+                        "loading": "Approbation en cours..."
+                    }
+                }
+            }
+        },
+        "actions": {
+            "approve": {
+                "label": "Approuver",
+                "loading": "Approbation en cours..."
+            },
+            "reject": {
+                "label": "Rejeter",
+                "loading": "Rejet en cours..."
+            },
+            "back": {
+                "label": "Retour aux révisions"
+            }
+        }
+    },
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et rôles",

@@ -31,10 +31,16 @@ export const useFetchDocuments = () => {
 // -----------------------------
 // Get Document by ID
 // -----------------------------
-export const useGetDocument = () => {
-  return useMutation<Document, ApiAxiosError, { id: string }>({
-    mutationFn: async ({ id }) => (await documentService.getById(id)).data,
-    mutationKey: ["document", "get"],
+export const useGetDocument = (id: string | undefined) => {
+  return useQuery<Document, ApiAxiosError>({
+    queryKey: ["documents", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Document ID is required");
+      const res = await documentService.getById(id);
+      return res.data;
+    },
+    enabled: !!id, // only fetch if id exists
+    staleTime: 1000 * 60, // optional: cache 5 minutes
   });
 };
 
