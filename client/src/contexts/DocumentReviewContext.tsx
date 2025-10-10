@@ -109,7 +109,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
   const setSelectedViewer = useCallback((viewer: ReviewItem) => {
     _setSelectedViewer(viewer);
-  });
+  }, []);
 
   const values = useMemo(
     () => ({

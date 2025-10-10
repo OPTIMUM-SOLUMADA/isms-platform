@@ -101,20 +101,24 @@ export type DocumentVersion = {
   document: Document;
   approvals?: DocumentApproval[];
 };
+export type ReviewDecision = "APPROVE" | "REJECT" | "REQUEST_CHANGES";
 
-export type DocumentReview = {
+export interface DocumentReview {
   id: string;
   documentId: string;
   reviewerId: string;
+  assignedById?: string | null;
   comment?: string | null;
-  isApproved?: boolean | null;
+  decision?: ReviewDecision | null;
   isCompleted: boolean;
-  reviewDate?: Date | null;
+  reviewDate?: string | Date | null;
 
-  // Relations
-  document?: Document;
-  reviewer?: User;
-};
+  document: Document;
+  reviewer: User;
+  assignedBy?: User | null;
+
+  createdAt: string | Date;
+}
 
 export type DocumentApproval = {
   id: string;

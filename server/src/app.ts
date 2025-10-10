@@ -12,6 +12,7 @@ import documentReviewRoutes from './routes/documentreview.routes';
 import excelRoutes from './routes/excel.routes';
 import invitationRoutes from './routes/invitation.routes';
 import ownerRoutes from './routes/owner.routes';
+import gdRoutes from './routes/googleauth.route';
 import { env } from './configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from './configs/upload';
 import { PUBLIC_PATH } from './configs/public';
@@ -52,5 +53,6 @@ app.use('/document-reviews', documentReviewRoutes);
 app.use('/excel', excelRoutes);
 app.use('/invitation', invitationRoutes);
 app.use('/owners', ownerRoutes);
+app.use('/gd', gdRoutes);
 
 export default app;

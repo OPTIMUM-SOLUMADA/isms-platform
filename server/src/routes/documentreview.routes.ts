@@ -13,6 +13,7 @@ const controller = new DocumentReviewController();
 
 router.post('/', validate(documentReviewCreateSchema), controller.create.bind(controller));
 router.get('/', controller.findAll.bind(controller));
+router.get('/:id', controller.findById.bind(controller));
 router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(controller));
 
 // mark as completed

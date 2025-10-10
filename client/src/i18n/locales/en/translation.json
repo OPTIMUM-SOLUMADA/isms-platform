@@ -201,6 +201,59 @@
     "title": "Compliance",
     "subtitle": ""
   },
+  "reviewApproval": {
+    "title": "Document Approval",
+    "subtitle": "Review and approve documents",
+    "dialogs": {
+      "reject": {
+        "title": "Reject Document",
+        "message": "Are you sure you want to reject this document?",
+        "form": {
+          "reason": {
+            "label": "Rejection Reason",
+            "placeholder": "Enter rejection reason..."
+          }
+        },
+        "description": "Please provide a reason for rejecting the document.",
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "confirm": {
+            "label": "Reject",
+            "loading": "Rejecting..."
+          }
+        }
+      },
+      "approve": {
+        "title": "Approve Document",
+        "message": "Are you sure you want to approve this document?",
+        "description": "You are about to approve the document <strong>{{entity}}</strong>. Once approved, the document will be marked as reviewed and will proceed to the next stage in the workflow.",
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "confirm": {
+            "label": "Yes, approve",
+            "loading": "Approving..."
+          }
+        }
+      }
+    },
+    "actions": {
+      "approve": {
+        "label": "Approve",
+        "loading": "Approving..."
+      },
+      "reject": {
+        "label": "Reject",
+        "loading": "Rejecting..."
+      },
+      "back": {
+        "label": "Back to Reviews"
+      }
+    }
+  },
   "user": {
     "title": "User management",
     "subtitle": "Manage user accounts and roles",
@@ -991,6 +1044,19 @@
     "actions": {
       "add": {
         "label": "Add a fonction"
+      },
+      "delete": {
+        "dialog": {
+          "title": "Delete fonction",
+          "message": "Deleting this fonction will also remove the following associated information:",
+          "hasMembers": "You cannot delete this fonction because it has assigned users. Please reassign or remove those users before deleting the fonction.",
+          "hasDocuments": "You cannot delete this fonction because it has associated documents. Please reassign or remove those documents before deleting the fonction.",
+          "canBeDeleted": "The fonction can be deleted safely because it has no assigned users or documents.",
+          "relatedItems": {
+            "users": "All users assigned to this fonction.",
+            "douments": "All documents associated with this fonction."
+          }
+        }
       }
     }
   },
@@ -1382,6 +1448,11 @@
           "deleted": "Department deleted successfully",
           "added": "Department added successfully",
           "updated": "Department updated successfully"
+        },
+        "departmentRole": {
+          "deleted": "Fonction deleted successfully",
+          "added": "Fonction added successfully",
+          "updated": "Fonction updated successfully"
         }
       },
       "error": {

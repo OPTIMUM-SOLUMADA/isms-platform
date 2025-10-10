@@ -7,12 +7,12 @@ import { useEffect } from "react";
 import { useToast } from "../use-toast";
 import { DepartmentRole } from "@/types";
 import { useTranslation } from "react-i18next";
-// import { EditDepartmentRoleFormData } from "@/templates/departmentRoles/forms/EditDepartmentRoleForm";
 import { isEqual } from "lodash";
 import { useDebounce } from "../use-debounce";
 import useDepartmentRoleStore from "@/stores/department/useDepatrmentRoleStore";
 import { depService } from "@/services/departmentService";
 import { AddDepartmentRoleFormData } from "@/templates/departments/forms/AddDepartmentRoleForm";
+import { EditDepartmentRoleFormData } from "@/templates/departments/forms/EditDepartmentRoleForm";
 
 // -----------------------------
 // Fetch DepartmentRoles
@@ -90,25 +90,25 @@ export const useCreateDepartmentRole = (departmentId: string) => {
 // -----------------------------
 // Update DepartmentRole
 // -----------------------------
-// export const useUpdateDepartmentRole = () => {
-//     const { toast } = useToast();
-//     const { t } = useTranslation();
-//     const { replaceDepartement } = useDepartmentRoleStore();
-//     const queryClient = useQueryClient();
+export const useUpdateDepartmentRole = () => {
+    const { toast } = useToast();
+    const { t } = useTranslation();
+    const { replaceDepartement } = useDepartmentRoleStore();
+    const queryClient = useQueryClient();
 
-//     return useMutation<any, ApiAxiosError, EditDepartmentRoleFormData>({
-//         mutationFn: ({ id, ...rest }) => depService.updateRoles(id, rest),
-//         onSuccess: (res, variables) => {
-//             toast({
-//                 title: t("components.toast.success.title"),
-//                 description: t("components.toast.success.departmentRole.updated"),
-//                 variant: "success",
-//             });
-//             replaceDepartement(variables.id, res.data);
-//             queryClient.invalidateQueries({ queryKey: ["departements"] });
-//         },
-//     });
-// };
+    return useMutation<any, ApiAxiosError, EditDepartmentRoleFormData>({
+        mutationFn: ({ id, ...rest }) => depService.updateRoles(id, rest),
+        onSuccess: (res, variables) => {
+            toast({
+                title: t("components.toast.success.title"),
+                description: t("components.toast.success.departmentRole.updated"),
+                variant: "success",
+            });
+            replaceDepartement(variables.id, res.data);
+            queryClient.invalidateQueries({ queryKey: ["departements"] });
+        },
+    });
+};
 
 // -----------------------------
 // Delete DepartmentRole

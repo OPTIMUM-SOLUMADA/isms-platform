@@ -43,9 +43,14 @@ export class DepartmentRoleService {
     }
 
     async updateRoles(id: string, data: { name?: string; description?: string }) {
+        const updateData: any = {};
+
+        if (data.name !== undefined) updateData.name = data.name;
+        if (data.description !== undefined) updateData.description = data.description;
+
         return prisma.departmentRole.update({
             where: { id },
-            data,
+            data: updateData,
         });
     }
 

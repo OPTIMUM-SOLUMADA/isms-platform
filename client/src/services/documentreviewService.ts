@@ -3,10 +3,11 @@ import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
 import { AddReviewFormData } from "@/templates/reviews/forms/AddReviewForm";
 
-const url = API_CONFIG.ENDPOINTS.DOCUMENTS.REVIEWS;
+const api = API_CONFIG.ENDPOINTS.REVIEWS;
 
 export const documentReviewService = {
-    list: async () => axios.get(url),
-    create: async (data: AddReviewFormData) => axios.post(url, { ...data }),
-    updateComment: async (id: string, comment: string) => axios.put(`${url}/${id}`, { comment }),
-}
+    list: async () => axios.get(api.BASE),
+    findById: async (id: string) => axios.get(api.GET(id)),
+    create: async (data: AddReviewFormData) => axios.post(api.BASE, { ...data }),
+    updateComment: async (id: string, comment: string) => axios.put(api.GET(id), { comment }),
+};
