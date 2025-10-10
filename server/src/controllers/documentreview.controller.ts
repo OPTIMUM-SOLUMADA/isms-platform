@@ -69,6 +69,7 @@ export class DocumentReviewController {
             const type = await service.submitReviewDecision(req.params.id!, {
                 decision,
                 comment,
+                isCompleted: true,
             });
             return res.json(type);
         } catch (error: any) {

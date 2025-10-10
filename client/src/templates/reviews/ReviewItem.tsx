@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Calendar, Eye, FileText, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,22 @@ import { Button } from "@/components/ui/button";
 import { getReviewStatus } from "@/lib/review";
 import { Badge } from "@/components/ui/badge";
 import { reviewStatusColors } from "@/constants/color";
+import HtmlContent from "@/components/HTMLContent";
+import { EnvelopeClosedIcon, EnvelopeOpenIcon } from "@radix-ui/react-icons";
+import {
+    Collapsible,
+    CollapsibleTrigger,
+    CollapsibleContent,
+} from "@/components/ui/collapsible";
+
+interface WrapperProps extends PropsWithChildren {
+    condition: boolean;
+    to: string;
+}
+
+const Wrapper = ({ condition, to, children }: WrapperProps) =>
+    condition ? <Link to={to} draggable={false}>{children}</Link> : children;
+
 
 interface ReviewItemProps {
     item: DocumentReview
@@ -23,8 +39,9 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
         {
             IN_REVIEW: t("review.inProgress"),
             APPROVED: t("review.approved"),
-            EXPIRED: t("review.rejected"),
+            EXPIRED: t("review.expired"),
             PENDING: t("review.pending"),
+            REJECTED: t("review.rejected"),
         }[status] || t("review.pending");
 
     const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
@@ -34,7 +51,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
     });
 
     return (
-        <Link to={`/review-approval/${item.id}`}>
+        <Wrapper condition={!item.isCompleted} to={`/review-approval/${item.id}`} >
             <Card className="hover:shadow-lg transition-all duration-200 border border-gray-200 rounded-lg relative hover:cursor-pointer">
                 <CardContent className="p-6">
                     <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
@@ -46,7 +63,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                                     {item.document.title}
                                 </h3>
                                 <Badge
-                                    className={`absolute  right-2 top-2 text-sm px-3 py-1 ${reviewStatusColors[status]}`}
+                                    className={`absolute  right-2 top-2 text-xs px-2 py-1 ${reviewStatusColors[status]}`}
                                 >
                                     {statusLabel}
                                 </Badge>
@@ -98,11 +115,31 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
 
                             {/* ---------- Comment ---------- */}
                             {item.isCompleted && item.comment && (
-                                <div className="mt-3 border-l-4 border-gray-300 bg-gray-50 p-3 rounded-md">
-                                    <p className="text-sm text-gray-700 italic">
-                                        “{item.comment.trim()}”
-                                    </p>
-                                </div>
+                                <Collapsible className="mt-3" asChild>
+                                    <div
+                                        className="p-3"
+                                        draggable={false}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <CollapsibleTrigger asChild>
+                                            <button
+                                                type="button"
+                                                className="flex items-center w-full text-left text-sm text-orange-600 hover:text-gray-900 transition-colors"
+                                            >
+                                                <EnvelopeClosedIcon className="h-4 w-4 mr-2" />
+                                                <span className="font-medium">Reviewer's Comment</span>
+                                                <EnvelopeOpenIcon className="h-4 w-4 ml-auto opacity-50 group-data-[state=open]:rotate-180 transition-transform" />
+                                            </button>
+                                        </CollapsibleTrigger>
+
+                                        <CollapsibleContent className="p-2 text-sm text-gray-600 border-l-4 border border-gray-300 bg-white">
+                                            <HtmlContent html={item.comment} />
+                                        </CollapsibleContent>
+                                    </div>
+                                </Collapsible>
                             )}
                         </div>
 
@@ -122,7 +159,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                     </div>
                 </CardContent>
             </Card>
-        </Link>
+        </Wrapper>
     );
 };
 

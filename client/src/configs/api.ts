@@ -49,6 +49,7 @@ export const API_CONFIG = {
             UPDATE: (id: string | number) => `/document-reviews/${id}`,
             DELETE: (id: string | number) => `/document-reviews/${id}`,
             SEARCH: "/document-reviews/search",
+            MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",

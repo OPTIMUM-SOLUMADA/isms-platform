@@ -118,7 +118,7 @@ export class DocumentReviewService {
 
     async submitReviewDecision(
         reviewId: string,
-        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision'>,
+        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision' | 'isCompleted'>,
     ) {
         return prisma.documentReview.update({
             where: { id: reviewId },

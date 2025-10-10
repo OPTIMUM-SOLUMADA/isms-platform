@@ -34,6 +34,8 @@ export default function ReviewWorkflowPage() {
       stage = "IN_REVIEW"; // pas encore fini
     } else if (item.isCompleted && item.decision === "APPROVE") {
       stage = "APPROVED"; // terminé + approuvé
+    } else if (item.isCompleted && item.decision === "REJECT") {
+      stage = "REJECTED";
     } else if (item.reviewDate && item.reviewDate < new Date()) {
       stage = "EXPIRED"; // terminé + rejeté
     } else {

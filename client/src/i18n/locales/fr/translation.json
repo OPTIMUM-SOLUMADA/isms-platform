@@ -224,6 +224,16 @@
                         "label": "Rejeter",
                         "loading": "Rejet en cours..."
                     }
+                },
+                "toast": {
+                    "error": {
+                        "title": "Erreur",
+                        "description": "Une erreur s'est produite lors du rejet du document. Veuillez réessayer."
+                    },
+                    "success": {
+                        "title": "Succès",
+                        "description": "Votre examen a été soumis avec succès. Le document a été rejeté."
+                    }
                 }
             },
             "approve": {
@@ -237,6 +247,16 @@
                     "confirm": {
                         "label": "Oui, approuver",
                         "loading": "Approbation en cours..."
+                    }
+                },
+                "toast": {
+                    "error": {
+                        "title": "Erreur",
+                        "description": "Une erreur s'est produite lors de l'approbation du document. Veuillez réessayer."
+                    },
+                    "success": {
+                        "title": "Succès",
+                        "description": "Votre examen a été soumis avec succès. Le document a été approuvé."
                     }
                 }
             }

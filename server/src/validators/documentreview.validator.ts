@@ -17,7 +17,7 @@ export const documentReviewUpdateSchema = Joi.object({
     id: Joi.string().trim().optional().messages({
         'string.empty': 'Id is required',
     }),
-    comment: Joi.string().optional().default(''),
+    comment: Joi.string().optional().default('').allow(''),
 });
 
 export const documentReviewMakeDecisionSchema = Joi.object({
@@ -28,5 +28,5 @@ export const documentReviewMakeDecisionSchema = Joi.object({
             'string.empty': 'Decision is required',
             'any.only': 'Invalid decision',
         }),
-    comment: Joi.string().optional().default(''),
+    comment: Joi.string().optional().default('').allow(''),
 });
