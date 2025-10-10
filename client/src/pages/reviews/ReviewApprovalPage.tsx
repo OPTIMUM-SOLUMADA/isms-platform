@@ -1,3 +1,4 @@
+import BackButton from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
@@ -24,6 +25,13 @@ const ReviewApprovalPage = () => {
 
     return (
         <WithTitle title={t('reviewApproval.title')}>
+            <div className="mb-2 flex items-center gap-2">
+                <BackButton />
+                <div>
+                    <h1 className="page-title">{t("reviewApproval.title")}</h1>
+                    <p className="page-description">{data?.document?.title}</p>
+                </div>
+            </div>
             <Card className="flex-grow flex flex-col p-0">
                 <CardContent className='flex flex-col grow p-0'>
                     <iframe
