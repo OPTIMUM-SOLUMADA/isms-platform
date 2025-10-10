@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Calendar, Eye, FileText, User } from "lucide-react";
+import { Calendar, Eye, FileText, FileWarning, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { DocumentReview } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,6 +56,9 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
             <Card className="hover:shadow-lg transition-all duration-200 border border-gray-200 rounded-lg relative hover:cursor-pointer">
                 <CardContent className="p-3">
                     <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
+                        <div className="text-muted-foreground shrink-0">
+                            <FileWarning />
+                        </div>
                         {/* ================= LEFT SIDE ================= */}
                         <div className="flex-1 space-y-3">
                             {/* ---------- Title & Status ---------- */}
