@@ -21,6 +21,19 @@ const includes: Prisma.DocumentReviewInclude = {
                     fileUrl: true,
                 },
             },
+            authors: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                            createdAt: true,
+                        },
+                    },
+                },
+            },
         },
     },
     reviewer: true,
@@ -131,11 +144,40 @@ export class DocumentReviewService {
         });
     }
 
-    async assignReviewersToDocument(documentId: string, reviewerIds: string[], userId?: string) {
+    async assignReviewersToDocument(
+        documentId: string,
+        reviewerIds: string[],
+        userId?: string,
+        reviewDate?: Date | null,
+    ) {
         return prisma.documentReview.createMany({
             data: reviewerIds.map((reviewerId) => ({
                 documentId: documentId,
                 reviewerId: reviewerId,
+                reviewDate: reviewDate || null,
+                ...(userId ? { assignedById: userId } : {}),
+            })),
+        });
+    }
+    async updateAssignedReviewersToDocument(
+        documentId: string,
+        reviewerIds: string[],
+        userId?: string,
+        reviewDate?: Date | null,
+    ) {
+        // Delete reviews where reviewDate is greater than now
+        await prisma.documentReview.deleteMany({
+            where: {
+                documentId: documentId,
+                reviewDate: { gt: new Date() },
+            },
+        });
+
+        return prisma.documentReview.createMany({
+            data: reviewerIds.map((reviewerId) => ({
+                documentId: documentId,
+                reviewerId: reviewerId,
+                reviewDate: reviewDate || null,
                 ...(userId ? { assignedById: userId } : {}),
             })),
         });

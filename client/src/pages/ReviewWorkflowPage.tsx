@@ -28,18 +28,16 @@ export default function ReviewWorkflowPage() {
 
   // Avant ton filter
   const viewersWithExtra = data.map((item) => {
-    let stage: string;
+    let stage: string = "IN_REVIEW";
 
     if (!item.isCompleted) {
       stage = "IN_REVIEW"; // pas encore fini
-    } else if (item.isCompleted && item.decision === "APPROVE") {
+    } else if (item.decision === "APPROVE") {
       stage = "APPROVED"; // terminé + approuvé
-    } else if (item.isCompleted && item.decision === "REJECT") {
+    } else if (item.decision === "REJECT" && item.comment) {
       stage = "REJECTED";
-    } else if (item.reviewDate && item.reviewDate < new Date()) {
+    } else if (item.reviewDate && item.reviewDate < new Date().toISOString()) {
       stage = "EXPIRED"; // terminé + rejeté
-    } else {
-      stage = 'IN_REVIEW';
     }
 
     // tu peux mettre une logique métier pour priority
@@ -81,7 +79,7 @@ export default function ReviewWorkflowPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid-cols-1 md:grid-cols-4 gap-4 hidden">
           {workflowStages.map((stage) => {
 
             const count = data.filter(
@@ -134,21 +132,24 @@ export default function ReviewWorkflowPage() {
           <CardContent className="mt-5">
             <Tabs value={activeTab} onValueChange={v => setActiveTab(v as Tab)}>
               <TabsList className="grid w-full grid-cols-5">
-
                 <TabsTrigger value="all">
                   {t("review.all")} ({data.length})
                 </TabsTrigger>
                 <TabsTrigger value="in_review">
-                  {t("review.inReview")} (
+                  {t("review.pending")} (
                   {data.filter((i) => !i.isCompleted).length})
                 </TabsTrigger>
                 <TabsTrigger value="approved">
                   {t("review.approved")} (
-                  {data.filter((i) => i.isCompleted && i.decision === 'APPROVE').length})
+                  {data.filter((i) => i.decision === 'APPROVE').length})
                 </TabsTrigger>
                 <TabsTrigger value="rejected">
                   {t("review.rejected")} (
-                  {data.filter((i) => i.reviewDate! < new Date()).length})
+                  {data.filter((i) => i.decision === 'REJECT').length})
+                </TabsTrigger>
+                <TabsTrigger value="expired">
+                  {t("review.overdue")} (
+                  {data.filter((i) => i.reviewDate! < new Date().toISOString()).length})
                 </TabsTrigger>
               </TabsList>
 

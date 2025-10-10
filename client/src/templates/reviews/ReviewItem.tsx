@@ -45,7 +45,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
             REJECTED: t("review.rejected"),
         }[status] || t("review.pending");
 
-    const formattedDate = new Date(item.createdAt).toLocaleDateString("en-US", {
+    const formattedDate = new Date(item.reviewDate || item.createdAt).toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -54,13 +54,13 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
     return (
         <Wrapper condition={!item.isCompleted} to={`/review-approval/${item.id}`} >
             <Card className="hover:shadow-lg transition-all duration-200 border border-gray-200 rounded-lg relative hover:cursor-pointer">
-                <CardContent className="p-6">
+                <CardContent className="p-3">
                     <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
                         {/* ================= LEFT SIDE ================= */}
                         <div className="flex-1 space-y-3">
                             {/* ---------- Title & Status ---------- */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
-                                <h3 className="font-semibold text-xl text-gray-800">
+                                <h3 className="font-semibold text-base text-gray-800">
                                     {item.document.title}
                                 </h3>
                                 <Badge
@@ -82,10 +82,10 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                                 <div className="flex items-center gap-2">
                                     <User className="h-4 w-4 text-gray-500" />
                                     <div className="font-medium flex items-center">
-                                        {t("review.reviewer")}:{" "}
-                                        {item.reviewer && (
-                                            <UserHoverCard user={item.reviewer} />
-                                        )}
+                                        {t("review.authors")}:{" "}
+                                        {item.document.authors.map((author, index) => (
+                                            <UserHoverCard key={index} user={author.user} />
+                                        ))}
                                     </div>
                                 </div>
 

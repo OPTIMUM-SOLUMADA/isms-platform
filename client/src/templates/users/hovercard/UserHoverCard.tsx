@@ -72,7 +72,7 @@ export function UserHoverCard({
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge className={cn(userRoleColors[user.role], "uppercase")}>
-                            {t(`role.options.${user.role.toLowerCase()}`)}
+                            {t(`role.options.${user.role?.toLowerCase()}`)}
                         </Badge>
                     </div>
                 </div>

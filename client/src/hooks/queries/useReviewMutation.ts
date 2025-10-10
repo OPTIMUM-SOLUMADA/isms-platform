@@ -18,7 +18,7 @@ export const useFetchMyReviews = () => {
     return useQuery<DocumentReview[], ApiAxiosError>({
         queryKey: ['reviews', user?.id],
         queryFn: async () => (await documentReviewService.getMyReviews(user!.id)).data,
-        staleTime: 1000 * 60 * 1,
+        staleTime: 1000,
         refetchInterval: 15000,
         enabled: !!user,
     });
