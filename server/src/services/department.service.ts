@@ -28,6 +28,19 @@ const depIncludes: Prisma.DepartmentInclude = {
             createdAt: true,
         },
     },
+    roles: {
+        include: {
+            createdBy: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                },
+            },
+        },
+    },
 };
 
 export class DepartmentService {

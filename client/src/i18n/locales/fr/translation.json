@@ -292,6 +292,11 @@
                     "label": "Departement",
                     "placeholder": "Departement de l'utilisateur"
                 },
+                "departmentRole": {
+                    "label": "Fonction",
+                    "placeholder": "Fonction d'utilisateur",
+                    "noRoles": "Aucune fonction disponible"
+                },
                 "fonction": {
                     "label": "Fonction",
                     "placeholder": "Ajout fonction"

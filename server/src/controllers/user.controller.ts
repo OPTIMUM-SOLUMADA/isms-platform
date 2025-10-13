@@ -12,8 +12,10 @@ const jwtService = new JwtService();
 export class UserController {
     async create(req: Request, res: Response) {
         try {
+            console.log('req', req.body);
             // check if user email exists
             const userExists = await service.findByEmail(req.body.email);
+            console.log('userExists', userExists);
             if (userExists) {
                 res.status(400).json({
                     error: 'User already exists',
@@ -22,7 +24,7 @@ export class UserController {
                 return;
             }
 
-            const { departmentId, sendInvitationLink, ...rest } = req.body;
+            const { departmentId, departmentRoleId, sendInvitationLink, ...rest } = req.body;
 
             const user = await service.createUser({
                 ...rest,
@@ -30,6 +32,11 @@ export class UserController {
                 department: {
                     connect: {
                         id: departmentId,
+                    },
+                },
+                departmentRole: {
+                    connect: {
+                        id: departmentRoleId,
                     },
                 },
             });
