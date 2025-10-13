@@ -190,6 +190,7 @@ export type User = {
   lastLogin?: string;
   department: Department;
   departmentId: string;
+  departmentRole: DepartmentRole;
 
   documentOwners: Document[];
   reviews: any[];
@@ -217,6 +218,7 @@ export type Department = {
 
   createdAt: string;
   updatedAt: string;
+  roles: DepartmentRole[];
 };
 
 export type DepartmentRole = {

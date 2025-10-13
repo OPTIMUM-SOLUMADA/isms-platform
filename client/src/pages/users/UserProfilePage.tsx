@@ -376,22 +376,6 @@ export default function UserProfilePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
-                            {/* <div className="space-y-4">
-                                {userData?.recentActivity.map((activity, index) => (
-                                    <div key={activity.id} className="flex items-start space-x-4">
-                                        <div className={`w-3 h-3 rounded-full mt-2 ${index === 0 ? 'bg-green-500' :
-                                            index === 1 ? 'bg-blue-500' : 'bg-gray-400'
-                                            }`} />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between">
-                                                <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                                                <p className="text-xs text-gray-500">{formatTimestamp(activity.timestamp)}</p>
-                                            </div>
-                                            <p className="text-sm text-gray-600 truncate">{activity.document}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div> */}
                             <Button variant="outline" className="w-full mt-4">
                                 <FileText className="h-4 w-4 mr-2" />
                                 View Full Activity Log
@@ -410,20 +394,6 @@ export default function UserProfilePage() {
                                 <span>Permissions</span>
                             </CardTitle>
                         </CardHeader>
-                        {/* <CardContent className="p-6">
-                            <div className="space-y-3">
-                                {userData?.permissions.map((permission) => (
-                                    <div key={permission} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
-                                        <span className="text-sm font-medium text-purple-900 capitalize">
-                                            {permission.replace('_', ' ')}
-                                        </span>
-                                        <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                                            Active
-                                        </Badge>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent> */}
                     </Card>
 
                     {/* Notification Settings */}

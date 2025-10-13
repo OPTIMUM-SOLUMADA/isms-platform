@@ -69,6 +69,8 @@ export const useCreateUser = () => {
     return useMutation<any, ApiAxiosError, AddUserFormData>({
         mutationFn: (data) => userService.create(data),
         onSuccess: (res) => {
+            console.log("rs", res);
+            
             toast({
                 title: t("components.toast.success.title"),
                 description: t("components.toast.success.user.created"),

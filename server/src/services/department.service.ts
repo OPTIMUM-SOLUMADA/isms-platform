@@ -33,6 +33,15 @@ const depIncludes: Prisma.DepartmentInclude = {
             id: true,
             name: true,
             description: true,
+            createdBy: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                },
+            },
         },
     },
 };
