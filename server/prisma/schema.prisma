@@ -276,8 +276,9 @@ model DocumentVersion {
   isCurrent  Boolean  @default(false) // optional: flag the latest version
   fileUrl    String?
 
-  document  Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  approvals DocumentApproval[]
+  document        Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approvals       DocumentApproval[]
+  documentReviews DocumentReview[]   @relation("ReviewDocumentVersion")
 
   @@index([documentId, version])
   @@map("document_versions")
@@ -294,14 +295,16 @@ enum ReviewDecision {
 
 // Ce modèle est plus robuste et inclut l'état de la révision et les commentaire
 model DocumentReview {
-  id           String          @id @default(auto()) @map("_id") @db.ObjectId
-  documentId   String          @db.ObjectId
-  reviewerId   String          @db.ObjectId
-  assignedById String?         @db.ObjectId
-  comment      String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
-  decision     ReviewDecision?
-  isCompleted  Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
-  reviewDate   DateTime? // Ajouté : La date à laquelle la révision a été effectuée
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  documentId        String          @db.ObjectId
+  reviewerId        String          @db.ObjectId
+  assignedById      String?         @db.ObjectId
+  comment           String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  decision          ReviewDecision?
+  isCompleted       Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
+  reviewDate        DateTime? // Ajouté : La date à laquelle la révision a été effectuée
+  documentVersionId String          @db.ObjectId
+  documentVersion   DocumentVersion @relation(name: "ReviewDocumentVersion", fields: [documentVersionId], references: [id], onDelete: Cascade)
 
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
@@ -311,6 +314,7 @@ model DocumentReview {
 
   @@index([documentId])
   @@index([reviewerId])
+  @@index([documentVersionId])
   @@map("document_reviews")
 }
 

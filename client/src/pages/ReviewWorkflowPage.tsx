@@ -1,23 +1,25 @@
 import { useState } from "react";
-import { GitBranch, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { reviewStageIcons } from "@/constants/icon";
 import WithTitle from "@/templates/layout/WithTitle";
 import { useTranslation } from "react-i18next";
-import ReviewItem from "@/templates/reviews/ReviewItem";
-import { useFetchMyReviews } from "@/hooks/queries/useReviewMutation";
-
-type Tab = 'in_review' | 'approved' | 'expired' | 'all';
+import { useFetchMyReviews, useGetReviewStats } from "@/hooks/queries/useReviewMutation";
+import { ReviewTable } from "@/templates/reviews/table/ReviewTable";
+import { useNavigate } from "react-router-dom";
+import useReviewStore, { FilterStatus } from "@/stores/review/useReviewStore";
 
 export default function ReviewWorkflowPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("all");
+  const { reviews, setFilter, filter } = useReviewStore();
+  const [activeTab, setActiveTab] = useState<FilterStatus>(filter.status || "ALL");
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterPriority] = useState("all");
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const { data = [] } = useFetchMyReviews();
+  const { isLoading } = useFetchMyReviews();
+  const { data: stats } = useGetReviewStats();
 
   const workflowStages = [
     { id: "PENDING", label: "review.pendingReview", color: "gray" },
@@ -26,41 +28,13 @@ export default function ReviewWorkflowPage() {
     { id: "EXPIRED", label: "review.overdue", color: "red" },
   ];
 
-  // Avant ton filter
-  const viewersWithExtra = data.map((item) => {
-    let stage: string = "IN_REVIEW";
-
-    if (!item.isCompleted) {
-      stage = "IN_REVIEW"; // pas encore fini
-    } else if (item.decision === "APPROVE") {
-      stage = "APPROVED"; // terminé + approuvé
-    } else if (item.decision === "REJECT" && item.comment) {
-      stage = "REJECTED";
-    } else if (item.reviewDate && item.reviewDate < new Date().toISOString()) {
-      stage = "EXPIRED"; // terminé + rejeté
-    }
-
-    // tu peux mettre une logique métier pour priority
-    const priority = "normal";
-
-    return {
-      ...item,
-      stage,
-      priority,
-    };
-  });
-
-  const filteredItems = viewersWithExtra.filter((item) => {
-    const matchesSearch =
-      item.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.reviewer.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesTab = activeTab === "all" || item.stage === activeTab.toUpperCase();
-    const matchesPriority =
-      filterPriority === "all" || item.priority === filterPriority;
-
-    return matchesSearch && matchesTab && matchesPriority;
-  });
+  function handleTabClick(tab: FilterStatus) {
+    setActiveTab(tab);
+    setFilter({
+      ...filter,
+      status: tab,
+    });
+  }
 
   const getStageIcon = (stage: string) => {
     const Icon = reviewStageIcons[stage as keyof typeof reviewStageIcons];
@@ -82,8 +56,8 @@ export default function ReviewWorkflowPage() {
         <div className="grid-cols-1 md:grid-cols-4 gap-4 hidden">
           {workflowStages.map((stage) => {
 
-            const count = data.filter(
-              (item) => item.document.status === stage.id
+            const count = reviews.filter(
+              (item) => item.document?.status === stage.id
             ).length;
 
             const Icon = getStageIcon(stage.id);
@@ -129,53 +103,32 @@ export default function ReviewWorkflowPage() {
 
         {/* Workflow Tabs */}
         <Card className="flex flex-col grow">
-          <CardContent className="mt-5">
-            <Tabs value={activeTab} onValueChange={v => setActiveTab(v as Tab)}>
+          <CardContent className="mt-5 flex flex-col grow">
+            <Tabs value={activeTab} onValueChange={v => handleTabClick(v as FilterStatus)}>
               <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="all">
-                  {t("review.all")} ({data.length})
+                <TabsTrigger value="ALL">
+                  {t("review.all")} ({stats?.all || 0})
                 </TabsTrigger>
-                <TabsTrigger value="in_review">
-                  {t("review.pending")} (
-                  {data.filter((i) => !i.isCompleted).length})
+                <TabsTrigger value="PENDING">
+                  {t("review.pending")} ({stats?.pending || 0})
                 </TabsTrigger>
-                <TabsTrigger value="approved">
-                  {t("review.approved")} (
-                  {data.filter((i) => i.decision === 'APPROVE').length})
+                <TabsTrigger value="APPROVED">
+                  {t("review.approved")} ({stats?.approved || 0})
                 </TabsTrigger>
-                <TabsTrigger value="rejected">
-                  {t("review.rejected")} (
-                  {data.filter((i) => i.decision === 'REJECT').length})
+                <TabsTrigger value="REJECTED">
+                  {t("review.rejected")} ({stats?.rejected || 0})
                 </TabsTrigger>
-                <TabsTrigger value="expired">
-                  {t("review.overdue")} (
-                  {data.filter((i) => i.reviewDate! < new Date().toISOString()).length})
+                <TabsTrigger value="EXPIRED">
+                  {t("review.overdue")} ({stats?.expired || 0})
                 </TabsTrigger>
               </TabsList>
-
-              <div className="mt-6">
-                <div className="space-y-4">
-                  {filteredItems.map((item, index) => (
-                    <ReviewItem
-                      key={index}
-                      item={item}
-                    />
-                  ))}
-
-                  {filteredItems.length === 0 && (
-                    <div className="text-center py-12">
-                      <GitBranch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No review items found
-                      </h3>
-                      <p className="text-gray-500">
-                        Try adjusting your filters or start a new review process
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </Tabs>
+
+            <ReviewTable
+              data={reviews}
+              onView={(item) => navigate(`/review-approval/${item.id}`)}
+              isLoading={isLoading}
+            />
           </CardContent>
         </Card>
       </div>

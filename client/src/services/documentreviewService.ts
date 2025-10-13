@@ -8,7 +8,10 @@ const api = API_CONFIG.ENDPOINTS.REVIEWS;
 
 export const documentReviewService = {
     list: async () => axios.get(api.BASE),
-    getMyReviews: async (id: string) => axios.get(api.GET_MY_REVIEWS(id)),
+    getMyReviews: async (id: string, filter: { page: number; limit: number, status: string }) => axios.get(api.GET_MY_REVIEWS(id), {
+        params: { page: filter.page, limit: filter.limit, status: filter.status },
+    }),
+    getMyReviewsStats: async (id: string) => axios.get(api.GET_MY_REVIEWS_STATS(id)),
     findById: async (id: string) => axios.get(api.GET(id)),
     create: async (data: AddReviewFormData) => axios.post(api.BASE, { ...data }),
     updateComment: async (id: string, comment: string) => axios.put(api.GET(id), { comment }),
