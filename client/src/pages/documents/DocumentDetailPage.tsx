@@ -35,9 +35,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/date";
 import { usePermissions } from "@/hooks/use-permissions";
 import { Document } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import { documentService } from "@/services/documentService";
-import { ApiAxiosError } from "@/types/api";
 import { cn } from "@/lib/utils";
 import { LoadingButton } from "@/components/ui/loading-button";
 import DocumentDetailSkeleton from "@/components/loading/DocumentDetailSkeleton";
@@ -49,6 +46,7 @@ import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import DepartmentHoverCard from "@/templates/departments/hovercard/DepartmentHoverCard";
+import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 
 const tabs = [
   {
@@ -332,17 +330,3 @@ export default function DocumentDetailPage() {
   );
 }
 
-
-
-export const useGetDocument = (id: string | undefined) => {
-  return useQuery<Document, ApiAxiosError>({
-    queryKey: ["documents", id],
-    queryFn: async () => {
-      if (!id) throw new Error("Document ID is required");
-      const res = await documentService.getById(id);
-      return res.data;
-    },
-    enabled: !!id, // only fetch if id exists
-    staleTime: 1000 * 60, // optional: cache 5 minutes
-  });
-};

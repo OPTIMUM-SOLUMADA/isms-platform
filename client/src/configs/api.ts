@@ -38,11 +38,19 @@ export const API_CONFIG = {
         DOCUMENTS: {
             BASE: "/documents",
             STATS: "/documents/statistics",
-            REVIEWS: '/document-reviews',
             GET: (id: string | number) => `/documents/${id}`,
             DOWNLOAD: (id: string | number) => `/documents/download/${id}`,
             PUBLISH: (id: string | number) => `/documents/publish/${id}`,
             UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
+        },
+        REVIEWS: {
+            BASE: "/document-reviews",
+            GET: (id: string | number) => `/document-reviews/${id}`,
+            UPDATE: (id: string | number) => `/document-reviews/${id}`,
+            DELETE: (id: string | number) => `/document-reviews/${id}`,
+            SEARCH: "/document-reviews/search",
+            MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
+            GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",

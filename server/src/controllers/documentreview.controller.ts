@@ -69,6 +69,7 @@ export class DocumentReviewController {
             const type = await service.submitReviewDecision(req.params.id!, {
                 decision,
                 comment,
+                isCompleted: true,
             });
             return res.json(type);
         } catch (error: any) {
@@ -97,6 +98,16 @@ export class DocumentReviewController {
             return res.json(type);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
+        }
+    }
+
+    async getMyReviews(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const reviews = await service.getReviewsByUserId(userId!);
+            return res.json(reviews);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
         }
     }
 }

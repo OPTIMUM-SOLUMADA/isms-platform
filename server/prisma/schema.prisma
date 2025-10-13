@@ -23,9 +23,7 @@ model Department {
   name        String  @unique
   description String?
 
-  // managerId String? @db.ObjectId
-  // manager   User[]   @relation("ManagedDepartment")
-  roles DepartmentRole[] @relation() // chaque département a ses propres rôles
+  roles DepartmentRole[] @relation()
 
   createdById String? @db.ObjectId
   createdBy   User?   @relation(name: "CreatedDepartments", fields: [createdById], references: [id], onDelete: SetNull)
@@ -34,7 +32,6 @@ model Department {
   updatedAt DateTime   @updatedAt
   documents Document[] @relation("DepartmentDocuments")
   members   User[]     @relation("DepartmentMembers")
-  // User      User[]
 
   @@map("departments")
 }

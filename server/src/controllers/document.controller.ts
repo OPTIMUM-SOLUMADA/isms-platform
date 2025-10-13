@@ -32,6 +32,21 @@ export class DocumentController {
                 classification,
             } = req.body;
 
+            const file = req.file;
+
+            if (!file) {
+                throw new Error('File is required');
+            }
+
+            // const buffer = fs.readFileSync(file.path);
+
+            // // Upload to Google Drive
+            // const result = await svc.uploadFileFromBuffer(buffer, {
+            //     name: file.originalname,
+            //     mimeType: file.mimetype,
+            //     parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+            // });
+
             const fileUrl = req.file ? req.file.filename : null;
 
             const createdDoc = await this.service.createDocumentWithDetails(
@@ -65,6 +80,7 @@ export class DocumentController {
                     createdDoc.id,
                     reviewers.split(','),
                     userId,
+                    createdDoc.nextReviewDate,
                 );
             }
 
@@ -140,6 +156,16 @@ export class DocumentController {
                 authors.split(','),
                 reviewers.split(','),
             );
+
+            // Assign reviews to reviewers
+            if (updatedDocument && updatedDocument.reviewers.length > 0) {
+                await this.reviewService.updateAssignedReviewersToDocument(
+                    updatedDocument.id,
+                    reviewers.split(','),
+                    updatedDocument.ownerId,
+                    updatedDocument.nextReviewDate,
+                );
+            }
 
             if (fileUrl) {
                 // Delete old file
