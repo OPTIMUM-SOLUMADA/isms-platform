@@ -124,6 +124,18 @@ export class DepartmentController {
         }
     }
 
+    async getRole(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            if (!id) return res.status(400).json({ error: 'Id is required' });
+            console.log('getRole');
+            const data = await serviceRole.getRole(id);
+            return res.json(data);
+        } catch (err) {
+            return res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
     addRoles = async (req: Request, res: Response) => {
         try {
             const { name, description, userId } = req.body;

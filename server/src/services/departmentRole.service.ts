@@ -27,6 +27,13 @@ export class DepartmentRoleService {
         });
     }
 
+    async getRole(id: string) {
+        return prisma.departmentRole.findUnique({
+            where: { id },
+            include: { department: true },
+        });
+    }
+
     async listDepartmentsRole({ id, page, limit }: { id: string; page: number; limit: number }) {
         return prisma.departmentRole.findMany({
             where: { departmentId: id },

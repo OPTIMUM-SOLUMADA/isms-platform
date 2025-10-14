@@ -606,6 +606,10 @@
             "label": "Department",
             "placeholder": "Select a department"
           },
+          "departmentRole": {
+            "label": "Fonction",
+            "placeholder": "Select a or more fonctions"
+          },
           "isoClause": {
             "label": "Clause/Control Number",
             "placeholder": "Select an Clause/Control Number"
@@ -1533,6 +1537,15 @@
         "addNew": "Add a new user",
         "loading": "Loading users...",
         "searching": "Searching users..."
+      },
+      "departmentRole": {
+        "label": "Fonctions",
+        "placeholder": "Select fonctions",
+        "search": "Search fonctions...",
+        "empty": "No fonction found.",
+        "addNew": "Add a new fonction",
+        "loading": "Loading fonctions...",
+        "searching": "Searching fonction..."
       }
     },
     "document": {

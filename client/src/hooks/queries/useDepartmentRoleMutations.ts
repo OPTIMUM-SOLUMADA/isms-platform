@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiAxiosError } from "@/types/api";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 // import { depService } from "@/services/departmentRoleService";
 // import useDepartmentRoleStore from "@/stores/departmentRole/useDepatrmentStore";
 // import { AddDepartmentRoleFormData } from "@/templates/departmentRoles/forms/AddDepartmentRoleForm";
@@ -131,5 +131,20 @@ export const useDeleteDepartmentRole = () => {
 
             queryClient.invalidateQueries({ queryKey: ["departements"] });
         },
+    });
+};
+
+// Get departementRole by id
+
+export const useFetchDepartmentRolesByIds = (ids: string[]) => {
+    const stableIds = useMemo(() => ids, [ids]);
+    return useQuery<DepartmentRole[], ApiAxiosError>({
+        queryKey: ["users", "useFetchDepartmentRolesByIds", ids],
+        queryFn: async () => {          
+            const responses = await Promise.all(ids.map(id => depService.getRoleById(id)));
+            return responses.map(res => res.data);
+        },//(await depService.getRoleById(ids)).data,
+        // staleTime: 1000 * 5,
+        enabled: stableIds.length > 0,
     });
 };
