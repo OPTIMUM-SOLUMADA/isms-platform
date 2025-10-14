@@ -52,6 +52,7 @@ export const API_CONFIG = {
             SEARCH: "/document-reviews/search",
             MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
             GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
+            GET_MY_REVIEWS_STATS: (id: string | number) => `/document-reviews/my-reviews/${id}/stats`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",

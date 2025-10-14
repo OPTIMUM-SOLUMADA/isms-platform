@@ -197,6 +197,36 @@
       "document": "Please select a document",
       "reviewer": "Please select a reviewer",
       "date": "Choose a date"
+    },
+    "table": {
+      "title": "Review List",
+      "columns": {
+        "document": "Document",
+        "title": "Title",
+        "version": "Version",
+        "reviewer": "Reviewer",
+        "authors": "Authors",
+        "status": "Status",
+        "dueDate": "Due Date",
+        "dueDateProgress": "Progress",
+        "lastUpdated": "Last Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject",
+        "comment": "Comment"
+      },
+      "empty": {
+        "title": "No Reviews Found",
+        "message": "Try adjusting your filters.",
+        "actions": {
+          "add": {
+            "label": "Add Review"
+          }
+        }
+      }
     }
   },
   "compliance": {
@@ -225,7 +255,8 @@
             "label": "Reject",
             "loading": "Rejecting..."
           }
-        }
+        },
+        "done": "You have already rejected this document. Your reason was:"
       },
       "approve": {
         "title": "Approve Document",
@@ -239,7 +270,8 @@
             "label": "Yes, approve",
             "loading": "Approving..."
           }
-        }
+        },
+        "done": "You have already approved this document."
       }
     },
     "actions": {
@@ -1561,6 +1593,10 @@
       "search": {
         "placeholder": "Search..."
       }
+    },
+    "dueDateProgress": {
+      "left": "{{time}} left",
+      "overdue": "Overdue by {{time}}"
     }
   },
   "navigation": {

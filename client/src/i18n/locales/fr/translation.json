@@ -197,6 +197,36 @@
             "document": "Veuillez séléctionner un document",
             "reviewer": "Veuillez Séléctionner un évaluateur",
             "date": "choisir une date"
+        },
+        "table": {
+            "title": "Liste des révisions",
+            "columns": {
+                "document": "Document",
+                "title": "Titre",
+                "version": "Version",
+                "reviewer": "Réviseur",
+                "authors": "Auteurs",
+                "status": "Statut",
+                "dueDate": "Date d'échéance",
+                "dueDateProgress": "Progression",
+                "lastUpdated": "Dernière mise à jour",
+                "actions": "Actions"
+            },
+            "actions": {
+                "view": "Voir",
+                "approve": "Approuver",
+                "reject": "Rejeter",
+                "comment": "Commenter"
+            },
+            "empty": {
+                "title": "Aucune révision trouvée",
+                "message": "Essayez de modifier les filtres.",
+                "actions": {
+                    "add": {
+                        "label": "Ajouter une révision"
+                    }
+                }
+            }
         }
     },
     "compliance": {
@@ -235,7 +265,8 @@
                         "title": "Succès",
                         "description": "Votre examen a été soumis avec succès. Le document a été rejeté."
                     }
-                }
+                },
+                "done": "Vous avez déjà rejeté ce document. Votre raison était:"
             },
             "approve": {
                 "title": "Approuver le document",
@@ -1593,6 +1624,10 @@
             "search": {
                 "placeholder": "Rechercher..."
             }
+        },
+        "dueDateProgress": {
+            "left": "Il reste {{time}}",
+            "overdue": "En retard de {{time}}"
         }
     },
     "navigation": {
