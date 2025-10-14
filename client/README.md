@@ -105,3 +105,8 @@ npm run dev
 | `npm run build` | Build a production-ready bundle  |
 | `npm run lint`  | Run ESLint to check code quality |
 | `npm run test`  | Run tests (if configured)        |
+
+```bash
+caché par le pull origin main : ===> git stash 
+retourné le stash ======> git stash pop
+```
