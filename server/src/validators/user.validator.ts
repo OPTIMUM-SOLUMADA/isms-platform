@@ -24,6 +24,12 @@ export const userCreateSchema = Joi.object({
         .messages({
             'string.empty': 'Department is required',
         }),
+    departmentRoleId: Joi.string()
+        .pattern(/^[0-9a-fA-F]{24}$/)
+        .required()
+        .messages({
+            'string.empty': 'Department role is required',
+        }),
     sendInvitationLink: Joi.boolean().optional().default(true),
     isActive: Joi.boolean().optional().default(true),
 });

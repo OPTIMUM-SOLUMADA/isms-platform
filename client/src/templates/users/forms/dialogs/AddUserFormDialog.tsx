@@ -35,7 +35,11 @@ const AddUserFormDialog = ({
     }, [isSuccess, reset, onOpenChange]);
 
     async function handleCreateUser(data: AddUserFormData) {
+        console.log("data", data);
+        
         const res = await createUser(data);
+        console.log("res", res);
+        
         // request send email invitation
         if (res.data && data.sendInvitationLink) {
             sendInvitation({ id: res.data.id });

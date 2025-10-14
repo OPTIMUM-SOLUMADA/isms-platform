@@ -25,6 +25,7 @@ const userIncludes: Prisma.UserInclude = {
 };
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
+        console.log('data', data);
         return prisma.user.create({
             data,
             include: {

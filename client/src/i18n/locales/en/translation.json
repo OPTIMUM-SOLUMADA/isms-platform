@@ -379,6 +379,11 @@
           "label": "Department",
           "placeholder": "User's department"
         },
+        "departmentRole": {
+          "label": "Fonction",
+          "placeholder": "User's fonction",
+          "noRoles": "Aucune fonction disponible"
+        },
         "fonction": {
           "label": "Fonction",
           "placeholder": "Add fonction"
