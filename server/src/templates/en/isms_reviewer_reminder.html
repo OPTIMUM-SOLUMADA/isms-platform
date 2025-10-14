@@ -1,6 +1,6 @@
 <section>
-    <h2>Hi {{reviewer.name}}, your review is needed</h2>
-    <p>Please review the policy below by <strong>{{dueDate}}</strong>.</p>
+    <p style="font-size:14px;">Hi {{reviewer.name}},</p>
+    <p style="font-size:14px;">Please review the policy below by <strong>{{dueDate}}</strong>.</p>
 
     <article class="card">
         <table role="presentation" cellspacing="0" cellpadding="0" border="0"
@@ -29,16 +29,6 @@
             <tr>
                 <td style="padding: 4px 0;">
                     <strong>Description:</strong> {{document.description}}
-                </td>
-            </tr>
-
-            <!-- Owner Row -->
-            <tr>
-                <td style="padding: 4px 0;">
-                    <strong>Owner:</strong>
-                    <a href="mailto:{{owner.email}}" style="color: var(--muted); text-decoration: none;">
-                        {{owner.name}} ({{owner.email}})
-                    </a>
                 </td>
             </tr>
 

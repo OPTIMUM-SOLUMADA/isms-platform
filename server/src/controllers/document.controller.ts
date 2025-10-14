@@ -74,14 +74,17 @@ export class DocumentController {
                 reviewers.split(','),
             );
 
-            // Assign reviews to reviewers
-            if (createdDoc && createdDoc.reviewers.length > 0) {
-                await this.reviewService.assignReviewersToDocument(
-                    createdDoc.id,
-                    reviewers.split(','),
-                    userId,
-                    createdDoc.nextReviewDate,
-                );
+            // get document version
+            const version = createdDoc?.versions.find((v) => v.isCurrent);
+
+            if (version && createdDoc && createdDoc.reviewers.length > 0) {
+                await this.reviewService.assignReviewersToDocument({
+                    documentId: createdDoc.id,
+                    documentVersionId: version.id,
+                    reviewerIds: reviewers.split(','),
+                    reviewDate: createdDoc.nextReviewDate,
+                    userId: userId,
+                });
             }
 
             res.status(201).json(createdDoc);
@@ -157,14 +160,16 @@ export class DocumentController {
                 reviewers.split(','),
             );
 
-            // Assign reviews to reviewers
-            if (updatedDocument && updatedDocument.reviewers.length > 0) {
-                await this.reviewService.updateAssignedReviewersToDocument(
-                    updatedDocument.id,
-                    reviewers.split(','),
-                    updatedDocument.ownerId,
-                    updatedDocument.nextReviewDate,
-                );
+            // get document version
+            const version = updatedDocument?.versions.find((v) => v.isCurrent);
+
+            if (version && updatedDocument && updatedDocument.reviewers.length > 0) {
+                await this.reviewService.updateAssignedReviewersToDocument({
+                    documentId: updatedDocument.id,
+                    documentVersionId: version.id,
+                    reviewerIds: reviewers.split(','),
+                    reviewDate: updatedDocument.nextReviewDate,
+                });
             }
 
             if (fileUrl) {

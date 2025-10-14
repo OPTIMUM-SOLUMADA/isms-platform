@@ -6,10 +6,11 @@ const service = new DocumentReviewService();
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
         try {
-            const { document, dueDate, reviewer } = req.body;
+            const { document, dueDate, reviewer, versionId } = req.body;
             const clause = await service.create({
                 document: { connect: { id: document } },
                 reviewer: { connect: { id: reviewer } },
+                documentVersion: { connect: { id: versionId } },
                 reviewDate: dueDate,
             });
             return res.status(201).json(clause);
@@ -69,7 +70,7 @@ export class DocumentReviewController {
             const type = await service.submitReviewDecision(req.params.id!, {
                 decision,
                 comment,
-                isCompleted: true,
+                isCompleted: false,
             });
             return res.json(type);
         } catch (error: any) {
@@ -103,9 +104,59 @@ export class DocumentReviewController {
 
     async getMyReviews(req: Request, res: Response) {
         try {
-            const { userId } = req.params;
-            const reviews = await service.getReviewsByUserId(userId!);
-            return res.json(reviews);
+            const { userId = '' } = req.params;
+            const { page = '1', limit = '50', status = 'ALL' } = req.query;
+            const data = await service.getReviewsByUserId({
+                userId,
+                page: Number(page),
+                limit: Number(limit),
+                filter: {
+                    ...(status === 'ALL' && {}),
+                    ...(status === 'PENDING' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        reviewDate: { gte: new Date() },
+                    }),
+                    ...(status === 'EXPIRED' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        reviewDate: { lte: new Date() },
+                    }),
+                    ...(status === 'APPROVED' && {
+                        isCompleted: false,
+                        decision: 'APPROVE',
+                    }),
+                    ...(status === 'REJECTED' && {
+                        isCompleted: false,
+                        decision: 'REJECT',
+                        comment: { not: '' },
+                    }),
+                    ...(status === 'COMPLETED' && {
+                        isCompleted: true,
+                        decision: { isSet: true },
+                    }),
+                },
+            });
+
+            return res.json({
+                reviews: data.data,
+                pagination: {
+                    total: data.total,
+                    limit: data.limit,
+                    page: data.page,
+                    totalPages: data.totalPages,
+                },
+            });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getMyReviewsStats(req: Request, res: Response) {
+        try {
+            const { userId = '' } = req.params;
+            const data = await service.getReviewStatsByUserId(userId);
+            return res.json(data);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
         }

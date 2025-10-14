@@ -53,7 +53,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
 
     return (
         <Wrapper condition={!item.isCompleted} to={`/review-approval/${item.id}`} >
-            <Card className="hover:shadow-lg transition-all duration-200 border border-gray-200 rounded-lg relative hover:cursor-pointer">
+            <Card className="hover:shadow-lg from-white to-white hover:from-gray-50 hover:to-gray-100 transition-all duration-200 border border-gray-200 hover:border-gray-300 rounded-lg relative hover:cursor-pointer">
                 <CardContent className="p-3">
                     <div className="flex flex-col lg:flex-row lg:justify-between gap-6">
                         <div className="text-muted-foreground shrink-0">
@@ -64,7 +64,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                             {/* ---------- Title & Status ---------- */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
                                 <h3 className="font-semibold text-base text-gray-800">
-                                    {item.document.title}
+                                    {item.document?.title}
                                 </h3>
                                 <Badge
                                     className={`absolute  right-2 top-2 text-xs px-2 py-1 ${reviewStatusColors[status]}`}
@@ -74,9 +74,9 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                             </div>
 
                             {/* ---------- Description ---------- */}
-                            {item.document.description && (
+                            {item.document?.description && (
                                 <p className="text-gray-600 text-sm leading-relaxed">
-                                    {item.document.description}
+                                    {item.document?.description}
                                 </p>
                             )}
 
@@ -86,7 +86,7 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                                     <User className="h-4 w-4 text-gray-500" />
                                     <div className="font-medium flex items-center">
                                         {t("review.authors")}:{" "}
-                                        {item.document.authors.map((author, index) => (
+                                        {item.document?.authors.map((author, index) => (
                                             <UserHoverCard key={index} user={author.user} />
                                         ))}
                                     </div>
@@ -107,14 +107,14 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                                     <span className="font-medium">
                                         {t("review.version")}:{" "}
                                         <span className="font-normal">
-                                            {item.document.versions[0]?.version || "v1"}
+                                            {item.document?.versions[0]?.version || "v1"}
                                         </span>
                                     </span>
                                 </div>
 
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs bg-gray-100 px-2 py-1 rounded-md text-gray-700">
-                                        {item.document.isoClause.code} – {item.document.isoClause.name}
+                                        {item.document?.isoClause.code} – {item.document?.isoClause.name}
                                     </span>
                                 </div>
                             </div>

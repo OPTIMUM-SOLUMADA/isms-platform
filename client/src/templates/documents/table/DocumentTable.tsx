@@ -25,8 +25,8 @@ import DownloadDocument from "../actions/DownloadDocument";
 import PublishDocument from "../actions/PublishDocument";
 import { documentStatus } from "@/constants/document";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
-import { formatDate } from "@/lib/date";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
+import DateLabel from "@/components/DateLabel";
 
 interface DocumentActionsCell {
     doc: Document;
@@ -195,9 +195,7 @@ const Table = ({
             cell: ({ row }) => {
                 const date = row.original.nextReviewDate;
                 return date ? (
-                    <span className="text-center block">
-                        {formatDate(date)}
-                    </span>
+                    <DateLabel date={date} />
                 ) : null;
             },
         },

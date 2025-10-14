@@ -14,6 +14,8 @@ export const Pagination = ({
     const { t } = useTranslation();
     const pageCount = totalCount;
 
+    console.log(pageCount)
+
     const maxButtons = 5;
 
     const pages = getPageButtons(page, pageCount, maxButtons);

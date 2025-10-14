@@ -301,4 +301,36 @@ export class DocumentService {
         // Par défaut, si aucune review n’a été complétée
         return DocumentStatus.DRAFT;
     }
+
+    async filterDocuments(filter: Prisma.DocumentWhereInput) {
+        return prisma.document.findMany({
+            where: filter,
+            include: {
+                reviewers: {
+                    select: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                role: true,
+                                createdAt: true,
+                            },
+                        },
+                    },
+                },
+                versions: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    where: { isCurrent: true },
+                    select: {
+                        id: true,
+                        createdAt: true,
+                        documentId: true,
+                        version: true,
+                    },
+                },
+            },
+        });
+    }
 }

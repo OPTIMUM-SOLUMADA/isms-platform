@@ -113,9 +113,11 @@ export interface DocumentReview {
   isCompleted: boolean;
   reviewDate?: string | Date | null;
 
-  document: Document;
+  document?: Document;
   reviewer: User;
   assignedBy?: User | null;
+
+  documentVersion?: DocumentVersion;
 
   createdAt: string | Date;
 }

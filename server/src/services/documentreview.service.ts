@@ -37,6 +37,13 @@ const includes: Prisma.DocumentReviewInclude = {
         },
     },
     reviewer: true,
+    documentVersion: {
+        select: {
+            version: true,
+            createdAt: true,
+            fileUrl: true,
+        },
+    },
 };
 
 export class DocumentReviewService {
@@ -144,27 +151,43 @@ export class DocumentReviewService {
         });
     }
 
-    async assignReviewersToDocument(
-        documentId: string,
-        reviewerIds: string[],
-        userId?: string,
-        reviewDate?: Date | null,
-    ) {
-        return prisma.documentReview.createMany({
-            data: reviewerIds.map((reviewerId) => ({
-                documentId: documentId,
-                reviewerId: reviewerId,
-                reviewDate: reviewDate || null,
-                ...(userId ? { assignedById: userId } : {}),
-            })),
-        });
+    async assignReviewersToDocument({
+        documentId,
+        documentVersionId,
+        reviewerIds,
+        userId,
+        reviewDate,
+    }: {
+        documentId: string;
+        documentVersionId: string;
+        reviewerIds: string[];
+        userId?: string;
+        reviewDate?: Date | null;
+    }) {
+        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+            documentId: documentId,
+            reviewerId: reviewerId,
+            reviewDate: reviewDate || null,
+            documentVersionId: documentVersionId,
+            ...(userId ? { assignedById: userId } : {}),
+        }));
+
+        return prisma.documentReview.createMany({ data });
     }
-    async updateAssignedReviewersToDocument(
-        documentId: string,
-        reviewerIds: string[],
-        userId?: string,
-        reviewDate?: Date | null,
-    ) {
+
+    async updateAssignedReviewersToDocument({
+        documentId,
+        documentVersionId,
+        reviewerIds,
+        userId,
+        reviewDate,
+    }: {
+        documentId: string;
+        documentVersionId: string;
+        reviewerIds: string[];
+        userId?: string;
+        reviewDate?: Date | null;
+    }) {
         // Delete reviews where reviewDate is greater than now
         await prisma.documentReview.deleteMany({
             where: {
@@ -172,15 +195,15 @@ export class DocumentReviewService {
                 reviewDate: { gt: new Date() },
             },
         });
+        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+            documentId: documentId,
+            reviewerId: reviewerId,
+            reviewDate: reviewDate || null,
+            documentVersionId: documentVersionId,
+            ...(userId ? { assignedById: userId } : {}),
+        }));
 
-        return prisma.documentReview.createMany({
-            data: reviewerIds.map((reviewerId) => ({
-                documentId: documentId,
-                reviewerId: reviewerId,
-                reviewDate: reviewDate || null,
-                ...(userId ? { assignedById: userId } : {}),
-            })),
-        });
+        return prisma.documentReview.createMany({ data });
     }
 
     async submitReviewDecision(
@@ -211,12 +234,155 @@ export class DocumentReviewService {
         });
     }
 
-    async getReviewsByUserId(userId: string) {
+    async getReviewsByUserId({
+        userId,
+        limit,
+        page,
+        filter,
+    }: {
+        userId: string;
+        limit: number;
+        page: number;
+        filter?: Prisma.DocumentReviewWhereInput;
+    }) {
+        const skip = (page - 1) * limit;
+
+        const [items, total] = await prisma.$transaction([
+            prisma.documentReview.findMany({
+                skip,
+                take: limit,
+                orderBy: {
+                    reviewDate: 'desc',
+                },
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    ...(filter && filter),
+                },
+                include: includes,
+            }),
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    ...(filter && filter),
+                },
+            }),
+        ]);
+
+        return {
+            data: items,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
+
+    async getReviewStatsByUserId(userId: string) {
+        const now = new Date();
+
+        // Run all count queries in a single atomic transaction
+        const [all, pending, expired, approved, rejected, completed] = await prisma.$transaction([
+            prisma.documentReview.count({
+                where: { reviewerId: userId },
+            }),
+
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    decision: { isSet: false },
+                    reviewDate: { gte: now },
+                },
+            }),
+
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    decision: { isSet: false },
+                    reviewDate: { lte: now },
+                },
+            }),
+
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    decision: 'APPROVE',
+                },
+            }),
+
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    decision: 'REJECT',
+                },
+            }),
+
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: true,
+                },
+            }),
+        ]);
+
+        return {
+            all,
+            pending,
+            expired,
+            approved,
+            rejected,
+            completed,
+        };
+    }
+
+    async findReview(filter: Prisma.DocumentReviewWhereInput) {
+        return prisma.documentReview.findFirst({ where: filter, include: includes });
+    }
+
+    async getUpcomingReviews({
+        targetDateStart,
+        targetDateEnd,
+    }: {
+        targetDateStart: Date;
+        targetDateEnd: Date;
+    }) {
         return prisma.documentReview.findMany({
             where: {
-                reviewerId: userId,
+                isCompleted: false,
+                reviewDate: {
+                    gte: targetDateStart,
+                    lte: targetDateEnd,
+                },
             },
-            include: includes,
+            include: {
+                reviewer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        status: true,
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                id: true,
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
     }
 }
