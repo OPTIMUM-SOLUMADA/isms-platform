@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { reviewJob } from './review.job';
+import { notifyReviewersJob, generateDocumentReviewsJob } from './review.job';
 import { logger } from '@/utils/logger';
 
 function safeSchedule(cronExp: string, name: string, fn: () => Promise<void>) {
@@ -16,8 +16,10 @@ function safeSchedule(cronExp: string, name: string, fn: () => Promise<void>) {
 
 export function registerCronJobs() {
     // Every day at 1:00 AM
-    // safeSchedule('0 1 * * *', 'generateDocumentReviews', reviewJob);
+    // safeSchedule('0 1 * * *', 'generateDocumentReviews', generateDocumentReviewsJob);
 
     // Test every minute
-    safeSchedule('* * * * *', 'generateDocumentReviews', reviewJob);
+    safeSchedule('* * * * *', 'generateDocumentReviews', generateDocumentReviewsJob);
+
+    safeSchedule('* * * * *', 'notifyReviewers', notifyReviewersJob);
 }

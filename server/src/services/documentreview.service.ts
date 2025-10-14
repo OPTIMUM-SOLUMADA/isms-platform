@@ -341,4 +341,48 @@ export class DocumentReviewService {
     async findReview(filter: Prisma.DocumentReviewWhereInput) {
         return prisma.documentReview.findFirst({ where: filter, include: includes });
     }
+
+    async getUpcomingReviews({
+        targetDateStart,
+        targetDateEnd,
+    }: {
+        targetDateStart: Date;
+        targetDateEnd: Date;
+    }) {
+        return prisma.documentReview.findMany({
+            where: {
+                isCompleted: false,
+                reviewDate: {
+                    gte: targetDateStart,
+                    lte: targetDateEnd,
+                },
+            },
+            include: {
+                reviewer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        status: true,
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                id: true,
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
 }

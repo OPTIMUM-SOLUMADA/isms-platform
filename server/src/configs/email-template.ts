@@ -31,11 +31,10 @@ export const EmailTemplate = {
     ) => renderTemplate('en', 'isms_invitation', data),
 
     // Review email template
-    review: (
+    reviewReminder: (
         data: {
             reviewer: Pick<User, 'name'>;
             document: Pick<Document, 'title' | 'status' | 'description'>;
-            owner: Pick<User, 'name' | 'email'>;
             dueDate: string;
             reviewLink: string;
             viewDocLink: string;
