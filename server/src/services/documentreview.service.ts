@@ -337,4 +337,8 @@ export class DocumentReviewService {
             completed,
         };
     }
+
+    async findReview(filter: Prisma.DocumentReviewWhereInput) {
+        return prisma.documentReview.findFirst({ where: filter, include: includes });
+    }
 }
