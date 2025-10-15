@@ -218,13 +218,13 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                 <NavLink
                   key={index}
                   to={item.path}
-                  className={({ isActive }) => cn('rounded-lg flex items-center gap-2 text-sm text-gray-300 hover:bg-white/5 p-2', isActive && 'bg-white/5')}
+                  className={({ isActive }) => cn('rounded-lg flex items-center gap-2 text-sm text-gray-300 hover:bg-white/5 p-2', isActive && 'bg-white/5', sidebarCollapsed && 'justify-center')}
                   title={t(item.descriptionKey)}
                 >
                   {({ isActive }) => (
                     <>
                       {<item.icon className={cn('w-5 h-5 shrink-0', isActive && 'text-theme')} />}
-                      <span className={cn('line-clamp-1', isActive && 'text-theme')}>
+                      <span className={cn('line-clamp-1', isActive && 'text-theme', sidebarCollapsed && 'hidden')}>
                         {t(item.labelKey)}
                       </span>
                     </>
