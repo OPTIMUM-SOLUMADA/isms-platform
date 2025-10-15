@@ -42,6 +42,7 @@ npm install
 
 ### Example `.env` File
 
+You need to create **.env** file inside server folder.
 See the [Setup .env Guide](ENV.md)
 
 ```env
