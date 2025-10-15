@@ -42,6 +42,8 @@ npm install
 
 ### Example `.env` File
 
+See the [Setup .env Guide](ENV.md)
+
 ```env
 DATABASE_URL=mongodb+srv://user:pass@cluster.mongodb.net/isms
 PORT=8080
