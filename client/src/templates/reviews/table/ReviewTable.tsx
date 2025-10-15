@@ -107,10 +107,10 @@ const Table = ({
             header: t("review.table.columns.dueDate"),
             size: 50,
             cell: ({ row }) => {
-                const { reviewDate } = row.original;
-                if (!reviewDate) return;
+                const { dueDate } = row.original;
+                if (!dueDate) return;
                 return (
-                    <DateLabel date={reviewDate} />
+                    <DateLabel date={dueDate} />
                 );
             },
         },
