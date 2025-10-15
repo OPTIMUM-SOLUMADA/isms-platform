@@ -82,7 +82,7 @@ export class DocumentController {
                     documentId: createdDoc.id,
                     documentVersionId: version.id,
                     reviewerIds: reviewers.split(','),
-                    reviewDate: createdDoc.nextReviewDate,
+                    dueDate: createdDoc.nextReviewDate,
                     userId: userId,
                 });
             }
@@ -168,7 +168,7 @@ export class DocumentController {
                     documentId: updatedDocument.id,
                     documentVersionId: version.id,
                     reviewerIds: reviewers.split(','),
-                    reviewDate: updatedDocument.nextReviewDate,
+                    dueDate: updatedDocument.nextReviewDate,
                 });
             }
 

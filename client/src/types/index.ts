@@ -32,7 +32,10 @@ export type ComplianceClause = {
 };
 
 type DocumentStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "EXPIRED";
-export type DocumentClassification = "CONFIDENTIAL" | "PUBLIC" | "INTERNAL_USE_ONLY";
+export type DocumentClassification =
+  | "CONFIDENTIAL"
+  | "PUBLIC"
+  | "INTERNAL_USE_ONLY";
 
 export type Document = {
   id: string;
@@ -70,11 +73,10 @@ export type Document = {
   auditlogs: AuditLog[];
 };
 
-
 export type DocumentOwner = {
   id: string;
   name: string;
-}
+};
 
 export type DocumentType = {
   id: string;
@@ -111,7 +113,8 @@ export interface DocumentReview {
   comment?: string | null;
   decision?: ReviewDecision | null;
   isCompleted: boolean;
-  reviewDate?: string | Date | null;
+  reviewDate: string | null;
+  dueDate: string | null;
 
   document?: Document;
   reviewer: User;
@@ -232,14 +235,14 @@ export type DepartmentRole = {
   departmentMembers: departmentMember[];
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type departmentMember = {
   id: string;
   userId: string;
   departmentId: string;
   roleId: string;
-}
+};
 
 export interface CustomFormProps<T> {
   onCancel?: () => void;

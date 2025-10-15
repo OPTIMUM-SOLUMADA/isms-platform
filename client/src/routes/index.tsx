@@ -33,7 +33,7 @@ const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage')
 
 // const DepartmentDetail = lazy(() => import('@/pages/departments/DepartmentDetail'));
 
-const ReviewWorkflowPage = lazy(() => import('@/pages/ReviewWorkflowPage'));
+const ReviewWorkflowPage = lazy(() => import('@/pages/reviews/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
 const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage'));
