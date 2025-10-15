@@ -1,5 +1,16 @@
-import { addDays, addWeeks, addMonths, addYears } from 'date-fns';
+import {
+    addDays,
+    addWeeks,
+    addMonths,
+    addYears,
+    startOfDay,
+    endOfDay,
+    isWithinInterval,
+    subHours,
+} from 'date-fns';
 import type { ReviewFrequency } from '@prisma/client';
+
+const NOTIFY_BEFORE_DAYS = 2;
 
 export function getNextReviewDate(
     lastReviewDate: Date | null,
@@ -26,5 +37,39 @@ export function getNextReviewDate(
             return null;
         default:
             return null;
+    }
+}
+
+/**
+ * Determines if a reviewer should be notified today based on the review frequency.
+ */
+export function shouldNotifyReview({
+    frequency,
+    dueDate,
+    lastNotifiedAt,
+    now = new Date(),
+}: {
+    frequency: ReviewFrequency;
+    dueDate: Date;
+    lastNotifiedAt?: Date | null;
+    now?: Date;
+}): boolean {
+    const targetStart = startOfDay(addDays(now, NOTIFY_BEFORE_DAYS));
+    const targetEnd = endOfDay(addDays(now, NOTIFY_BEFORE_DAYS));
+
+    switch (frequency) {
+        case 'DAILY':
+            // Notify every day if not already notified today
+            return (
+                !lastNotifiedAt &&
+                isWithinInterval(dueDate, {
+                    start: subHours(dueDate, 12),
+                    end: dueDate,
+                })
+            );
+
+        default:
+            // For other frequencies, notify if within 2 days before due date
+            return isWithinInterval(dueDate, { start: targetStart, end: targetEnd });
     }
 }

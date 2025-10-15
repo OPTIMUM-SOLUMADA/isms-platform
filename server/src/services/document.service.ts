@@ -62,35 +62,72 @@ export class DocumentService {
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
+        const nextReviewDate = new Date(); //this.calculateNextReviewDate(new Date(), data.reviewFrequency);
+
         return prisma.document.create({
-            data,
+            data: {
+                ...data,
+                nextReviewDate,
+            },
             include: this.documentInclude,
         });
     }
 
-    async createDocumentWithDetails(
-        data: Prisma.DocumentCreateInput,
-        ownerIds: string[],
-        reviewerIds: string[],
-    ) {
-        return prisma.$transaction(async (tx) => {
-            const doc = await tx.document.create({
-                data: {
-                    ...data,
-                    nextReviewDate: this.calculateNextReviewDate(new Date(), data.reviewFrequency),
-                },
-            });
-            const ownersData = ownerIds.map((userId) => ({ documentId: doc.id, userId }));
-            const reviewersData = reviewerIds.map((userId) => ({ documentId: doc.id, userId }));
-            // create reviewers
-            await tx.documentReviewer.createMany({ data: reviewersData });
-            // create owners
-            await tx.documentAuthor.createMany({ data: ownersData });
-            // return document
-            return tx.document.findUnique({
-                where: { id: doc.id },
-                include: this.documentInclude,
-            });
+    async linkDocumentToUsers({
+        documentId,
+        reviewerIds,
+        authors,
+    }: {
+        documentId: string;
+        reviewerIds: string[];
+        authors: string[];
+    }) {
+        if (!authors.length && !reviewerIds.length) return;
+
+        await prisma.$transaction([
+            prisma.documentAuthor.createMany({
+                data: authors.map((userId) => ({ documentId, userId })),
+            }),
+            prisma.documentReviewer.createMany({
+                data: reviewerIds.map((userId) => ({ documentId, userId })),
+            }),
+        ]);
+    }
+    async reLinkDocumentToUsers({
+        documentId,
+        reviewerIds,
+        authors,
+    }: {
+        documentId: string;
+        reviewerIds: string[];
+        authors: string[];
+    }) {
+        // Delete old links
+        await prisma.documentAuthor.deleteMany({ where: { documentId } });
+        if (!authors.length && !reviewerIds.length) return;
+
+        await prisma.$transaction([
+            prisma.documentAuthor.createMany({
+                data: authors.map((userId) => ({ documentId, userId })),
+            }),
+            prisma.documentReviewer.createMany({
+                data: reviewerIds.map((userId) => ({ documentId, userId })),
+            }),
+        ]);
+    }
+
+    async update(id: string, data: Prisma.DocumentUpdateInput) {
+        return prisma.document.update({
+            where: { id },
+            data: {
+                ...data,
+                ...(data.reviewFrequency && {
+                    nextReviewDate: this.calculateNextReviewDate(
+                        new Date(),
+                        data.reviewFrequency! as ReviewFrequency,
+                    ),
+                }),
+            },
         });
     }
 

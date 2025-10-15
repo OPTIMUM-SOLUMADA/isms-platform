@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { RefreshCcw, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +10,7 @@ import { useFetchMyReviews, useGetReviewStats } from "@/hooks/queries/useReviewM
 import { ReviewTable } from "@/templates/reviews/table/ReviewTable";
 import { useNavigate } from "react-router-dom";
 import useReviewStore, { FilterStatus } from "@/stores/review/useReviewStore";
+import { Button } from "@/components/ui/button";
 
 export default function ReviewWorkflowPage() {
   const { reviews, setFilter, filter } = useReviewStore();
@@ -18,7 +19,7 @@ export default function ReviewWorkflowPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { isLoading } = useFetchMyReviews();
+  const { isLoading, refetch } = useFetchMyReviews();
   const { data: stats } = useGetReviewStats();
 
   const workflowStages = [
@@ -50,6 +51,14 @@ export default function ReviewWorkflowPage() {
             <h1 className="page-title">{t("review.title")}</h1>
             <p className="page-description">{t("review.subtitle")}</p>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => refetch()}
+            title="Refresh"
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Stats Cards */}
