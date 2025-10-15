@@ -310,6 +310,8 @@ model DocumentReview {
   dueDate           DateTime? // Date de limite de révision
   documentVersionId String          @db.ObjectId
   documentVersion   DocumentVersion @relation(name: "ReviewDocumentVersion", fields: [documentVersionId], references: [id], onDelete: Cascade)
+  isNotified        Boolean         @default(false)
+  notifiedAt        DateTime?
 
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
