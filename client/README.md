@@ -109,4 +109,11 @@ npm run dev
 ```bash
 caché par le pull origin main : ===> git stash 
 retourné le stash ======> git stash pop
+
+
+```ini
+Pour la création du navigation dashboard, il faut modifier les fichiers suivants
+    =>./constant/navigation
+    =>./type/role
+    =>./configs/role-permissions
 ```

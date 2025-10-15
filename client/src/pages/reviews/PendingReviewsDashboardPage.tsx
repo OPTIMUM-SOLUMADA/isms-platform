@@ -7,150 +7,134 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-type ReviewStatus = "pending" | "in_review" | "approved" | "rejected";
+type ReviewDecision = "approved" | "rejected" | "pending";
 
-type Review = {
+type DocumentReview = {
   id: string;
-  title: string;
-  reviewer: string;
+  documentId: string;
+  reviewerId: string;
+  assignedById?: string | null;
+  comment?: string;
+  decision?: ReviewDecision;
+  isCompleted: boolean;
+  reviewDate?: string;
+  documentVersionId: string;
+  reviewerName: string;
+  documentTitle: string;
   department?: string;
-  submittedAt: string;
-  excerpt: string;
-  rating?: number;
-  status: ReviewStatus;
 };
 
-const mockData: Review[] = [
+const mockData: DocumentReview[] = [
   {
-    id: "REV-001",
-    title: "Proposition de changement de salaire",
-    reviewer: "Rija Ramanantsoa",
-    department: "Finances",
-    submittedAt: "2025-10-10T09:12:00.000Z",
-    excerpt: "Demande d'ajustement salarial suite aux responsabilités supplémentaires...",
-    rating: 4,
-    status: "pending",
+    id: "6710d01b99d4f8b2a5a11111",
+    documentId: "670fa01b22b4c8b3a1c00123",
+    reviewerId: "670fa01b22b4c8b3a1c04567",
+    assignedById: "670fa01b22b4c8b3a1c07890",
+    comment: "Besoin de clarifier la section sur les responsabilités.",
+    decision: "pending",
+    isCompleted: false,
+    documentVersionId: "670fa01b22b4c8b3a1c09999",
+    reviewerName: "Rija Ramanantsoa",
+    documentTitle: "Politique de sécurité - v2",
+    department: "Sécurité",
   },
   {
-    id: "REV-002",
-    title: "Rapport mensuel - équipe produit",
-    reviewer: "Lala Andriatsima",
-    department: "Produit",
-    submittedAt: "2025-10-09T14:00:00.000Z",
-    excerpt: "Le bilan du mois montre une augmentation des livraisons...",
-    rating: 3,
-    status: "in_review",
-  },
-  {
-    id: "REV-003",
-    title: "Demande de congé exceptionnelle",
-    reviewer: "Hery Rakotomalala",
+    id: "6710d01b99d4f8b2a5a12222",
+    documentId: "670fa01b22b4c8b3a1c00222",
+    reviewerId: "670fa01b22b4c8b3a1c04678",
+    assignedById: null,
+    comment: "RAS, conforme aux standards internes.",
+    decision: "approved",
+    isCompleted: true,
+    reviewDate: "2025-10-11T14:30:00.000Z",
+    documentVersionId: "670fa01b22b4c8b3a1c01000",
+    reviewerName: "Hery Rakotomalala",
+    documentTitle: "Procédure d'accès aux locaux - v1",
     department: "RH",
-    submittedAt: "2025-10-08T07:30:00.000Z",
-    excerpt: "Demande de 3 jours de congé pour raisons familiales...",
-    rating: 5,
-    status: "pending",
   },
   {
-    id: "REV-004",
-    title: "Proposition de changement de salaire",
-    reviewer: "Rija Ramanantsoa",
-    department: "Finances",
-    submittedAt: "2025-10-10T09:12:00.000Z",
-    excerpt: "Demande d'ajustement salarial suite aux responsabilités supplémentaires...",
-    rating: 4,
-    status: "pending",
+    id: "6710d01b99d4f8b2a5a13333",
+    documentId: "670fa01b22b4c8b3a1c00333",
+    reviewerId: "670fa01b22b4c8b3a1c04789",
+    assignedById: "670fa01b22b4c8b3a1c07890",
+    comment: "Les chiffres doivent être mis à jour.",
+    decision: "rejected",
+    isCompleted: true,
+    reviewDate: "2025-10-10T10:00:00.000Z",
+    documentVersionId: "670fa01b22b4c8b3a1c01111",
+    reviewerName: "Lala Andriatsima",
+    documentTitle: "Politique financière - Q4",
+    department: "Finance",
   },
   {
-    id: "REV-005",
-    title: "Rapport mensuel - équipe produit",
-    reviewer: "Lala Andriatsima",
-    department: "Produit",
-    submittedAt: "2025-10-09T14:00:00.000Z",
-    excerpt: "Le bilan du mois montre une augmentation des livraisons...",
-    rating: 3,
-    status: "in_review",
-  },
-  {
-    id: "REV-006",
-    title: "Demande de congé exceptionnelle",
-    reviewer: "Hery Rakotomalala",
-    department: "RH",
-    submittedAt: "2025-10-08T07:30:00.000Z",
-    excerpt: "Demande de 3 jours de congé pour raisons familiales...",
-    rating: 5,
-    status: "pending",
+    id: "6710d01b99d4f8b2a5a14444",
+    documentId: "670fa01b22b4c8b3a1c00444",
+    reviewerId: "670fa01b22b4c8b3a1c04890",
+    assignedById: null,
+    comment: undefined,
+    decision: "pending",
+    isCompleted: false,
+    documentVersionId: "670fa01b22b4c8b3a1c01222",
+    reviewerName: "Miora Razanadrakoto",
+    documentTitle: "Charte informatique - v3",
+    department: "IT",
   },
 ];
 
 export default function PendingReviewsDashboardPage(): JSX.Element {
-  const [reviews, setReviews] = useState<Review[]>(mockData);
+  const [reviews, setReviews] = useState<DocumentReview[]>(mockData);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
+  const [decisionFilter, setDecisionFilter] = useState<string>("all");
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
-  const [preview, setPreview] = useState<Review | null>(null);
+  const [preview, setPreview] = useState<DocumentReview | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    let list = reviews.filter((r) => (statusFilter === "all" ? true : r.status === statusFilter));
+    let list = reviews.filter((r) => (decisionFilter === "all" ? true : r.decision === decisionFilter));
     if (q.length) {
       list = list.filter(
         (r) =>
-          r.title.toLowerCase().includes(q) ||
-          r.reviewer.toLowerCase().includes(q) ||
+          r.documentTitle.toLowerCase().includes(q) ||
+          r.reviewerName.toLowerCase().includes(q) ||
           (r.department ?? "").toLowerCase().includes(q)
       );
     }
-    list.sort((a, b) => {
-      const ta = new Date(a.submittedAt).getTime();
-      const tb = new Date(b.submittedAt).getTime();
-      return sortBy === "newest" ? tb - ta : ta - tb;
-    });
     return list;
-  }, [reviews, query, statusFilter, sortBy]);
+  }, [reviews, query, decisionFilter]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((s) => ({ ...s, [id]: !s[id] }));
   };
 
-  const singleChangeStatus = (id: string, newStatus: ReviewStatus) => {
-    setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)));
+  const singleChangeDecision = (id: string, decision: ReviewDecision) => {
+    setReviews((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, decision, isCompleted: decision !== "pending" } : r))
+    );
   };
 
   return (
     <div className="p-8 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Aperçu — Avis en attente</h1>
-          <p className="text-sm text-muted-foreground">Gérez et consultez les avis soumis.</p>
+          <h1 className="text-2xl font-semibold">Aperçu — Avis sur documents</h1>
+          <p className="text-sm text-muted-foreground">Liste et statut des révisions de documents.</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Input
-            placeholder="Rechercher..."
+            placeholder="Rechercher un document..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-64"
           />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={decisionFilter} onValueChange={setDecisionFilter}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Filtrer par statut" />
+              <SelectValue placeholder="Filtrer par décision" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tous</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="in_review">In review</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Trier" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Plus récents</SelectItem>
-              <SelectItem value="oldest">Plus anciens</SelectItem>
+              <SelectItem value="pending">En attente</SelectItem>
+              <SelectItem value="approved">Approuvé</SelectItem>
+              <SelectItem value="rejected">Rejeté</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -158,30 +142,30 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((r) => (
-          <Card key={r.id} className="relative">
+          <Card key={r.id}>
             <CardHeader>
-              <div className="flex items-start justify-between">
+              <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-base font-medium">{r.title}</CardTitle>
+                  <CardTitle className="text-base font-medium">{r.documentTitle}</CardTitle>
                   <p className="text-sm text-muted-foreground">{r.department ?? "—"}</p>
                 </div>
                 <Checkbox checked={!!selectedIds[r.id]} onCheckedChange={() => toggleSelect(r.id)} />
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-700 line-clamp-3">{r.excerpt}</p>
+              <p className="text-sm text-gray-700 line-clamp-3">{r.comment ?? "Aucun commentaire fourni."}</p>
               <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-                <span>Par {r.reviewer}</span>
-                <Badge variant={r.status === "pending" ? "outline" : "default"}>{r.status}</Badge>
+                <span>Par {r.reviewerName}</span>
+                <Badge variant={r.decision === "pending" ? "outline" : "default"}>{r.decision}</Badge>
               </div>
               <div className="mt-3 flex justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={() => setPreview(r)}>
                   Aperçu
                 </Button>
-                <Button variant="default" size="sm" onClick={() => singleChangeStatus(r.id, "approved")}>
+                <Button variant="default" size="sm" onClick={() => singleChangeDecision(r.id, "approved")}>
                   Approuver
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => singleChangeStatus(r.id, "rejected")}>
+                <Button variant="destructive" size="sm" onClick={() => singleChangeDecision(r.id, "rejected")}>
                   Rejeter
                 </Button>
               </div>
@@ -195,13 +179,13 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
           {preview && (
             <>
               <DialogHeader>
-                <DialogTitle>{preview.title}</DialogTitle>
+                <DialogTitle>{preview.documentTitle}</DialogTitle>
               </DialogHeader>
-              <p className="text-sm text-gray-500 mb-2">{preview.department} — {preview.reviewer}</p>
-              <p className="text-gray-700 mb-4">{preview.excerpt}</p>
+              <p className="text-sm text-gray-500 mb-2">{preview.department} — {preview.reviewerName}</p>
+              <p className="text-gray-700 mb-4">{preview.comment ?? "Aucun commentaire."}</p>
               <div className="flex justify-end gap-2">
-                <Button onClick={() => singleChangeStatus(preview.id, "approved")}>Approuver</Button>
-                <Button variant="destructive" onClick={() => singleChangeStatus(preview.id, "rejected")}>
+                <Button onClick={() => singleChangeDecision(preview.id, "approved")}>Approuver</Button>
+                <Button variant="destructive" onClick={() => singleChangeDecision(preview.id, "rejected")}>
                   Rejeter
                 </Button>
               </div>

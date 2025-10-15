@@ -1612,6 +1612,10 @@
       "label": "Reviews",
       "description": "Manage approval workflows"
     },
+    "pendingReviews": {
+      "label": "Pending",
+      "description": "All of pending reviews"
+    },
     "compliance": {
       "label": "Compliance",
       "description": "Track ISO 27001 compliance status"

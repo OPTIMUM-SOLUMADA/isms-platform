@@ -1643,6 +1643,10 @@
             "label": "Revues",
             "description": "Gestion des processus de validation"
         },
+        "pendingReviews": {
+            "label": "Avis",
+            "description": "Tous les avis en attente"
+        },
         "compliance": {
             "label": "Conformité",
             "description": "Suivi de l'état de conformité ISO 27001"

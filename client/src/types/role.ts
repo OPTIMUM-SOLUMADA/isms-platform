@@ -39,6 +39,7 @@ export type AccessPermission =
     | "dashboard.page.access"
     | "documents.page.access"
     | "reviews.page.access"
+    | "pendingReviews.page.access"
     | "compliance.page.access"
     | "users.page.access"
     | "settings.page.access"
