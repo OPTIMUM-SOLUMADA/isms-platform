@@ -33,13 +33,13 @@ import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
-import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import { useDocumentTypeUIStore } from "@/stores/document-type/useDocumentTypeUIStore";
 import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
-import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
 import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
 import { classifications } from "@/constants/classification";
 import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
+import { MultiSelect } from "@/components/multi-select";
+import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -50,7 +50,7 @@ const documentSchema = cz.z.object({
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
-  department: z.string().nonempty(i18n.t("zod.errors.required")),
+  departmentRoles: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
   classification: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -97,7 +97,6 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
 
     const [stay, setStay] = useLocalStorage("editDocumentFormStay", false);
 
-    const { openAdd: openAddDepartmentModal } = useDepartmentUI();
     const { openAdd: openAddDocumentTypeModal } = useDocumentTypeUIStore();
 
     const form = useForm<EditDocumentFormData>({
@@ -112,7 +111,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         reviewers: doc.reviewers.map(reviewer => reviewer.user.id),
         files: [],
         type: doc.categoryId,
-        department: doc.departmentId,
+        departmentRoles: doc.departmentRoles?.map(g => g.departmentRole?.id) || [],
         reviewFrequency: doc.reviewFrequency!,
         classification: doc.classification,
       },
@@ -121,15 +120,19 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
 
     const {
       handleSubmit,
-      formState: { isSubmitting },
+      formState: { isSubmitting, isDirty },
     } = form;
 
 
     // expose resetForm method
     useImperativeHandle(ref, () => ({
       resetForm: () => form.reset(),
-      isStay: () => stay
+      isStay: () => stay,
     }));
+
+
+
+    const { data: departmentsRes } = useFetchAllDepartments();
 
 
     return (
@@ -272,29 +275,39 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
               )}
             />
 
+
             {/* Department */}
-            <FormField
-              control={form.control}
-              name="department"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">
-                    {t("document.add.form.fields.department.label")} <Required />
-                  </FormLabel>
-                  <FormControl>
-                    <DepartmentSelect
-                      placeholder={t("document.add.form.fields.department.placeholder")}
-                      onChange={field.onChange}
-                      value={field.value}
-                      addLabel={t("department.actions.add.label")}
-                      hasError={!!fieldState.error}
-                      onButtonClick={openAddDepartmentModal}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {Array.isArray(departmentsRes?.departments) && (
+              <FormField
+                control={form.control}
+                name="departmentRoles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium">
+                      {t("document.add.form.fields.departments.label")} <Required />
+                    </FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        placeholder={t("document.add.form.fields.departments.placeholder")}
+                        options={departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
+                          heading: item.name,
+                          options: [
+                            ...item.roles.map(role => ({
+                              label: role.name,
+                              value: role.id
+                            }))
+                          ]
+                        }))}
+                        value={field.value}
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Clause */}
             <FormField
@@ -477,6 +490,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                 type="submit"
                 className="btn"
                 isLoading={isPending || isSubmitting}
+                disabled={!isDirty}
                 loadingText={t("document.edit.form.actions.submit.loading")}
               >
                 <Save className="mr-2 h-4 w-4" />

@@ -45,8 +45,8 @@ import PublishDocument from "@/templates/documents/actions/PublishDocument";
 import UnpublishDocument from "@/templates/documents/actions/UnpublishDocument";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
-import DepartmentHoverCard from "@/templates/departments/hovercard/DepartmentHoverCard";
 import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
+import DepartmentRoleHoverCard from "@/templates/departments/hovercard/departmentRoleHoverCard";
 
 const tabs = [
   {
@@ -102,7 +102,6 @@ export default function DocumentDetailPage() {
   useEffect(() => {
     if (isDeleted) {
       navigate("/documents");
-      console.log(isDeleted);
     }
   }, [isDeleted, navigate]);
 
@@ -270,7 +269,10 @@ export default function DocumentDetailPage() {
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">{t("document.view.detail.department")}</span>
-                  <DepartmentHoverCard department={document.department} />
+                  {Array.isArray(document.departmentRoles) && document.departmentRoles.map(
+                    (d, index) => (
+                      <DepartmentRoleHoverCard role={d.departmentRole} key={index} />
+                    ))}
                 </div>
               </div>
             </div>

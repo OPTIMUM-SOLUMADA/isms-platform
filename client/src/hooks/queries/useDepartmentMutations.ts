@@ -37,6 +37,13 @@ export const useFetchDepartments = () => {
     return query;
 };
 
+export const useFetchAllDepartments = () => {
+    return useQuery<{ departments: Department[] }, ApiAxiosError>({
+        queryKey: ["departements"],
+        queryFn: async () => (await depService.getAll()).data,
+    });
+};
+
 // Search
 export const useSearchDepartments = () => {
     const { query } = useDepartmentStore();

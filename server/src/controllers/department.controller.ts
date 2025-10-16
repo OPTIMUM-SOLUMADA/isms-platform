@@ -77,14 +77,15 @@ export class DepartmentController {
 
     async list(req: Request, res: Response) {
         try {
-            const { limit = '50', page = '1' } = req.query;
+            const { limit = 'Infinity', page = '1' } = req.query;
             const departments = await service.listDepartments({
                 page: Number(page),
                 limit: Number(limit),
             });
             res.json(departments);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            console.log(err);
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 

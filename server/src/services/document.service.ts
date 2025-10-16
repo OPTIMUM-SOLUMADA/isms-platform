@@ -19,7 +19,6 @@ export class DocumentService {
         this.documentInclude = {
             approvals: true,
             auditlogs: true,
-            department: true,
             isoClause: true,
             reviews: true,
             versions: true,
@@ -55,6 +54,14 @@ export class DocumentService {
                             role: true,
                             createdAt: true,
                         },
+                    },
+                },
+            },
+            departmentRoles: {
+                select: {
+                    id: true,
+                    departmentRole: {
+                        select: { id: true, name: true, description: true },
                     },
                 },
             },
