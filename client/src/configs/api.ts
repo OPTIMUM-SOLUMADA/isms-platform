@@ -49,9 +49,12 @@ export const API_CONFIG = {
             UPDATE: (id: string | number) => `/document-reviews/${id}`,
             DELETE: (id: string | number) => `/document-reviews/${id}`,
             SEARCH: "/document-reviews/search",
-            MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
-            GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
-            GET_MY_REVIEWS_STATS: (id: string | number) => `/document-reviews/my-reviews/${id}/stats`,
+            MAKE_DECISION: (id: string | number) =>
+                `/document-reviews/make-decision/${id}`,
+            GET_MY_REVIEWS: (id: string | number) =>
+                `/document-reviews/my-reviews/${id}`,
+            GET_MY_REVIEWS_STATS: (id: string | number) =>
+                `/document-reviews/my-reviews/${id}/stats`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",
@@ -72,6 +75,14 @@ export const API_CONFIG = {
             GET: (id: string | number) => `/owners/${id}`,
         },
         EXCEL_IMAGE: "/excel/image",
+        DEPARTMENT_ROLE_DOCUMENTS: {
+            BASE: "/department-role-documents",
+            GET: (id: string | number) => `/department-role-documents/${id}`,
+        },
+        DEPARTMENT_ROLE: {
+            BASE: "/department-roles",
+            GET: (id: string | number) => `/department-roles/${id}`,
+        }
     },
 } as const;
 

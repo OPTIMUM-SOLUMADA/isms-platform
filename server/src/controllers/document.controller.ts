@@ -4,12 +4,15 @@ import { createVersion } from '@/utils/version';
 import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
+import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
 
 export class DocumentController {
     private service: DocumentService;
+    private departmentRoleDocument: DepartmentRoleDocumentService;
 
     constructor() {
         this.service = new DocumentService();
+        this.departmentRoleDocument = new DepartmentRoleDocumentService();
     }
 
     async create(req: Request, res: Response) {
@@ -19,13 +22,13 @@ export class DocumentController {
                 description,
                 status,
                 type,
-                department,
                 isoClause,
                 reviewers,
                 authors,
                 reviewFrequency,
                 owner,
                 classification,
+                departmentRoles,
             } = req.body;
 
             const file = req.file;
@@ -52,7 +55,6 @@ export class DocumentController {
                 reviewFrequency,
                 classification,
                 ...(type && { type: { connect: { id: type } } }),
-                ...(department && { department: { connect: { id: department } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 fileUrl: fileUrl,
@@ -73,12 +75,20 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
+            // link departmentRoles to document
+            this.departmentRoleDocument.createMany(
+                departmentRoles.split(',').map((departmentRoleId: any) => ({
+                    documentId: createdDoc.id,
+                    departmentRoleId: departmentRoleId,
+                })),
+            );
+
             res.status(201).json(createdDoc);
         } catch (err) {
             const fileUrl = req.file ? req.file.filename : null;
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -94,7 +104,7 @@ export class DocumentController {
                 res.json(document);
             }
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -107,7 +117,7 @@ export class DocumentController {
                 status,
                 authors,
                 type,
-                department,
+                departmentRoles,
                 isoClause,
                 reviewers,
                 reviewFrequency,
@@ -134,12 +144,19 @@ export class DocumentController {
                 ...(status && { status }),
                 ...(reviewFrequency && { reviewFrequency }),
                 ...(type && { type: { connect: { id: type } } }),
-                ...(department && { department: { connect: { id: department } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 ...(fileUrl && { fileUrl }),
                 classification,
             });
+
+            // link departmentRoles to document
+            this.departmentRoleDocument.reCreateMany(
+                departmentRoles.split(',').map((departmentRoleId: any) => ({
+                    documentId: updatedDocument.id,
+                    departmentRoleId: departmentRoleId,
+                })),
+            );
 
             // relink document to users (Authors and Reviewers)
             await this.service.reLinkDocumentToUsers({
@@ -156,7 +173,7 @@ export class DocumentController {
             res.json(updatedDocument);
         } catch (err) {
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -169,7 +186,7 @@ export class DocumentController {
             res.status(204).json(deleted);
         } catch (err) {
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -184,7 +201,7 @@ export class DocumentController {
             res.json(documents);
         } catch (err) {
             console.log('err', err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -193,7 +210,7 @@ export class DocumentController {
             const statistics = await this.service.getDocumentStats();
             res.json(statistics);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -212,7 +229,7 @@ export class DocumentController {
                 res.download(filePath, filename);
             }
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -221,7 +238,7 @@ export class DocumentController {
             const document = await this.service.publishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -230,7 +247,7 @@ export class DocumentController {
             const document = await this.service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 }

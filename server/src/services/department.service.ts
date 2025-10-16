@@ -3,13 +3,6 @@ import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 
 const depIncludes: Prisma.DepartmentInclude = {
-    documents: {
-        select: {
-            id: true,
-            title: true,
-            fileUrl: true,
-        },
-    },
     members: {
         select: {
             id: true,

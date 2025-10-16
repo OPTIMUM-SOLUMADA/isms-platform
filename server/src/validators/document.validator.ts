@@ -40,11 +40,6 @@ export const documentCreateSchema = Joi.object({
         'any.required': 'Type is required',
     }),
 
-    department: Joi.string().min(1).required().messages({
-        'string.empty': 'Department is required',
-        'any.required': 'Department is required',
-    }),
-
     isoClause: Joi.string().min(1).required().messages({
         'string.empty': 'ISO Clause is required',
         'any.required': 'ISO Clause is required',
@@ -53,6 +48,11 @@ export const documentCreateSchema = Joi.object({
     reviewers: Joi.array().items(Joi.string()).min(1).required().messages({
         'array.min': 'At least one reviewer is required',
         'any.required': 'Reviewers are required',
+    }),
+
+    departmentRoles: Joi.array().items(Joi.string()).min(1).required().messages({
+        'array.min': 'At least one departmentRole is required',
+        'any.required': 'departmentRoles are required',
     }),
 
     classification: Joi.string()

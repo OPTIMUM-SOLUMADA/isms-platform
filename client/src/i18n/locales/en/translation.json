@@ -657,6 +657,10 @@
             "label": "Department",
             "placeholder": "Select a department"
           },
+          "departments": {
+            "label": "Departments",
+            "placeholder": "Select departments"
+          },
           "isoClause": {
             "label": "Clause/Control Number",
             "placeholder": "Select an Clause/Control Number"
