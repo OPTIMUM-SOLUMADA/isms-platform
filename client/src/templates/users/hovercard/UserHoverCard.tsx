@@ -35,6 +35,7 @@ export function UserHoverCard({
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();
     const { setCurrentUser, openEdit } = useUserUIStore();
+    console.log("user", user);
 
     const handleEdit = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();

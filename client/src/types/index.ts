@@ -122,7 +122,7 @@ export interface DocumentReview {
 
   documentVersion?: DocumentVersion;
 
-  createdAt: string | Date;
+  createdAt?: string;
 }
 
 export type DocumentApproval = {
