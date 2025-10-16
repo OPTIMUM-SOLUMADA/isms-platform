@@ -106,8 +106,11 @@ export class DocumentReviewService {
                 },
                 reviewer: {
                     select: {
+                        id: true,
                         name: true,
                         email: true,
+                        createdAt: true,
+                        role: true,
                     },
                 },
                 assignedBy: {
@@ -218,7 +221,10 @@ export class DocumentReviewService {
     ) {
         return prisma.documentReview.update({
             where: { id: reviewId },
-            data,
+            data: {
+                ...data,
+                reviewDate: new Date(),
+            },
         });
     }
 
@@ -237,6 +243,7 @@ export class DocumentReviewService {
             where: {
                 id: reviewId,
             },
+            include: includes,
         });
     }
 

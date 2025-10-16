@@ -7,9 +7,9 @@ function safeSchedule(cronExp: string, name: string, fn: () => Promise<void>) {
         logger.info(`[CRON] Running job: ${name}`);
         try {
             await fn();
-            logger.info(`[CRON] Job "${name}" finished successfully`);
+            logger.info(`[CRON] Job "<${name}>" finished successfully`);
         } catch (err) {
-            logger.error(`[CRON] Job "${name}" failed: ${err}`);
+            logger.error(`[CRON] Job "<${name}>" failed: ${err}`);
         }
     });
 }
