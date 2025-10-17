@@ -14,15 +14,16 @@ import { SelectWithButton } from '@/components/SelectWithButton';
 import ErrorCodeField from '@/components/ErrorCodeField';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useDepartmentUI } from '@/stores/department/useDepartmentUI';
+import { useFetchAllDepartments } from '@/hooks/queries/useDepartmentMutations';
+import { MultiSelect } from '@/components/multi-select';
+import Required from '@/components/Required';
 import { useMemo } from 'react';
 
 const addUserSchema: z.ZodSchema<any> = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
     email: cz.email(),
     role: z.enum(roles),
-    departmentId: z.string().nonempty(i18n.t("zod.errors.department.required")),
-    departmentRoleId: z.string().nonempty(i18n.t("zod.errors.department.required")),
+    departmentRoleUsers: z.array(z.string()).min(1, i18n.t("zod.errors.department.required")),
     sendInvitationLink: z.boolean().optional().default(true),
     isActive: z.boolean().optional().default(false),
 });
@@ -35,14 +36,12 @@ interface AddUserFormProps extends CustomFormProps<AddUserFormData> {
 
 const AddUserForm = ({
     onSubmit,
-    departments = [],
     isPending = false,
     onCancel,
     error
 }: AddUserFormProps) => {
 
     const { t } = useTranslation();
-    const { openAdd } = useDepartmentUI();
 
     const form = useForm<AddUserFormData>({
         resolver: zodResolver(addUserSchema),
@@ -50,21 +49,28 @@ const AddUserForm = ({
             name: "",
             email: "",
             role: "VIEWER",
-            departmentId: "",
-            departmentRoleId: "",
+            departmentRoleUsers: [],
             sendInvitationLink: true,
             isActive: true
         },
     });
 
-    const { handleSubmit, watch } = form;
+    const { handleSubmit } = form;
 
-    // 🧠 Watch departmentId changes
-    const selectedDepartmentId = watch("departmentId");
-    const selectDepartmentRole = useMemo(()=>{
-        return departments.find(role => role.id === selectedDepartmentId);
-    }, [departments, selectedDepartmentId]);
-    
+    const { data: departmentsRes } = useFetchAllDepartments();
+
+    const departmentRoles = useMemo(() => {
+        if (!Array.isArray(departmentsRes?.departments)) return [];
+        return departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
+            heading: item.name,
+            options: [
+                ...item.roles.map(role => ({
+                    label: role.name,
+                    value: role.id
+                }))
+            ]
+        }))
+    }, [departmentsRes?.departments])
 
     return (
         <Form {...form}>
@@ -125,47 +131,21 @@ const AddUserForm = ({
                     )}
                 />
 
-                {/* department */}
+                {/* Department */}
                 <FormField
                     control={form.control}
-                    name='departmentId'
+                    name="departmentRoleUsers"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('user.forms.add.department.label')}</FormLabel>
+                            <FormLabel className="font-medium">
+                                {t("user.forms.add.department.label")} <Required />
+                            </FormLabel>
                             <FormControl>
-                                <SelectWithButton
-                                    items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
+                                <MultiSelect
+                                    placeholder={t("user.forms.add.department.placeholder")}
+                                    options={departmentRoles}
                                     value={field.value}
-                                    placeholder={t('user.forms.add.department.placeholder')}
-                                    onChange={field.onChange}
-                                    onButtonClick={openAdd}
-                                    addLabel={t('department.actions.add.label')}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                {/* departmentRole */}
-                <FormField
-                    control={form.control}
-                    name='departmentRoleId'
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('user.forms.add.departmentRole.label')}</FormLabel>
-                            <FormControl>
-                                <SelectWithButton
-                                    items={selectDepartmentRole?.roles.map(role => ({ value: role.id, label: role.name })) || []}
-                                    value={field.value}
-                                    placeholder={
-                                        (selectDepartmentRole?.roles.length || 0) > 0
-                                        ? t('user.forms.add.departmentRole.placeholder')
-                                        : t('user.forms.add.departmentRole.noRoles')
-                                    }
-                                    onChange={field.onChange}
-                                    onButtonClick={openAdd}
-                                    addLabel={t('departmentRole.actions.add.label')}
+                                    onValueChange={field.onChange}
                                 />
                             </FormControl>
                             <FormMessage />

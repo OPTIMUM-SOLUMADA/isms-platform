@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { cz } from "@/lib/czod";
-import type { CustomFormProps, Department, User } from '@/types';
+import type { CustomFormProps, User } from '@/types';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import i18n from '@/i18n/config';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,10 @@ import { roles } from '@/constants/role';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/loading-button';
 import ErrorCodeField from '@/components/ErrorCodeField';
+import { useMemo } from 'react';
+import { useFetchAllDepartments } from '@/hooks/queries/useDepartmentMutations';
+import { MultiSelect } from '@/components/multi-select';
+import Required from '@/components/Required';
 import { SelectWithButton } from '@/components/SelectWithButton';
 
 const updateUserSchema = z.object({
@@ -18,20 +22,18 @@ const updateUserSchema = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
     email: cz.email(),
     role: z.enum(roles),
-    departmentId: z.string().nonempty(i18n.t("zod.errors.department.required")),
+    departmentRoleUsers: z.array(z.string()).min(1, i18n.t("zod.errors.department.required")),
 });
 
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
 
 interface UpdateUserFormProps extends CustomFormProps<UpdateUserFormData> {
     user: User; // existing user data
-    departments: Department[];
 }
 
 const UpdateUserForm = ({
     onSubmit,
     user,
-    departments = [],
     isPending = false,
     onCancel,
     error
@@ -46,11 +48,26 @@ const UpdateUserForm = ({
             name: user.name,
             email: user.email,
             role: user.role,
-            departmentId: user.departmentId,
+            departmentRoleUsers: user.departmentRoleUsers.map(item => item.departmentRole.id),
         },
     });
 
     const { handleSubmit } = form;
+
+    const { data: departmentsRes } = useFetchAllDepartments();
+
+    const departmentRoles = useMemo(() => {
+        if (!Array.isArray(departmentsRes?.departments)) return [];
+        return departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
+            heading: item.name,
+            options: [
+                ...item.roles.map(role => ({
+                    label: role.name,
+                    value: role.id
+                }))
+            ]
+        }))
+    }, [departmentsRes?.departments])
 
     return (
         <Form {...form}>
@@ -105,21 +122,22 @@ const UpdateUserForm = ({
                     )}
                 />
 
-                {/* department */}
+                {/* Department */}
                 <FormField
                     control={form.control}
-                    name='departmentId'
+                    name="departmentRoleUsers"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('user.forms.update.department.label')}</FormLabel>
+                            <FormLabel className="font-medium">
+                                {t("user.forms.add.department.label")} <Required />
+                            </FormLabel>
                             <FormControl>
-                                <SelectWithButton
-                                    items={departments.map(dep => ({ value: dep.id, label: dep.name }))}
+                                <MultiSelect
+                                    placeholder={t("user.forms.add.department.placeholder")}
+                                    defaultValue={field.value}
+                                    options={departmentRoles}
                                     value={field.value}
-                                    placeholder={t('user.forms.update.department.placeholder')}
-                                    onChange={field.onChange}
-                                    onAdd={() => { }}
-                                    addLabel={t('department.actions.add.label')}
+                                    onValueChange={field.onChange}
                                 />
                             </FormControl>
                             <FormMessage />

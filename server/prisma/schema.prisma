@@ -30,7 +30,6 @@ model Department {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  members   User[]   @relation("DepartmentMembers")
 
   @@map("departments")
 }
@@ -48,9 +47,9 @@ model DepartmentRole {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  members   User[]   @relation("UserDepartmentRole")
 
   departmentRoleDocuments DepartmentRoleDocument[]
+  departmentRoleUsers     DepartmentRoleUser[]
 
   @@unique([departmentId, name]) // un rôle est unique par département
   @@map("department_roles")
@@ -92,11 +91,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  departmentId String?     @db.ObjectId
-  department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  departmentRoleId String?         @db.ObjectId
-  departmentRole   DepartmentRole? @relation("UserDepartmentRole", fields: [departmentRoleId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  departmentRoleUsers DepartmentRoleUser[]
 
   metadata                Json?
   documentAuthors         DocumentAuthor[]   @relation("DocumentAuthorUser")
@@ -127,6 +122,19 @@ model DepartmentRoleDocument {
   departmentRole DepartmentRole @relation(fields: [departmentRoleId], references: [id], onDelete: Cascade)
 
   @@map("departmentrole_documents")
+}
+
+// Relation between user and department role
+model DepartmentRoleUser {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  departmentRoleId String @db.ObjectId
+  userId           String @db.ObjectId
+
+  // Prisma relations
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentRole DepartmentRole @relation(fields: [departmentRoleId], references: [id], onDelete: Cascade)
+
+  @@map("departmentrole_users")
 }
 
 model Invitation {
@@ -317,7 +325,7 @@ model DocumentReview {
   documentId        String          @db.ObjectId
   reviewerId        String          @db.ObjectId
   assignedById      String?         @db.ObjectId
-  comment           String?         // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  comment           String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
   decision          ReviewDecision?
   isCompleted       Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
   reviewDate        DateTime? // Ajouté : La date à laquelle la révision a été effectuée

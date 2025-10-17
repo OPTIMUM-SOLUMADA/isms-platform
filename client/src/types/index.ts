@@ -197,12 +197,14 @@ export type User = {
   role: RoleType;
   isActive: boolean;
   lastLogin?: string;
-  department: Department;
-  departmentId: string;
-  departmentRole: DepartmentRole;
 
   documentOwners: Document[];
   reviews: any[];
+
+  departmentRoleUsers: {
+    id: string;
+    departmentRole: DepartmentRole;
+  }[];
 
   createdAt: string;
   updatedAt: string;
@@ -239,6 +241,14 @@ export type DepartmentRole = {
   departmentMembers: departmentMember[];
   createdAt: string;
   updatedAt: string;
+  departmentRoleDocuments: {
+    id: string;
+    document: Document;
+  }[]
+  departmentRoleUsers: {
+    id: string;
+    user: User;
+  }[]
 };
 
 export type departmentMember = {

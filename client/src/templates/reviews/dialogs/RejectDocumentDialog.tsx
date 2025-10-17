@@ -33,7 +33,7 @@ const rejectSchema = z.object({
     comment: z
         .string()
         .min(5, "Please provide at least 5 characters for your reason.")
-        .max(500, "Comment is too long."),
+        .max(3000, "Comment is too long."),
 });
 
 type RejectFormValues = z.infer<typeof rejectSchema>;
@@ -111,7 +111,7 @@ const RejectDocumentDialog = ({
                                 <AlertTriangle className="w-6 h-6 text-theme-danger" />
                                 <DialogTitle>
                                     {t("reviewApproval.dialogs.reject.title", {
-                                        entity: document.title,
+                                        entity: document?.title,
                                     })}
                                 </DialogTitle>
                             </div>
