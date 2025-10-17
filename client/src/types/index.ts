@@ -71,6 +71,10 @@ export type Document = {
   approvals: DocumentApproval[];
   notifications: Notification[];
   auditlogs: AuditLog[];
+  departmentRoles: [{
+    id: string;
+    departmentRole: DepartmentRole;
+  }]
 };
 
 export type DocumentOwner = {
@@ -122,7 +126,7 @@ export interface DocumentReview {
 
   documentVersion?: DocumentVersion;
 
-  createdAt: string | Date;
+  createdAt?: string;
 }
 
 export type DocumentApproval = {
@@ -263,4 +267,13 @@ export interface ISOClause {
   documents: Document[];
   createdAt: string;
   updatedAt: string;
+}
+
+export type DepartmentRoleDocument = {
+  id: string;
+  documentId: string;
+  departmentRoleId: string;
+
+  document: Document;
+  departmentRole: DepartmentRole;
 }

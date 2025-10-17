@@ -661,6 +661,10 @@
                         "label": "Fonction",
                         "placeholder": "Séléctionner une ou plusieurs fonctions"
                     },
+                    "departments": {
+                        "label": "Départements",
+                        "placeholder": "Séléctionner des départements"
+                    },
                     "isoClause": {
                         "label": "Clause/Control Number",
                         "placeholder": "Séléctionner une Clause/Control Number"

@@ -1,13 +1,17 @@
 import BackButton from '@/components/BackButton';
 import HtmlContent from '@/components/HTMLContent';
 import CircleLoading from '@/components/loading/CircleLoading';
+import RTERichText from '@/components/RTERichText';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { UserAvatar } from '@/components/user-avatar';
 import { useAuth } from '@/contexts/AuthContext';
-import { useGetReview } from '@/hooks/queries/useReviewMutation';
+import { useGetReview, useUpdateComment } from '@/hooks/queries/useReviewMutation';
+import { formatDate } from '@/lib/date';
 import WithTitle from '@/templates/layout/WithTitle';
 import ApproveDocumentDialog from '@/templates/reviews/dialogs/ApproveDocumentDialog';
 import RejectDocumentDialog from '@/templates/reviews/dialogs/RejectDocumentDialog';
+import { Pen, Save } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
@@ -23,7 +27,7 @@ const ReviewApprovalPage = () => {
     const { data, isLoading, isError } = useGetReview(reviewId);
 
     // Check if review use for the active user
-    if (data?.reviewer?.id === user?.id) {
+    if (data && (data.reviewer.id !== user?.id)) {
         return <Navigate to={'/reviews'} replace />
     }
 
@@ -70,12 +74,24 @@ const ReviewApprovalPage = () => {
                         className="w-full p-4 space-y-3 bg-gray-200 flex flex-col items-center justify-center"
                     >
                         {data.decision && (
-                            <div className='w-full bg-white max-w-3xl p-4 border rounded-lg text-sm'>
+                            <div className='w-full bg-white max-w-3xl p-4 border-2 border-gray-300 rounded-lg text-sm'>
                                 {(data.decision === "REJECT" && data.comment) && (
                                     <>
-                                        <p className='mb-2'>{t(`reviewApproval.dialogs.reject.done`)}</p>
-                                        <div className="px-2">
-                                            <HtmlContent html={data.comment} />
+                                        <div className='mb-4'>{t(`reviewApproval.dialogs.reject.done`)}</div>
+                                        <div className="w-full p-2 bg-gray-50 border-gray-100 border">
+                                            {data.reviewer && (
+                                                <div className='flex items-start justify-between gap-2 py-3'>
+                                                    <div className="flex items-center gap-2">
+                                                        <UserAvatar className="size-8" id={data.reviewer.id} name={data.reviewer.name} />
+                                                        <div className='flex flex-col'>
+                                                            <span>{data.reviewer.name}</span>
+                                                            <span className='text-muted-foreground text-xs'>{data.reviewer.email}</span>
+                                                        </div>
+                                                    </div>
+                                                    {data.reviewDate && (<span className='opacity-70 text-sm'>{formatDate(data.reviewDate)}</span>)}
+                                                </div>
+                                            )}
+                                            <EditableComment comment={data.comment} reviewId={data.id} />
                                         </div>
                                     </>
                                 )}
@@ -127,6 +143,51 @@ const ReviewApprovalPage = () => {
                 </>
             )}
         </WithTitle>
+    )
+}
+
+interface EditableCommentProps {
+    comment: string;
+    reviewId: string;
+}
+
+export const EditableComment = ({ comment, reviewId, }: EditableCommentProps) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [commentValue, setCommentValue] = useState(comment);
+
+    const { mutate: updateComment, isPending } = useUpdateComment(reviewId);
+
+    const handleSave = () => {
+        updateComment({
+            comment: commentValue
+        }, {
+            onSuccess: () => {
+                setIsEditing(false);
+            }
+        });
+    }
+
+    return (
+        <div className="px-2 relative">
+            <div className="absolute top-0 right-2 z-10">
+                {isEditing ? (
+                    <Button type="submit" variant="ghost" className='absolute top-1 right-2' onClick={handleSave} disabled={isPending}>
+                        <Save size={16} className='mr-2' />
+                        Save
+                    </Button>
+                ) : (
+                    <Button type="button" variant="ghost" className='absolute top-1 right-2' onClick={() => setIsEditing(true)}>
+                        <Pen size={16} className='mr-2' />
+                        Edit
+                    </Button>
+                )}
+            </div>
+            {isEditing ? (
+                <RTERichText value={commentValue} onChange={setCommentValue} />
+            ) : (
+                <HtmlContent html={commentValue} />
+            )}
+        </div>
     )
 }
 

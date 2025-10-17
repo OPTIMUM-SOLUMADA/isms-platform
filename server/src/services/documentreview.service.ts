@@ -1,5 +1,10 @@
+import { EmailTemplate } from '@/configs/email-template';
+import { env } from '@/configs/env';
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
+import { EmailService } from './email.service';
+
+const emailService = new EmailService();
 
 const includes: Prisma.DocumentReviewInclude = {
     document: {
@@ -7,6 +12,7 @@ const includes: Prisma.DocumentReviewInclude = {
             id: true,
             title: true,
             status: true,
+            reviewFrequency: true,
             isoClause: {
                 select: {
                     name: true,
@@ -100,8 +106,11 @@ export class DocumentReviewService {
                 },
                 reviewer: {
                     select: {
+                        id: true,
                         name: true,
                         email: true,
+                        createdAt: true,
+                        role: true,
                     },
                 },
                 assignedBy: {
@@ -245,7 +254,10 @@ export class DocumentReviewService {
     ) {
         return prisma.documentReview.update({
             where: { id: reviewId },
-            data,
+            data: {
+                ...data,
+                reviewDate: new Date(),
+            },
         });
     }
 
@@ -264,6 +276,7 @@ export class DocumentReviewService {
             where: {
                 id: reviewId,
             },
+            include: includes,
         });
     }
 
@@ -404,6 +417,7 @@ export class DocumentReviewService {
                         title: true,
                         description: true,
                         status: true,
+                        reviewFrequency: true,
                         versions: {
                             where: { isCurrent: true },
                             select: {
@@ -416,6 +430,49 @@ export class DocumentReviewService {
                     },
                 },
             },
+        });
+    }
+
+    async sendReviewNotification(review: any) {
+        const { reviewer, document, dueDate } = review;
+
+        const html = await EmailTemplate.reviewReminder({
+            document: {
+                title: document.title,
+                description: document.description,
+                status: document.status,
+            },
+            dueDate: dueDate?.toDateString() || '',
+            reviewer: { name: reviewer.name },
+            year: new Date().getFullYear().toString(),
+            viewDocLink: `${env.CORS_ORIGIN}/documents/view/${document.id}`,
+            reviewLink: `${env.CORS_ORIGIN}/review-approval/${review.id}`,
+            headerDescription: 'Automated email',
+            orgName: env.ORG_NAME,
+        });
+
+        await emailService.sendMail({
+            subject: 'ISMS Solumada - Review Reminder',
+            to: reviewer.email,
+            html,
+        });
+
+        await prisma.documentReview.update({
+            where: { id: review.id },
+            data: {
+                notifiedAt: new Date(),
+                isNotified: true,
+            },
+        });
+    }
+
+    async getActiveReviews() {
+        return prisma.documentReview.findMany({
+            where: {
+                isCompleted: false,
+                decision: { isSet: false },
+            },
+            include: includes,
         });
     }
 }

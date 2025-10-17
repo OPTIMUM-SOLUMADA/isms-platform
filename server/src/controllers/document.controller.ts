@@ -4,15 +4,15 @@ import { createVersion } from '@/utils/version';
 import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
-import { DocumentReviewService } from '@/services/documentreview.service';
+import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
 
 export class DocumentController {
     private service: DocumentService;
-    private reviewService: DocumentReviewService;
+    private departmentRoleDocument: DepartmentRoleDocumentService;
 
     constructor() {
         this.service = new DocumentService();
-        this.reviewService = new DocumentReviewService();
+        this.departmentRoleDocument = new DepartmentRoleDocumentService();
     }
 
     async create(req: Request, res: Response) {
@@ -22,14 +22,13 @@ export class DocumentController {
                 description,
                 status,
                 type,
-                department,
                 isoClause,
                 reviewers,
                 authors,
                 reviewFrequency,
-                userId,
                 owner,
                 classification,
+                departmentRoles,
             } = req.body;
 
             const file = req.file;
@@ -49,50 +48,47 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : null;
 
-            const createdDoc = await this.service.createDocumentWithDetails(
-                {
-                    title,
-                    description,
-                    status,
-                    reviewFrequency,
-                    classification,
-                    ...(type && { type: { connect: { id: type } } }),
-                    ...(department && { department: { connect: { id: department } } }),
-                    ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
-                    ...(owner && { owner: { connect: { id: owner } } }),
-                    fileUrl: fileUrl,
-                    // create document version
-                    versions: {
-                        create: {
-                            version: createVersion(1, 0), // 1.0
-                            isCurrent: true,
-                            fileUrl: fileUrl,
-                        },
+            const createdDoc = await this.service.createDocument({
+                title,
+                description,
+                status,
+                reviewFrequency,
+                classification,
+                ...(type && { type: { connect: { id: type } } }),
+                ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                ...(owner && { owner: { connect: { id: owner } } }),
+                fileUrl: fileUrl,
+                // create document version
+                versions: {
+                    create: {
+                        version: createVersion(1, 0), // 1.0
+                        isCurrent: true,
+                        fileUrl: fileUrl,
                     },
                 },
-                authors.split(','),
-                reviewers.split(','),
-            );
+            });
 
-            // get document version
-            const version = createdDoc?.versions.find((v) => v.isCurrent);
+            // link document to users (Authors and Reviewers)
+            await this.service.linkDocumentToUsers({
+                documentId: createdDoc.id,
+                reviewerIds: reviewers.split(','),
+                authors: authors.split(','),
+            });
 
-            if (version && createdDoc && createdDoc.reviewers.length > 0) {
-                await this.reviewService.assignReviewersToDocument({
+            // link departmentRoles to document
+            this.departmentRoleDocument.createMany(
+                departmentRoles.split(',').map((departmentRoleId: any) => ({
                     documentId: createdDoc.id,
-                    documentVersionId: version.id,
-                    reviewerIds: reviewers.split(','),
-                    dueDate: createdDoc.nextReviewDate,
-                    userId: userId,
-                });
-            }
+                    departmentRoleId: departmentRoleId,
+                })),
+            );
 
             res.status(201).json(createdDoc);
         } catch (err) {
             const fileUrl = req.file ? req.file.filename : null;
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -108,7 +104,7 @@ export class DocumentController {
                 res.json(document);
             }
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -121,7 +117,7 @@ export class DocumentController {
                 status,
                 authors,
                 type,
-                department,
+                departmentRoles,
                 isoClause,
                 reviewers,
                 reviewFrequency,
@@ -142,35 +138,32 @@ export class DocumentController {
 
             const fileUrl = req.file ? req.file.filename : undefined;
 
-            const updatedDocument = await this.service.updateDocumentWithDetails(
-                documentId!,
-                {
-                    ...(title && { title }),
-                    ...(description && { description }),
-                    ...(status && { status }),
-                    ...(reviewFrequency && { reviewFrequency }),
-                    ...(type && { type: { connect: { id: type } } }),
-                    ...(department && { department: { connect: { id: department } } }),
-                    ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
-                    ...(owner && { owner: { connect: { id: owner } } }),
-                    ...(fileUrl && { fileUrl }),
-                    classification,
-                },
-                authors.split(','),
-                reviewers.split(','),
+            const updatedDocument = await this.service.update(documentId!, {
+                ...(title && { title }),
+                ...(description && { description }),
+                ...(status && { status }),
+                ...(reviewFrequency && { reviewFrequency }),
+                ...(type && { type: { connect: { id: type } } }),
+                ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
+                ...(owner && { owner: { connect: { id: owner } } }),
+                ...(fileUrl && { fileUrl }),
+                classification,
+            });
+
+            // link departmentRoles to document
+            this.departmentRoleDocument.reCreateMany(
+                departmentRoles.split(',').map((departmentRoleId: any) => ({
+                    documentId: updatedDocument.id,
+                    departmentRoleId: departmentRoleId,
+                })),
             );
 
-            // get document version
-            const version = updatedDocument?.versions.find((v) => v.isCurrent);
-
-            if (version && updatedDocument && updatedDocument.reviewers.length > 0) {
-                await this.reviewService.updateAssignedReviewersToDocument({
-                    documentId: updatedDocument.id,
-                    documentVersionId: version.id,
-                    reviewerIds: reviewers.split(','),
-                    dueDate: updatedDocument.nextReviewDate,
-                });
-            }
+            // relink document to users (Authors and Reviewers)
+            await this.service.reLinkDocumentToUsers({
+                documentId: updatedDocument.id,
+                reviewerIds: reviewers.split(','),
+                authors: authors.split(','),
+            });
 
             if (fileUrl) {
                 // Delete old file
@@ -180,7 +173,7 @@ export class DocumentController {
             res.json(updatedDocument);
         } catch (err) {
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -193,7 +186,7 @@ export class DocumentController {
             res.status(204).json(deleted);
         } catch (err) {
             console.log(err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -208,7 +201,7 @@ export class DocumentController {
             res.json(documents);
         } catch (err) {
             console.log('err', err);
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -217,7 +210,7 @@ export class DocumentController {
             const statistics = await this.service.getDocumentStats();
             res.json(statistics);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -236,7 +229,7 @@ export class DocumentController {
                 res.download(filePath, filename);
             }
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -245,7 +238,7 @@ export class DocumentController {
             const document = await this.service.publishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -254,7 +247,7 @@ export class DocumentController {
             const document = await this.service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 }

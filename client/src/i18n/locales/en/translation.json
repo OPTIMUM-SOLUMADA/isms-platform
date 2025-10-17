@@ -242,8 +242,8 @@
         "message": "Are you sure you want to reject this document?",
         "form": {
           "reason": {
-            "label": "Rejection Reason",
-            "placeholder": "Enter rejection reason..."
+            "label": "Reason for Rejection",
+            "placeholder": "Enter the reason for rejection..."
           }
         },
         "description": "Please provide a reason for rejecting the document.",
@@ -256,12 +256,22 @@
             "loading": "Rejecting..."
           }
         },
+        "toast": {
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while rejecting the document. Please try again."
+          },
+          "success": {
+            "title": "Success",
+            "description": "Your review has been submitted successfully. The document has been rejected."
+          }
+        },
         "done": "You have already rejected this document. Your reason was:"
       },
       "approve": {
         "title": "Approve Document",
         "message": "Are you sure you want to approve this document?",
-        "description": "You are about to approve the document <strong>{{entity}}</strong>. Once approved, the document will be marked as reviewed and will proceed to the next stage in the workflow.",
+        "description": "You are about to approve the document <strong>{{entity}}</strong>. Once approved, the document will be marked as reviewed and move to the next stage of the process.",
         "actions": {
           "cancel": {
             "label": "Cancel"
@@ -271,7 +281,16 @@
             "loading": "Approving..."
           }
         },
-        "done": "You have already approved this document."
+        "toast": {
+          "error": {
+            "title": "Error",
+            "description": "An error occurred while approving the document. Please try again."
+          },
+          "success": {
+            "title": "Success",
+            "description": "Your review has been submitted successfully. The document has been approved."
+          }
+        }
       }
     },
     "actions": {
@@ -641,6 +660,10 @@
           "departmentRole": {
             "label": "Fonction",
             "placeholder": "Select a or more fonctions"
+          },
+          "departments": {
+            "label": "Departments",
+            "placeholder": "Select departments"
           },
           "isoClause": {
             "label": "Clause/Control Number",

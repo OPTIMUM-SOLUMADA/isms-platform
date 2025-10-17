@@ -28,10 +28,9 @@ model Department {
   createdById String? @db.ObjectId
   createdBy   User?   @relation(name: "CreatedDepartments", fields: [createdById], references: [id], onDelete: SetNull)
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  documents Document[] @relation("DepartmentDocuments")
-  members   User[]     @relation("DepartmentMembers")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   User[]   @relation("DepartmentMembers")
 
   @@map("departments")
 }
@@ -50,6 +49,8 @@ model DepartmentRole {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   members   User[]   @relation("UserDepartmentRole")
+
+  departmentRoleDocuments DepartmentRoleDocument[]
 
   @@unique([departmentId, name]) // un rôle est unique par département
   @@map("department_roles")
@@ -113,6 +114,19 @@ model User {
   @@index([email, isActive])
   @@index([role])
   @@map("users")
+}
+
+// Relation between document and department role
+model DepartmentRoleDocument {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  departmentRoleId String @db.ObjectId
+  documentId       String @db.ObjectId
+
+  // Prisma relations
+  document       Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  departmentRole DepartmentRole @relation(fields: [departmentRoleId], references: [id], onDelete: Cascade)
+
+  @@map("departmentrole_documents")
 }
 
 model Invitation {
@@ -196,15 +210,15 @@ model Document {
 
   classification Classification @default(CONFIDENTIAL)
 
-  departmentId String        @db.ObjectId
-  categoryId   String?       @db.ObjectId
-  ownerId      String        @db.ObjectId
-  owner        DocumentOwner @relation(name: "DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  departmentRoles DepartmentRoleDocument[]
+
+  categoryId String?       @db.ObjectId
+  ownerId    String        @db.ObjectId
+  owner      DocumentOwner @relation(name: "DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  department    Department         @relation("DepartmentDocuments", fields: [departmentId], references: [id], onDelete: Restrict)
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
@@ -310,6 +324,8 @@ model DocumentReview {
   dueDate           DateTime? // Date de limite de révision
   documentVersionId String          @db.ObjectId
   documentVersion   DocumentVersion @relation(name: "ReviewDocumentVersion", fields: [documentVersionId], references: [id], onDelete: Cascade)
+  isNotified        Boolean         @default(false)
+  notifiedAt        DateTime?
 
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)

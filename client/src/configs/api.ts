@@ -74,6 +74,14 @@ export const API_CONFIG = {
             GET: (id: string | number) => `/owners/${id}`,
         },
         EXCEL_IMAGE: "/excel/image",
+        DEPARTMENT_ROLE_DOCUMENTS: {
+            BASE: "/department-role-documents",
+            GET: (id: string | number) => `/department-role-documents/${id}`,
+        },
+        DEPARTMENT_ROLE: {
+            BASE: "/department-roles",
+            GET: (id: string | number) => `/department-roles/${id}`,
+        }
     },
 } as const;
 

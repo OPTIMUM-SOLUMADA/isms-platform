@@ -13,6 +13,7 @@ import useDepartmentRoleStore from "@/stores/department/useDepatrmentRoleStore";
 import { depService } from "@/services/departmentService";
 import { AddDepartmentRoleFormData } from "@/templates/departments/forms/AddDepartmentRoleForm";
 import { EditDepartmentRoleFormData } from "@/templates/departments/forms/EditDepartmentRoleForm";
+import { depRolepService } from "@/services/departmentRoleService";
 
 // -----------------------------
 // Fetch DepartmentRoles
@@ -42,6 +43,13 @@ export const useFetchDepartmentRoles = (id?: string) => {
     return query;
 };
 
+
+export const useFetchAllDepartmentRoles = () => {
+    return useQuery<DepartmentRole[], ApiAxiosError>({
+        queryKey: ["departements"],
+        queryFn: async () => (await depRolepService.getAll()).data
+    })
+}
 
 // Fetch department role by id
 export const useFetchDepartmentRole = (id?: string) => useQuery<any, ApiAxiosError>({

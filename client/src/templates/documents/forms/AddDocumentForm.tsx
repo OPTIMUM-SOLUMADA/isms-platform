@@ -33,15 +33,15 @@ import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
-import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
 import ISOSelectLookup from "@/templates/iso-clauses/lookup/ISOSelectLookup";
-// import DepartmentSelect from "@/templates/departments/lookup/DepartmentSelect";
 import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSelect";
 import { Classification, classifications } from "@/constants/classification";
 import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 import useOwnerStore from "@/stores/owner/userOwnserStore";
 // import { useDepartmentRoleUI } from "@/stores/department/useDepartmentRoleUI";
 import { SelectWithButton } from "@/components/SelectWithButton";
+import { MultiSelect } from "@/components/multi-select";
+import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -52,8 +52,7 @@ const documentSchema = cz.z.object({
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
-  departmentId: z.string().nonempty(i18n.t("zod.errors.required")),
-  departmentRoleId: z.string().nonempty(i18n.t("zod.errors.required")),
+  departmentRoles: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
   classification: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -96,7 +95,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
   ) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { openAdd } = useDepartmentUI()
+    // const { openAdd } = useDepartmentUI()
 
     const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
     const { owners } = useOwnerStore();
@@ -113,10 +112,9 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         authors: [],
         files: [],
         type: "",
-        departmentId: "",
-        departmentRoleId: "",
         classification: Classification.PUBLIC,
         reviewFrequency: Frequencies.DAILY,
+        departmentRoles: [],
       },
       mode: "onChange",
     });
@@ -124,9 +122,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const {
       handleSubmit,
       formState: { isSubmitting },
-      watch
     } = form;
-
 
     // expose resetForm method
     useImperativeHandle(ref, () => ({
@@ -134,13 +130,13 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
       isStay: () => stay
     }));
 
-    // const { openAdd: openAddDepartmentModal } = useDepartmentUI();
-    // const { openAdd: openAddDepartmentRoleModal } = useDepartmentRoleUI();
+    const { data: departmentsRes } = useFetchAllDepartments();
 
-    const selectedDepartmentId = watch('departmentId');
-    const selectedDepartmentRole = useMemo(() => {
-      return departments.find(role => role.id === selectedDepartmentId);
-    }, [departments, selectedDepartmentId])
+
+    // const selectedDepartmentId = watch('departmentId');
+    // const selectedDepartmentRole = useMemo(() => {
+    //   return departments.find(role => role.id === selectedDepartmentId);
+    // }, [departments, selectedDepartmentId])
     return (
       <Form {...form}>
         <form
@@ -281,6 +277,38 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               )}
             />
 
+            {/* Department */}
+            {Array.isArray(departmentsRes?.departments) && (
+              <FormField
+                control={form.control}
+                name="departmentRoles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium">
+                      {t("document.add.form.fields.departments.label")} <Required />
+                    </FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        placeholder={t("document.add.form.fields.departments.placeholder")}
+                        options={departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
+                          heading: item.name,
+                          options: [
+                            ...item.roles.map(role => ({
+                              label: role.name,
+                              value: role.id
+                            }))
+                          ]
+                        }))}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {/* Clause */}
             <FormField
               control={form.control}
@@ -308,7 +336,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4"> */}
 
-            {/* Department */}
+            {/* Department * /}
             <FormField
               control={form.control}
               name="departmentId"
@@ -318,14 +346,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.department.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    {/* <DepartmentSelect
-                      placeholder={t("document.add.form.fields.department.placeholder")}
-                      onChange={field.onChange}
-                      value={field.value}
-                      addLabel={t("department.actions.add.label")}
-                      hasError={!!fieldState.error}
-                      onButtonClick={openAddDepartmentModal}
-                    /> */}
                     <SelectWithButton
                       items={departments.map(dep => ({value: dep.id, label: dep.name}))}
                       value={field.value}
@@ -339,8 +359,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            {/* Department Role */}
+            />*/}
+            {/* Department Role * /}
             <FormField
               control={form.control}
               name="departmentRoleId"
