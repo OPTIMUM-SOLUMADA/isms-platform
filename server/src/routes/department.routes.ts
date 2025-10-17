@@ -22,5 +22,5 @@ router.get('/:id/roles', controller.getRoles.bind(controller));
 router.post('/:id/roles', controller.addRoles.bind(controller));
 router.put('/:id/roles', controller.updateRoles.bind(controller));
 router.delete('/:id/roles', controller.removeRoles.bind(controller));
-
+router.get('/role/:id', controller.getRole.bind(controller));
 export default router;

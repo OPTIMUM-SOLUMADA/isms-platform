@@ -317,7 +317,7 @@ model DocumentReview {
   documentId        String          @db.ObjectId
   reviewerId        String          @db.ObjectId
   assignedById      String?         @db.ObjectId
-  comment           String? // Ajouté : Pour "commenter une politique pendant le processus de révision"
+  comment           String?         // Ajouté : Pour "commenter une politique pendant le processus de révision"
   decision          ReviewDecision?
   isCompleted       Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
   reviewDate        DateTime? // Ajouté : La date à laquelle la révision a été effectuée

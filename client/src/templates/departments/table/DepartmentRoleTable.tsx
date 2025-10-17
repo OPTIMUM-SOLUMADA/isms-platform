@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, Trash, Building2, Eye } from "lucide-react";
+import { Edit, Trash, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import type { DepartmentRole } from "@/types";

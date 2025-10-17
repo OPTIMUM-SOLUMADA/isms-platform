@@ -23,6 +23,7 @@ import DepartmentDetail from "@/pages/departments/DepartmentDetail";
 import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
 import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
 import ReviewApprovalPage from "@/pages/reviews/ReviewApprovalPage";
+import PendingReviewsDashboardPage from "@/pages/reviews/PendingReviewsDashboardPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -96,9 +97,20 @@ const routeConfig: AppRoute[] = [
             {
                 path: "reviews",
                 permission: "reviews.page.access",
-                children: [{ index: true, element: <ReviewWorkflowPage /> }],
+                children: [
+                    { index: true, element: <ReviewWorkflowPage /> },
+                    { path: "pending", element: <PendingReviewsDashboardPage />}
+                ],
             },
 
+            // Reviews
+            {
+                path: "pending-reviews",
+                permission: "pendingReviews.page.access",
+                children: [
+                    { index: true, element: <PendingReviewsDashboardPage />}
+                ],
+            },
             // Compliance
             {
                 path: "compliance",

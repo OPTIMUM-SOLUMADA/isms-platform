@@ -60,6 +60,7 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "dashboard.page.access",
         "documents.page.access",
         "reviews.page.access",
+        "pendingReviews.page.access",
         "compliance.page.access",
         "users.page.access",
         "audit.page.access",
@@ -69,6 +70,7 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "dashboard.page.access",
         "documents.page.access",
         "reviews.page.access",
+        "pendingReviews.page.access",
         "compliance.page.access",
         "audit.page.access",
         "settings.page.access"

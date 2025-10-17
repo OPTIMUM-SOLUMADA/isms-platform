@@ -657,6 +657,10 @@
             "label": "Department",
             "placeholder": "Select a department"
           },
+          "departmentRole": {
+            "label": "Fonction",
+            "placeholder": "Select a or more fonctions"
+          },
           "departments": {
             "label": "Departments",
             "placeholder": "Select departments"
@@ -1588,6 +1592,15 @@
         "addNew": "Add a new user",
         "loading": "Loading users...",
         "searching": "Searching users..."
+      },
+      "departmentRole": {
+        "label": "Fonctions",
+        "placeholder": "Select fonctions",
+        "search": "Search fonctions...",
+        "empty": "No fonction found.",
+        "addNew": "Add a new fonction",
+        "loading": "Loading fonctions...",
+        "searching": "Searching fonction..."
       }
     },
     "document": {
@@ -1621,6 +1634,10 @@
     "reviews": {
       "label": "Reviews",
       "description": "Manage approval workflows"
+    },
+    "pendingReviews": {
+      "label": "Pending",
+      "description": "All of pending reviews"
     },
     "compliance": {
       "label": "Compliance",

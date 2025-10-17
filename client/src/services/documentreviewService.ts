@@ -16,4 +16,5 @@ export const documentReviewService = {
     create: async (data: AddReviewFormData) => axios.post(api.BASE, { ...data }),
     updateComment: async (id: string, comment: string) => axios.put(api.GET(id), { comment }),
     submitReview: async (id: string, data: { decision: ReviewDecision; comment: string }) => axios.put(api.MAKE_DECISION(id), data),
+    getPendingReviews: async () => axios.get(api.GET_PENDING_REVIEWS),
 };

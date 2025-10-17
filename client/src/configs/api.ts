@@ -32,6 +32,7 @@ export const API_CONFIG = {
             SEARCH: "/departments/search",
             GET_ROLES: (id: string | number) => `/departments/${id}/roles`,
             SEARCH_ROLES: "/users/search",
+            GET_ROLE_BY_ID: (id: string | number) => `/deparmtents/role/${id}`,
             // UPDATE_ROLES: (id: string | number) => `/departments/${id}/roles`,
             // DELETE_ROLES: (id: string | number) => `/departments/${id}/roles`,
         },
@@ -49,12 +50,10 @@ export const API_CONFIG = {
             UPDATE: (id: string | number) => `/document-reviews/${id}`,
             DELETE: (id: string | number) => `/document-reviews/${id}`,
             SEARCH: "/document-reviews/search",
-            MAKE_DECISION: (id: string | number) =>
-                `/document-reviews/make-decision/${id}`,
-            GET_MY_REVIEWS: (id: string | number) =>
-                `/document-reviews/my-reviews/${id}`,
-            GET_MY_REVIEWS_STATS: (id: string | number) =>
-                `/document-reviews/my-reviews/${id}/stats`,
+            MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
+            GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
+            GET_MY_REVIEWS_STATS: (id: string | number) => `/document-reviews/my-reviews/${id}/stats`,
+            GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",

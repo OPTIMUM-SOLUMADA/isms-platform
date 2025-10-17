@@ -10,6 +10,7 @@ import {
     Building2,
     FileType2,
     FileLock2,
+    Lightbulb,
 } from 'lucide-react';
 
 type MenuItem = {
@@ -41,6 +42,13 @@ export const menuItems: MenuItem[] = [
         icon: GitBranch,
         descriptionKey: 'navigation.reviews.description',
         requiredPermission: "reviews.page.access"
+    },
+    {
+        path: '/pending-reviews',
+        labelKey: 'navigation.pendingReviews.label',
+        icon: Lightbulb,
+        descriptionKey: 'navigation.pendingReviews.description',
+        requiredPermission: "pendingReviews.page.access"
     },
     {
         path: '/compliance',

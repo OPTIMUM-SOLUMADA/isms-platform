@@ -657,6 +657,10 @@
                         "label": "Département",
                         "placeholder": "Séléctionner un département"
                     },
+                    "departmentRole": {
+                        "label": "Fonction",
+                        "placeholder": "Séléctionner une ou plusieurs fonctions"
+                    },
                     "departments": {
                         "label": "Départements",
                         "placeholder": "Séléctionner des départements"
@@ -1600,6 +1604,15 @@
                 "addNew": "Ajouter un nouvel utilisateur",
                 "loading": "Chargement des utilisateurs...",
                 "searching": "Recherche des utilisateurs..."
+            },
+            "departmentRole": {
+                "label": "Fonctions",
+                "placeholder": "Sélectionner des fonctions",
+                "search": "Rechercher des fonctions...",
+                "empty": "Aucune fonction trouvée.",
+                "addNew": "Ajouter une nouvelle fonction",
+                "loading": "Chargement des fonctions...",
+                "searching": "Recherche des fonctions..."
             }
         },
         "document": {
@@ -1633,6 +1646,10 @@
         "reviews": {
             "label": "Revues",
             "description": "Gestion des processus de validation"
+        },
+        "pendingReviews": {
+            "label": "Avis",
+            "description": "Tous les avis en attente"
         },
         "compliance": {
             "label": "Conformité",

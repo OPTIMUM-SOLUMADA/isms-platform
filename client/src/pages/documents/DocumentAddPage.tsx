@@ -18,6 +18,7 @@ import { useFetchUsers } from '@/hooks/queries/useUserMutations';
 import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
 import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
+import useDepartmentRoleStore from '@/stores/department/useDepatrmentRoleStore';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function DocumentAddPage() {
   const { documentTypes } = useDocumentTypeStore();
   const { users } = useUserStore();
   const { departments } = useDepartmentStore();
+  const { departmentRoles } = useDepartmentRoleStore();
   const { create, isCreating } = useDocument();
 
   // data need to be fetched
@@ -79,6 +81,7 @@ export default function DocumentAddPage() {
               types={documentTypes}
               users={users}
               departments={departments}
+              departmentRoles={departmentRoles}
               onSubmit={saveDocument}
               isPending={isCreating}
             />
