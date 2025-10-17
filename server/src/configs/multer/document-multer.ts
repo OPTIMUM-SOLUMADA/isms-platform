@@ -37,7 +37,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
     if (allowed.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only PDF or DOC allowed'));
+        cb(new Error('Only PDF or DOC or XLSX allowed'));
     }
 };
 

@@ -40,7 +40,6 @@ export const useGetDocument = (id: string | undefined) => {
       return res.data;
     },
     enabled: !!id, // only fetch if id exists
-    staleTime: 1000 * 60, // optional: cache 5 minutes
   });
 };
 

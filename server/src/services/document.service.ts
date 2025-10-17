@@ -110,7 +110,11 @@ export class DocumentService {
         authors: string[];
     }) {
         // Delete old links
-        await prisma.documentAuthor.deleteMany({ where: { documentId } });
+        await prisma.$transaction([
+            prisma.documentAuthor.deleteMany({ where: { documentId } }),
+            prisma.documentReviewer.deleteMany({ where: { documentId } }),
+        ]);
+
         if (!authors.length && !reviewerIds.length) return;
 
         await prisma.$transaction([
@@ -135,6 +139,7 @@ export class DocumentService {
                     ),
                 }),
             },
+            include: this.documentInclude,
         });
     }
 
@@ -203,6 +208,10 @@ export class DocumentService {
     }
 
     async deleteDocument(id: string) {
+        // Delete any DepartmentRoleDocument referencing this document
+        await prisma.departmentRoleDocument.deleteMany({
+            where: { documentId: id },
+        });
         return prisma.document.delete({ where: { id } });
     }
 

@@ -197,6 +197,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             });
             setDocuments(prev => prev.map(document => document.id === data.id ? data : document));
             queryClient.invalidateQueries({ queryKey: ["departements"] });
+            queryClient.invalidateQueries({ queryKey: ["departements", data.id] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -341,7 +342,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
 export const useDocument = (): DocumentContextType => {
     const context = useContext(DocumentContext);
     if (!context) {
-        throw new Error("useDocument must be used within ISOClauseProvider");
+        throw new Error("useDocument must be used within DocumentProvider");
     }
     return context;
 };
