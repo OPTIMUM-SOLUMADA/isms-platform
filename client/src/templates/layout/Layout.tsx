@@ -11,7 +11,11 @@ function Layout() {
     const [sidebarOpen, setSidebarOpen] = useLocalStorage(`sidebar-open-${user?.id}`, true);
     const { pathname } = useLocation();
 
-    const expand = useMemo(() => pathname.startsWith('/document-editor/'), [pathname]);
+    const expand = useMemo(() => [
+        '/document-editor/',
+        '/patch-document-version/',
+    ].some(p => pathname.startsWith(p)
+    ), [pathname]);
 
     return (
         <div className="h-screen bg-muted flex">

@@ -334,6 +334,7 @@ model DocumentReview {
   documentVersion   DocumentVersion @relation(name: "ReviewDocumentVersion", fields: [documentVersionId], references: [id], onDelete: Cascade)
   isNotified        Boolean         @default(false)
   notifiedAt        DateTime?
+  completedAt       DateTime?
 
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)

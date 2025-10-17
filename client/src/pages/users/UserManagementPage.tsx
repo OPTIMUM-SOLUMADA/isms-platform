@@ -52,11 +52,10 @@ export default function UserManagementPage() {
 
   const filteredUsers = useMemo(() => users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.department.name.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = filterRole === 'all' || user.role === filterRole;
-    const matchesDepartment = filterDepartment === 'all' || user.department.id === filterDepartment;
+    const matchesDepartment = filterDepartment === 'all';
     const matchesStatus = filterStatus === 'all' || user.isActive === UsersStatusObject[filterStatus as keyof typeof UsersStatusObject];
 
     return matchesSearch && matchesRole && matchesDepartment && matchesStatus;

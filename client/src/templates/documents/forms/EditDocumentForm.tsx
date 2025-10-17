@@ -130,8 +130,6 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
       isStay: () => stay,
     }));
 
-
-
     const { data: departmentsRes } = useFetchAllDepartments();
     const departmentRoles = useMemo(() => {
       if (!Array.isArray(departmentsRes?.departments)) return [];

@@ -119,6 +119,14 @@ export class DocumentReviewService {
                         email: true,
                     },
                 },
+                documentVersion: {
+                    select: {
+                        id: true,
+                        version: true,
+                        createdAt: true,
+                        fileUrl: true,
+                    },
+                },
             },
         });
     }
@@ -266,7 +274,7 @@ export class DocumentReviewService {
             where: { id: reviewId },
             data: {
                 isCompleted: true,
-                reviewDate: new Date(),
+                completedAt: new Date(),
             },
         });
     }
@@ -331,7 +339,7 @@ export class DocumentReviewService {
         // Run all count queries in a single atomic transaction
         const [all, pending, expired, approved, rejected, completed] = await prisma.$transaction([
             prisma.documentReview.count({
-                where: { reviewerId: userId },
+                where: { reviewerId: userId, isCompleted: false },
             }),
 
             prisma.documentReview.count({
@@ -355,6 +363,7 @@ export class DocumentReviewService {
             prisma.documentReview.count({
                 where: {
                     reviewerId: userId,
+                    isCompleted: false,
                     decision: 'APPROVE',
                 },
             }),
@@ -362,6 +371,7 @@ export class DocumentReviewService {
             prisma.documentReview.count({
                 where: {
                     reviewerId: userId,
+                    isCompleted: false,
                     decision: 'REJECT',
                 },
             }),
@@ -452,7 +462,7 @@ export class DocumentReviewService {
         });
 
         await emailService.sendMail({
-            subject: 'ISMS Solumada - Review Reminder',
+            subject: `ISMS Solumada - Review Reminder (${document.title})`,
             to: reviewer.email,
             html,
         });

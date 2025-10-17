@@ -3,21 +3,29 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { FileText, Calendar, User, AlertCircle, CheckCircle2, ChevronDown } from 'lucide-react';
+import { FileText, Calendar, AlertCircle, CheckCircle2, ChevronDown, FilePen, CheckCheck } from 'lucide-react';
 import { DocumentReview } from '@/types';
 import { useState } from 'react';
 import HtmlContent from '@/components/HTMLContent';
 import { useTranslation } from 'react-i18next';
+import { useMarkAsCompleted } from '@/hooks/queries/useReviewMutation';
+import { LoadingButton } from '@/components/ui/loading-button';
+import { UserHoverCard } from '../users/hovercard/UserHoverCard';
+import { useNavigate } from 'react-router-dom';
 
 interface PendingReviewItemProps {
     review: DocumentReview;
-    onUpdateDocument?: (reviewId: string, documentId: string) => void;
-    onMarkCompleted?: (reviewId: string) => void;
 }
 
-export function PendingReviewItem({ review, onUpdateDocument, onMarkCompleted }: PendingReviewItemProps) {
+export function PendingReviewItem({ review }: PendingReviewItemProps) {
     const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const {
+        mutate: markAsCompleted,
+        isPending: isMarkingAsCompleted
+    } = useMarkAsCompleted();
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -38,6 +46,19 @@ export function PendingReviewItem({ review, onUpdateDocument, onMarkCompleted }:
             return newSet;
         });
     };
+
+    function handleMarkAsCompleted() {
+        markAsCompleted({ id: review.id }, {
+            onSuccess: () => {
+
+            },
+        });
+    }
+
+
+    function handleUpdateDocument() {
+        navigate(`/patch-document-version/${review.id}`);
+    }
 
     const isExpanded = expandedReviews.has(review.id);
     return (
@@ -74,10 +95,9 @@ export function PendingReviewItem({ review, onUpdateDocument, onMarkCompleted }:
                     </div>
 
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            <span>{review.reviewer.name}</span>
-                        </div>
+                        {review.reviewer && (
+                            <UserHoverCard user={review.reviewer} />
+                        )}
                         {review.dueDate && (
                             <div className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
@@ -136,19 +156,24 @@ export function PendingReviewItem({ review, onUpdateDocument, onMarkCompleted }:
                     <CardFooter className="bg-muted/30 py-3 flex justify-end items-center gap-2">
                         {review.decision === 'REJECT' && (
                             <Button
-                                onClick={() => onUpdateDocument?.(review.id, review.documentId)}
+                                onClick={handleUpdateDocument}
                                 size="sm"
+                                variant="primary"
                             >
+                                <FilePen className="h-4 w-4 mr-1" />
                                 Update Document
                             </Button>
                         )}
                         {review.decision === 'APPROVE' && !review.isCompleted && (
-                            <Button
-                                onClick={() => onMarkCompleted?.(review.id)}
+                            <LoadingButton
+                                onClick={handleMarkAsCompleted}
                                 size="sm"
+                                isLoading={isMarkingAsCompleted}
+
                             >
+                                <CheckCheck className="h-4 w-4 mr-1" />
                                 Mark as Completed
-                            </Button>
+                            </LoadingButton>
                         )}
                         {review.isCompleted && (
                             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">

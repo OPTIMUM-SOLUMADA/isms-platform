@@ -54,6 +54,7 @@ export const API_CONFIG = {
             GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
             GET_MY_REVIEWS_STATS: (id: string | number) => `/document-reviews/my-reviews/${id}/stats`,
             GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
+            MARK_AS_COMPLETED: (id: string | number) => `/document-reviews/mark-as-completed/${id}`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",
