@@ -57,6 +57,12 @@ export class DocumentService {
                     },
                 },
             },
+            departmentRoles: {
+                select: {
+                    id: true,
+                    departmentRole: true,
+                },
+            },
         };
     }
 

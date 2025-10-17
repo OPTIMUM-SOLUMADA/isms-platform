@@ -8,9 +8,9 @@ export class DepartmentRoleDocumentService {
         });
     }
 
-    async reCreateMany(data: Prisma.DepartmentRoleDocumentCreateManyInput) {
+    async reCreateMany(documentId: string, data: Prisma.DepartmentRoleDocumentCreateManyInput) {
         return prisma.departmentRoleDocument
-            .deleteMany({ where: { documentId: data.documentId } })
+            .deleteMany({ where: { documentId: documentId } })
             .then(() => this.createMany(data));
     }
 
