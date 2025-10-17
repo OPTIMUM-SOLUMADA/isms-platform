@@ -11,10 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { complianceProgress, recentActivities, stats, upcomingDeadlines } from '@/mocks/dashboard';
+import { complianceProgress, recentActivities, upcomingDeadlines } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import DashboardStats from '@/components/dashboard';
 
 
 
@@ -25,35 +26,8 @@ export default function DashboardPage() {
     <WithTitle title={t("dashboard.title")}>
       <div className="space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={stat.title} className="hover:shadow-lg transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <span className="text-2xl font-bold">{stat.value}</span>
-                        <Badge
-                          variant={stat.changeType === 'increase' ? 'default' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {stat.change}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className={`p-3 rounded-full bg-${stat.color}-100`}>
-                      <Icon className={`h-6 w-6 text-${stat.color}-600`} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
 
+        <DashboardStats />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Deadlines */}
           <Card>
