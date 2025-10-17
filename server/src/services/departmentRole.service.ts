@@ -11,6 +11,32 @@ const include: Prisma.DepartmentRoleInclude = {
             email: true,
         },
     },
+    departmentRoleUsers: {
+        select: {
+            id: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                },
+            },
+        },
+    },
+    departmentRoleDocuments: {
+        select: {
+            id: true,
+            document: {
+                select: {
+                    id: true,
+                    title: true,
+                    fileUrl: true,
+                },
+            },
+        },
+    },
 };
 
 export class DepartmentRoleService {

@@ -19,13 +19,11 @@ import useDepartmentRoleStore from "@/stores/department/useDepatrmentRoleStore";
 // UserTable component using the reusable DataTable
 interface DepartmentRoleTableProps {
     data: DepartmentRole[];
-    onView?: (user: DepartmentRole) => void
     isLoading?: boolean;
 }
 
 const Table = ({
     data,
-    onView,
     isLoading = false,
 }: DepartmentRoleTableProps) => {
     const { t } = useTranslation();
@@ -80,7 +78,24 @@ const Table = ({
                 return <span className="text-muted-foreground">{formatDate(row.original.createdAt)}</span>;
             }
         },
-
+        {
+            accessorKey: "documents",
+            header: t("departmentRole.table.columns.documents"),
+            size: 60,
+            cell: ({ row }) => {
+                const departments = row.original.departmentRoleDocuments;
+                return <span className="text-muted-foreground">{departments.length}</span>;
+            }
+        },
+        {
+            accessorKey: "users",
+            header: t("departmentRole.table.columns.users"),
+            size: 60,
+            cell: ({ row }) => {
+                const users = row.original.departmentRoleUsers;
+                return <span className="text-muted-foreground">{users.length}</span>;
+            }
+        },
         {
             id: "actions",
             header: t("departmentRole.table.columns.actions"),
@@ -100,24 +115,26 @@ const Table = ({
                         >
                             <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                            type="button"
-                            variant="ghost-destructive"
-                            size="sm"
-                            onClick={() => {
-                                setCurrentDepartmentRole(departmentRole);
-                                openDelete();
-                            }}
-                        >
-                            <Trash className="h-4 w-4" />
-                        </Button>
+                        {(departmentRole.departmentRoleDocuments?.length === 0 && departmentRole.departmentRoleUsers?.length === 0) && (
+                            <Button
+                                type="button"
+                                variant="ghost-destructive"
+                                size="sm"
+                                onClick={() => {
+                                    setCurrentDepartmentRole(departmentRole);
+                                    openDelete();
+                                }}
+                            >
+                                <Trash className="h-4 w-4" />
+                            </Button>
+                        )}
                     </>
                 );
             },
             enableSorting: false,
             enableHiding: false,
         },
-    ], [t, openDelete, setCurrentDepartmentRole, openEdit, activeUser, onView]);
+    ], [t, openDelete, setCurrentDepartmentRole, openEdit, activeUser]);
 
     return (
         <DataTable

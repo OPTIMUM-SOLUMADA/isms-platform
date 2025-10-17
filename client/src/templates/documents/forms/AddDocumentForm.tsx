@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
-import { forwardRef, useImperativeHandle, useMemo } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -38,8 +38,6 @@ import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSe
 import { Classification, classifications } from "@/constants/classification";
 import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 import useOwnerStore from "@/stores/owner/userOwnserStore";
-// import { useDepartmentRoleUI } from "@/stores/department/useDepartmentRoleUI";
-import { SelectWithButton } from "@/components/SelectWithButton";
 import { MultiSelect } from "@/components/multi-select";
 import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
 
@@ -89,7 +87,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
       onSubmit,
       error,
       users = [],
-      departments = [],
     },
     ref
   ) => {
@@ -332,62 +329,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
               )}
             />
 
-          {/* </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4"> */}
-
-            {/* Department * /}
-            <FormField
-              control={form.control}
-              name="departmentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">
-                    {t("document.add.form.fields.department.label")} <Required />
-                  </FormLabel>
-                  <FormControl>
-                    <SelectWithButton
-                      items={departments.map(dep => ({value: dep.id, label: dep.name}))}
-                      value={field.value}
-                      placeholder={t('user.forms.add.department.placeholder')}
-                      onChange={field.onChange}
-                      onButtonClick={openAdd}
-                      addLabel={t('department.actions.add.label')}
-                    />
-
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />*/}
-            {/* Department Role * /}
-            <FormField
-              control={form.control}
-              name="departmentRoleId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">
-                    {t("document.add.form.fields.departmentRole.label")} <Required />
-                  </FormLabel>
-                  <FormControl>
-                    <SelectWithButton
-                        items={selectedDepartmentRole?.roles.map(role => ({ value: role.id, label: role.name })) || []}
-                        value={field.value}
-                        placeholder={
-                            (selectedDepartmentRole?.roles.length || 0) > 0
-                            ? t('user.forms.add.departmentRole.placeholder')
-                            : t('user.forms.add.departmentRole.noRoles')
-                        }
-                        onChange={field.onChange}
-                        onButtonClick={openAdd}
-                        addLabel={t('departmentRole.actions.add.label')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>)
-              
-              }
-            />
             {/* Owner */}
             <FormField
               control={form.control}
@@ -489,26 +430,26 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
           </div>
 
-            {/* File URL */}
-            <FormField
-              control={form.control}
-              name="files"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">
-                    {t("document.add.form.fields.file.label")} <Required />
-                  </FormLabel>
-                  <FormControl>
-                    <DocumentFileUpload
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!fieldState.error}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* File URL */}
+          <FormField
+            control={form.control}
+            name="files"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel className="font-medium">
+                  {t("document.add.form.fields.file.label")} <Required />
+                </FormLabel>
+                <FormControl>
+                  <DocumentFileUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!fieldState.error}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Error */}
           <ErrorCodeField code={error} />

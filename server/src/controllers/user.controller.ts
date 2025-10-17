@@ -4,10 +4,12 @@ import { EmailService } from '@/services/email.service';
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import { JwtService } from '@/services/jwt.service';
+import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
 
 const service = new UserService();
 const emailService = new EmailService();
 const jwtService = new JwtService();
+const depRoleUserService = new DepartmentRoleUserService();
 
 export class UserController {
     async create(req: Request, res: Response) {
@@ -15,7 +17,7 @@ export class UserController {
             console.log('req', req.body);
             // check if user email exists
             const userExists = await service.findByEmail(req.body.email);
-            console.log('userExists', userExists);
+
             if (userExists) {
                 res.status(400).json({
                     error: 'User already exists',
@@ -24,22 +26,20 @@ export class UserController {
                 return;
             }
 
-            const { departmentId, departmentRoleId, sendInvitationLink, ...rest } = req.body;
+            const { departmentRoleUsers, sendInvitationLink, ...rest } = req.body;
 
             const user = await service.createUser({
                 ...rest,
                 isActive: false,
-                department: {
-                    connect: {
-                        id: departmentId,
-                    },
-                },
-                departmentRole: {
-                    connect: {
-                        id: departmentRoleId,
-                    },
-                },
             });
+
+            // Link user to department role
+            const userRoles = departmentRoleUsers.map((roleId: any) => ({
+                userId: user.id,
+                departmentRoleId: roleId,
+            }));
+
+            await depRoleUserService.createMany(userRoles);
 
             res.status(201).json(user);
         } catch (err) {
@@ -150,17 +150,20 @@ export class UserController {
 
     async update(req: Request, res: Response) {
         try {
-            const { name, email, role, departmentId } = req.body;
+            const { name, email, role, departmentRoleUsers } = req.body;
             const updated = await service.updateUser(req.params.id!, {
                 name,
                 email,
                 role,
-                department: {
-                    connect: {
-                        id: departmentId,
-                    },
-                },
             });
+
+            // Link user to department role
+            const userRoles = departmentRoleUsers.map((roleId: any) => ({
+                userId: updated.id,
+                departmentRoleId: roleId,
+            }));
+
+            await depRoleUserService.reCreateMany(userRoles);
             res.json(updated);
         } catch (err) {
             console.log(err);

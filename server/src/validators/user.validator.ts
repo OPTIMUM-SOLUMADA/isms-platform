@@ -18,18 +18,10 @@ export const userCreateSchema = Joi.object({
             'string.empty': 'Role is required',
             'any.only': 'Invalid role',
         }),
-    departmentId: Joi.string()
-        .pattern(/^[0-9a-fA-F]{24}$/)
-        .required()
-        .messages({
-            'string.empty': 'Department is required',
-        }),
-    departmentRoleId: Joi.string()
-        .pattern(/^[0-9a-fA-F]{24}$/)
-        .required()
-        .messages({
-            'string.empty': 'Department role is required',
-        }),
+    departmentRoleUsers: Joi.array().items(Joi.string()).min(1).required().messages({
+        'string.empty': 'Department role users is required',
+        'any.required': 'Department role users is required',
+    }),
     sendInvitationLink: Joi.boolean().optional().default(true),
     isActive: Joi.boolean().optional().default(true),
 });

@@ -22,6 +22,18 @@ const userIncludes: Prisma.UserInclude = {
             },
         },
     },
+    departmentRoleUsers: {
+        select: {
+            id: true,
+            departmentRole: {
+                select: {
+                    id: true,
+                    name: true,
+                    departmentId: true,
+                },
+            },
+        },
+    },
 };
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
@@ -126,6 +138,18 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
+                departmentRoleUsers: {
+                    select: {
+                        id: true,
+                        departmentRole: {
+                            select: {
+                                id: true,
+                                name: true,
+                                departmentId: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 

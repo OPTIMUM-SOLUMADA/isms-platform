@@ -6,9 +6,7 @@ import { DataTable } from "@/components/DataTable";
 import type { Department } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { UserAvatarGroup } from "@/templates/users/UserAvatarGroup";
 import { useDepartmentUI } from "@/stores/department/useDepartmentUI";
-import DocumentsHoverCard from "@/templates/documents/hovercard/DocumentsHoverCard";
 import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
 import { formatDate } from "@/lib/date";
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,28 +61,14 @@ const Table = ({
             },
         },
         {
-            accessorKey: "users",
-            header: t("department.table.columns.members"),
-            cell: ({ row }) => {
-                const users = row.original.members;
-                return users.length > 0 ? (
-                    <div className="flex items-center gap-1">
-                        <UserAvatarGroup users={users} />
-                        <span className="text-muted-foreground text-xs">({users.length})</span>
-                    </div>
-                ) : (
-                    <CellNoValue />
-                );
-            }
-        },
-        {
-            accessorKey: "documents",
-            header: t("department.table.columns.documents"),
+            accessorKey: "functions",
+            header: t("department.table.columns.functions"),
             size: 60,
             cell: ({ row }) => {
-                const docs = row.original.documents;
+                const docs = row.original.roles;
+                if (!docs) return;
                 return docs.length > 0 ? (
-                    <DocumentsHoverCard documents={docs} />
+                    <span>{docs.length}</span>
                 ) : (
                     <CellNoValue />
                 );
@@ -142,17 +126,19 @@ const Table = ({
                         >
                             <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                            type="button"
-                            variant="ghost-destructive"
-                            size="sm"
-                            onClick={() => {
-                                setCurrentDepartment(department);
-                                openDelete();
-                            }}
-                        >
-                            <Trash className="h-4 w-4" />
-                        </Button>
+                        {department.roles.length === 0 && (
+                            <Button
+                                type="button"
+                                variant="ghost-destructive"
+                                size="sm"
+                                onClick={() => {
+                                    setCurrentDepartment(department);
+                                    openDelete();
+                                }}
+                            >
+                                <Trash className="h-4 w-4" />
+                            </Button>
+                        )}
                     </>
                 );
             },
