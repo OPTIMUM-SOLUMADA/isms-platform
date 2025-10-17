@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { useFetchPendingReviews } from "@/hooks/queries/usePendingReviewsMutations";
 import LoadingSplash from "@/components/loading";
 import { PendingReviewItem } from "@/templates/reviews/PendingReviewItem";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Filter } from "lucide-react";
+import { useFetchPendingReviews } from "@/hooks/queries/useReviewMutation";
 
 export default function PendingReviewsDashboardPage(): JSX.Element {
   const [filterDocument, setFilterDocument] = useState<string>("all");

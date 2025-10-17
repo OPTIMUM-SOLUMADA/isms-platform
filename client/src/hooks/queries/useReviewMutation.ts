@@ -91,7 +91,6 @@ export const useGetReview = (id: string | undefined) =>
   useQuery<DocumentReview, ApiAxiosError>({
     queryKey: ["reviews", id],
     queryFn: async () => (await documentReviewService.findById(id!)).data,
-    staleTime: 1000 * 60 * 1,
     enabled: !!id,
   });
 
@@ -122,3 +121,23 @@ export const useUpdateComment = (id: string | undefined) => {
     },
   });
 };
+
+export const useFetchPendingReviews = () => {
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ['pending-reviews'],
+    queryFn: async () => (await documentReviewService.getPendingReviews()).data
+  })
+}
+
+export const useMarkAsCompleted = () => {
+  const queryClient = useQueryClient();
+  return useMutation<any, ApiAxiosError, { id: string }>({
+    mutationFn: async (payload) =>
+      documentReviewService.markAsCompleted(payload.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+    },
+  });
+}

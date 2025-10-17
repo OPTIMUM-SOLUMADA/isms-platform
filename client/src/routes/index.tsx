@@ -24,6 +24,7 @@ import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
 import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
 import ReviewApprovalPage from "@/pages/reviews/ReviewApprovalPage";
 import PendingReviewsDashboardPage from "@/pages/reviews/PendingReviewsDashboardPage";
+import PatchDocumentVersionPage from "@/pages/reviews/PatchDocumentVersionPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -99,7 +100,7 @@ const routeConfig: AppRoute[] = [
                 permission: "reviews.page.access",
                 children: [
                     { index: true, element: <ReviewWorkflowPage /> },
-                    { path: "pending", element: <PendingReviewsDashboardPage />}
+                    { path: "pending", element: <PendingReviewsDashboardPage /> }
                 ],
             },
 
@@ -108,7 +109,7 @@ const routeConfig: AppRoute[] = [
                 path: "pending-reviews",
                 permission: "pendingReviews.page.access",
                 children: [
-                    { index: true, element: <PendingReviewsDashboardPage />}
+                    { index: true, element: <PendingReviewsDashboardPage /> }
                 ],
             },
             // Compliance
@@ -182,6 +183,12 @@ const routeConfig: AppRoute[] = [
                 path: "review-approval/:reviewId",
                 permission: "documents.page.access",
                 children: [{ index: true, element: <ReviewApprovalPage /> }],
+            },
+            // Patch Document Version
+            {
+                path: "patch-document-version/:reviewId",
+                permission: "documents.page.access",
+                children: [{ index: true, element: <PatchDocumentVersionPage /> }],
             },
             // Special pages
             { path: "unauthorized", element: <UnauthorizedPage /> },
