@@ -144,6 +144,39 @@ export class DocumentReviewService {
         });
     }
 
+    async findPendingReviews(): Promise<DocumentReview[]> {
+        return prisma.documentReview.findMany({
+            where: {
+                decision: { isSet: true },
+                isCompleted: false,
+            },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        status: true,
+                        isoClause: {
+                            select: {
+                                name: true,
+                                code: true,
+                            },
+                        },
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                            },
+                        },
+                    },
+                },
+                reviewer: true,
+            },
+        });
+    }
+
     async update(id: string, data: Prisma.DocumentReviewUpdateInput): Promise<DocumentReview> {
         return prisma.documentReview.update({
             where: { id },
@@ -156,18 +189,18 @@ export class DocumentReviewService {
         documentVersionId,
         reviewerIds,
         userId,
-        reviewDate,
+        dueDate,
     }: {
         documentId: string;
         documentVersionId: string;
         reviewerIds: string[];
         userId?: string;
-        reviewDate?: Date | null;
+        dueDate?: Date | null;
     }) {
         const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
-            reviewDate: reviewDate || null,
+            dueDate: dueDate || null,
             documentVersionId: documentVersionId,
             ...(userId ? { assignedById: userId } : {}),
         }));
@@ -180,25 +213,25 @@ export class DocumentReviewService {
         documentVersionId,
         reviewerIds,
         userId,
-        reviewDate,
+        dueDate,
     }: {
         documentId: string;
         documentVersionId: string;
         reviewerIds: string[];
         userId?: string;
-        reviewDate?: Date | null;
+        dueDate?: Date | null;
     }) {
-        // Delete reviews where reviewDate is greater than now
+        // Delete reviews where dueDate is greater than now
         await prisma.documentReview.deleteMany({
             where: {
                 documentId: documentId,
-                reviewDate: { gt: new Date() },
+                dueDate: { gt: new Date() },
             },
         });
         const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
-            reviewDate: reviewDate || null,
+            dueDate: dueDate || null,
             documentVersionId: documentVersionId,
             ...(userId ? { assignedById: userId } : {}),
         }));

@@ -28,6 +28,15 @@ export class DocumentReviewController {
         }
     }
 
+    async findPendingReviews(req: Request, res: Response) {
+        try {
+            const allPending = await service.findPendingReviews();
+            return res.json(allPending);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
     async update(req: Request, res: Response) {
         try {
             const type = await service.update(req.params.id!, req.body);

@@ -49,7 +49,7 @@ model DepartmentRole {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  members   User[]     @relation("UserDepartmentRole")
+  members   User[]   @relation("UserDepartmentRole")
 
   @@unique([departmentId, name]) // un rôle est unique par département
   @@map("department_roles")
@@ -94,7 +94,7 @@ model User {
   departmentId String?     @db.ObjectId
   department   Department? @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
-  departmentRoleId String?     @db.ObjectId
+  departmentRoleId String?         @db.ObjectId
   departmentRole   DepartmentRole? @relation("UserDepartmentRole", fields: [departmentRoleId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   metadata                Json?
@@ -306,7 +306,8 @@ model DocumentReview {
   comment           String?         // Ajouté : Pour "commenter une politique pendant le processus de révision"
   decision          ReviewDecision?
   isCompleted       Boolean         @default(false) // Ajouté : pour suivre si la tâche est terminée
-  reviewDate        DateTime?       // Ajouté : La date à laquelle la révision a été effectuée
+  reviewDate        DateTime? // Ajouté : La date à laquelle la révision a été effectuée
+  dueDate           DateTime? // Date de limite de révision
   documentVersionId String          @db.ObjectId
   documentVersion   DocumentVersion @relation(name: "ReviewDocumentVersion", fields: [documentVersionId], references: [id], onDelete: Cascade)
 

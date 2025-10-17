@@ -60,7 +60,7 @@ export async function generateDocumentReviewsJob() {
             documentId: doc.id,
             documentVersionId: lastVersionId,
             reviewerIds: doc.reviewers.map((r) => r.user.id),
-            reviewDate: nextReviewDate,
+            dueDate: nextReviewDate,
         });
 
         count += 1;
@@ -102,7 +102,7 @@ export async function notifyReviewersJob() {
                     description: document.description,
                     status: document.status,
                 },
-                dueDate: review.reviewDate?.toDateString() || '',
+                dueDate: review.dueDate?.toDateString() || '',
                 reviewer: { name: reviewer.name },
                 year: new Date().getFullYear().toString(),
                 viewDocLink: `${env.CORS_ORIGIN}/documents/view/${document.id}`,

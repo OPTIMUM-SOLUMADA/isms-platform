@@ -107,10 +107,10 @@ const Table = ({
             header: t("review.table.columns.dueDate"),
             size: 50,
             cell: ({ row }) => {
-                const { reviewDate } = row.original;
-                if (!reviewDate) return;
+                const { dueDate } = row.original;
+                if (!dueDate) return;
                 return (
-                    <DateLabel date={reviewDate} />
+                    <DateLabel date={dueDate} />
                 );
             },
         },
@@ -119,14 +119,14 @@ const Table = ({
             header: t("review.table.columns.dueDateProgress"),
             size: 120,
             cell: ({ row }) => {
-                const { createdAt, reviewDate, decision } = row.original;
-                if (!reviewDate) return;
+                const { createdAt, dueDate, decision } = row.original;
+                if (!dueDate) return;
                 if (decision) return <CellNoValue />;
                 return (
                     <div className="w-full pr-2">
                         <DueDateProgress
                             createdAt={createdAt}
-                            dueDate={reviewDate}
+                            dueDate={dueDate}
                         />
                     </div>
                 );
