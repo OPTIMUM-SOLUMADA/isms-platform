@@ -100,7 +100,7 @@ const RejectDocumentDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} className="max-w-4xl">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(handleSubmit)}

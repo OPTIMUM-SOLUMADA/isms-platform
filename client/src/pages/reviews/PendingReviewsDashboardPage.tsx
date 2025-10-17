@@ -1,66 +1,27 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { useMemo, useState } from "react";
 import { useFetchPendingReviews } from "@/hooks/queries/usePendingReviewsMutations";
 import LoadingSplash from "@/components/loading";
-import HtmlContent from "@/components/HTMLContent";
-import { UserHoverCard } from "@/templates/users/hovercard/UserHoverCard";
-
-type ReviewDecision = "approved" | "rejected" | "pending";
-
-type DocumentReview = {
-  id: string;
-  documentId: string;
-  reviewerId: string;
-  assignedById?: string | null;
-  comment?: string;
-  decision?: ReviewDecision;
-  isCompleted: boolean;
-  reviewDate?: string;
-  documentVersionId: string;
-  reviewerName: string;
-  documentTitle: string;
-  department?: string;
-  dueDate: string;
-};
+import { PendingReviewItem } from "@/templates/reviews/PendingReviewItem";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Filter } from "lucide-react";
 
 export default function PendingReviewsDashboardPage(): JSX.Element {
-  // const [reviews, setReviews] = useState<DocumentReview[]>(mockData);
-  const [query, setQuery] = useState("");
-  const [decisionFilter, setDecisionFilter] = useState<string>("all");
-  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
-  const [preview, setPreview] = useState<DocumentReview | null>(null);
+  const [filterDocument, setFilterDocument] = useState<string>("all");
 
-  const  { data, isLoading, error }   = useFetchPendingReviews();
-  // const filtered = useMemo(() => {
-  //   const q = query.toLowerCase();
-  //   let list = reviews.filter((r) => (decisionFilter === "all" ? true : r.decision === decisionFilter));
-  //   if (q.length) {
-  //     list = list.filter(
-  //       (r) =>
-  //         r.documentTitle.toLowerCase().includes(q) ||
-  //         r.reviewerName.toLowerCase().includes(q) ||
-  //         (r.department ?? "").toLowerCase().includes(q)
-  //     );
-  //   }
-  //   return list;
-  // }, [reviews, query, decisionFilter]);
+  const { data, isLoading } = useFetchPendingReviews();
 
-  console.log('pending', data,  isLoading, error );
-  
-  const toggleSelect = (id: string) => {
-    setSelectedIds((s) => ({ ...s, [id]: !s[id] }));
-  };
+  const documents = useMemo(() => {
+    if (!data) return [];
+    return data.map((d) => d.document).filter(d => !!d);
+  }, [data]);
 
-  // const singleChangeDecision = (id: string, decision: ReviewDecision) => {
-  //   setReviews(user)
-  // };
+  const filteredReviews = useMemo(() => {
+    if (!data) return [];
+    if (filterDocument === "all") return data;
+    return data.filter((r) => r.documentId === filterDocument);
+  }, [data, filterDocument]);
 
-  if(isLoading) return <LoadingSplash />
+  if (isLoading) return <LoadingSplash />;
 
   return (
     <div className="p-8 space-y-6">
@@ -69,61 +30,33 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
           <h1 className="text-2xl font-semibold">Aperçu — Avis sur documents</h1>
           <p className="text-sm text-muted-foreground">Liste et statut des révisions de documents.</p>
         </div>
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4" />
+
+          <Select value={filterDocument} onValueChange={setFilterDocument}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Filter by document" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{"Tous"}</SelectItem>
+              {documents.map((d, index) => (
+                <SelectItem key={index} value={d.id}>
+                  {d.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+        </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.isArray(data) && data.map((r) => (
-          <Card key={r.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-base font-medium">{r.document?.title}</CardTitle>
-                  {/* <p className="text-sm text-muted-foreground">{r.department  ?? "—"}</p> */}
-                </div>
-                <Checkbox checked={!!selectedIds[r.id]} onCheckedChange={() => toggleSelect(r.id)} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <HtmlContent html={r.comment ?? "Aucun commentaire"}/>
-              <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-                <div className="flex">Par <UserHoverCard user={r.reviewer}  /> </div>
-                <Badge variant={r.decision === "APPROVE" ? "outline" : "default"}>{r.decision}</Badge>
-              </div>
-              <div className="mt-3 flex justify-end gap-2">
-                {/* <Button variant="outline" size="sm" onClick={() => setPreview(r)}>
-                  Aperçu
-                </Button> */}
-                {/* <Button variant="default" size="sm" onClick={() => singleChangeDecision(r.id, "approved")}>
-                  Approuver
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => singleChangeDecision(r.id, "rejected")}>
-                  Rejeter
-                </Button> */}
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {filteredReviews.map((r, index) => (
+          <div key={index}>
+            <PendingReviewItem review={r} />
+          </div>
         ))}
       </div>
-
-      <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
-        <DialogContent className="max-w-xl">
-          {preview && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{preview.documentTitle}</DialogTitle>
-              </DialogHeader>
-              <p className="text-sm text-gray-500 mb-2">{preview.department} — {preview.reviewerName}</p>
-              <p className="text-gray-700 mb-4">{preview.comment ?? "Aucun commentaire."}</p>
-              <div className="flex justify-end gap-2">
-                {/* <Button onClick={() => singleChangeDecision(preview.id, "approved")}>Approuver</Button>
-                <Button variant="destructive" onClick={() => singleChangeDecision(preview.id, "rejected")}>
-                  Rejeter
-                </Button> */}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
