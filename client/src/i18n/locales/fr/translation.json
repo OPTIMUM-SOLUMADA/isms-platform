@@ -290,7 +290,8 @@
                         "title": "Succès",
                         "description": "Votre examen a été soumis avec succès. Le document a été approuvé."
                     }
-                }
+                },
+                "done": "Vous avez déjà approuvé ce document."
             }
         },
         "actions": {
@@ -1763,6 +1764,13 @@
                 "requirementsLabel": "Exigences du mot de passe",
                 "requirementMet": "Exigence remplie",
                 "requirementNotMet": "Exigence non remplie"
+            }
+        },
+        "reviews": {
+            "decisions": {
+                "approve": "Approuvé",
+                "requestChanges": "Modifications demandées",
+                "reject": "Rejeté"
             }
         }
     }

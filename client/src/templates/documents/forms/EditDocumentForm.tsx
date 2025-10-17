@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -133,6 +133,18 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
 
 
     const { data: departmentsRes } = useFetchAllDepartments();
+    const departmentRoles = useMemo(() => {
+      if (!Array.isArray(departmentsRes?.departments)) return [];
+      return departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
+        heading: item.name,
+        options: [
+          ...item.roles.map(role => ({
+            label: role.name,
+            value: role.id
+          }))
+        ]
+      }))
+    }, [departmentsRes?.departments])
 
 
     return (
@@ -289,15 +301,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     <FormControl>
                       <MultiSelect
                         placeholder={t("document.add.form.fields.departments.placeholder")}
-                        options={departmentsRes.departments.filter(item => item.roles.length > 0).map(item => ({
-                          heading: item.name,
-                          options: [
-                            ...item.roles.map(role => ({
-                              label: role.name,
-                              value: role.id
-                            }))
-                          ]
-                        }))}
+                        options={departmentRoles}
                         value={field.value}
                         defaultValue={field.value}
                         onValueChange={field.onChange}

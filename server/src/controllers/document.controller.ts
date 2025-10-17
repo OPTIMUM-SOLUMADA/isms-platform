@@ -152,6 +152,7 @@ export class DocumentController {
 
             // link departmentRoles to document
             this.departmentRoleDocument.reCreateMany(
+                updatedDocument.id,
                 departmentRoles.split(',').map((departmentRoleId: any) => ({
                     documentId: updatedDocument.id,
                     departmentRoleId: departmentRoleId,

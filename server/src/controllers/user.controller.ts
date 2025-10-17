@@ -163,7 +163,7 @@ export class UserController {
                 departmentRoleId: roleId,
             }));
 
-            await depRoleUserService.reCreateMany(userRoles);
+            await depRoleUserService.reCreateMany(updated.id, userRoles);
             res.json(updated);
         } catch (err) {
             console.log(err);

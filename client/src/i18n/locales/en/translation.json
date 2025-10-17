@@ -290,7 +290,8 @@
             "title": "Success",
             "description": "Your review has been submitted successfully. The document has been approved."
           }
-        }
+        },
+        "done": "You have already approved this document."
       }
     },
     "actions": {
@@ -1751,6 +1752,13 @@
         "requirementsLabel": "Password requirements",
         "requirementMet": "Requirement met",
         "requirementNotMet": "Requirement not met"
+      }
+    },
+    "reviews": {
+      "decisions": {
+        "approve": "Approved",
+        "requestChanges": "Changes requested",
+        "reject": "Rejected"
       }
     }
   }
