@@ -110,6 +110,23 @@ export const useSubmitReview = (id: string | undefined) => {
   });
 };
 
+export const usePatchDocumentReview = (id: string | undefined) => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    any,
+    ApiAxiosError,
+    { reviewId: string; patchedVersion: string; userId: string }
+  >({
+    mutationFn: async (payload) =>
+      documentReviewService.patchDocumentReview(id!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+    },
+  });
+};
+
 export const useUpdateComment = (id: string | undefined) => {
   const queryClient = useQueryClient();
   return useMutation<any, ApiAxiosError, { comment: string }>({
