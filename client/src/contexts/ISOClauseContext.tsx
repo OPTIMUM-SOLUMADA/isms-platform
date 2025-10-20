@@ -26,7 +26,7 @@ export const ISOClauseProvider = ({ children }: { children: ReactNode }) => {
     } = useQuery<ISOClause[], Error>({
         queryKey: ["isoClauses"],
         queryFn: async () => {
-            const res = await isoClauseService.list();
+            const res = await isoClauseService.list({ limit: 1000, page: 1 });
             return res.data;
         },
         staleTime: 1000 * 60, // cache data for 1 min

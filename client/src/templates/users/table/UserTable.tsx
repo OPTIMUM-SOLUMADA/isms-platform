@@ -19,7 +19,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { UserHoverCard } from "../hovercard/UserHoverCard";
-import DepartmentHoverCard from "../../departments/hovercard/DepartmentHoverCard";
 import You from "@/components/You";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useUserUIStore } from "@/stores/user/useUserUIStore";
@@ -150,7 +149,11 @@ const Table = ({
         {
             accessorKey: "department",
             header: t("user.table.columns.department"),
-            cell: ({ row }) => <DepartmentHoverCard department={row.original.department} />
+            cell: ({ row }) => {
+
+                const roles = row.original.departmentRoleUsers.map((item) => item.departmentRole.name);
+                return roles.join(' / ');
+            }
         },
         {
             accessorKey: "isActive",

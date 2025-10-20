@@ -45,7 +45,8 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
             REJECTED: t("review.rejected"),
         }[status] || t("review.pending");
 
-    const formattedDate = new Date(item.reviewDate || item.createdAt).toLocaleDateString("en-US", {
+    const date = item.reviewDate || item.createdAt || new Date();
+    const formattedDate = new Date(date).toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",

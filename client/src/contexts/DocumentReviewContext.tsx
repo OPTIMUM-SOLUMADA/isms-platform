@@ -121,7 +121,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       selectedViewer,
       setSelectedViewer,
     }),
-    [viewers, createViewer, updateComment]
+    [viewers, createViewer, updateComment, isLoading, refetchViewers, selectedViewer, setSelectedViewer]
   );
 
   return (

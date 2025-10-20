@@ -73,12 +73,12 @@ const ApproveDocumentDialog = ({
                     <div className="flex items-center gap-2 mb-2">
                         <AlertCircle className="w-6 h-6 text-theme-danger" />
                         <DialogTitle>
-                            {t("reviewApproval.dialogs.approve.title", { entity: document.title })}
+                            {t("reviewApproval.dialogs.approve.title", { entity: document?.title })}
                         </DialogTitle>
                     </div>
                     <DialogDescription
                         dangerouslySetInnerHTML={{
-                            __html: t("reviewApproval.dialogs.approve.description", { entity: document.title })
+                            __html: t("reviewApproval.dialogs.approve.description", { entity: document?.title })
                         }}
                     />
                     <p className="mt-3 text-primary">

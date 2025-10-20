@@ -120,7 +120,7 @@ const Table = ({
             size: 120,
             cell: ({ row }) => {
                 const { createdAt, dueDate, decision } = row.original;
-                if (!dueDate) return;
+                if (!dueDate || !createdAt) return;
                 if (decision) return <CellNoValue />;
                 return (
                     <div className="w-full pr-2">

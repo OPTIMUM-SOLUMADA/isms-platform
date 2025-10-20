@@ -3,6 +3,7 @@ import { API_CONFIG } from "@/configs/api";
 import axios from "@/lib/axios";
 import { AddDepartmentFormData } from "@/templates/departments/forms/AddDepartmentForm";
 import { AddDepartmentRoleFormData } from "@/templates/departments/forms/AddDepartmentRoleForm";
+import { EditDepartmentFormData } from "@/templates/departments/forms/EditDepartmentForm";
 import { PaginationArgs } from "@/types/pagination";
 
 const api = API_CONFIG.ENDPOINTS.DEPARTMENTS;
@@ -14,7 +15,7 @@ export const depService = {
     getAll: () => axios.get(api.BASE, { params: { page: 1, limit: 1000 } }),
     getById: async (id: string) => axios.get(api.GET(id)),
     create: async (data: AddDepartmentFormData) => axios.post(api.BASE, data),
-    update: async (userId: string, data: any) => axios.put(api.GET(userId), data),
+    update: async (userId: string, data: Omit<EditDepartmentFormData, "id">) => axios.put(api.GET(userId), data),
     delete: async (userId: string) => axios.delete(api.GET(userId)),
     search: async (query: string) => axios.get(api.SEARCH, { params: { q: query } }),
 
