@@ -26,7 +26,7 @@ export const DocumentTypeProvider = ({ children }: { children: ReactNode }) => {
     } = useQuery<DocumentType[], Error>({
         queryKey: ["documentTypes"],
         queryFn: async () => {
-            const res = await documentTypeService.list();
+            const res = await documentTypeService.list({ limit: 1000, page: 1 });
             return res.data;
         },
         staleTime: 1000 * 60, // cache data for 1 min

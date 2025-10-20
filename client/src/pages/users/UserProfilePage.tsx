@@ -41,6 +41,7 @@ import { depService } from '@/services/departmentService';
 import { UserAvatar } from '@/components/user-avatar';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import BackButton from '@/components/BackButton';
+import { RoleType } from '@/types';
 
 interface UserData {
     id: string;
@@ -105,7 +106,7 @@ export default function UserProfilePage() {
 
         async function fetchDepartment() {
             try {
-                const allDepart = await depService.list();
+                const allDepart = await depService.list({ limit: 100, page: 1 });
                 const depart = allDepart.data;
                 setDepartment(depart);
             } catch (error) {
@@ -131,11 +132,9 @@ export default function UserProfilePage() {
             const updateData = {
                 name: formData.name,
                 email: formData.email,
-                role: formData.role,
-                departmentId: formData.department
+                role: formData.role as RoleType,
+                departmentRoleUsers: [formData.department]
             }
-
-            console.log("udp", updateData);
 
             await userService.update(id!, updateData);
             // Mettre à jour les données locales

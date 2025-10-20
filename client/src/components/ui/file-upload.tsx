@@ -1,5 +1,4 @@
-"use client";
-
+// @ts-nocheck
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import {

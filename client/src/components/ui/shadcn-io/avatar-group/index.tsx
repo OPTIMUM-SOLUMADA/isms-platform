@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, type Transition } from 'motion/react';
-import { Children, type ReactNode } from 'react';
+import { Children } from 'react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -200,7 +200,7 @@ function AvatarGroup({
       >
         {children?.map((child, index) => {
           const zIndex = invertOverlap ? React.Children.count(children) - index : index;
-          
+
           if (variant === 'motion') {
             return (
               <AvatarMotionContainer
@@ -214,7 +214,7 @@ function AvatarGroup({
               </AvatarMotionContainer>
             );
           }
-          
+
           return (
             <AvatarCSSContainer
               key={index}
