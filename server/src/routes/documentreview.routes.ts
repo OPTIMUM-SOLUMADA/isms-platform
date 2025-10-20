@@ -1,10 +1,9 @@
 import { Router } from 'express';
-// import { DocumentReviewController } from '@/controllers/documentreview.controller';
 import {
     documentReviewCreateSchema,
     documentReviewMakeDecisionSchema,
     documentReviewUpdateSchema,
-} from '@/validators/documentreview.validator'; //documentTypeUpdateSchema
+} from '@/validators/documentreview.validator';
 import { validate } from '@/middlewares/validate';
 import { DocumentReviewController } from '@/controllers/documentreview.controller';
 
@@ -28,5 +27,7 @@ router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(
 
 // mark as completed
 router.patch('/mark-as-completed/:id', controller.markAsCompleted.bind(controller));
+// patch
+router.patch('/:id/patch-document-version', controller.patchReview.bind(controller));
 
 export default router;

@@ -97,6 +97,8 @@ model User {
   documentAuthors         DocumentAuthor[]   @relation("DocumentAuthorUser")
   documentReviewers       DocumentReviewer[] @relation("DocumentReviewerUser")
   assignedDocumentReviews DocumentReview[]   @relation("Assigner")
+  reviewsCompleted        DocumentReview[]   @relation("ReviewCompletedBy")
+  createdVersions         DocumentVersion[]  @relation("VersionCreatedByUser")
 
   // Reverse relations: must break referential action cycles
   createdUsers           User[]           @relation("CreatedUsers")
@@ -294,13 +296,15 @@ model ISOClause {
 }
 
 model DocumentVersion {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  documentId String   @db.ObjectId
-  version    String
-  comment    String?
-  createdAt  DateTime @default(now())
-  isCurrent  Boolean  @default(false) // optional: flag the latest version
-  fileUrl    String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String   @db.ObjectId
+  version     String
+  comment     String?
+  createdAt   DateTime @default(now())
+  isCurrent   Boolean  @default(false) // optional: flag the latest version
+  fileUrl     String?
+  createdById String?  @db.ObjectId
+  createdBy   User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   document        Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   approvals       DocumentApproval[]
@@ -336,9 +340,11 @@ model DocumentReview {
   notifiedAt        DateTime?
   completedAt       DateTime?
 
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
-  assignedBy User?    @relation("Assigner", fields: [assignedById], references: [id])
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  reviewer      User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  assignedBy    User?    @relation("Assigner", fields: [assignedById], references: [id])
+  completedById String?  @db.ObjectId
+  completedBy   User?    @relation(name: "ReviewCompletedBy", fields: [completedById], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

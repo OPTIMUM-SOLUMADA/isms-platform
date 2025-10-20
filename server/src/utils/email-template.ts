@@ -3,6 +3,7 @@ import path from 'path';
 import handlebars from 'handlebars';
 import juice from 'juice';
 import { minify } from 'html-minifier-terser';
+import { TEMPLATE_DIR_PATH } from '@/configs/path';
 
 const templatesCache: Record<string, handlebars.TemplateDelegate> = {};
 const partialsRegistered = { en: false, fr: false };
@@ -10,7 +11,7 @@ const partialsRegistered = { en: false, fr: false };
 async function registerPartials(lang: 'en' | 'fr') {
     if (partialsRegistered[lang]) return;
 
-    const partialsDir = path.join(__dirname, '..', 'templates', 'partials');
+    const partialsDir = path.join(TEMPLATE_DIR_PATH, 'partials');
     const files = fs.readdirSync(partialsDir);
 
     for (const file of files) {
@@ -32,7 +33,7 @@ export async function renderTemplate<T extends object>(
     // Load and compile main template content (body)
     const bodyKey = `${lang}:body:${templateName}`;
     if (!templatesCache[bodyKey]) {
-        const bodyPath = path.join(__dirname, '..', 'templates', lang, `${templateName}.html`);
+        const bodyPath = path.join(TEMPLATE_DIR_PATH, lang, `${templateName}.html`);
         const bodySource = fs.readFileSync(bodyPath, 'utf8');
         templatesCache[bodyKey] = handlebars.compile(bodySource);
     }
@@ -41,7 +42,7 @@ export async function renderTemplate<T extends object>(
     // Load and compile layout
     const layoutKey = `${lang}:layout`;
     if (!templatesCache[layoutKey]) {
-        const layoutPath = path.join(__dirname, '..', 'templates', lang, 'layout.html');
+        const layoutPath = path.join(TEMPLATE_DIR_PATH, lang, 'layout.html');
         const layoutSource = fs.readFileSync(layoutPath, 'utf8');
         templatesCache[layoutKey] = handlebars.compile(layoutSource);
     }

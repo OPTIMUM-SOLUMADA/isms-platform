@@ -23,7 +23,7 @@ export const ISOClauseProvider = ({ children }: { children: ReactNode }) => {
         isError,
         error,
         refetch,
-    } = useQuery<ISOClause[], Error>({
+    } = useQuery<{ iSOClauses: ISOClause[] }, Error>({
         queryKey: ["isoClauses"],
         queryFn: async () => {
             const res = await isoClauseService.list({ limit: 1000, page: 1 });
@@ -35,7 +35,7 @@ export const ISOClauseProvider = ({ children }: { children: ReactNode }) => {
     return (
         <ISOClauseContext.Provider
             value={{
-                clauses: data ?? [],
+                clauses: data?.iSOClauses ?? [],
                 loading: isLoading,
                 error: isError ? error.message : null,
                 refetchClauses: refetch,

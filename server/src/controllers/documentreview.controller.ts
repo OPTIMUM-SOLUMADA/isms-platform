@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { DocumentReviewService } from '@/services/documentreview.service';
+import { DocumentVersionService } from '@/services/documentversion.service';
 
 const service = new DocumentReviewService();
+const versionService = new DocumentVersionService();
 
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
@@ -124,12 +126,12 @@ export class DocumentReviewController {
                     ...(status === 'PENDING' && {
                         isCompleted: false,
                         decision: { isSet: false },
-                        reviewDate: { gte: new Date() },
+                        dueDate: { gte: new Date() },
                     }),
                     ...(status === 'EXPIRED' && {
                         isCompleted: false,
                         decision: { isSet: false },
-                        reviewDate: { lte: new Date() },
+                        dueDate: { lte: new Date() },
                     }),
                     ...(status === 'APPROVED' && {
                         isCompleted: false,
@@ -165,6 +167,29 @@ export class DocumentReviewController {
         try {
             const { userId = '' } = req.params;
             const data = await service.getReviewStatsByUserId(userId);
+            return res.json(data);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async patchReview(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { userId, patchedVersion } = req.body;
+            // Complete review
+            const data = await service.update(id!, {
+                isCompleted: true,
+                completedAt: new Date(),
+                completedBy: { connect: { id: userId } },
+            });
+
+            // Create new version of the doc and mark it as current
+            await versionService.createPatchedVersion(data.documentId, {
+                userId: userId,
+                version: patchedVersion,
+            });
+
             return res.json(data);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });

@@ -308,6 +308,50 @@
             }
         }
     },
+    "patchDocumentReview": {
+        "title": "Modifier le document",
+        "subtitle": "Modifier le document",
+        "completed": {
+            "message": "Cette révision est terminée ! Vous pouvez consulter une autre révision ou retourner au tableau de bord."
+        },
+        "actions": {
+            "viewRequest": {
+                "label": "Voir le détails de la demande"
+            },
+            "patch": {
+                "label": "Mettre à jour la version"
+            },
+            "reviews": {
+                "label": "Voir mes révisions"
+            }
+        },
+        "dialogs": {
+            "confirm": {
+                "title": "Confirmer la modification",
+                "message": "Êtes-vous sûr de vouloir enregistrer cette nouvelle version du document ?",
+                "description": "Une fois enregistrée, cette version sera ajoutée à l'historique des versions du document et sera disponible pour les utilisateurs autorisés.",
+                "actions": {
+                    "cancel": {
+                        "label": "Annuler"
+                    },
+                    "confirm": {
+                        "label": "Oui, enregistrer",
+                        "loading": "Enregistrement en cours..."
+                    }
+                }
+            }
+        },
+        "toast": {
+            "success": {
+                "title": "Succès",
+                "description": "La nouvelle version du document a été enregistrée avec succès."
+            },
+            "error": {
+                "title": "Erreur",
+                "description": "Une erreur s'est produite lors de l'enregistrement de la nouvelle version du document. Veuillez réessayer."
+            }
+        }
+    },
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et rôles",

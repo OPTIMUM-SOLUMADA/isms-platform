@@ -156,6 +156,15 @@ export class DocumentReviewService {
                     },
                 },
                 reviewer: true,
+                completedBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        createdAt: true,
+                    },
+                },
             },
             orderBy: { reviewDate: 'desc' },
         });
@@ -347,7 +356,7 @@ export class DocumentReviewService {
                     reviewerId: userId,
                     isCompleted: false,
                     decision: { isSet: false },
-                    reviewDate: { gte: now },
+                    dueDate: { gte: now },
                 },
             }),
 
@@ -356,7 +365,7 @@ export class DocumentReviewService {
                     reviewerId: userId,
                     isCompleted: false,
                     decision: { isSet: false },
-                    reviewDate: { lte: now },
+                    dueDate: { lte: now },
                 },
             }),
 

@@ -308,6 +308,50 @@
       }
     }
   },
+  "patchDocumentReview": {
+    "title": "Edit Document",
+    "subtitle": "Edit Document",
+    "completed": {
+      "message": "This review is complete! You can view another review or return to the dashboard."
+    },
+    "actions": {
+      "viewRequest": {
+        "label": "See request details"
+      },
+      "patch": {
+        "label": "Update version"
+      },
+      "reviews": {
+        "label": "Back to reviews"
+      }
+    },
+    "dialogs": {
+      "confirm": {
+        "title": "Confirm Edit",
+        "message": "Are you sure you want to save this new version of the document?",
+        "description": "Once saved, this version will be added to the document's version history and will be available to authorized users.",
+        "actions": {
+          "cancel": {
+            "label": "Cancel"
+          },
+          "confirm": {
+            "label": "Yes, Save",
+            "loading": "Saving..."
+          }
+        }
+      }
+    },
+    "toast": {
+      "success": {
+        "title": "Success",
+        "description": "The new version of the document has been saved successfully."
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred while saving the new version of the document. Please try again."
+      }
+    }
+  },
   "user": {
     "title": "User management",
     "subtitle": "Manage user accounts and roles",
