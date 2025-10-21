@@ -23,7 +23,7 @@ const HtmlContent: FC<HtmlContentProps> = ({ html, className }) => {
     return (
         <div
             className={clsx(
-                "prose prose-sm max-w-none text-gray-800 dark:text-gray-200",
+                "prose prose-sm text-sm max-w-none text-gray-800 dark:text-gray-200",
                 "prose-headings:font-semibold prose-a:text-blue-600 hover:prose-a:underline",
                 "prose-img:rounded-lg prose-img:shadow-sm cursor-auto [&>p]:my-2 [&>ol]:my-2 [&>ul]:my-2 [&>ul]:pl-8",
                 className
