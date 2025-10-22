@@ -71,3 +71,7 @@ GOOGLE_REDIRECT_URI=http://localhost:8080/gd/oauth2callback
 
 BCRYPT_SALT_ROUNDS=12
 ```
+
+## API Documentation
+
+For detailed API usage and endpoints, please check the [API Documentation](API.md).
