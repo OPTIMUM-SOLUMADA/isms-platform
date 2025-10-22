@@ -85,7 +85,7 @@ Copy **.env.example** to **.env**
 cp .env.example .env
 ```
 
-Then edit **.env** with your actual values
+Then edit **.env** with your actual values. See the [Setup .env Guide](ENV.md)
 
 ```ini
 VITE_BACKEND_URL=your_backend_api_url
@@ -106,8 +106,8 @@ npm run dev
 | `npm run lint`  | Run ESLint to check code quality |
 | `npm run test`  | Run tests (if configured)        |
 
-```bash
-caché par le pull origin main : ===> git stash 
+````bash
+caché par le pull origin main : ===> git stash
 retourné le stash ======> git stash pop
 
 
@@ -116,4 +116,4 @@ Pour la création du navigation dashboard, il faut modifier les fichiers suivant
     =>./constant/navigation
     =>./type/role
     =>./configs/role-permissions
-```
+````
