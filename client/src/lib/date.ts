@@ -1,3 +1,7 @@
+
+import i18n from "@/i18n/config";
+import { enUS, fr } from "date-fns/locale";
+
 /**
  * Format a date according to locale
  * @param date - Date object or ISO string
@@ -16,3 +20,17 @@ export function formatDate(
 
     return new Intl.DateTimeFormat(userLocale, options).format(d);
 }
+
+
+
+export const getDateFnsLocale = () => {
+    const lng = i18n.language;
+
+    switch (lng) {
+        case "fr":
+            return fr;
+        case "en":
+        default:
+            return enUS;
+    }
+};

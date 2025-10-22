@@ -195,4 +195,15 @@ export class DocumentReviewController {
             return res.status(500).json({ error: error.message });
         }
     }
+
+    // Due soon
+    async getMyReviewsDueSoon(req: Request, res: Response) {
+        try {
+            const { userId = '' } = req.params;
+            const data = await service.getMyReviewsDueSoon(userId);
+            return res.json(data);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 }

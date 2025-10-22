@@ -19,6 +19,7 @@ router.put(
 // Get my reviews
 router.get('/my-reviews/:userId', controller.getMyReviews.bind(controller));
 router.get('/my-reviews/:userId/stats', controller.getMyReviewsStats.bind(controller));
+router.get('/my-reviews/:userId/due-soon', controller.getMyReviewsDueSoon.bind(controller));
 router.post('/', validate(documentReviewCreateSchema), controller.create.bind(controller));
 router.get('/', controller.findAll.bind(controller));
 router.get('/pending-reviews', controller.findPendingReviews.bind(controller));

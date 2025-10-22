@@ -1,7 +1,8 @@
 import fs from 'fs';
 import { Readable } from 'stream';
 import { google } from 'googleapis';
-import type { OAuth2Client } from 'google-auth-library';
+import type { drive_v3 } from 'googleapis';
+import type { JWT } from 'google-auth-library';
 
 export type UploadResult = {
     id: string;
@@ -23,68 +24,37 @@ export type DriveFileMetadata = {
     webContentLink?: string;
 };
 
-export interface GDriveOptions {
-    clientId?: string;
-    clientSecret?: string;
-    redirectUri?: string;
-    token?: any; // OAuth2 token object { access_token, refresh_token, scope, token_type, expiry_date }
+export interface ServiceAccountOptions {
+    keyFile: string; // Path to your service account JSON file
     scopes?: string[];
 }
 
 /**
- * GoogleDriveService using OAuth2
+ * Google Drive Service using a Service Account JSON (server-side only)
  */
 export class GoogleDriveService {
-    private authClient?: OAuth2Client;
-    private drive: ReturnType<typeof google.drive>;
+    private drive!: drive_v3.Drive;
     private readonly scopes: string[];
 
-    constructor(private readonly opts: GDriveOptions = {}) {
+    constructor(private readonly opts: ServiceAccountOptions) {
         this.scopes = opts.scopes ?? ['https://www.googleapis.com/auth/drive'];
-        this.drive = google.drive({ version: 'v3' }); // placeholder
     }
 
     /**
-     * Initialize OAuth2 client. Call before other methods.
+     * Initialize the service account auth and create Drive client.
      */
     async initialize(): Promise<void> {
-        const { clientId, clientSecret, redirectUri, token } = this.opts;
-
-        if (!clientId || !clientSecret || !redirectUri) {
-            throw new Error(
-                'OAuth2 credentials (clientId, clientSecret, redirectUri) are required.',
-            );
+        if (!this.opts.keyFile) {
+            throw new Error('A path to the service account JSON file is required.');
         }
 
-        this.authClient = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
-
-        if (token) {
-            this.authClient.setCredentials(token);
-        }
-
-        this.drive = google.drive({ version: 'v3', auth: this.authClient });
-    }
-
-    /**
-     * Generate an OAuth2 URL for user consent.
-     */
-    generateAuthUrl(): string {
-        if (!this.authClient) throw new Error('Service not initialized.');
-        return this.authClient.generateAuthUrl({
-            access_type: 'offline',
-            scope: this.scopes,
-            prompt: 'consent',
+        const auth = new google.auth.GoogleAuth({
+            keyFile: this.opts.keyFile,
+            scopes: this.scopes,
         });
-    }
 
-    /**
-     * Exchange authorization code for token
-     */
-    async getTokenFromCode(code: string) {
-        if (!this.authClient) throw new Error('Service not initialized.');
-        const { tokens } = await this.authClient.getToken(code);
-        this.authClient.setCredentials(tokens);
-        return tokens;
+        const client = (await auth.getClient()) as JWT;
+        this.drive = google.drive({ version: 'v3', auth: client });
     }
 
     // ---------------------------
@@ -103,7 +73,7 @@ export class GoogleDriveService {
         stream: Readable,
         options?: { name?: string; parents?: string[]; mimeType?: string },
     ): Promise<UploadResult> {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
 
         const res = await this.drive.files.create({
             requestBody: {
@@ -115,6 +85,7 @@ export class GoogleDriveService {
                 body: stream,
             },
             fields: 'id, name, mimeType, webViewLink, webContentLink',
+            supportsAllDrives: true,
         });
 
         return {
@@ -139,7 +110,7 @@ export class GoogleDriveService {
     // ---------------------------
 
     async getFileMetadata(fileId: string): Promise<DriveFileMetadata> {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
 
         const res = await this.drive.files.get({
             fileId,
@@ -150,7 +121,7 @@ export class GoogleDriveService {
     }
 
     async downloadFileAsBuffer(fileId: string): Promise<Buffer> {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
 
         const res = await this.drive.files.get(
             { fileId, alt: 'media' },
@@ -171,7 +142,7 @@ export class GoogleDriveService {
             emailAddress?: string;
         },
     ) {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
         return this.drive.permissions.create({ fileId, requestBody: permission });
     }
 
@@ -184,7 +155,7 @@ export class GoogleDriveService {
     // ---------------------------
 
     async createFolder(name: string, parents?: string[]) {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
         const res = await this.drive.files.create({
             requestBody: {
                 name,
@@ -197,7 +168,7 @@ export class GoogleDriveService {
     }
 
     async moveFile(fileId: string, fromParents: string[], toParents: string[]) {
-        if (!this.authClient) throw new Error('Service not initialized.');
+        if (!this.drive) throw new Error('Service not initialized.');
         const addParents = toParents.join(',');
         const removeParents = fromParents.join(',');
         const res = await this.drive.files.update({

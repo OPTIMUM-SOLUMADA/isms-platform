@@ -53,6 +53,7 @@ export const API_CONFIG = {
             MAKE_DECISION: (id: string | number) => `/document-reviews/make-decision/${id}`,
             GET_MY_REVIEWS: (id: string | number) => `/document-reviews/my-reviews/${id}`,
             GET_MY_REVIEWS_STATS: (id: string | number) => `/document-reviews/my-reviews/${id}/stats`,
+            GET_MY_REVIEWS_DUE_SOON: (id: string | number) => `/document-reviews/my-reviews/${id}/due-soon`,
             GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
             MARK_AS_COMPLETED: (id: string | number) => `/document-reviews/mark-as-completed/${id}`,
             PATCH_DOCUMENT_VERSION: (id: string | number) => `/document-reviews/${id}/patch-document-version`,

@@ -352,6 +352,29 @@
       }
     }
   },
+  "upcomingReviews": {
+    "title": "Upcoming Reviews",
+    "subtitle": "Documents that need your attention soon",
+    "item": {
+      "version": "Version",
+      "status": "Status",
+      "reviewer": "Reviewer",
+      "important": "Must be reviewed before {{date}}",
+      "actions": {
+        "reviewNow": {
+          "label": "Review now"
+        }
+      }
+    },
+    "actions": {
+      "close": {
+        "label": "Close"
+      },
+      "viewAll": {
+        "label": "View all reviews"
+      }
+    }
+  },
   "user": {
     "title": "User management",
     "subtitle": "Manage user accounts and roles",

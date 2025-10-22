@@ -6,7 +6,7 @@
 /server/npm-debug.log*
 /server/yarn-debug.log*
 /server/yarn-error.log*
-/server/googledrive.json
+/server/gd-service-account.json
 
 # ====== React + Vite (client) ======
 /client/node_modules
