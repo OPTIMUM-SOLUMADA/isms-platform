@@ -49,6 +49,9 @@ export function UserHoverCard({
                     <div className="flex items-center gap-1 cursor-pointer font-medium text-primary hover:text-theme-2 px-1 rounded hover:underline">
                         <UserAvatar className="size-4" id={user.id} name={user.name} />
                         {user.name}
+                        {currentUserId === user.id && (
+                            <You />
+                        )}
                     </div>
                 )}
             </HoverCardTrigger>

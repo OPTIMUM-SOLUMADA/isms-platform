@@ -3,6 +3,7 @@ import { DepartmentUIModals } from "@/templates/departments/modal/DepartmentUIMo
 import { DocumentTypeUIModals } from "@/templates/document-types/modal/DocumentTypeUIModals";
 import { DocumentUIModals } from "@/templates/documents/modals/DocumentUIModals";
 import { ISOClauseUIModals } from "@/templates/iso-clauses/modal/ISOClauseUIModals";
+import ReviewAlertDrawer from "@/templates/reviews/ReviewDueSoonDrawer";
 import { UserUIModals } from "@/templates/users/modals/UserUIModals";
 import { createContext, ReactNode } from "react";
 
@@ -24,6 +25,9 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
             <DocumentTypeUIModals />
             {/* ISOClause modals */}
             <ISOClauseUIModals />
+
+            {/* Due Soon Alerts */}
+            <ReviewAlertDrawer />
         </UIContext.Provider>
     );
 };

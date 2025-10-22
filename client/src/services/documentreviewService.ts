@@ -19,4 +19,5 @@ export const documentReviewService = {
     getPendingReviews: async () => axios.get(api.GET_PENDING_REVIEWS),
     markAsCompleted: async (id: string) => axios.patch(api.MARK_AS_COMPLETED(id)),
     patchDocumentReview: async (id: string, data: any) => axios.patch(api.PATCH_DOCUMENT_VERSION(id), data),
+    getMyReviewsDueSoon: async (id: string) => axios.get(api.GET_MY_REVIEWS_DUE_SOON(id)),
 };

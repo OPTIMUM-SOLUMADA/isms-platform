@@ -1,10 +1,8 @@
 import { GoogleDriveService } from '@/services/googleapi.service';
-import { env } from './env';
+import { GOOGLE_DRIVE_JSON_PATH } from './path';
 
 const svc = new GoogleDriveService({
-    clientId: env.GOOGLE_CLIENT_ID,
-    clientSecret: env.GOOGLE_CLIENT_SECRET,
-    redirectUri: env.GOOGLE_REDIRECT_URI,
+    keyFile: GOOGLE_DRIVE_JSON_PATH,
 });
 
 svc.initialize();

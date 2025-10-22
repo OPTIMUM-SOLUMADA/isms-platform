@@ -158,3 +158,13 @@ export const useMarkAsCompleted = () => {
     },
   });
 }
+
+export const useGetMyReviewsDueSoon = () => {
+  const { user } = useAuth();
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ['my-reviews-due-soon', user?.id],
+    queryFn: async () => (await documentReviewService.getMyReviewsDueSoon(user!.id)).data,
+    enabled: !!user,
+    refetchInterval: 5 * 60 * 1000,
+  });
+}

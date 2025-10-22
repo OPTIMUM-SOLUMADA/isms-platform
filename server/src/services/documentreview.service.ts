@@ -3,6 +3,7 @@ import { env } from '@/configs/env';
 import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
 import { EmailService } from './email.service';
+import { addHours } from 'date-fns';
 
 const emailService = new EmailService();
 
@@ -42,7 +43,15 @@ const includes: Prisma.DocumentReviewInclude = {
             },
         },
     },
-    reviewer: true,
+    reviewer: {
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+        },
+    },
     documentVersion: {
         select: {
             version: true,
@@ -490,6 +499,24 @@ export class DocumentReviewService {
             where: {
                 isCompleted: false,
                 decision: { isSet: false },
+            },
+            include: includes,
+        });
+    }
+
+    async getMyReviewsDueSoon(userId?: string) {
+        const now = new Date();
+        const treeHoursLater = addHours(now, 3);
+
+        return prisma.documentReview.findMany({
+            where: {
+                ...(userId && { reviewerId: userId }),
+                isCompleted: false,
+                decision: { isSet: false },
+                dueDate: {
+                    gte: now,
+                    lte: treeHoursLater,
+                },
             },
             include: includes,
         });

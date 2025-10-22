@@ -352,6 +352,29 @@
             }
         }
     },
+    "upcomingReviews": {
+        "title": "Prochaines révisions",
+        "subtitle": "Documents nécessitant bientôt votre attention",
+        "item": {
+            "version": "Version",
+            "status": "Statut",
+            "reviewer": "Réviseur",
+            "important": "Doit être révisé avant le {{date}}",
+            "actions": {
+                "reviewNow": {
+                    "label": "Réviser maintenant"
+                }
+            }
+        },
+        "actions": {
+            "close": {
+                "label": "Fermer"
+            },
+            "viewAll": {
+                "label": "Voir toutes les révisions"
+            }
+        }
+    },
     "user": {
         "title": "Gestion des utilisateurs",
         "subtitle": "Gerer les comptes des utilisateurs et rôles",
