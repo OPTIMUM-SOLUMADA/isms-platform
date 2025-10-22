@@ -11,7 +11,7 @@ const CircleLoading = ({ className, size = 40, text }: CircleLoadingProps) => {
     return (
         <div
             className={cn(
-                'flex flex-col items-center justify-center space-y-2',
+                'flex flex-col grow items-center justify-center space-y-2',
                 className
             )}
         >

@@ -43,7 +43,7 @@ const Table = ({
                 return (
                     <div className="flex gap-2 w-full items-center">
                         <div className="p-1">
-                            <FileCheck className={cn("h-7 w-7 text-muted-foreground", !!decision && "text-green-600")} />
+                            <FileCheck className={cn("h-7 w-7 text-muted-foregound opacity-0", !!decision && "text-green-600 opacity-100")} />
                         </div>
                         <div className="w-full space-y-1">
                             <div className="flex items-center gap-2 text-muted-foreground">

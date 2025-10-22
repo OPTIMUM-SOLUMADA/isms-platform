@@ -324,7 +324,7 @@ export class DocumentReviewService {
                 skip,
                 take: limit,
                 orderBy: {
-                    reviewDate: 'desc',
+                    createdAt: 'desc',
                 },
                 where: {
                     reviewerId: userId,

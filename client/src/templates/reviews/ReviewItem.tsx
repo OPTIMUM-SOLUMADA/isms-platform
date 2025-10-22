@@ -16,6 +16,8 @@ import {
     CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { UserHoverCard } from "../users/hovercard/UserHoverCard";
+import { formatDistanceToNow } from "date-fns";
+import { getDateFnsLocale } from "@/lib/date";
 
 interface WrapperProps extends PropsWithChildren {
     condition: boolean;
@@ -67,11 +69,16 @@ const ReviewItem: FC<ReviewItemProps> = ({ item }) => {
                                 <h3 className="font-semibold text-base text-gray-800">
                                     {item.document?.title}
                                 </h3>
-                                <Badge
-                                    className={`absolute  right-2 top-2 text-xs px-2 py-1 ${reviewStatusColors[status]}`}
-                                >
-                                    {statusLabel}
-                                </Badge>
+                                <div className="d">
+                                    <span className="text-sm text-gray-600">
+                                        {formatDistanceToNow(item.reviewDate, { locale: getDateFnsLocale() })}
+                                    </span>
+                                    <Badge
+                                        className={`absolute right-2 top-2 text-xs px-2 py-1 ${reviewStatusColors[status]}`}
+                                    >
+                                        {statusLabel}
+                                    </Badge>
+                                </div>
                             </div>
 
                             {/* ---------- Description ---------- */}

@@ -10,10 +10,11 @@ import { useMarkAsCompleted } from '@/hooks/queries/useReviewMutation';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { UserHoverCard } from '../users/hovercard/UserHoverCard';
 import { useNavigate } from 'react-router-dom';
-import { formatDate } from '@/lib/date';
+import { formatDate, getDateFnsLocale } from '@/lib/date';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { useCallback } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface PendingReviewItemProps {
     review: DocumentReview;
@@ -61,15 +62,21 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
                                     </CardDescription>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                                <Badge variant={review.decision === 'REJECT' ? 'destructive' : 'default'} className="text-xs">
-                                    {review.decision === 'REJECT' ? (
-                                        <AlertCircle className="h-3 w-3 mr-1" />
-                                    ) : (
-                                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                                    )}
-                                    {t(`common.reviews.decisions.${review.decision?.toLowerCase()}`)}
-                                </Badge>
+                            <div className="flex flex-col gap-2">
+
+                                <span className="text-xs text-muted-foreground text-right">
+                                    {formatDistanceToNow(review.reviewDate, { locale: getDateFnsLocale(), addSuffix: true, includeSeconds: true })}
+                                </span>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <Badge variant={review.decision === 'REJECT' ? 'destructive' : 'default'} className="text-xs">
+                                        {review.decision === 'REJECT' ? (
+                                            <AlertCircle className="h-3 w-3 mr-1" />
+                                        ) : (
+                                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                                        )}
+                                        {t(`common.reviews.decisions.${review.decision?.toLowerCase()}`)}
+                                    </Badge>
+                                </div>
                             </div>
                         </div>
 

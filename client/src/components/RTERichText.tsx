@@ -65,7 +65,7 @@ const RTERichText: FC<Props> = ({
                     readOnly={readOnly}
                     modules={modules}
                     formats={formats}
-                    className="text-gray-800 text-editor"
+                    className="text-gray-800 bg-white text-editor"
                 />
             </div>
         </div>
