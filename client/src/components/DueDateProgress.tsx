@@ -50,7 +50,7 @@ export const DueDateProgress: FC<DueDateProgressProps> = ({
 
     return (
         <div className={cn("flex flex-col gap-1 w-full", className)}>
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="flex justify-between gap-2 text-xs text-muted-foreground">
                 <span className={cn("font-medium", isOverdue && "text-red-500")}>{label}</span>
                 {!isOverdue && <span>{Math.round(percent)}%</span>}
             </div>

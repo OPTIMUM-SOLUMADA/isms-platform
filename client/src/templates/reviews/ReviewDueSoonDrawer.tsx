@@ -3,20 +3,22 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { useGetMyReviewsDueSoon } from '@/hooks/queries/useReviewMutation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
-import { formatDate, getDateFnsLocale } from '@/lib/date';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getDateFnsLocale } from '@/lib/date';
 import { UserHoverCard } from '../users/hovercard/UserHoverCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { DueDateProgress } from '@/components/DueDateProgress';
 
 export default function ReviewAlertDrawer() {
     const [open, setOpen] = useState(false);
 
     const { data: reviews, isLoading, isSuccess } = useGetMyReviewsDueSoon();
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const { user } = useAuth();
     const { t } = useTranslation();
 
@@ -44,7 +46,7 @@ export default function ReviewAlertDrawer() {
 
     return (
         <Drawer open={open} onOpenChange={setOpen} direction='bottom'>
-            <DrawerContent className='outline-none border-none mx-auto max-w-7xl rounded-t-3xl'>
+            <DrawerContent className='outline-none border-none mx-auto max-w-7xl rounded-t-[40px]'>
                 <div className="flex flex-col grow mx-auto max-w-fullh-full">
 
                     <DrawerHeader>
@@ -53,12 +55,8 @@ export default function ReviewAlertDrawer() {
                     </DrawerHeader>
 
                     <ScrollArea className="flex-1 max-h-[600px] overflow-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5
-                        ">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 p-5">
                             {reviews.map((review) => {
-                                const dueDate = parseISO(review.dueDate);
-                                const timeLeft = formatDistanceToNow(dueDate, { addSuffix: true, locale: getDateFnsLocale() });
-
                                 return (
                                     <div
                                         key={review.id}
@@ -78,25 +76,31 @@ export default function ReviewAlertDrawer() {
                                                     <UserHoverCard user={review.reviewer} currentUserId={user?.id} />
                                                 </p>
                                             </div>
-                                            <span className="text-xs font-normal text-theme-danger animate-pulse">{timeLeft}</span>
+                                            <div className="flex flex-col gap-1">
+                                                <DueDateProgress
+                                                    createdAt={review.createdAt}
+                                                    dueDate={review.dueDate}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div className="mt-2 flex items-center justify-between gap-2">
                                             <p className="text-xs text-muted-foreground">
                                                 {t("upcomingReviews.item.important", {
-                                                    date: formatDate(review.dueDate, {
-                                                        minute: '2-digit',
-                                                        hour: '2-digit',
+                                                    date: format(review.dueDate, "PPpp", {
+                                                        locale: getDateFnsLocale(),
                                                     }),
                                                 })}
                                             </p>
                                             <Button
                                                 type="button"
-                                                className='rounded-md normal-case'
+                                                className='rounded-md truncate'
+                                                variant='outline'
                                                 size='sm'
                                                 onClick={() => handleNavigateToReview(review.id)}
                                             >
                                                 {t("upcomingReviews.item.actions.reviewNow.label")}
+                                                <ArrowUpRight className='ml-2 w-4 h-4' />
                                             </Button>
                                         </div>
                                     </div>
@@ -109,13 +113,15 @@ export default function ReviewAlertDrawer() {
                         <DrawerClose asChild>
                             <Button variant="outline">{t("upcomingReviews.actions.close.label")}</Button>
                         </DrawerClose>
-                        <Button
-                            variant="primary"
-                            onClick={handleSeeReviews}
-                        >
-                            {t("upcomingReviews.actions.viewAll.label")}
-                            <ArrowRight className='ml-2 w-4 h-4' />
-                        </Button>
+                        {pathname !== "/reviews" && (
+                            <Button
+                                variant="primary"
+                                onClick={handleSeeReviews}
+                            >
+                                {t("upcomingReviews.actions.viewAll.label")}
+                                <ArrowRight className='ml-2 w-4 h-4' />
+                            </Button>
+                        )}
                     </DrawerFooter>
                 </div>
 

@@ -323,6 +323,9 @@
       },
       "reviews": {
         "label": "Back to reviews"
+      },
+      "pendingReviews": {
+        "label": "Back to pending reviews"
       }
     },
     "dialogs": {
@@ -330,6 +333,7 @@
         "title": "Confirm Edit",
         "message": "Are you sure you want to save this new version of the document?",
         "description": "Once saved, this version will be added to the document's version history and will be available to authorized users.",
+        "nextVersion": "The new version will be:",
         "actions": {
           "cancel": {
             "label": "Cancel"
@@ -372,6 +376,58 @@
       },
       "viewAll": {
         "label": "View all reviews"
+      }
+    }
+  },
+  "pendingReviews": {
+    "title": "Overview — Feedback on Documents",
+    "subtitle": "Document revision list and status",
+    "list": {
+      "filter": {
+        "document": {
+          "label": "Filter by document",
+          "placeholder": "All documents",
+          "options": {
+            "all": "All documents"
+          }
+        },
+        "decision": {
+          "label": "Filter by decision",
+          "placeholder": "All decisions",
+          "options": {
+            "all": "All decisions",
+            "approved": "Approved",
+            "rejected": "Change requested"
+          }
+        }
+      },
+      "total": "{{count}} reviews pending",
+      "item": {
+        "version": "Version",
+        "status": "Status",
+        "reviewer": "Reviewer",
+        "dueDate": "Due date",
+        "actions": {
+          "reviewNow": {
+            "label": "Review now"
+          }
+        }
+      },
+      "empty": "No "
+    },
+    "preview": {
+      "noReviewSelected": "No review selected. Please select a review from the list to see its details.",
+      "reviewDate": "Review date",
+      "createdAt": "Created at",
+      "documentVersion": "Document version",
+      "comments": "Comments",
+      "actions": {
+        "update": {
+          "label": "Update document"
+        },
+        "markAsComplete": {
+          "label": "Mark as complete"
+        }
       }
     }
   },
@@ -1707,7 +1763,7 @@
     },
     "pendingReviews": {
       "label": "Pending",
-      "description": "All of pending reviews"
+      "description": "All pending reviews"
     },
     "compliance": {
       "label": "Compliance",

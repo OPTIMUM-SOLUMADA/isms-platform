@@ -323,6 +323,9 @@
             },
             "reviews": {
                 "label": "Voir mes révisions"
+            },
+            "pendingReviews": {
+                "label": "Revenir aux révisions en attente"
             }
         },
         "dialogs": {
@@ -330,6 +333,7 @@
                 "title": "Confirmer la modification",
                 "message": "Êtes-vous sûr de vouloir enregistrer cette nouvelle version du document ?",
                 "description": "Une fois enregistrée, cette version sera ajoutée à l'historique des versions du document et sera disponible pour les utilisateurs autorisés.",
+                "nextVersion": "La nouvelle version sera :",
                 "actions": {
                     "cancel": {
                         "label": "Annuler"
@@ -372,6 +376,58 @@
             },
             "viewAll": {
                 "label": "Voir toutes les révisions"
+            }
+        }
+    },
+    "pendingReviews": {
+        "title": "Aperçu — Avis sur les documents",
+        "subtitle": "Liste et statut des révisions de documents",
+        "list": {
+            "filter": {
+                "document": {
+                    "label": "Filtrer par document",
+                    "placeholder": "Tous les documents",
+                    "options": {
+                        "all": "Tous les documents"
+                    }
+                },
+                "decision": {
+                    "label": "Filtrer par décision",
+                    "placeholder": "Toutes les décisions",
+                    "options": {
+                        "all": "Toutes les décisions",
+                        "approved": "Approuvé",
+                        "rejected": "Changement demandé"
+                    }
+                }
+            },
+            "total": "{{count}} révisions en attente",
+            "item": {
+                "version": "Version",
+                "status": "Statut",
+                "reviewer": "Réviseur",
+                "dueDate": "Date limite",
+                "actions": {
+                    "reviewNow": {
+                        "label": "Réviser maintenant"
+                    }
+                }
+            },
+            "empty": "Aucune revue en attente de validation."
+        },
+        "preview": {
+            "noReviewSelected": "Aucune révision sélectionnée. Veuillez sélectionner une révision pour voir les détails.",
+            "reviewDate": "Date de révision",
+            "createdAt": "Créé le",
+            "documentVersion": "Version du document",
+            "comments": "Commentaires",
+            "actions": {
+                "update": {
+                    "label": "Mettre à jour le document"
+                },
+                "markAsComplete": {
+                    "label": "Marquer comme terminé"
+                }
             }
         }
     },

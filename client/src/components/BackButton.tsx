@@ -1,8 +1,14 @@
+import { cn } from '@/lib/utils';
 import { Button } from './ui/button'
 import { ChevronLeft } from 'lucide-react'
 import { useNavigate, useNavigationType } from 'react-router-dom'
 
-const BackButton = () => {
+interface Props {
+    className?: string;
+    size?: 'sm' | 'default' | 'lg' | 'icon';
+}
+
+const BackButton = ({ className, size = 'default' }: Props) => {
     const navigate = useNavigate();
     const navigationType = useNavigationType();
 
@@ -20,7 +26,8 @@ const BackButton = () => {
             type="button"
             variant="outline"
             onClick={handleBack}
-            className='aspect-square'
+            className={cn('aspect-square', className)}
+            size={size}
         >
             <ChevronLeft className="h-5 w-5" />
         </Button>
