@@ -40,6 +40,17 @@ export class DocumentService {
                             email: true,
                             role: true,
                             createdAt: true,
+                            departmentRoleUsers: {
+                                select: {
+                                    id: true,
+                                    departmentRole: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -53,6 +64,17 @@ export class DocumentService {
                             email: true,
                             role: true,
                             createdAt: true,
+                            departmentRoleUsers: {
+                                select: {
+                                    id: true,
+                                    departmentRole: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -366,6 +388,17 @@ export class DocumentService {
                                 email: true,
                                 role: true,
                                 createdAt: true,
+                                departmentRoleUsers: {
+                                    select: {
+                                        id: true,
+                                        departmentRole: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },

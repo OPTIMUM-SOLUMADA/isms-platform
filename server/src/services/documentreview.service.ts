@@ -97,6 +97,19 @@ export class DocumentReviewService {
                                                     select: {
                                                         name: true,
                                                         email: true,
+                                                        createdAt: true,
+                                                        role: true,
+                                                        departmentRoleUsers: {
+                                                            select: {
+                                                                id: true,
+                                                                departmentRole: {
+                                                                    select: {
+                                                                        id: true,
+                                                                        name: true,
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
                                                     },
                                                 },
                                             },
@@ -120,6 +133,17 @@ export class DocumentReviewService {
                         email: true,
                         createdAt: true,
                         role: true,
+                        departmentRoleUsers: {
+                            select: {
+                                id: true,
+                                departmentRole: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
                 assignedBy: {
@@ -172,6 +196,17 @@ export class DocumentReviewService {
                         email: true,
                         role: true,
                         createdAt: true,
+                        departmentRoleUsers: {
+                            select: {
+                                id: true,
+                                departmentRole: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
@@ -207,7 +242,26 @@ export class DocumentReviewService {
                         },
                     },
                 },
-                reviewer: true,
+                reviewer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        createdAt: true,
+                        role: true,
+                        departmentRoleUsers: {
+                            select: {
+                                id: true,
+                                departmentRole: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
     }
