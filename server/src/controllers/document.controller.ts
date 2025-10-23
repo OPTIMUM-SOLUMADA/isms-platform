@@ -5,8 +5,8 @@ import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
-import { readFileSync } from 'fs';
-import svc from '@/configs/google-service';
+// import { readFileSync } from 'fs';
+// import svc from '@/configs/google-service';
 
 export class DocumentController {
     private service: DocumentService;
@@ -39,16 +39,16 @@ export class DocumentController {
                 throw new Error('File is required');
             }
 
-            const buffer = readFileSync(file.path);
+            // const buffer = readFileSync(file.path);
 
-            // Upload to Google Drive
-            const result = await svc.uploadFileFromBuffer(buffer, {
-                name: file.originalname,
-                mimeType: file.mimetype,
-                parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
-            });
+            // // Upload to Google Drive
+            // const result = await svc.uploadFileFromBuffer(buffer, {
+            //     name: file.originalname,
+            //     mimeType: file.mimetype,
+            //     parents: ['16kYtd8LCgX2JW9FAuX38NMicKbpJp7OC'],
+            // });
 
-            console.log(result);
+            // console.log(result);
 
             const fileUrl = req.file ? req.file.filename : null;
 
