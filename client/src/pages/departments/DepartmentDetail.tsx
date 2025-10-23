@@ -67,7 +67,7 @@ export default function DepartmentDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
                 <Layers className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{t("department.forms.add.name.placeholder")}:</span>
+                <span className="font-medium">{t("departmentRole.forms.add.name.placeholder")}:</span>
                 {department.name}
               </div>
               <div className="flex items-center gap-2">
