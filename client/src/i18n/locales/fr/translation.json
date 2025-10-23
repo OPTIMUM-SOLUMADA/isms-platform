@@ -790,8 +790,8 @@
                         "placeholder": "Séléctionner des départements"
                     },
                     "isoClause": {
-                        "label": "Clause/Control Number",
-                        "placeholder": "Séléctionner une Clause/Control Number"
+                        "label": "Clause/Numéro de contrôle",
+                        "placeholder": "Sélectionnez une clause/un numéro de contrôle"
                     },
                     "file": {
                         "label": "Fichier",
@@ -926,7 +926,7 @@
         },
         "filter": {
             "search": {
-                "label": "Rechercher par nom, propriétaire ou Clause/Control Number",
+                "label": "Recherche par nom, propriétaire ou clause/numéro de contrôle",
                 "placeholder": "Rechercher un document..."
             },
             "status": {
@@ -942,8 +942,8 @@
                 "placeholder": "Tous les propriétaires"
             },
             "isoClause": {
-                "label": "Filtrer par Clause/Control Number",
-                "placeholder": "Toutes les clauses ISO"
+                "label": "Filtrer par clause/numéro de contrôle",
+                "placeholder": "Toutes les clauses/numéros de contrôles"
             }
         },
         "table": {
@@ -951,7 +951,7 @@
             "columns": {
                 "name": "Nom",
                 "type": "Type",
-                "isoClause": "Clause/Control Number",
+                "isoClause": "clause/numéro de contrôle",
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
@@ -987,7 +987,7 @@
                 "name": "Nom",
                 "description": "Description",
                 "type": "Type",
-                "isoClause": "Clause/Control Number",
+                "isoClause": "Clause/Numéro de contrôle",
                 "status": "Statut",
                 "ownesr": "Propriétaires",
                 "owner": "Propriétaire",
@@ -1409,10 +1409,10 @@
         }
     },
     "isoClause": {
-        "title": "Gestion des clauses ISO",
-        "subtitle": "Gérer les clauses ISO et leurs descriptions",
+        "title": "Gestion des clauses/numéros de contrôles",
+        "subtitle": "Gérer les clauses/numéros de contrôle et leurs descriptions",
         "table": {
-            "title": "Liste des clauses ISO",
+            "title": "Liste des clauses/numéros de contrôles",
             "columns": {
                 "name": "Nom",
                 "code": "Code",
@@ -1431,27 +1431,27 @@
                 }
             },
             "empty": {
-                "title": "Aucune Clause/Control Number trouvée",
-                "message": "Essayez d'ajouter une nouvelle Clause/Control Number.",
+                "title": "Aucune clause/numéro de contrôle trouvée",
+                "message": "Essayez d'ajouter une nouvelle clause/numéro de contrôle.",
                 "actions": {
                     "add": {
-                        "label": "Ajouter une Clause/Control Number"
+                        "label": "Ajouter une clause/numéro de contrôle"
                     }
                 }
             }
         },
         "actions": {
             "add": {
-                "label": "Ajouter une Clause/Control Number"
+                "label": "Ajouter une clause/numéro de contrôler"
             }
         },
         "forms": {
             "add": {
-                "title": "Ajouter une Clause/Control Number",
-                "subtitle": "Remplir les informations de la Clause/Control Number",
+                "title": "Ajouter une clause/numéro de contrôle",
+                "subtitle": "Remplir les informations de la clause/numéro de contrôle",
                 "name": {
                     "label": "Nom",
-                    "placeholder": "Nom de la Clause/Control Number"
+                    "placeholder": "Nom de la clause/numéro de contrôle"
                 },
                 "code": {
                     "label": "Code",
@@ -1459,7 +1459,7 @@
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Description de la Clause/Control Number"
+                    "placeholder": "Description de la clause/numéro de contrôle"
                 },
                 "actions": {
                     "submit": {
@@ -1476,24 +1476,24 @@
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La Clause/Control Number a été ajoutée avec succès"
+                        "description": "La clause/numéro de contrôle a été ajoutée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de l'ajout de la Clause/Control Number. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de l'ajout de la clause/numéro de contrôle. Veuillez réessayer."
                     }
                 }
             },
             "edit": {
-                "title": "Modifier la Clause/Control Number",
-                "subtitle": "Modifier les informations de la Clause/Control Number",
+                "title": "Modifier la clause/numéro de contrôle",
+                "subtitle": "Modifier les informations de la clause/numéro de contrôle",
                 "name": {
                     "label": "Nom",
-                    "placeholder": "Nom de la Clause/Control Number"
+                    "placeholder": "Nom de la clause/numéro de contrôle"
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Description de la Clause/Control Number"
+                    "placeholder": "Description de la clause/numéro de contrôle"
                 },
                 "actions": {
                     "submit": {
@@ -1510,33 +1510,33 @@
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La Clause/Control Number a été modifiée avec succès"
+                        "description": "La clause/numéro de contrôle a été modifiée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de la modification de la Clause/Control Number. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de la modification de la clause/numéro de contrôle. Veuillez réessayer."
                     }
                 }
             },
             "delete": {
                 "dialog": {
-                    "title": "Supprimer la Clause/Control Number",
-                    "message": "La suppression de cette Clause/Control Number supprimera également toutes les informations associées suivantes :",
+                    "title": "Supprimer la clause/numéro de contrôle",
+                    "message": "La suppression de cette clause/numéro de contrôle supprimera également toutes les informations associées suivantes :",
                     "relatedItems": {
-                        "documents": "Tous les documents associés à cette Clause/Control Number."
+                        "documents": "Tous les documents associés à cette clause/numéro de contrôle."
                     },
-                    "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer cette Clause/Control Number car :",
-                    "hasDocuments": "Il y a des documents associés à cette Clause/Control Number. Veuillez réassigner ou supprimer ces documents avant de supprimer la Clause/Control Number.",
-                    "canBeDeleted": "La Clause/Control Number peut être supprimée sans risque car elle n'a aucun document associé."
+                    "cannotDeleteDescription": "Mais, vous ne pouvez pas supprimer cette clause/numéro de contrôle car :",
+                    "hasDocuments": "Il y a des documents associés à cette clause/numéro de contrôle. Veuillez réassigner ou supprimer ces documents avant de supprimer la clause/numéro de contrôle.",
+                    "canBeDeleted": "La clause/numéro de contrôle peut être supprimée sans risque car elle n'a aucun document associé."
                 },
                 "toast": {
                     "success": {
                         "title": "Succès",
-                        "description": "La Clause/Control Number a été supprimée avec succès"
+                        "description": "La clause/numéro de contrôle a été supprimée avec succès"
                     },
                     "error": {
                         "title": "Erreur",
-                        "description": "Une erreur s'est produite lors de la suppression de la Clause/Control Number. Veuillez réessayer."
+                        "description": "Une erreur s'est produite lors de la suppression de la clause/numéro de contrôle. Veuillez réessayer."
                     }
                 }
             }
@@ -1594,7 +1594,7 @@
         "ERR_DEPARTMENT_DUPLICATED_NAME": "Un département avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_DOCUMENTTYPE_DUPLICATED_NAME": "Un type de document avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_CANNOT_DELETE_YOURSELF": "Vous ne pouvez pas supprimer votre propre compte",
-        "ERR_ISOCODE_DUPLICATED_NAME": "Une Clause/Control Number avec ce nom existe déjà. Veuillez en choisir un autre.",
+        "ERR_ISOCODE_DUPLICATED_NAME": "Une clause/numéro de contrôle avec ce nom existe déjà. Veuillez en choisir un autre.",
         "ERR_USER_ALREADY_VERIFIED": "Cet utilisateur a été déjà verifié"
     },
     "zod": {
@@ -1800,8 +1800,8 @@
                 "description": "Gestion des types de documents"
             },
             "isoClauses": {
-                "label": "Clauses ISO",
-                "description": "Gestion des clauses ISO"
+                "label": "Clause/numéro de contrôle",
+                "description": "Gestion des clauses/numéros de contrôles"
             }
         }
     },

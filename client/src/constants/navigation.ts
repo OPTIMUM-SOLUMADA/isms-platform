@@ -80,20 +80,20 @@ export const otherMenuItems: MenuItem[] = [
         labelKey: 'navigation.others.departments.label',
         icon: Building2,
         descriptionKey: 'navigation.others.departments.description',
-        requiredPermission: 'documents.page.access',
+        requiredPermission: 'departments.page.access',
     },
     {
         path: '/document-types',
         labelKey: 'navigation.others.documentTypes.label',
         icon: FileType2,
         descriptionKey: 'navigation.others.documentTypes.description',
-        requiredPermission: 'documents.page.access',
+        requiredPermission: 'document-types.page.access',
     },
     {
         path: '/iso-clauses',
         labelKey: 'navigation.others.isoClauses.label',
         icon: FileLock2,
         descriptionKey: 'navigation.others.isoClauses.description',
-        requiredPermission: 'documents.page.access',
+        requiredPermission: 'iso-clauses.page.access',
     },
 ];

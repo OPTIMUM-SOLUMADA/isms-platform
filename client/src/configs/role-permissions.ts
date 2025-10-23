@@ -64,7 +64,10 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "compliance.page.access",
         "users.page.access",
         "audit.page.access",
-        "settings.page.access"
+        "settings.page.access",
+        "departments.page.access",
+        "document-types.page.access",
+        "iso-clauses.page.access",
     ],
     [RoleType.CONTRIBUTOR]: [
         "dashboard.page.access",
