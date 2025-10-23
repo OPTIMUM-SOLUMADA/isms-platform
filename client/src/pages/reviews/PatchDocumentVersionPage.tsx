@@ -13,6 +13,7 @@ import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import RequestDetailsSheet from '@/templates/reviews/RequestDetailsSheet';
+import { NumberInput } from '@/components/NumberInput';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -97,11 +98,16 @@ const PatchDocumentVersionPage = () => {
                             value={currentVersion}
                         />
                         <ArrowRight className="h-4 w-4" />
-                        <Input
-                            type="text"
+                        <NumberInput
+                            inputMode='decimal'
                             name="nextVersion"
                             className='text-center max-w-[80px]'
-                            value={nextVersion}
+                            stepper={0.1}
+                            decimalScale={1}
+                            fixedDecimalScale
+                            allowNegative={false}
+                            decimalSeparator='.'
+                            value={Number(nextVersion)}
                             onChange={e => setNextVersion(e.target.value)}
                         />
                     </div>

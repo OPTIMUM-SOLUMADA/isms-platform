@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@/app';
 import prisma from '@/database/mocks/prisma';
-import { mockUser } from '@/tests/mocks/data';
+import { mockUser } from '../mocks/data';
 
 describe('Auth controller', () => {
     describe('login', () => {

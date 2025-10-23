@@ -1,14 +1,25 @@
 import { Button } from './ui/button'
 import { ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useNavigationType } from 'react-router-dom'
 
 const BackButton = () => {
     const navigate = useNavigate();
+    const navigationType = useNavigationType();
+
+    const handleBack = () => {
+        // If the user navigated here manually (not via PUSH)
+        if (navigationType === 'POP') {
+            navigate('/', { replace: true }); // fallback
+        } else {
+            navigate(-1);
+        }
+    };
+
     return (
         <Button
             type="button"
             variant="outline"
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className='aspect-square'
         >
             <ChevronLeft className="h-5 w-5" />
