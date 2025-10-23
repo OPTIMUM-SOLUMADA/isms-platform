@@ -1,12 +1,15 @@
 
 
 import { useDocument } from "@/contexts/DocumentContext";
-import { useFetchPendingReviews } from "@/hooks/queries/usePendingReviewsMutations";
 import { useFetchUsers } from "@/hooks/queries/useUserMutations";
-import { FileText, Clock, Users, Shield } from "lucide-react";
+import { FileText, Clock, Users, Shield, AlertCircle, Badge } from "lucide-react";
 
-import { Card, CardContent } from '@/components/ui/card';
-export default function DashboardStats() {
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useFetchPendingReviews } from "@/hooks/queries/useReviewMutation";
+import { DocumentReview } from "@/types";
+import { useNavigate } from "react-router-dom";
+export function DashboardStats() {
   const { documents } = useDocument();
   const { data } = useFetchUsers();
   const { data: pending } = useFetchPendingReviews();
@@ -80,6 +83,46 @@ export default function DashboardStats() {
           })}
         </div>
   );
+}
+
+// UserTable component using the reusable DataTable
+interface UserTableProps {
+    data: DocumentReview[];
+    isLoading?: boolean;
+}
+
+export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
+  const navigate = useNavigate()
+  return(
+    (isLoading ? <h5>loading</h5> : 
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center space-x-2">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <span>Upcoming Deadlines</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {data.map((item) => (
+            <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex-1">
+                <p className="font-medium text-sm">{item.document.title}</p>
+                <p className="text-xs text-gray-500 mt-1">Owner: {item.document.authors[0].user.name}</p>
+                <p className="text-xs text-gray-500">Due: {new Date(item.dueDate).toLocaleDateString()}</p>
+              </div>
+              <Badge
+                className="text-xs"
+              >
+                {/* {item.priority} */}
+              </Badge>
+            </div>
+          ))}
+          <Button  className="w-full" onClick={() => navigate("/reviews")}>
+            View All Deadlines
+          </Button>
+        </CardContent>
+      </Card>
+     ) )
 }
 
 // export const stats = [

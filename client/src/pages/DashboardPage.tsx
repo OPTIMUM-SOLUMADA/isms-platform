@@ -1,6 +1,5 @@
 import {
   FileText,
-  AlertCircle,
   CheckCircle,
   Clock,
   TrendingUp,
@@ -9,19 +8,30 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { complianceProgress, recentActivities, upcomingDeadlines } from '@/mocks/dashboard';
+import { complianceProgress, recentActivities } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import DashboardStats from '@/components/dashboard';
+import  { DashboardStats, UpdcommingDeadline } from '@/components/dashboard';
+import useReviewStore from '@/stores/review/useReviewStore';
+import { useFetchMyReviews } from '@/hooks/queries/useReviewMutation';
 
 
 
 export default function DashboardPage() {
   const { t } = useTranslation();
 
+  const { reviews } = useReviewStore()
+  const { isLoading } = useFetchMyReviews()
+  console.log("review", reviews);
+  const sortedData = [ ...reviews]
+    .filter((item) => item.dueDate)
+    .sort(
+        (a, b) =>
+          new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()
+      )
+    .slice(0, 3); // garder les 3 dernières
   return (
     <WithTitle title={t("dashboard.title")}>
       <div className="space-y-6">
@@ -30,7 +40,11 @@ export default function DashboardPage() {
         <DashboardStats />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Deadlines */}
-          <Card>
+          <UpdcommingDeadline 
+          data={ sortedData }
+          isLoading = { isLoading } />
+
+          {/* <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
                 <AlertCircle className="h-5 w-5 text-red-600" />
@@ -60,7 +74,7 @@ export default function DashboardPage() {
                 View All Deadlines
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Recent Activity */}
           <Card>
