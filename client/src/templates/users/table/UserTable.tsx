@@ -161,6 +161,11 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const user = row.original;
+                console.log('user', user.lastLogin);
+                
+                if(!user.lastLogin || currentUser.id === user.id) {
+                    return
+                }
                 return (
                     <UserActivationSwitch user={user} active={user.isActive} />
                 )

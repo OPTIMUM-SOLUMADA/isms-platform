@@ -109,6 +109,7 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
+                lastLogin: true,
             },
             take: 10,
         });
@@ -138,6 +139,7 @@ export class UserService {
                 name: true,
                 role: true,
                 isActive: true,
+                lastLogin: true,
                 departmentRoleUsers: {
                     select: {
                         id: true,

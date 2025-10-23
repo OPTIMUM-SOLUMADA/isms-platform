@@ -97,6 +97,10 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     return menuItems.filter(item => hasAccessPermission(item.requiredPermission))
   }, [hasAccessPermission]);
 
+  const filteredOtherMenuItems = useMemo(() => {
+    return otherMenuItems.filter(item => hasAccessPermission(item.requiredPermission))
+  }, [hasAccessPermission]);
+
   return (
     <>
       {/* Mobile overlay */}
@@ -207,32 +211,35 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           </ScrollArea>
 
           {/* Other menus */}
-          <div className="p-4">
-            <h3 className='text-gray-400 text-xs flex items-center gap-1'>
-              <hr className='w-1 border-theme-2-muted' />
-              <span>{t("navigation.others.title")}</span>
-              <hr className='flex-1 border-theme-2-muted' />
-            </h3>
-            <div className="w-full space-y-1 my-2">
-              {otherMenuItems.map((item, index) => (
-                <NavLink
-                  key={index}
-                  to={item.path}
-                  className={({ isActive }) => cn('rounded-lg flex items-center gap-2 text-sm text-gray-300 hover:bg-white/5 p-2', isActive && 'bg-white/5', sidebarCollapsed && 'justify-center')}
-                  title={t(item.descriptionKey)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      {<item.icon className={cn('w-5 h-5 shrink-0', isActive && 'text-theme')} />}
-                      <span className={cn('line-clamp-1', isActive && 'text-theme', sidebarCollapsed && 'hidden')}>
-                        {t(item.labelKey)}
-                      </span>
-                    </>
-                  )}
-                </NavLink>
-              ))}
+          {filteredOtherMenuItems.length > 0 && (
+            <div className="p-4">
+              <h3 className='text-gray-400 text-xs flex items-center gap-1'>
+                <hr className='w-1 border-theme-2-muted' />
+                <span>{t("navigation.others.title")}</span>
+                <hr className='flex-1 border-theme-2-muted' />
+              </h3>
+              <div className="w-full space-y-1 my-2">
+                {filteredOtherMenuItems.map((item, index) => (
+                  <NavLink
+                    key={index}
+                    to={item.path}
+                    className={({ isActive }) => cn('rounded-lg flex items-center gap-2 text-sm text-gray-300 hover:bg-white/5 p-2', isActive && 'bg-white/5', sidebarCollapsed && 'justify-center')}
+                    title={t(item.descriptionKey)}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {<item.icon className={cn('w-5 h-5 shrink-0', isActive && 'text-theme')} />}
+                        <span className={cn('line-clamp-1', isActive && 'text-theme', sidebarCollapsed && 'hidden')}>
+                          {t(item.labelKey)}
+                        </span>
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
             </div>
-          </div>
+            
+          )}
 
           {/* Footer */}
           <div className="p-4 border-t border-theme-2-muted">
