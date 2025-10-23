@@ -16,6 +16,7 @@ import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { usePatchDocumentReview } from "@/hooks/queries/useReviewMutation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
     open: boolean;
@@ -89,6 +90,10 @@ const PatchDocumentDialog = ({
                     <p className="mt-3 text-primary">
                         {t("patchDocumentReview.dialogs.confirm.message")}
                     </p>
+                    <div className="flex items-center gap-2">
+                        <span className="text-theme-2 underline underline-offset-4 text-sm">{t("patchDocumentReview.dialogs.confirm.nextVersion")}</span>
+                        <Badge variant="outline">{nextVersion}</Badge>
+                    </div>
                 </DialogHeader>
                 <DialogFooter className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={() => handleOpenChange(false)}>

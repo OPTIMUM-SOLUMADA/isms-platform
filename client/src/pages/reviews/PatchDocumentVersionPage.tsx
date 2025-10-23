@@ -4,7 +4,7 @@ import { LoadingButton } from '@/components/ui/loading-button';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
 import { useNavigate, useParams } from 'react-router-dom';
 import Iframe from 'react-iframe';
-import { ArrowLeft, ArrowRight, Eye, FileCheck2, Layers } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Eye, FileCheck2, Layers } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useEffect, useMemo, useState } from 'react';
 import { bumpVersion } from '@/lib/version';
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import RequestDetailsSheet from '@/templates/reviews/RequestDetailsSheet';
 import { NumberInput } from '@/components/NumberInput';
+import BackButton from '@/components/BackButton';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -49,14 +50,18 @@ const PatchDocumentVersionPage = () => {
             <div className='grow flex flex-col items-center justify-center '>
                 <div className="space-y-6">
                     <FileCheck2 className="mx-auto h-12 w-12 text-primary/40" />
-                    <p className='text-center text-2xl font-normal w-full max-w-md opacity-80'>
+                    <p className='text-center text-2xl font-normal w-full max-w-md mx-auto opacity-80'>
                         {t('patchDocumentReview.completed.message')}
                     </p>
 
                     <div className="flex items-center justify-center gap-2">
-                        <Button type="button" variant="outline" size='sm' onClick={() => navigate("/reviews")}>
+                        <Button type="button" variant="outline" size='sm' onClick={() => navigate("/pending-reviews")}>
                             <ArrowLeft className="h-4 w-4 mr-2" />
+                            {t('patchDocumentReview.actions.pendingReviews.label')}
+                        </Button>
+                        <Button type="button" variant="outline" size='sm' onClick={() => navigate("/reviews")}>
                             {t('patchDocumentReview.actions.reviews.label')}
+                            <ArrowUpRight className="h-4 w-4 ml-2" />
                         </Button>
                         <RequestDetailsSheet item={data} >
                             <Button type="button" variant="outline" size='sm'>
@@ -81,12 +86,15 @@ const PatchDocumentVersionPage = () => {
                 </CardContent>
                 <CardFooter className='flex justify-between items-center gap-5 py-2 border-t bg-gray-200 my-0'>
 
-                    <RequestDetailsSheet item={data} >
-                        <Button type="button" variant="outline" size='sm'>
-                            <Eye className="mr-2 h-4 w-4" />
-                            {t('patchDocumentReview.actions.viewRequest.label')}
-                        </Button>
-                    </RequestDetailsSheet>
+                    <div className="flex items-center gap-2">
+                        <BackButton className='aspect-auto' size='sm' />
+                        <RequestDetailsSheet item={data} >
+                            <Button type="button" variant="outline" size='sm'>
+                                <Eye className="mr-2 h-4 w-4" />
+                                {t('patchDocumentReview.actions.viewRequest.label')}
+                            </Button>
+                        </RequestDetailsSheet>
+                    </div>
 
                     {/* Versions */}
                     <div className="flex items-center gap-2">

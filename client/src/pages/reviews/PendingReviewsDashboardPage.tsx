@@ -55,16 +55,22 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
     return result;
   }, [data, filterDocument, filterStatus]);
 
+  function handleSuccess(reviewId: string) {
+    if (selectedItem?.id === reviewId) {
+      setSelectedItem(null);
+    }
+  }
+
 
   if (isLoading) return <LoadingSplash />;
 
   return (
-    <WithTitle title={t("Aperçu — Avis sur documents")}>
+    <WithTitle title={t("pendingReviews.title")}>
       <div className="p-8 space-y-6 flex flex-col grow">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">{t("Aperçu — Avis sur documents")}</h1>
-            <p className="text-sm text-muted-foreground">{t("Liste et statut des révisions de documents.")}</p>
+            <h1 className="text-2xl font-semibold">{t("pendingReviews.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("pendingReviews.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2">
 
@@ -76,15 +82,15 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
             <div className="flex flex-col grow space-y-2 min-h-0">
               {/* Head */}
               <div className="flex items-center justify-between gap-2 shrink-0  pr-5">
-                <h2 className="text-sm text-muted-foreground">{t("Total")} ({filteredReviews.length})</h2>
+                <h2 className="text-sm text-muted-foreground">{t("pendingReviews.list.total", { count: filteredReviews.length })}</h2>
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4" />
                   <Select value={filterDocument} onValueChange={setFilterDocument}>
                     <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Filter by document" />
+                      <SelectValue placeholder={t("pendingReviews.list.filter.document.label")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{"Tous"}</SelectItem>
+                      <SelectItem value="all">{t("pendingReviews.list.filter.document.options.all")}</SelectItem>
                       {documents.map((d, index) => (
                         <SelectItem key={index} value={d.id}>
                           {d.title}
@@ -95,12 +101,12 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
                   {/* Status */}
                   <Select value={filterStatus} onValueChange={v => setFilterStatus(v as StatusFilter)}>
                     <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Filter by decision" />
+                      <SelectValue placeholder={t("pendingReviews.list.filter.decision.label")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{"Tous"}</SelectItem>
-                      <SelectItem value="approved">{"Approved"}</SelectItem>
-                      <SelectItem value="rejected">{"Change requested"}</SelectItem>
+                      <SelectItem value="all">{t("pendingReviews.list.filter.decision.options.all")}</SelectItem>
+                      <SelectItem value="approved">{t("pendingReviews.list.filter.decision.options.approved")}</SelectItem>
+                      <SelectItem value="rejected">{t("pendingReviews.list.filter.decision.options.rejected")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -132,7 +138,7 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
                   {/* No Data */}
                   {filteredReviews.length === 0 && (
                     <p className="text-muted-foreground p-10 text-center text-sm">
-                      {t("Aucune revue en attente de validation.")}
+                      {t("pendingReviews.list.empty")}
                     </p>
                   )}
                 </ScrollArea>
@@ -143,10 +149,10 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
             <Card className="sticky top-10">
               {!selectedItem ? (
                 <p className="text-muted-foreground p-10 text-center">
-                  {t("Please select a review to preview its details.")}
+                  {t("pendingReviews.preview.noReviewSelected")}
                 </p>
               ) : (
-                <PrendingItemPreview review={selectedItem} />
+                <PrendingItemPreview review={selectedItem} onSuccess={handleSuccess} />
               )}
             </Card>
           </div>

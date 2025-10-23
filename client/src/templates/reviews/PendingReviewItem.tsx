@@ -67,7 +67,7 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
                                 <span className="text-xs text-muted-foreground text-right">
                                     {formatDistanceToNow(review.reviewDate, { locale: getDateFnsLocale(), addSuffix: true, includeSeconds: true })}
                                 </span>
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="flex items-center justify-end gap-2 flex-shrink-0">
                                     <Badge variant={review.decision === 'REJECT' ? 'destructive' : 'default'} className="text-xs">
                                         {review.decision === 'REJECT' ? (
                                             <AlertCircle className="h-3 w-3 mr-1" />
@@ -102,11 +102,14 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
 
 interface PendingReviewItemPreviewProps {
     review: DocumentReview;
+    onSuccess?: (id: string) => void;
 }
 
-export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) => {
+export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPreviewProps) => {
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
     const {
         mutate: markAsCompleted,
         isPending: isMarkingAsCompleted
@@ -115,7 +118,7 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
     function handleMarkAsCompleted() {
         markAsCompleted({ id: review.id }, {
             onSuccess: () => {
-
+                onSuccess?.(review.id);
             },
         });
     }
@@ -131,13 +134,13 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     {review.reviewDate && (
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground mb-1">Review Date</p>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">{t("pendingReviews.preview.reviewDate")}</p>
                             <p className="text-sm">{formatDate(review.reviewDate)}</p>
                         </div>
                     )}
                     {review.createdAt && (
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground mb-1">Created</p>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">{t("pendingReviews.preview.createdAt")}</p>
                             <p className="text-sm">{formatDate(review.createdAt)}</p>
                         </div>
                     )}
@@ -145,7 +148,7 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
 
                 {review.document?.versions && review.document?.versions.length > 0 && (
                     <div className="space-y-1">
-                        <p className="text-xs font-medium text-muted-foreground">Document Version</p>
+                        <p className="text-xs font-medium text-muted-foreground">{t("pendingReviews.preview.documentVersion")}</p>
                         <div className="flex items-center gap-2 text-sm">
                             <Badge variant="secondary" className="text-xs">v{review.document?.versions[0].version}</Badge>
                             <span className="text-xs text-muted-foreground truncate">{review.document?.versions[0]?.fileUrl}</span>
@@ -157,7 +160,7 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
                     <div className="space-y-2">
                         <p className="text-sm font-medium flex items-center gap-2">
                             <AlertCircle className="h-4 w-4 text-destructive" />
-                            Review Comments
+                            {t("pendingReviews.preview.comments")}
                         </p>
                         <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
                             <HtmlContent
@@ -176,7 +179,7 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
                         variant="primary"
                     >
                         <FilePen className="h-4 w-4 mr-1" />
-                        Update Document
+                        {t("pendingReviews.preview.actions.update.label")}
                     </Button>
                 )}
                 {review.decision === 'APPROVE' && !review.isCompleted && (
@@ -187,7 +190,7 @@ export const PrendingItemPreview = ({ review, }: PendingReviewItemPreviewProps) 
 
                     >
                         <CheckCheck className="h-4 w-4 mr-1" />
-                        Mark as Completed
+                        {t("pendingReviews.preview.actions.markAsComplete.label")}
                     </LoadingButton>
                 )}
                 {review.isCompleted && (
