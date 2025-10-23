@@ -138,7 +138,7 @@ const Table = ({
 
     return (
         <DataTable
-            title={t("documentType.table.title")}
+            title={t("departmentRole.table.title")}
             columns={departmentRoleColumns}
             data={data}
             enableSearch
