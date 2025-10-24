@@ -208,9 +208,10 @@ const Table = ({
                 const doc = row.original;
                 return (
                     <div className="flex items-center gap-2">
+
                         {/* Download */}
                         <DownloadDocument
-                            documentId={doc.id}
+                            document={doc}
                         />
                         {/* Publish */}
                         {!doc.published ? (
