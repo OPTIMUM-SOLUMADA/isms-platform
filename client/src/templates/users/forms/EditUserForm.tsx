@@ -48,7 +48,7 @@ const UpdateUserForm = ({
             name: user.name,
             email: user.email,
             role: user.role,
-            departmentRoleUsers: user.departmentRoleUsers.map(item => item.departmentRole.id),
+            departmentRoleUsers: user.departmentRoleUsers?.map(item => item.departmentRole.id) || [],
         },
     });
 

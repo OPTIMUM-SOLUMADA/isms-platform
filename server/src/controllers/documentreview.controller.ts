@@ -201,6 +201,8 @@ export class DocumentReviewController {
         try {
             const { userId = '' } = req.params;
             const data = await service.getMyReviewsDueSoon(userId);
+            return res.set('Content-Type', 'application/json').send(JSON.stringify(data, null, 2));
+
             return res.json(data);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
