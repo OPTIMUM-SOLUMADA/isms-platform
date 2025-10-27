@@ -168,3 +168,31 @@ export const useGetMyReviewsDueSoon = () => {
     refetchInterval: 5 * 60 * 1000,
   });
 }
+
+export const useGetSubmittedReviewByDocument = (documentId: string) => {
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ['submitted-review', documentId],
+    queryFn: async () => (await documentReviewService.getSubmittedReviews(documentId)).data,
+    enabled: !!documentId,
+    refetchInterval: 5 * 60 * 1000,
+  });
+}
+
+export const useGetCompletedReviewByDocument = (documentId: string) => {
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ['completed-review', documentId],
+    queryFn: async () => (await documentReviewService.getCompletedReviews(documentId)).data,
+    enabled: !!documentId,
+    refetchInterval: 4 * 60 * 1000,
+  });
+}
+
+export const useGetExpiredReviewsByUser = () => {
+  const { user } = useAuth();
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ['expired-reviews', user?.id],
+    queryFn: async () => (await documentReviewService.getExpiredReviews(user?.id)).data,
+    enabled: !!user,
+    refetchInterval: 5 * 60 * 1000,
+  });
+}

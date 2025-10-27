@@ -575,4 +575,31 @@ export class DocumentReviewService {
             include: includes,
         });
     }
+
+    async getSubmittedReviewsByDocument(documentId: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId, decision: { isSet: true }, isCompleted: false },
+            include: includes,
+        });
+    }
+
+    async getCompletedReviewsByDocument(documentId: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId, decision: { isSet: true }, isCompleted: true },
+            include: includes,
+            orderBy: { completedAt: 'desc' },
+        });
+    }
+
+    async getExpiredReviewsByUser(userId: string) {
+        return prisma.documentReview.findMany({
+            where: {
+                reviewerId: userId,
+                isCompleted: false,
+                decision: { isSet: false },
+                dueDate: { lte: new Date() },
+            },
+            include: includes,
+        });
+    }
 }

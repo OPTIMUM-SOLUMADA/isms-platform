@@ -399,26 +399,40 @@ model Notification {
 // ===========================================================================================
 
 enum AuditEventType {
+  // Document
   DOCUMENT_UPLOAD
   DOCUMENT_UPDATE
   DOCUMENT_VERSION_CREATED
   DOCUMENT_STATUS_CHANGE
   DOCUMENT_REVIEW_SUBMITTED
+  // User
   USER_ROLE_CHANGE
+  USER_ADD
+  USER_DELETE
+  // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux
 }
 
-model AuditLog {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String?        @db.ObjectId
-  eventType  AuditEventType
-  documentId String?        @db.ObjectId
-  details    Json? // Stocke les détails de l'événement (e.g. { oldStatus: 'DRAFT', newStatus: 'IN_REVIEW' })
-  timestamp  DateTime       @default(now())
+enum AuditStatus {
+  SUCCESS
+  FAILED
+}
 
-  user     User?     @relation(fields: [userId], references: [id])
-  document Document? @relation(fields: [documentId], references: [id])
+model AuditLog {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String?        @db.ObjectId
+  eventType     AuditEventType
+  documentId    String?        @db.ObjectId
+  details       Json?
+  ipAddress     String?
+  userAgent     String?
+  status        AuditStatus @default(SUCCESS)
+  sessionId     String?
+  timestamp     DateTime       @default(now())
+
+  user          User?          @relation(fields: [userId], references: [id])
+  document      Document?      @relation(fields: [documentId], references: [id])
 
   @@index([userId, documentId, eventType, timestamp])
   @@map("audit_logs")

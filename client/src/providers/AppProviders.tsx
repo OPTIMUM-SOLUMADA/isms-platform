@@ -3,10 +3,12 @@ import { UIProvider } from "@/contexts/ui/UIProvider";
 import { ISOClauseProvider } from "@/contexts/ISOClauseContext";
 import { DocumentTypeProvider } from "@/contexts/DocumentTypeContext";
 import { DocumentProvider } from "@/contexts/DocumentContext";
+import { NuqsAdapter } from "nuqs/adapters/react-router"
 // import { ViewerProvider } from "@/contexts/DocumentReviewContext";
 
 // Compose providers
 export const AppProviders = composeProviders(
+    NuqsAdapter,
     DocumentTypeProvider,
     ISOClauseProvider,
     DocumentProvider,
