@@ -1,5 +1,6 @@
 
 import i18n from "@/i18n/config";
+import { format } from "date-fns";
 import { enUS, fr } from "date-fns/locale";
 
 /**
@@ -34,3 +35,8 @@ export const getDateFnsLocale = () => {
             return enUS;
     }
 };
+
+
+export const defaultFormat = (date: string | Date) => {
+    return format(date, "dd/MM/yyyy");
+}

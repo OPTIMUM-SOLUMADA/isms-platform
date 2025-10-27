@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/date';
+import { defaultFormat } from '@/lib/date';
 import { cn } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 
@@ -11,7 +11,7 @@ const DateLabel = ({ className, date }: Props) => {
     return (
         <div className={cn('flex items-center gap-2', className)}>
             <Calendar className='h-4 w-4' />
-            <span>{formatDate(date)}</span>
+            <span>{defaultFormat(date)}</span>
         </div>
     )
 }
