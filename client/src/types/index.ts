@@ -104,6 +104,7 @@ export type DocumentVersion = {
   createdAt: Date;
   isCurrent: boolean; // optional: flag the latest version
   fileUrl?: string;
+  googleDriveFileId: string;
 
   document: Document;
   approvals?: DocumentApproval[];

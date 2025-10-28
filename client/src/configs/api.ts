@@ -87,7 +87,12 @@ export const API_CONFIG = {
         DEPARTMENT_ROLE: {
             BASE: "/department-roles",
             GET: (id: string | number) => `/department-roles/${id}`,
-        }
+        },
+        GOOGLE_DRIVE: {
+            BASE: "/google-drive",
+            GET_FILES: () => `/google-drive/files`,
+            GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) => `/google-drive/grant-permissions/${id}`,
+        },
     },
 } as const;
 

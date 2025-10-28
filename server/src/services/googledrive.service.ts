@@ -28,6 +28,8 @@ export type DriveFileMetadata = {
     webContentLink?: string;
 };
 
+type Role = 'owner' | 'writer' | 'commenter' | 'reader';
+
 export class GoogleDriveService implements IGoogleDriveService {
     private drive: drive_v3.Drive;
 
@@ -79,7 +81,7 @@ export class GoogleDriveService implements IGoogleDriveService {
 
     async uploadFileFromStream(
         stream: Readable,
-        options?: { name?: string; parents?: string[]; mimeType?: string },
+        options?: { name?: string; parents?: string[]; mimeType?: string; emails?: string[] },
     ): Promise<UploadResult> {
         if (!this.drive) throw new Error('Service not initialized.');
 
@@ -87,6 +89,12 @@ export class GoogleDriveService implements IGoogleDriveService {
             requestBody: {
                 name: options?.name || 'Untitled',
                 parents: options?.parents ?? null,
+                permissions:
+                    options?.emails?.map((reviewer) => ({
+                        emailAddress: reviewer,
+                        role: 'writer',
+                        kind: 'drive#permission',
+                    })) || [],
             },
             media: {
                 mimeType: options?.mimeType || 'application/octet-stream',
@@ -163,7 +171,7 @@ export class GoogleDriveService implements IGoogleDriveService {
     async createPermission(
         fileId: string,
         permission: {
-            role: 'owner' | 'writer' | 'commenter' | 'reader';
+            role: Role;
             type: 'user' | 'group' | 'domain' | 'anyone';
             emailAddress?: string;
         },
@@ -204,6 +212,27 @@ export class GoogleDriveService implements IGoogleDriveService {
             fields: 'id, parents',
         });
         return res.data;
+    }
+
+    async grantPermissions(documentId: string, emails: string[], role: Role) {
+        if (!this.drive) throw new Error('Service not initialized.');
+        for (const email of emails) {
+            await this.createPermission(documentId, {
+                role: role,
+                type: 'user',
+                emailAddress: email,
+            });
+        }
+    }
+
+    async removePermissions(documentId: string, emails: string[]) {
+        if (!this.drive) throw new Error('Service not initialized.');
+        for (const email of emails) {
+            await this.drive.permissions.delete({
+                fileId: documentId,
+                permissionId: email,
+            });
+        }
     }
 
     getWebViewLink(fileId: string) {

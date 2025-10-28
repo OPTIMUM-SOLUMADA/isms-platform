@@ -4,8 +4,12 @@ import { GoogleAuthConfig } from '@/configs/google.config';
 import { GoogleDriveService } from '@/services/googledrive.service';
 import { logger } from '@/utils/logger';
 import { GoogleAccountService } from '@/services/google-account.service';
+import { useGoogleDriveService } from '@/utils/google-drive';
+import { DocumentVersionService } from '@/services/documentversion.service';
 
 const gAccountService = new GoogleAccountService();
+const documentVersion = new DocumentVersionService();
+
 export class GoogleDriveController {
     static async redirectToGoogle(req: Request, res: Response) {
         const oauth2Client = GoogleAuthConfig.getInstance().getClient();
@@ -59,19 +63,26 @@ export class GoogleDriveController {
         }
     }
 
-    // static async uploadFile(req: Request, res: Response) {
-    //     try {
-    //         // @ts-ignore
-    //         const user = (req.session as any)?.user;
-    //         if (!user) return res.status(401).json({ error: 'Not authenticated' });
+    static async grantPermissions(req: Request, res: Response) {
+        try {
+            const { documentId } = req.params;
+            const versions = await documentVersion.getByDocumentId(documentId!);
 
-    //         const driveService = new GoogleDriveService(user.tokens);
-    //         const file = await driveService.uploadFile(req.file!);
+            const driveService = useGoogleDriveService(req);
 
-    //         return res.json(file);
-    //     } catch (error) {
-    //         logger.error(error);
-    //         return res.status(500).json({ error: 'Failed to upload file' });
-    //     }
-    // }
+            for (const version of versions) {
+                const { document, googleDriveFileId } = version;
+                const authorsEmail = document.authors.map((e) => e.user.email);
+                const reviewersEmail = document.reviewers.map((e) => e.user.email);
+                // Grant permissions (Authors)
+                await driveService.grantPermissions(googleDriveFileId, authorsEmail, 'writer');
+                // Grant permissions (Reviewers)
+                await driveService.grantPermissions(googleDriveFileId, reviewersEmail, 'commenter');
+            }
+
+            return res.status(200).json({ message: 'Permissions granted successfully' });
+        } catch {
+            return res.status(500).json({ error: 'Failed to grant permissions' });
+        }
+    }
 }

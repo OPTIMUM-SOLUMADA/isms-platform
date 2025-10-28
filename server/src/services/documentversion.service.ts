@@ -17,6 +17,89 @@ export class DocumentVersionService {
                         createdAt: true,
                     },
                 },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
+
+    async getByDocumentId(documentId: string) {
+        return prisma.documentVersion.findMany({
+            where: {
+                documentId,
+            },
+            include: {
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        createdAt: true,
+                    },
+                },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
     }

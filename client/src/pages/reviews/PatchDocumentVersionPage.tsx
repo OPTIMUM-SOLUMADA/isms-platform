@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { LoadingButton } from '@/components/ui/loading-button';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
 import { useNavigate, useParams } from 'react-router-dom';
-import Iframe from 'react-iframe';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Eye, FileCheck2, Layers } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useEffect, useMemo, useState } from 'react';
@@ -15,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import RequestDetailsSheet from '@/templates/reviews/RequestDetailsSheet';
 import { NumberInput } from '@/components/NumberInput';
 import BackButton from '@/components/BackButton';
+import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -79,10 +79,9 @@ const PatchDocumentVersionPage = () => {
         <WithTitle title={t("patchDocumentReview.title")}>
             <Card className='flex flex-grow flex-col p-0 space-y-0'>
                 <CardContent className='flex flex-col flex-grow px-0'>
-                    <Iframe
-                        url="https://docs.google.com/document/d/1i12G55H6V0mcVWHCzlRfC3CKpyDt1sRI/edit?usp=sharing&ouid=104020429096532563212&rtpof=true&sd=true"
-                        className="border-none bg-white overflow-hidden w-full grow min-h-[600px]"
-                    />
+                    {data.documentVersion && (
+                        <DocumentPreview version={data.documentVersion} mode="edit" className='grow' />
+                    )}
                 </CardContent>
                 <CardFooter className='flex justify-between items-center gap-5 py-2 border-t bg-gray-200 my-0'>
 
