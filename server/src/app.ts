@@ -16,6 +16,8 @@ import departmentRoleRoutes from './routes/departmentrole.routes';
 import { env } from './configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from './configs/upload';
 import { PUBLIC_PATH } from './configs/public';
+import { sessionMiddleware } from './configs/session.config';
+import googleDriveRoutes from './routes/googledrive.routes';
 
 const app = express();
 
@@ -32,6 +34,9 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization'],
     }),
 );
+
+// session
+app.use(sessionMiddleware);
 
 // Public folder
 app.use(express.static(PUBLIC_PATH));
@@ -54,5 +59,6 @@ app.use('/excel', excelRoutes);
 app.use('/invitation', invitationRoutes);
 app.use('/owners', ownerRoutes);
 app.use('/department-roles', departmentRoleRoutes);
+app.use('/google-drive', googleDriveRoutes);
 
 export default app;

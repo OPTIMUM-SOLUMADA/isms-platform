@@ -26,7 +26,7 @@ export const envSchema = z.object({
     CORS_ORIGIN: z.string().default('*'),
 
     // Session (optional, if you mix JWT with sessions for some flows)
-    SESSION_SECRET: z.string().min(16).optional(),
+    SESSION_SECRET: z.string().min(16).optional().default('isms-solumada-session-2025'),
 
     // JWT
     JWT_ACCESS_SECRET: z

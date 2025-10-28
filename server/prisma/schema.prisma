@@ -296,15 +296,16 @@ model ISOClause {
 }
 
 model DocumentVersion {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  documentId  String   @db.ObjectId
-  version     String
-  comment     String?
-  createdAt   DateTime @default(now())
-  isCurrent   Boolean  @default(false) // optional: flag the latest version
-  fileUrl     String?
-  createdById String?  @db.ObjectId
-  createdBy   User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId        String   @db.ObjectId
+  version           String
+  comment           String?
+  createdAt         DateTime @default(now())
+  isCurrent         Boolean  @default(false) // optional: flag the latest version
+  fileUrl           String?
+  googleDriveFileId String
+  createdById       String?  @db.ObjectId
+  createdBy         User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   document        Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   approvals       DocumentApproval[]
@@ -420,20 +421,31 @@ enum AuditStatus {
 }
 
 model AuditLog {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String?        @db.ObjectId
-  eventType     AuditEventType
-  documentId    String?        @db.ObjectId
-  details       Json?
-  ipAddress     String?
-  userAgent     String?
-  status        AuditStatus @default(SUCCESS)
-  sessionId     String?
-  timestamp     DateTime       @default(now())
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String?        @db.ObjectId
+  eventType  AuditEventType
+  documentId String?        @db.ObjectId
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  status     AuditStatus    @default(SUCCESS)
+  sessionId  String?
+  timestamp  DateTime       @default(now())
 
-  user          User?          @relation(fields: [userId], references: [id])
-  document      Document?      @relation(fields: [documentId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id])
 
   @@index([userId, documentId, eventType, timestamp])
   @@map("audit_logs")
+}
+
+model GoogleAccount {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  googleId String
+  tokens   Json
+
+  createdAt DateTime @default(now())
+
+  @@map("google_accounts")
 }

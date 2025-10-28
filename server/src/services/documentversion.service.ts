@@ -32,7 +32,12 @@ export class DocumentVersionService {
     // patch version
     async createPatchedVersion(
         documentId: string,
-        data: { userId: string; version: string; fileUrl?: string },
+        data: {
+            userId: string;
+            version: string;
+            fileUrl?: string;
+            googleDriveFileId: string;
+        },
     ) {
         return prisma.$transaction(async (tx) => {
             // set current to false for all version of the doc
@@ -49,6 +54,7 @@ export class DocumentVersionService {
                     version: data.version,
                     ...(data.fileUrl && { fileUrl: data.fileUrl }),
                     createdBy: { connect: { id: data.userId } },
+                    googleDriveFileId: data.googleDriveFileId,
                 },
             });
         });

@@ -188,6 +188,7 @@ export class DocumentReviewController {
             await versionService.createPatchedVersion(data.documentId, {
                 userId: userId,
                 version: patchedVersion,
+                googleDriveFileId: '',
             });
 
             return res.json(data);

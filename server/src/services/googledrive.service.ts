@@ -1,8 +1,12 @@
-import fs from 'fs';
+import { google, drive_v3 } from 'googleapis';
 import { Readable } from 'stream';
-import { google } from 'googleapis';
-import type { drive_v3 } from 'googleapis';
-import type { JWT } from 'google-auth-library';
+import { GoogleAuthConfig } from '@/configs/google.config';
+import fs from 'fs';
+
+export interface IGoogleDriveService {
+    listFiles(): Promise<drive_v3.Schema$FileList>;
+    uploadFile(name: string, mimeType: string, data: Buffer): Promise<drive_v3.Schema$File>;
+}
 
 export type UploadResult = {
     id: string;
@@ -24,37 +28,41 @@ export type DriveFileMetadata = {
     webContentLink?: string;
 };
 
-export interface ServiceAccountOptions {
-    keyFile: string; // Path to your service account JSON file
-    scopes?: string[];
-}
+export class GoogleDriveService implements IGoogleDriveService {
+    private drive: drive_v3.Drive;
 
-/**
- * Google Drive Service using a Service Account JSON (server-side only)
- */
-export class GoogleDriveService {
-    private drive!: drive_v3.Drive;
-    private readonly scopes: string[];
-
-    constructor(private readonly opts: ServiceAccountOptions) {
-        this.scopes = opts.scopes ?? ['https://www.googleapis.com/auth/drive'];
+    constructor(tokens: any) {
+        const auth = GoogleAuthConfig.getInstance().getClient();
+        auth.setCredentials(tokens);
+        this.drive = google.drive({ version: 'v3', auth });
     }
 
-    /**
-     * Initialize the service account auth and create Drive client.
-     */
-    async initialize(): Promise<void> {
-        if (!this.opts.keyFile) {
-            throw new Error('A path to the service account JSON file is required.');
-        }
+    async listFiles() {
+        const res = await this.drive.files.list({
+            pageSize: 10,
+            fields: 'files(id, name, mimeType, parents)',
+            includeItemsFromAllDrives: true,
+            supportsAllDrives: true,
+            corpora: 'user',
+            q: 'trashed = false',
+        });
+        return res.data;
+    }
 
-        const auth = new google.auth.GoogleAuth({
-            keyFile: this.opts.keyFile,
-            scopes: this.scopes,
+    async uploadFile(name: string, mimeType: string, data: Buffer) {
+        const fileMetadata = { name };
+        const media = {
+            mimeType,
+            body: Readable.from(data),
+        };
+
+        const res = await this.drive.files.create({
+            requestBody: fileMetadata,
+            media,
+            fields: 'id, name',
         });
 
-        const client = (await auth.getClient()) as JWT;
-        this.drive = google.drive({ version: 'v3', auth: client });
+        return res.data;
     }
 
     // ---------------------------
@@ -103,6 +111,24 @@ export class GoogleDriveService {
     ): Promise<UploadResult> {
         const stream = Readable.from(buffer);
         return this.uploadFileFromStream(stream, options);
+    }
+
+    // ---------------------------
+    // Delete file
+    // ---------------------------
+    async deleteFile(fileId: string) {
+        try {
+            if (!this.drive) throw new Error('Service not initialized.');
+            await this.drive.files.delete({ fileId });
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    async deleteFiles(fileIds: string[]) {
+        for (const fileId of fileIds) await this.deleteFile(fileId);
+        return true;
     }
 
     // ---------------------------

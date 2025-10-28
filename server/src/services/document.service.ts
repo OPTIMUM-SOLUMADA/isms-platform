@@ -232,7 +232,16 @@ export class DocumentService {
         await prisma.departmentRoleDocument.deleteMany({
             where: { documentId: id },
         });
-        return prisma.document.delete({ where: { id } });
+        return prisma.document.delete({
+            where: { id },
+            include: {
+                versions: {
+                    select: {
+                        googleDriveFileId: true,
+                    },
+                },
+            },
+        });
     }
 
     async listDocuments({ page = 1, limit = 50 }: { page: number; limit: number }) {

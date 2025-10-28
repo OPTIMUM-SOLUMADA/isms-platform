@@ -5,6 +5,8 @@ import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
+import { readFileSync } from 'fs';
+import { useGoogleDriveService } from '@/utils/google-drive';
 // import { readFileSync } from 'fs';
 // import svc from '@/configs/google-service';
 
@@ -39,16 +41,17 @@ export class DocumentController {
                 throw new Error('File is required');
             }
 
-            // const buffer = readFileSync(file.path);
+            const version = createVersion(1, 0);
 
-            // // Upload to Google Drive
-            // const result = await svc.uploadFileFromBuffer(buffer, {
-            //     name: file.originalname,
-            //     mimeType: file.mimetype,
-            //     parents: ['16kYtd8LCgX2JW9FAuX38NMicKbpJp7OC'],
-            // });
-
-            // console.log(result);
+            const buffer = readFileSync(file.path);
+            const googleDriveService = useGoogleDriveService(req);
+            const [originalname, ext] = file.originalname.split('.');
+            // Upload to Google Drive
+            const result = await googleDriveService.uploadFileFromBuffer(buffer, {
+                name: `${originalname}-${version}.${ext}`,
+                mimeType: file.mimetype,
+                parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+            });
 
             const fileUrl = req.file ? req.file.filename : null;
 
@@ -65,9 +68,10 @@ export class DocumentController {
                 // create document version
                 versions: {
                     create: {
-                        version: createVersion(1, 0), // 1.0
+                        version: version, // 1.0
                         isCurrent: true,
-                        fileUrl: fileUrl,
+                        fileUrl: result.webViewLink,
+                        googleDriveFileId: result.id,
                     },
                 },
             });
@@ -86,6 +90,8 @@ export class DocumentController {
                     departmentRoleId: departmentRoleId,
                 })),
             );
+
+            if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
 
             res.status(201).json(createdDoc);
         } catch (err) {
@@ -140,7 +146,39 @@ export class DocumentController {
                 return;
             }
 
-            const fileUrl = req.file ? req.file.filename : undefined;
+            const file = req.file;
+
+            // Replace file from google drive if user change the document
+            if (file) {
+                const googleDriveService = useGoogleDriveService(req);
+                const currentVersion = document.versions.find((v) => v.isCurrent);
+                if (!currentVersion) throw new Error('Current version not found');
+                googleDriveService.deleteFile(currentVersion.googleDriveFileId);
+                // re upload
+                const buffer = readFileSync(file.path);
+                const [originalname, ext] = file.originalname.split('.');
+                const result = await googleDriveService.uploadFileFromBuffer(buffer, {
+                    name: `${originalname}-${createVersion(1, 0)}.${ext}`,
+                    mimeType: file.mimetype,
+                    parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+                });
+
+                // update version
+                await this.service.update(documentId!, {
+                    versions: {
+                        update: {
+                            where: {
+                                id: currentVersion.id,
+                                isCurrent: true,
+                            },
+                            data: {
+                                fileUrl: result.webViewLink!,
+                                googleDriveFileId: result.id!,
+                            },
+                        },
+                    },
+                });
+            }
 
             const updatedDocument = await this.service.update(documentId!, {
                 ...(title && { title }),
@@ -150,7 +188,7 @@ export class DocumentController {
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
-                ...(fileUrl && { fileUrl }),
+                ...(file && { fileUrl: file.filename }),
                 classification,
             });
 
@@ -170,7 +208,7 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
-            if (fileUrl) {
+            if (file) {
                 // Delete old file
                 await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
             }
@@ -187,6 +225,10 @@ export class DocumentController {
             const deleted = await this.service.deleteDocument(req.params.id!);
             // Delete file
             await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, deleted.fileUrl!);
+            // Delete file from google drive
+            const googleDriveService = useGoogleDriveService(req);
+            const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
+            googleDriveService.deleteFiles(versionsIds);
 
             res.status(204).json(deleted);
         } catch (err) {
