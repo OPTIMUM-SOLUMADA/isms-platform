@@ -5,16 +5,22 @@ import { FileService } from '@/services/file.service';
 import path from 'path';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
-// import { readFileSync } from 'fs';
-// import svc from '@/configs/google-service';
+import { readFileSync } from 'fs';
+import { useGoogleDriveService } from '@/utils/google-drive';
+import { DocumentVersionService } from '@/services/documentversion.service';
+import { DocumentReviewService } from '@/services/documentreview.service';
 
 export class DocumentController {
     private service: DocumentService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
+    private versionService: DocumentVersionService;
+    private reviewService: DocumentReviewService;
 
     constructor() {
         this.service = new DocumentService();
         this.departmentRoleDocument = new DepartmentRoleDocumentService();
+        this.versionService = new DocumentVersionService();
+        this.reviewService = new DocumentReviewService();
     }
 
     async create(req: Request, res: Response) {
@@ -39,16 +45,21 @@ export class DocumentController {
                 throw new Error('File is required');
             }
 
-            // const buffer = readFileSync(file.path);
+            const version = createVersion(1, 0);
 
-            // // Upload to Google Drive
-            // const result = await svc.uploadFileFromBuffer(buffer, {
-            //     name: file.originalname,
-            //     mimeType: file.mimetype,
-            //     parents: ['16kYtd8LCgX2JW9FAuX38NMicKbpJp7OC'],
-            // });
+            const buffer = readFileSync(file.path);
+            const googleDriveService = useGoogleDriveService(req);
+            const workingDirId = googleDriveService.getWorkingDirId();
 
-            // console.log(result);
+            // Create folder parent for the new document
+            const folder = await googleDriveService.createFolder(title, [workingDirId]);
+
+            // Upload to Google Drive
+            const result = await googleDriveService.uploadFileFromBuffer(buffer, {
+                name: `${title} - ${version}`,
+                mimeType: file.mimetype,
+                parents: [folder.id],
+            });
 
             const fileUrl = req.file ? req.file.filename : null;
 
@@ -62,14 +73,17 @@ export class DocumentController {
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 fileUrl: fileUrl,
-                // create document version
+                // Create document version
                 versions: {
                     create: {
-                        version: createVersion(1, 0), // 1.0
+                        version: version, // 1.0
                         isCurrent: true,
-                        fileUrl: fileUrl,
+                        fileUrl: result.webViewLink,
+                        downloadUrl: result.webContentLink,
+                        googleDriveFileId: result.id,
                     },
                 },
+                folderId: folder.id,
             });
 
             // link document to users (Authors and Reviewers)
@@ -86,6 +100,8 @@ export class DocumentController {
                     departmentRoleId: departmentRoleId,
                 })),
             );
+
+            if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
 
             res.status(201).json(createdDoc);
         } catch (err) {
@@ -140,7 +156,45 @@ export class DocumentController {
                 return;
             }
 
-            const fileUrl = req.file ? req.file.filename : undefined;
+            const googleDriveService = useGoogleDriveService(req);
+
+            const file = req.file;
+
+            // Replace file from google drive if user change the document
+            if (file) {
+                const currentVersion = document.versions.find((v) => v.isCurrent);
+                if (!currentVersion) throw new Error('Current version not found');
+                googleDriveService.deleteFile(currentVersion.googleDriveFileId);
+                // re upload
+                const buffer = readFileSync(file.path);
+                const [originalname, ext] = file.originalname.split('.');
+                const result = await googleDriveService.uploadFileFromBuffer(buffer, {
+                    name: `${originalname}-${createVersion(1, 0)}.${ext}`,
+                    mimeType: file.mimetype,
+                    parents: [document.folderId!],
+                });
+
+                // update version
+                await this.service.update(documentId!, {
+                    versions: {
+                        update: {
+                            where: {
+                                id: currentVersion.id,
+                                isCurrent: true,
+                            },
+                            data: {
+                                fileUrl: result.webViewLink!,
+                                googleDriveFileId: result.id!,
+                            },
+                        },
+                    },
+                });
+            }
+
+            // Update folder name if name changed
+            if (title !== document.title) {
+                await googleDriveService.updateFolderName(document.folderId!, title);
+            }
 
             const updatedDocument = await this.service.update(documentId!, {
                 ...(title && { title }),
@@ -150,7 +204,7 @@ export class DocumentController {
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
-                ...(fileUrl && { fileUrl }),
+                ...(file && { fileUrl: file.filename }),
                 classification,
             });
 
@@ -170,7 +224,7 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
-            if (fileUrl) {
+            if (file) {
                 // Delete old file
                 await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
             }
@@ -187,6 +241,11 @@ export class DocumentController {
             const deleted = await this.service.deleteDocument(req.params.id!);
             // Delete file
             await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, deleted.fileUrl!);
+            // Delete file from google drive
+            const googleDriveService = useGoogleDriveService(req);
+            const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
+            await googleDriveService.deleteFiles(versionsIds);
+            await googleDriveService.deleteFolder(deleted.folderId!);
 
             res.status(204).json(deleted);
         } catch (err) {
@@ -238,6 +297,40 @@ export class DocumentController {
         }
     }
 
+    async downloadFromGoogleDrive(req: Request, res: Response) {
+        try {
+            const document = await this.service.getDocumentById(req.params.id!);
+            if (!document) {
+                res.status(404).json({ error: 'Document not found' });
+                return;
+            }
+
+            const gdService = useGoogleDriveService(req);
+
+            // Use folderId as reference (assuming folderId stores the Google Drive fileId)
+            const fileId = document.versions.find((v) => v.isCurrent)?.googleDriveFileId || '';
+
+            const file = await gdService.getFileById(fileId);
+
+            const driveFile = await gdService.getStreamFileById(fileId);
+
+            // Set minimal headers to prompt download
+            res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+
+            driveFile
+                .on('end', () => console.log(`File ${file.name} streamed successfully`))
+                .on('error', (err) => {
+                    console.error('Error streaming Google Drive file', err);
+                    res.status(500).json({ error: 'Failed to download file' });
+                })
+                .pipe(res);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
     async publish(req: Request, res: Response) {
         try {
             const document = await this.service.publishDocument(req.params.id!);
@@ -252,6 +345,65 @@ export class DocumentController {
             const document = await this.service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    async createDraftDocumentVersion(req: Request, res: Response) {
+        try {
+            const { id: reviewId } = req.params;
+
+            const review = await this.reviewService.findByIdWithIncludedData(reviewId!);
+            if (!review) {
+                res.status(404).json({ error: 'Review not found' });
+                return;
+            }
+
+            const documentId = review.documentId;
+
+            const version = await this.versionService.getCurrentVersionByDocumentId(documentId!);
+            if (!version) {
+                res.status(404).json({ error: 'Document not found' });
+                return;
+            }
+
+            if (version.draftUrl || version.draftId) {
+                res.json(version);
+                return;
+            }
+
+            const gdService = useGoogleDriveService(req);
+
+            // Use folderId as reference (assuming folderId stores the Google Drive fileId)
+            const fileId = version.googleDriveFileId;
+
+            const draft = await gdService.duplicateFile(fileId, {
+                name: `Draft - ${version.document.title} - ${version.version}`,
+                parentId: version.document.folderId!,
+            });
+
+            // Grant permissions to authors
+            await gdService.grantPermissions(
+                draft.id!,
+                version.document.authors.map((a) => a.user.email),
+                'writer',
+            );
+
+            // Grant permissions to reviewers
+            await gdService.grantPermissions(
+                draft.id!,
+                version.document.reviewers.map((r) => r.user.email),
+                'commenter',
+            );
+
+            const updatedVersion = await this.versionService.update(version.id, {
+                draftUrl: draft.webViewLink!,
+                draftId: draft.id!,
+            });
+
+            res.json(updatedVersion);
+        } catch (err) {
+            console.log(err);
             res.status(500).json({ error: (err as Error).message });
         }
     }

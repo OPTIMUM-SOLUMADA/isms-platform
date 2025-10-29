@@ -7,6 +7,7 @@ import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm
 import { useToast } from "@/hooks/use-toast";
 import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
 import { useTranslation } from "react-i18next";
+import { useGrantPermissionsToDocumentVersion } from "@/hooks/queries/useGoogleDriveMutation";
 
 // Define shape of context
 interface DocumentContextType {
@@ -88,6 +89,8 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
 
+    const { mutate: grantPermissions } = useGrantPermissionsToDocumentVersion();
+
     const setCurrentDocument = useCallback((document: Document) => {
         _setCurrentDocument(document);
     }, []);
@@ -157,6 +160,11 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             return res.data;
         },
         onSuccess: (data) => {
+            // grant permission
+            grantPermissions({
+                documentId: data.id,
+            });
+
             toast({
                 title: t("document.add.toast.success.title"),
                 description: t("document.add.toast.success.description"),
@@ -190,6 +198,11 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             return res.data;
         },
         onSuccess: (data) => {
+            // grant permission
+            grantPermissions({
+                documentId: data.id,
+            });
+
             toast({
                 title: t("document.edit.toast.success.title"),
                 description: t("document.edit.toast.success.description"),

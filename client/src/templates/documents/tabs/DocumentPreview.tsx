@@ -1,30 +1,35 @@
+import { cn } from "@/lib/utils";
+import { DocumentVersion } from "@/types";
+import { useMemo } from "react";
+import Iframe from "react-iframe";
 
-import { ImageViewer } from "@/components/viewers/ImageViewer";
-import { ExcelViewer } from "@/components/viewers/ExcelViewer";
-import { PdfViewer } from "@/components/viewers/PdfViewer";
-import { getFileType } from "@/lib/preview";
-import { apiUrl } from "@/configs/api";
-import { env } from "@/configs/env";
+type Mode = 'edit' | 'view';
 
 interface DocumentPreviewProps {
-  filename: string;
+  version: DocumentVersion;
+  mode?: Mode;
+  className?: string;
 }
 
-export default function DocumentPreview({ filename }: DocumentPreviewProps) {
+const modeToUrl: Record<Mode, string> = {
+  'edit': '/edit?',
+  'view': '/preview?'
+};
 
+export default function DocumentPreview({
+  version,
+  mode = 'edit',
+  className = '',
+}: DocumentPreviewProps) {
 
-  // get file type from filename extension
-  const fileType = getFileType(filename);
-  const fileUrl = apiUrl(`${env.DOCUMENT_PREVIEW_URL}/${filename}`);
-
-  switch (fileType) {
-    case "pdf":
-      return <PdfViewer url={fileUrl} />;
-    case "image":
-      return <ImageViewer url={fileUrl} />;
-    case "excel":
-      return <ExcelViewer url={fileUrl} />;
-    default:
-      return <div>Unsupported file type</div>;
-  }
+  const replacer = modeToUrl[mode];
+  const url = mode === 'edit' ? version.draftUrl : version.fileUrl;
+  const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
+  return (
+    <Iframe
+      url={fileUrl}
+      className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
+      referrerpolicy="no-referrer"
+    />
+  );
 }

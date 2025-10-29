@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGetReview, useUpdateComment } from '@/hooks/queries/useReviewMutation';
 import { formatDate } from '@/lib/date';
+import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
 import WithTitle from '@/templates/layout/WithTitle';
 import ApproveDocumentDialog from '@/templates/reviews/dialogs/ApproveDocumentDialog';
 import RejectDocumentDialog from '@/templates/reviews/dialogs/RejectDocumentDialog';
@@ -25,6 +26,7 @@ const ReviewApprovalPage = () => {
     const [openReject, setOpenReject] = useState(false);
 
     const { data, isLoading, isError } = useGetReview(reviewId);
+
 
     // Check if review use for the active user
     if (data && (data.reviewer.id !== user?.id)) {
@@ -66,10 +68,13 @@ const ReviewApprovalPage = () => {
             </div>
             <Card className="flex-grow flex flex-col p-0">
                 <CardContent className='flex flex-col grow p-0'>
-                    <iframe
-                        src="https://docs.google.com/document/d/1i12G55H6V0mcVWHCzlRfC3CKpyDt1sRI/preview"
-                        className="border-none shadow-lg bg-white overflow-hidden w-full flex-grow min-h-[600px]"
-                    />
+                    {data.documentVersion && (
+                        <DocumentPreview
+                            version={data.documentVersion}
+                            mode='view'
+                            className='grow'
+                        />
+                    )}
                     <div
                         className="w-full p-4 space-y-3 bg-gray-200 flex flex-col items-center justify-center"
                     >

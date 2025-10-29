@@ -20,4 +20,7 @@ export const documentReviewService = {
     markAsCompleted: async (id: string) => axios.patch(api.MARK_AS_COMPLETED(id)),
     patchDocumentReview: async (id: string, data: any) => axios.patch(api.PATCH_DOCUMENT_VERSION(id), data),
     getMyReviewsDueSoon: async (id: string) => axios.get(api.GET_MY_REVIEWS_DUE_SOON(id)),
+    getSubmittedReviews: async (id: string) => axios.get(api.GET_SUBMITTED_REVIEWS_BY_DOCUMENT(id)),
+    getCompletedReviews: async (id: string) => axios.get(api.GET_COMPLETED_REVIEWS_BY_DOCUMENT(id)),
+    getExpiredReviews: async (id: string) => axios.get(api.GET_EXPIRED_REVIEWS_BY_USER(id)),
 };

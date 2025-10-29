@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
-import type { Document } from "@/types";
+import type { Document, DocumentVersion } from "@/types";
 import type { ApiAxiosError } from "@/types/api";
 import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm";
 import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
@@ -229,3 +229,15 @@ export const useDownloadDocument = () => {
     },
   });
 };
+
+
+// --------------------------
+// Create draft version
+// --------------------------
+export const useCreateDraftVersion = (reviewId?: string) => {
+  return useQuery<DocumentVersion, ApiAxiosError>({
+    queryKey: ['create-draft-version', reviewId],
+    queryFn: async () => (await documentService.createDraftVersion(reviewId!)).data,
+    enabled: !!reviewId,
+  });
+}

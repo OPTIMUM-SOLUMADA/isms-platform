@@ -1,9 +1,7 @@
-import LoadingSplash from '@/components/loading';
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { LoadingButton } from '@/components/ui/loading-button';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
 import { useNavigate, useParams } from 'react-router-dom';
-import Iframe from 'react-iframe';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Eye, FileCheck2, Layers } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useEffect, useMemo, useState } from 'react';
@@ -15,6 +13,9 @@ import { Button } from '@/components/ui/button';
 import RequestDetailsSheet from '@/templates/reviews/RequestDetailsSheet';
 import { NumberInput } from '@/components/NumberInput';
 import BackButton from '@/components/BackButton';
+import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
+import { useCreateDraftVersion } from '@/hooks/queries/useDocumentMutations';
+import CircleLoading from '@/components/loading/CircleLoading';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -24,7 +25,11 @@ const PatchDocumentVersionPage = () => {
     const navigate = useNavigate();
 
 
+    console.log(nextVersion)
+
+
     const { data, isLoading } = useGetReview(reviewId);
+    const { data: draftVersion, isLoading: isCreatingDraft } = useCreateDraftVersion(data?.id);
 
     const currentVersion = useMemo(() => {
         if (!data) return '';
@@ -38,7 +43,7 @@ const PatchDocumentVersionPage = () => {
         setNextVersion(newVersion);
     }, [currentVersion]);
 
-    if (isLoading) return <LoadingSplash />
+    if (isLoading || isCreatingDraft) return <CircleLoading />;
 
     if (!data) {
         return <div>404</div>
@@ -79,10 +84,9 @@ const PatchDocumentVersionPage = () => {
         <WithTitle title={t("patchDocumentReview.title")}>
             <Card className='flex flex-grow flex-col p-0 space-y-0'>
                 <CardContent className='flex flex-col flex-grow px-0'>
-                    <Iframe
-                        url="https://docs.google.com/document/d/1i12G55H6V0mcVWHCzlRfC3CKpyDt1sRI/edit?usp=sharing&ouid=104020429096532563212&rtpof=true&sd=true"
-                        className="border-none bg-white overflow-hidden w-full grow min-h-[600px]"
-                    />
+                    {draftVersion && (
+                        <DocumentPreview version={draftVersion} mode="edit" className='grow' />
+                    )}
                 </CardContent>
                 <CardFooter className='flex justify-between items-center gap-5 py-2 border-t bg-gray-200 my-0'>
 
@@ -116,7 +120,7 @@ const PatchDocumentVersionPage = () => {
                             allowNegative={false}
                             decimalSeparator='.'
                             value={Number(nextVersion)}
-                            onChange={e => setNextVersion(e.target.value)}
+                            onValueChange={e => setNextVersion(e.toString())}
                         />
                     </div>
 

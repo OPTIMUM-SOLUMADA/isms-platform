@@ -17,6 +17,89 @@ export class DocumentVersionService {
                         createdAt: true,
                     },
                 },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
+
+    async getByDocumentId(documentId: string) {
+        return prisma.documentVersion.findMany({
+            where: {
+                documentId,
+            },
+            include: {
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        createdAt: true,
+                    },
+                },
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
     }
@@ -29,10 +112,56 @@ export class DocumentVersionService {
         return prisma.documentVersion.update({ where: { id }, data });
     }
 
+    async getCurrentVersionByDocumentId(documentId: string) {
+        return prisma.documentVersion.findFirst({
+            where: { documentId, isCurrent: true },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        folderId: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
+
     // patch version
     async createPatchedVersion(
         documentId: string,
-        data: { userId: string; version: string; fileUrl?: string },
+        data: {
+            userId: string;
+            version: string;
+            fileUrl?: string;
+            googleDriveFileId: string;
+        },
     ) {
         return prisma.$transaction(async (tx) => {
             // set current to false for all version of the doc
@@ -49,6 +178,7 @@ export class DocumentVersionService {
                     version: data.version,
                     ...(data.fileUrl && { fileUrl: data.fileUrl }),
                     createdBy: { connect: { id: data.userId } },
+                    googleDriveFileId: data.googleDriveFileId,
                 },
             });
         });

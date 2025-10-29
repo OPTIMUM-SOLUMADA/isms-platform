@@ -11,10 +11,14 @@ import { ReviewTable } from "@/templates/reviews/table/ReviewTable";
 import { useNavigate } from "react-router-dom";
 import useReviewStore, { FilterStatus } from "@/stores/review/useReviewStore";
 import { Button } from "@/components/ui/button";
+import { useQueryState, parseAsStringEnum } from "nuqs";
 
 export default function ReviewWorkflowPage() {
   const { reviews, setFilter, filter } = useReviewStore();
-  const [activeTab, setActiveTab] = useState<FilterStatus>(filter.status || "ALL");
+  const [activeTab, setActiveTab] = useQueryState<FilterStatus>(
+    "tab",
+    parseAsStringEnum<FilterStatus>(["ALL", "PENDING", "APPROVED", "REJECTED", "EXPIRED"]).withDefault("ALL")
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const { t } = useTranslation();
   const navigate = useNavigate();

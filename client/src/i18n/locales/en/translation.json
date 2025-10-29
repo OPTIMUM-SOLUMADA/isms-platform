@@ -379,6 +379,29 @@
       }
     }
   },
+  "expiredReviews": {
+    "title": "Expired Reviews",
+    "subtitle": "Documents that are past their review date",
+    "item": {
+      "version": "Version",
+      "status": "Status",
+      "reviewer": "Reviewer",
+      "important": "Was due on {{date}}",
+      "actions": {
+        "reviewNow": {
+          "label": "Review now"
+        }
+      }
+    },
+    "actions": {
+      "close": {
+        "label": "Close"
+      },
+      "viewAll": {
+        "label": "View all reviews"
+      }
+    }
+  },
   "pendingReviews": {
     "title": "Overview — Feedback on Documents",
     "subtitle": "Document revision list and status",

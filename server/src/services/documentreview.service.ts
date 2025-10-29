@@ -54,9 +54,12 @@ const includes: Prisma.DocumentReviewInclude = {
     },
     documentVersion: {
         select: {
+            id: true,
             version: true,
             createdAt: true,
             fileUrl: true,
+            draftId: true,
+            draftUrl: true,
         },
     },
 };
@@ -68,7 +71,7 @@ export class DocumentReviewService {
         });
     }
 
-    async findByIdWithIncludedData(id: string): Promise<DocumentReview | null> {
+    async findByIdWithIncludedData(id: string) {
         return prisma.documentReview.findUnique({
             where: { id },
             include: {
@@ -571,6 +574,33 @@ export class DocumentReviewService {
                     gte: now,
                     lte: treeHoursLater,
                 },
+            },
+            include: includes,
+        });
+    }
+
+    async getSubmittedReviewsByDocument(documentId: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId, decision: { isSet: true }, isCompleted: false },
+            include: includes,
+        });
+    }
+
+    async getCompletedReviewsByDocument(documentId: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId, decision: { isSet: true }, isCompleted: true },
+            include: includes,
+            orderBy: { completedAt: 'desc' },
+        });
+    }
+
+    async getExpiredReviewsByUser(userId: string) {
+        return prisma.documentReview.findMany({
+            where: {
+                reviewerId: userId,
+                isCompleted: false,
+                decision: { isSet: false },
+                dueDate: { lte: new Date() },
             },
             include: includes,
         });

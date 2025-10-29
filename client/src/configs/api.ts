@@ -43,6 +43,7 @@ export const API_CONFIG = {
             DOWNLOAD: (id: string | number) => `/documents/download/${id}`,
             PUBLISH: (id: string | number) => `/documents/publish/${id}`,
             UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
+            CREATE_DRAFT_VERSION: (id: string | number) => `/documents/create-draft-version/${id}`,
         },
         REVIEWS: {
             BASE: "/document-reviews",
@@ -57,6 +58,9 @@ export const API_CONFIG = {
             GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
             MARK_AS_COMPLETED: (id: string | number) => `/document-reviews/mark-as-completed/${id}`,
             PATCH_DOCUMENT_VERSION: (id: string | number) => `/document-reviews/${id}/patch-document-version`,
+            GET_SUBMITTED_REVIEWS_BY_DOCUMENT: (id: string | number) => `/document-reviews/document/${id}/submitted`,
+            GET_COMPLETED_REVIEWS_BY_DOCUMENT: (id: string | number) => `/document-reviews/document/${id}/completed`,
+            GET_EXPIRED_REVIEWS_BY_USER: (id: string | number) => `/document-reviews/expired-reviews/${id}`,
         },
         ISO_CLAUSES: {
             BASE: "/iso-clauses",
@@ -84,7 +88,12 @@ export const API_CONFIG = {
         DEPARTMENT_ROLE: {
             BASE: "/department-roles",
             GET: (id: string | number) => `/department-roles/${id}`,
-        }
+        },
+        GOOGLE_DRIVE: {
+            BASE: "/google-drive",
+            GET_FILES: () => `/google-drive/files`,
+            GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) => `/google-drive/grant-permissions/${id}`,
+        },
     },
 } as const;
 

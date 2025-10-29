@@ -229,6 +229,8 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  folderId String?
+
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
@@ -296,15 +298,19 @@ model ISOClause {
 }
 
 model DocumentVersion {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  documentId  String   @db.ObjectId
-  version     String
-  comment     String?
-  createdAt   DateTime @default(now())
-  isCurrent   Boolean  @default(false) // optional: flag the latest version
-  fileUrl     String?
-  createdById String?  @db.ObjectId
-  createdBy   User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId        String   @db.ObjectId
+  version           String
+  comment           String?
+  createdAt         DateTime @default(now())
+  isCurrent         Boolean  @default(false) // optional: flag the latest version
+  fileUrl           String?
+  downloadUrl       String?
+  draftId           String?
+  draftUrl          String?
+  googleDriveFileId String
+  createdById       String?  @db.ObjectId
+  createdBy         User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   document        Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   approvals       DocumentApproval[]
@@ -399,14 +405,24 @@ model Notification {
 // ===========================================================================================
 
 enum AuditEventType {
+  // Document
   DOCUMENT_UPLOAD
   DOCUMENT_UPDATE
   DOCUMENT_VERSION_CREATED
   DOCUMENT_STATUS_CHANGE
   DOCUMENT_REVIEW_SUBMITTED
+  // User
   USER_ROLE_CHANGE
+  USER_ADD
+  USER_DELETE
+  // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux
+}
+
+enum AuditStatus {
+  SUCCESS
+  FAILED
 }
 
 model AuditLog {
@@ -414,7 +430,11 @@ model AuditLog {
   userId     String?        @db.ObjectId
   eventType  AuditEventType
   documentId String?        @db.ObjectId
-  details    Json? // Stocke les détails de l'événement (e.g. { oldStatus: 'DRAFT', newStatus: 'IN_REVIEW' })
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  status     AuditStatus    @default(SUCCESS)
+  sessionId  String?
   timestamp  DateTime       @default(now())
 
   user     User?     @relation(fields: [userId], references: [id])
@@ -422,4 +442,16 @@ model AuditLog {
 
   @@index([userId, documentId, eventType, timestamp])
   @@map("audit_logs")
+}
+
+model GoogleAccount {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  email        String @unique
+  googleId     String
+  tokens       Json
+  workingDirId String
+
+  createdAt DateTime @default(now())
+
+  @@map("google_accounts")
 }

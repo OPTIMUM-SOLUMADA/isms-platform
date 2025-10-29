@@ -19,10 +19,9 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
-import DocPreview from "@/templates/documents/tabs/DocumentPreview";
+import DocumentPreview from "@/templates/documents/tabs/DocumentPreview";
 // import DocumentApproval from "@/templates/forms/documents/DocumentApproval";
 // import AuditLog from "@/templates/forms/documents/AuditLog";
-import Notification from "@/templates/documents/tabs/Notification";
 import { documentStatusColors } from "@/constants/color";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WithTitle from "@/templates/layout/WithTitle";
@@ -47,19 +46,26 @@ import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 import DepartmentRoleHoverCard from "@/templates/departments/hovercard/departmentRoleHoverCard";
+import ChangeLog from "@/templates/documents/tabs/ChangeLog";
 
 const tabs = [
   {
     id: "preview",
     label: "document.view.tabs.preview",
     icon: FileText,
-    content: (document: Document) => <DocPreview filename={document.fileUrl!} />
+    content: (document: Document) => {
+      const currentVersion = document.versions.find(v => v.isCurrent);
+      if (!currentVersion) return null;
+      return <DocumentPreview version={currentVersion} mode="view" />
+    }
   },
   {
-    id: "notification",
+    id: "change-log",
     label: "document.view.tabs.changeLogs",
     icon: Clock,
-    content: (document: Document) => <Notification documentId={document.id} />
+    content: (document: Document) => {
+      return <ChangeLog document={document} />
+    }
   },
 ];
 
@@ -319,7 +325,7 @@ export default function DocumentDetailPage() {
               <TabsContent
                 key={tab.id}
                 value={tab.id}
-                className={cn("w-full flex-grow flex flex-col", tab.id === tabs[0].id ? "flex" : "hidden")}
+                className={cn("w-full flex-grow flex flex-col")}
               >
                 {tab.content(document)}
               </TabsContent>

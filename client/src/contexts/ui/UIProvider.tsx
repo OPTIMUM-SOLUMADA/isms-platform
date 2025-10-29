@@ -3,6 +3,7 @@ import { DepartmentUIModals } from "@/templates/departments/modal/DepartmentUIMo
 import { DocumentTypeUIModals } from "@/templates/document-types/modal/DocumentTypeUIModals";
 import { DocumentUIModals } from "@/templates/documents/modals/DocumentUIModals";
 import { ISOClauseUIModals } from "@/templates/iso-clauses/modal/ISOClauseUIModals";
+import ExpiredReviewsDrawer from "@/templates/reviews/ExpiredReviewsDrawer";
 import ReviewAlertDrawer from "@/templates/reviews/ReviewDueSoonDrawer";
 import { UserUIModals } from "@/templates/users/modals/UserUIModals";
 import { createContext, ReactNode } from "react";
@@ -28,6 +29,8 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
 
             {/* Due Soon Alerts */}
             <ReviewAlertDrawer />
+            {/* Expired Alert */}
+            <ExpiredReviewsDrawer />
         </UIContext.Provider>
     );
 };

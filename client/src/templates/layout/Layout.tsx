@@ -14,6 +14,7 @@ function Layout() {
     const expand = useMemo(() => [
         '/document-editor/',
         '/patch-document-version/',
+        '/review-approval/'
     ].some(p => pathname.startsWith(p)
     ), [pathname]);
 
