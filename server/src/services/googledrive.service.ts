@@ -104,6 +104,15 @@ export class GoogleDriveService implements IGoogleDriveService {
         return res.data;
     }
 
+    async updateFileName(fileId: string, name: string) {
+        const res = await this.drive.files.update({
+            fileId,
+            requestBody: { name },
+            fields: 'id, name, webViewLink, webContentLink',
+        });
+        return res.data;
+    }
+
     // ---------------------------
     // Upload helpers
     // ---------------------------

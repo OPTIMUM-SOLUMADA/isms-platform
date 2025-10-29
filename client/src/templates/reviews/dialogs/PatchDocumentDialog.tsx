@@ -17,6 +17,7 @@ import { usePatchDocumentReview } from "@/hooks/queries/useReviewMutation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { useGrantPermissionsToDocumentVersion } from "@/hooks/queries/useGoogleDriveMutation";
 
 interface Props {
     open: boolean;
@@ -41,6 +42,7 @@ const PatchDocumentDialog = ({
     const { document } = item;
 
     const { mutate: patchDocument, isPending } = usePatchDocumentReview(item.id);
+    const { mutate: grantPermission } = useGrantPermissionsToDocumentVersion();
 
     function handleOpenChange(value: boolean) {
         if (!value) setCurrentDocument(null);
@@ -54,13 +56,19 @@ const PatchDocumentDialog = ({
             userId: user?.id || ""
         }, {
             onSuccess: () => {
-                toast({
-                    title: t("patchDocumentReview.toast.success.title"),
-                    description: t("patchDocumentReview.toast.success.description"),
-                    variant: "success"
-                });
-                handleOpenChange(false);
-                onSuccess?.();
+                grantPermission({
+                    documentId: item.documentId
+                }, {
+                    onSuccess: () => {
+                        toast({
+                            title: t("patchDocumentReview.toast.success.title"),
+                            description: t("patchDocumentReview.toast.success.description"),
+                            variant: "success"
+                        });
+                        handleOpenChange(false);
+                        onSuccess?.();
+                    }
+                })
             },
             onError: () => {
                 toast({

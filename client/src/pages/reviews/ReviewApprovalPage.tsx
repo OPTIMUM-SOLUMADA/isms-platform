@@ -72,6 +72,7 @@ const ReviewApprovalPage = () => {
                         <DocumentPreview
                             version={data.documentVersion}
                             mode='view'
+                            className='grow'
                         />
                     )}
                     <div

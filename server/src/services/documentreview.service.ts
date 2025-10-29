@@ -54,9 +54,12 @@ const includes: Prisma.DocumentReviewInclude = {
     },
     documentVersion: {
         select: {
+            id: true,
             version: true,
             createdAt: true,
             fileUrl: true,
+            draftId: true,
+            draftUrl: true,
         },
     },
 };

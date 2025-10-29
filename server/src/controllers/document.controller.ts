@@ -54,10 +54,9 @@ export class DocumentController {
             // Create folder parent for the new document
             const folder = await googleDriveService.createFolder(title, [workingDirId]);
 
-            const [originalname, ext] = file.originalname.split('.');
             // Upload to Google Drive
             const result = await googleDriveService.uploadFileFromBuffer(buffer, {
-                name: `${originalname}-${version}.${ext}`,
+                name: `${title} - ${version}`,
                 mimeType: file.mimetype,
                 parents: [folder.id],
             });
@@ -379,15 +378,23 @@ export class DocumentController {
             const fileId = version.googleDriveFileId;
 
             const draft = await gdService.duplicateFile(fileId, {
-                name: `Draft - ${version.document.title}-${version.version}`,
+                name: `Draft - ${version.document.title} - ${version.version}`,
                 parentId: version.document.folderId!,
             });
 
-            await gdService.createPermission(draft.id!, {
-                role: 'writer',
-                type: 'user',
-                emailAddress: review.reviewer.email,
-            });
+            // Grant permissions to authors
+            await gdService.grantPermissions(
+                draft.id!,
+                version.document.authors.map((a) => a.user.email),
+                'writer',
+            );
+
+            // Grant permissions to reviewers
+            await gdService.grantPermissions(
+                draft.id!,
+                version.document.reviewers.map((r) => r.user.email),
+                'commenter',
+            );
 
             const updatedVersion = await this.versionService.update(version.id, {
                 draftUrl: draft.webViewLink!,

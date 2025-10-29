@@ -1,4 +1,3 @@
-import LoadingSplash from '@/components/loading';
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { LoadingButton } from '@/components/ui/loading-button';
 import { useGetReview } from '@/hooks/queries/useReviewMutation';
@@ -16,6 +15,7 @@ import { NumberInput } from '@/components/NumberInput';
 import BackButton from '@/components/BackButton';
 import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
 import { useCreateDraftVersion } from '@/hooks/queries/useDocumentMutations';
+import CircleLoading from '@/components/loading/CircleLoading';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -25,10 +25,11 @@ const PatchDocumentVersionPage = () => {
     const navigate = useNavigate();
 
 
+    console.log(nextVersion)
+
+
     const { data, isLoading } = useGetReview(reviewId);
     const { data: draftVersion, isLoading: isCreatingDraft } = useCreateDraftVersion(data?.id);
-
-    console.log(draftVersion)
 
     const currentVersion = useMemo(() => {
         if (!data) return '';
@@ -42,7 +43,7 @@ const PatchDocumentVersionPage = () => {
         setNextVersion(newVersion);
     }, [currentVersion]);
 
-    if (isLoading || isCreatingDraft) return <LoadingSplash />;
+    if (isLoading || isCreatingDraft) return <CircleLoading />;
 
     if (!data) {
         return <div>404</div>
@@ -119,7 +120,7 @@ const PatchDocumentVersionPage = () => {
                             allowNegative={false}
                             decimalSeparator='.'
                             value={Number(nextVersion)}
-                            onChange={e => setNextVersion(e.target.value)}
+                            onValueChange={e => setNextVersion(e.toString())}
                         />
                     </div>
 

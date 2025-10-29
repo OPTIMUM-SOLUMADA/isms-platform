@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { DocumentVersionService } from '@/services/documentversion.service';
+import { useGoogleDriveService } from '@/utils/google-drive';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
@@ -177,22 +178,46 @@ export class DocumentReviewController {
         try {
             const { id } = req.params;
             const { userId, patchedVersion } = req.body;
-            // Complete review
+            const gdService = useGoogleDriveService(req);
+            const review = await service.findById(id!);
+            if (!review) {
+                return res.status(404).json({ error: 'Version not found' });
+            }
+
+            if (review.isCompleted) {
+                return res.status(400).json({ error: 'Review already completed' });
+            }
+
+            // 1 - Create the patched version file on google drive (by renaming the draft file)
+            const patchedFile = await gdService.updateFileName(
+                review.documentVersion.draftId!,
+                `${review.document.title} - ${patchedVersion}`,
+            );
+
+            // 2 - Remove draft fields from version
+            await versionService.update(review.documentVersion.id!, {
+                draftUrl: null,
+                draftId: null,
+            });
+
+            // 3 - Complete review
             const data = await service.update(id!, {
                 isCompleted: true,
                 completedAt: new Date(),
                 completedBy: { connect: { id: userId } },
             });
 
-            // Create new version of the doc and mark it as current
+            // 4 - Create new version of the doc and mark it as current
             await versionService.createPatchedVersion(data.documentId, {
                 userId: userId,
                 version: patchedVersion,
-                googleDriveFileId: '',
+                googleDriveFileId: patchedFile.id!,
+                fileUrl: patchedFile.webViewLink!,
             });
 
             return res.json(data);
         } catch (error: any) {
+            console.log(error.message);
             return res.status(500).json({ error: error.message });
         }
     }

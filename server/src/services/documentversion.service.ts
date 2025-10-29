@@ -121,6 +121,32 @@ export class DocumentVersionService {
                         id: true,
                         title: true,
                         folderId: true,
+                        authors: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
+                        reviewers: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                        role: true,
+                                        createdAt: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },

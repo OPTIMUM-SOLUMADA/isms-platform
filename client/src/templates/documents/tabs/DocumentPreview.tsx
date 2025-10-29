@@ -25,11 +25,11 @@ export default function DocumentPreview({
   const replacer = modeToUrl[mode];
   const url = mode === 'edit' ? version.draftUrl : version.fileUrl;
   const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
-
   return (
     <Iframe
       url={fileUrl}
       className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
+      referrerpolicy="no-referrer"
     />
   );
 }
