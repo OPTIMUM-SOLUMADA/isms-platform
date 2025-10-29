@@ -112,6 +112,21 @@ export class DocumentVersionService {
         return prisma.documentVersion.update({ where: { id }, data });
     }
 
+    async getCurrentVersionByDocumentId(documentId: string) {
+        return prisma.documentVersion.findFirst({
+            where: { documentId, isCurrent: true },
+            include: {
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        folderId: true,
+                    },
+                },
+            },
+        });
+    }
+
     // patch version
     async createPatchedVersion(
         documentId: string,

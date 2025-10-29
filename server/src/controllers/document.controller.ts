@@ -7,14 +7,20 @@ import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
 import { readFileSync } from 'fs';
 import { useGoogleDriveService } from '@/utils/google-drive';
+import { DocumentVersionService } from '@/services/documentversion.service';
+import { DocumentReviewService } from '@/services/documentreview.service';
 
 export class DocumentController {
     private service: DocumentService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
+    private versionService: DocumentVersionService;
+    private reviewService: DocumentReviewService;
 
     constructor() {
         this.service = new DocumentService();
         this.departmentRoleDocument = new DepartmentRoleDocumentService();
+        this.versionService = new DocumentVersionService();
+        this.reviewService = new DocumentReviewService();
     }
 
     async create(req: Request, res: Response) {
@@ -340,6 +346,57 @@ export class DocumentController {
             const document = await this.service.unpublishDocument(req.params.id!);
             res.json(document);
         } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    async createDraftDocumentVersion(req: Request, res: Response) {
+        try {
+            const { id: reviewId } = req.params;
+
+            const review = await this.reviewService.findByIdWithIncludedData(reviewId!);
+            if (!review) {
+                res.status(404).json({ error: 'Review not found' });
+                return;
+            }
+
+            const documentId = review.documentId;
+
+            const version = await this.versionService.getCurrentVersionByDocumentId(documentId!);
+            if (!version) {
+                res.status(404).json({ error: 'Document not found' });
+                return;
+            }
+
+            if (version.draftUrl || version.draftId) {
+                res.json(version);
+                return;
+            }
+
+            const gdService = useGoogleDriveService(req);
+
+            // Use folderId as reference (assuming folderId stores the Google Drive fileId)
+            const fileId = version.googleDriveFileId;
+
+            const draft = await gdService.duplicateFile(fileId, {
+                name: `Draft - ${version.document.title}-${version.version}`,
+                parentId: version.document.folderId!,
+            });
+
+            await gdService.createPermission(draft.id!, {
+                role: 'writer',
+                type: 'user',
+                emailAddress: review.reviewer.email,
+            });
+
+            const updatedVersion = await this.versionService.update(version.id, {
+                draftUrl: draft.webViewLink!,
+                draftId: draft.id!,
+            });
+
+            res.json(updatedVersion);
+        } catch (err) {
+            console.log(err);
             res.status(500).json({ error: (err as Error).message });
         }
     }

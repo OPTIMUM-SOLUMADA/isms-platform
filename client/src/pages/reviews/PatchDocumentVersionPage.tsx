@@ -15,6 +15,7 @@ import RequestDetailsSheet from '@/templates/reviews/RequestDetailsSheet';
 import { NumberInput } from '@/components/NumberInput';
 import BackButton from '@/components/BackButton';
 import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
+import { useCreateDraftVersion } from '@/hooks/queries/useDocumentMutations';
 
 const PatchDocumentVersionPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
@@ -25,6 +26,9 @@ const PatchDocumentVersionPage = () => {
 
 
     const { data, isLoading } = useGetReview(reviewId);
+    const { data: draftVersion, isLoading: isCreatingDraft } = useCreateDraftVersion(data?.id);
+
+    console.log(draftVersion)
 
     const currentVersion = useMemo(() => {
         if (!data) return '';
@@ -38,7 +42,7 @@ const PatchDocumentVersionPage = () => {
         setNextVersion(newVersion);
     }, [currentVersion]);
 
-    if (isLoading) return <LoadingSplash />
+    if (isLoading || isCreatingDraft) return <LoadingSplash />;
 
     if (!data) {
         return <div>404</div>
@@ -79,8 +83,8 @@ const PatchDocumentVersionPage = () => {
         <WithTitle title={t("patchDocumentReview.title")}>
             <Card className='flex flex-grow flex-col p-0 space-y-0'>
                 <CardContent className='flex flex-col flex-grow px-0'>
-                    {data.documentVersion && (
-                        <DocumentPreview version={data.documentVersion} mode="edit" className='grow' />
+                    {draftVersion && (
+                        <DocumentPreview version={draftVersion} mode="edit" className='grow' />
                     )}
                 </CardContent>
                 <CardFooter className='flex justify-between items-center gap-5 py-2 border-t bg-gray-200 my-0'>

@@ -68,7 +68,7 @@ export class DocumentReviewService {
         });
     }
 
-    async findByIdWithIncludedData(id: string): Promise<DocumentReview | null> {
+    async findByIdWithIncludedData(id: string) {
         return prisma.documentReview.findUnique({
             where: { id },
             include: {

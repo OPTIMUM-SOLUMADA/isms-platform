@@ -25,5 +25,7 @@ router.get('/download/:id', controller.downloadFromGoogleDrive.bind(controller))
 router.put('/publish/:id', controller.publish.bind(controller));
 // unpublish document
 router.put('/unpublish/:id', controller.unpublish.bind(controller));
+// create draft document
+router.get('/create-draft-version/:id', controller.createDraftDocumentVersion.bind(controller));
 
 export default router;

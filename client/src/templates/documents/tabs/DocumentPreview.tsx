@@ -23,7 +23,8 @@ export default function DocumentPreview({
 }: DocumentPreviewProps) {
 
   const replacer = modeToUrl[mode];
-  const fileUrl = useMemo(() => (version.fileUrl || "").replace('/edit?', replacer), [version, replacer]);
+  const url = mode === 'edit' ? version.draftUrl : version.fileUrl;
+  const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
 
   return (
     <Iframe

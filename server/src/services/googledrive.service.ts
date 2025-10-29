@@ -92,6 +92,18 @@ export class GoogleDriveService implements IGoogleDriveService {
         return res.data;
     }
 
+    async duplicateFile(fileId: string, data: { name: string; parentId: string }) {
+        const res = await this.drive.files.copy({
+            fileId,
+            requestBody: {
+                name: data.name,
+                parents: [data.parentId],
+            },
+            fields: 'id, name, webViewLink, webContentLink',
+        });
+        return res.data;
+    }
+
     // ---------------------------
     // Upload helpers
     // ---------------------------
