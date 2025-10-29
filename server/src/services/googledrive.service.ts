@@ -32,11 +32,17 @@ type Role = 'owner' | 'writer' | 'commenter' | 'reader';
 
 export class GoogleDriveService implements IGoogleDriveService {
     private drive: drive_v3.Drive;
+    private workingFolderId: string;
 
-    constructor(tokens: any) {
+    constructor(tokens: any, workingFolderId?: string) {
         const auth = GoogleAuthConfig.getInstance().getClient();
         auth.setCredentials(tokens);
         this.drive = google.drive({ version: 'v3', auth });
+        this.workingFolderId = workingFolderId || '';
+    }
+
+    getWorkingDirId() {
+        return this.workingFolderId;
     }
 
     async listFiles() {
@@ -177,7 +183,11 @@ export class GoogleDriveService implements IGoogleDriveService {
         },
     ) {
         if (!this.drive) throw new Error('Service not initialized.');
-        return this.drive.permissions.create({ fileId, requestBody: permission });
+        return this.drive.permissions.create({
+            fileId,
+            requestBody: permission,
+            sendNotificationEmail: false,
+        });
     }
 
     async makeFilePublicReadable(fileId: string) {
@@ -199,6 +209,21 @@ export class GoogleDriveService implements IGoogleDriveService {
             fields: 'id, name',
         });
         return { id: res.data.id!, name: res.data.name };
+    }
+
+    async updateFolderName(folderId: string, name: string) {
+        if (!this.drive) throw new Error('Service not initialized.');
+        const res = await this.drive.files.update({
+            fileId: folderId,
+            requestBody: { name },
+            fields: 'id, name',
+        });
+        return res.data;
+    }
+
+    async deleteFolder(folderId: string) {
+        if (!this.drive) throw new Error('Service not initialized.');
+        await this.drive.files.delete({ fileId: folderId });
     }
 
     async moveFile(fileId: string, fromParents: string[], toParents: string[]) {
@@ -233,6 +258,16 @@ export class GoogleDriveService implements IGoogleDriveService {
                 permissionId: email,
             });
         }
+    }
+
+    // Find folder
+    async findFolderById(folderId: string) {
+        if (!this.drive) throw new Error('Service not initialized.');
+        const res = await this.drive.files.get({
+            fileId: folderId,
+            fields: 'id, name, mimeType, webViewLink, webContentLink',
+        });
+        return res.data;
     }
 
     getWebViewLink(fileId: string) {

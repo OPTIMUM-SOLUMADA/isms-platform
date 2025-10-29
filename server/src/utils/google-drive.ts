@@ -7,5 +7,5 @@ export const useGoogleDriveService = (req: Request) => {
         throw new Error('A google account is not authenticated');
     }
 
-    return new GoogleDriveService(user.tokens);
+    return new GoogleDriveService(user.tokens, user.workingDirId);
 };

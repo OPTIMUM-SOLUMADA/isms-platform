@@ -45,12 +45,17 @@ export class DocumentController {
 
             const buffer = readFileSync(file.path);
             const googleDriveService = useGoogleDriveService(req);
+            const workingDirId = googleDriveService.getWorkingDirId();
+
+            // Create folder parent for the new document
+            const folder = await googleDriveService.createFolder(title, [workingDirId]);
+
             const [originalname, ext] = file.originalname.split('.');
             // Upload to Google Drive
             const result = await googleDriveService.uploadFileFromBuffer(buffer, {
                 name: `${originalname}-${version}.${ext}`,
                 mimeType: file.mimetype,
-                parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+                parents: [folder.id],
             });
 
             const fileUrl = req.file ? req.file.filename : null;
@@ -71,9 +76,11 @@ export class DocumentController {
                         version: version, // 1.0
                         isCurrent: true,
                         fileUrl: result.webViewLink,
+                        downloadUrl: result.webContentLink,
                         googleDriveFileId: result.id,
                     },
                 },
+                folderId: folder.id,
             });
 
             // link document to users (Authors and Reviewers)
@@ -146,11 +153,12 @@ export class DocumentController {
                 return;
             }
 
+            const googleDriveService = useGoogleDriveService(req);
+
             const file = req.file;
 
             // Replace file from google drive if user change the document
             if (file) {
-                const googleDriveService = useGoogleDriveService(req);
                 const currentVersion = document.versions.find((v) => v.isCurrent);
                 if (!currentVersion) throw new Error('Current version not found');
                 googleDriveService.deleteFile(currentVersion.googleDriveFileId);
@@ -160,7 +168,7 @@ export class DocumentController {
                 const result = await googleDriveService.uploadFileFromBuffer(buffer, {
                     name: `${originalname}-${createVersion(1, 0)}.${ext}`,
                     mimeType: file.mimetype,
-                    parents: ['1QiA9L2CzuvXBP4LBCGTo80Q1V-cD13TQ'],
+                    parents: [document.folderId!],
                 });
 
                 // update version
@@ -178,6 +186,11 @@ export class DocumentController {
                         },
                     },
                 });
+            }
+
+            // Update folder name if name changed
+            if (title !== document.title) {
+                await googleDriveService.updateFolderName(document.folderId!, title);
             }
 
             const updatedDocument = await this.service.update(documentId!, {
@@ -228,7 +241,8 @@ export class DocumentController {
             // Delete file from google drive
             const googleDriveService = useGoogleDriveService(req);
             const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
-            googleDriveService.deleteFiles(versionsIds);
+            await googleDriveService.deleteFiles(versionsIds);
+            await googleDriveService.deleteFolder(deleted.folderId!);
 
             res.status(204).json(deleted);
         } catch (err) {

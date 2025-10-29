@@ -62,6 +62,7 @@ export const envSchema = z.object({
     GOOGLE_CLIENT_ID: z.string().optional().default(''),
     GOOGLE_CLIENT_SECRET: z.string().optional().default(''),
     GOOGLE_REDIRECT_URI: z.string().optional().default(''),
+    GOOGLE_DRIVE_WORKING_FOLDER_NAME: z.string().optional().default('ISMS Solumada Documents'),
 });
 
 const envServer = envSchema.safeParse({
@@ -89,6 +90,7 @@ const envServer = envSchema.safeParse({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
+    GOOGLE_DRIVE_WORKING_FOLDER_NAME: process.env.GOOGLE_DRIVE_WORKING_FOLDER_NAME,
 });
 
 if (!envServer.success) {

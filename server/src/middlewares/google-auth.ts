@@ -16,6 +16,7 @@ export const googleAuthMiddleware = async (req: Request, res: Response, next: Ne
                 email: account.email,
                 googleId: account.googleId,
                 tokens: account.tokens,
+                workingDirId: account.workingDirId,
             };
         }
 

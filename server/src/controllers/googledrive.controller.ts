@@ -6,6 +6,7 @@ import { logger } from '@/utils/logger';
 import { GoogleAccountService } from '@/services/google-account.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
+import { env } from '@/configs/env';
 
 const gAccountService = new GoogleAccountService();
 const documentVersion = new DocumentVersionService();
@@ -34,10 +35,30 @@ export class GoogleDriveController {
             const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
             const { data: userInfo } = await oauth2.userinfo.get();
 
+            const driveService = new GoogleDriveService(tokens);
+
+            // get Account if exists
+            const existingAccount = await gAccountService.getLast();
+
+            let workingDirId = '';
+
+            if (existingAccount) {
+                // Find working directory if exists
+                const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
+                workingDirId = workingDir?.id || '';
+            } else {
+                // Create working directory
+                const workingDir = await driveService.createFolder(
+                    env.GOOGLE_DRIVE_WORKING_FOLDER_NAME,
+                );
+                workingDirId = workingDir.id;
+            }
+
             await gAccountService.create({
                 email: userInfo.email!,
                 googleId: userInfo.id!,
                 tokens: tokens,
+                workingDirId: workingDirId,
             });
 
             return res.redirect('/google-drive/files');
@@ -66,7 +87,10 @@ export class GoogleDriveController {
     static async grantPermissions(req: Request, res: Response) {
         try {
             const { documentId } = req.params;
+            console.log(documentId);
             const versions = await documentVersion.getByDocumentId(documentId!);
+
+            console.log(versions);
 
             const driveService = useGoogleDriveService(req);
 

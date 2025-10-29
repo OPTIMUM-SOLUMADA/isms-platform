@@ -229,6 +229,8 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  folderId String?
+
   isoClause     ISOClause          @relation(fields: [isoClauseId], references: [id])
   type          DocumentType?      @relation(fields: [categoryId], references: [id])
   versions      DocumentVersion[]
@@ -303,6 +305,7 @@ model DocumentVersion {
   createdAt         DateTime @default(now())
   isCurrent         Boolean  @default(false) // optional: flag the latest version
   fileUrl           String?
+  downloadUrl       String?
   googleDriveFileId String
   createdById       String?  @db.ObjectId
   createdBy         User?    @relation(name: "VersionCreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
@@ -440,10 +443,11 @@ model AuditLog {
 }
 
 model GoogleAccount {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  email    String @unique
-  googleId String
-  tokens   Json
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  email        String @unique
+  googleId     String
+  tokens       Json
+  workingDirId String
 
   createdAt DateTime @default(now())
 
