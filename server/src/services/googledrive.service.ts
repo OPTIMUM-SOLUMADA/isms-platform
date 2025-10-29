@@ -57,6 +57,25 @@ export class GoogleDriveService implements IGoogleDriveService {
         return res.data;
     }
 
+    async getFileById(fileId: string) {
+        const res = await this.drive.files.get({
+            fileId,
+            fields: 'id, name, mimeType, parents, createdTime, modifiedTime, size, webViewLink, webContentLink',
+        });
+        return res.data;
+    }
+
+    async getStreamFileById(fileId: string) {
+        const res = await this.drive.files.get(
+            {
+                fileId,
+                alt: 'media',
+            },
+            { responseType: 'stream' },
+        );
+        return res.data;
+    }
+
     async uploadFile(name: string, mimeType: string, data: Buffer) {
         const fileMetadata = { name };
         const media = {
@@ -87,7 +106,7 @@ export class GoogleDriveService implements IGoogleDriveService {
 
     async uploadFileFromStream(
         stream: Readable,
-        options?: { name?: string; parents?: string[]; mimeType?: string; emails?: string[] },
+        options?: { name?: string; parents?: string[]; mimeType?: string },
     ): Promise<UploadResult> {
         if (!this.drive) throw new Error('Service not initialized.');
 
@@ -95,12 +114,6 @@ export class GoogleDriveService implements IGoogleDriveService {
             requestBody: {
                 name: options?.name || 'Untitled',
                 parents: options?.parents ?? null,
-                permissions:
-                    options?.emails?.map((reviewer) => ({
-                        emailAddress: reviewer,
-                        role: 'writer',
-                        kind: 'drive#permission',
-                    })) || [],
             },
             media: {
                 mimeType: options?.mimeType || 'application/octet-stream',

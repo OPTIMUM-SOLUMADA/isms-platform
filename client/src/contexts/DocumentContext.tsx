@@ -160,16 +160,17 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             return res.data;
         },
         onSuccess: (data) => {
+            // grant permission
+            grantPermissions({
+                documentId: data.id,
+            });
+
             toast({
                 title: t("document.add.toast.success.title"),
                 description: t("document.add.toast.success.description"),
                 variant: "success",
             });
             setDocuments(prev => [...prev, data]);
-            // grant permission
-            grantPermissions({
-                documentId: data.id,
-            });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -197,6 +198,11 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             return res.data;
         },
         onSuccess: (data) => {
+            // grant permission
+            grantPermissions({
+                documentId: data.id,
+            });
+
             toast({
                 title: t("document.edit.toast.success.title"),
                 description: t("document.edit.toast.success.description"),
@@ -205,10 +211,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             setDocuments(prev => prev.map(document => document.id === data.id ? data : document));
             queryClient.invalidateQueries({ queryKey: ["departements"] });
             queryClient.invalidateQueries({ queryKey: ["departements", data.id] });
-            // grant permission
-            grantPermissions({
-                documentId: data.id,
-            });
         },
         onError: (err) => {
             console.error(err.response?.data);

@@ -28,7 +28,7 @@ export default function DocumentPreview({
   return (
     <Iframe
       url={fileUrl}
-      className={cn("border-none shadow-lg bg-white overflow-hidden w-full min-h-[600px]", className)}
+      className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
     />
   );
 }

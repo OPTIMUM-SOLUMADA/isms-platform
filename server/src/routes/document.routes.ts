@@ -20,7 +20,7 @@ router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', uploadSingleDocument, controller.update.bind(controller));
 router.delete('/:id', googleAuthMiddleware, controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
-router.get('/download/:id', controller.download.bind(controller));
+router.get('/download/:id', controller.downloadFromGoogleDrive.bind(controller));
 // publish document
 router.put('/publish/:id', controller.publish.bind(controller));
 // unpublish document

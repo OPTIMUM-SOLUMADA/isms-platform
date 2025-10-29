@@ -7,8 +7,6 @@ import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 import { DepartmentRoleDocumentService } from '@/services/departmentrole-document.service';
 import { readFileSync } from 'fs';
 import { useGoogleDriveService } from '@/utils/google-drive';
-// import { readFileSync } from 'fs';
-// import svc from '@/configs/google-service';
 
 export class DocumentController {
     private service: DocumentService;
@@ -70,7 +68,7 @@ export class DocumentController {
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 fileUrl: fileUrl,
-                // create document version
+                // Create document version
                 versions: {
                     create: {
                         version: version, // 1.0
@@ -290,6 +288,40 @@ export class DocumentController {
                 res.download(filePath, filename);
             }
         } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    async downloadFromGoogleDrive(req: Request, res: Response) {
+        try {
+            const document = await this.service.getDocumentById(req.params.id!);
+            if (!document) {
+                res.status(404).json({ error: 'Document not found' });
+                return;
+            }
+
+            const gdService = useGoogleDriveService(req);
+
+            // Use folderId as reference (assuming folderId stores the Google Drive fileId)
+            const fileId = document.versions.find((v) => v.isCurrent)?.googleDriveFileId || '';
+
+            const file = await gdService.getFileById(fileId);
+
+            const driveFile = await gdService.getStreamFileById(fileId);
+
+            // Set minimal headers to prompt download
+            res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+
+            driveFile
+                .on('end', () => console.log(`File ${file.name} streamed successfully`))
+                .on('error', (err) => {
+                    console.error('Error streaming Google Drive file', err);
+                    res.status(500).json({ error: 'Failed to download file' });
+                })
+                .pipe(res);
+        } catch (err) {
+            console.error(err);
             res.status(500).json({ error: (err as Error).message });
         }
     }

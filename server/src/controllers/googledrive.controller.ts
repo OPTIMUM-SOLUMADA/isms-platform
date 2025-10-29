@@ -87,10 +87,7 @@ export class GoogleDriveController {
     static async grantPermissions(req: Request, res: Response) {
         try {
             const { documentId } = req.params;
-            console.log(documentId);
             const versions = await documentVersion.getByDocumentId(documentId!);
-
-            console.log(versions);
 
             const driveService = useGoogleDriveService(req);
 
