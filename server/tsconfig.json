@@ -31,14 +31,20 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "baseUrl": "src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["./src/*"],
+      "@/configs/*": ["./src/configs/*"],
+      "@/controllers/*": ["./src/controllers/*"],
+      "@/database/*": ["./src/database/*"],
+      "@/init/*": ["./src/init/*"],
+      "@/jobs/*": ["./src/jobs/*"],
+      "@/middlewares/*": ["./src/middlewares/*"],
+      "@/routes/*": ["./src/routes/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/validators/*": ["./src/validators/*"],
     }
-  },
-  "ts-node": {
-    "transpileOnly": true,
-    "require": ["tsconfig-paths/register"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]

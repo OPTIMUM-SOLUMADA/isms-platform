@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch",
-    "build": "tsc && tsc-alias",
+    "build": "rimraf build && tsc && tsc-alias",
     "build:app": "rimraf build && tsc",
     "start": "node build/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
