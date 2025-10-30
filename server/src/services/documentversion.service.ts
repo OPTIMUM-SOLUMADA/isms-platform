@@ -58,6 +58,7 @@ export class DocumentVersionService {
             where: {
                 documentId,
             },
+            orderBy: { createdAt: 'desc' },
             include: {
                 createdBy: {
                     select: {

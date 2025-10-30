@@ -28,6 +28,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { StatCard } from '@/templates/documents/card/StatCard';
 import useUserStore from '@/stores/user/useUserStore';
 import useDocumentTypeStore from '@/stores/document-type/useDocumentTypeStore';
+import CollapsibleStats from '@/components/CollapsibleStats';
 
 
 export const NEW_DOCUMENT_PATH = '/documents/add';
@@ -108,17 +109,19 @@ export default function DocumentRepositoryPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {statItems.map((item, index) => (
-            <StatCard
-              key={index}
-              title={item.title}
-              value={item.value}
-              icon={item.icon}
-              valueClassName={item.valueClassName}
-            />
-          ))}
-        </div>
+        <CollapsibleStats>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {statItems.map((item, index) => (
+              <StatCard
+                key={index}
+                title={item.title}
+                value={item.value}
+                icon={item.icon}
+                valueClassName={item.valueClassName}
+              />
+            ))}
+          </div>
+        </CollapsibleStats>
 
         {/* Filters */}
         <Card>
