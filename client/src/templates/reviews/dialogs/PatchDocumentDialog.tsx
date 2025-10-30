@@ -56,19 +56,21 @@ const PatchDocumentDialog = ({
             userId: user?.id || ""
         }, {
             onSuccess: () => {
+                toast({
+                    title: t("patchDocumentReview.toast.success.title"),
+                    description: t("patchDocumentReview.toast.success.description"),
+                    variant: "success"
+                });
+                handleOpenChange(false);
+                onSuccess?.();
+
                 grantPermission({
                     documentId: item.documentId
                 }, {
-                    onSuccess: () => {
-                        toast({
-                            title: t("patchDocumentReview.toast.success.title"),
-                            description: t("patchDocumentReview.toast.success.description"),
-                            variant: "success"
-                        });
-                        handleOpenChange(false);
-                        onSuccess?.();
+                    onError: () => {
+                        alert('An error occurred while granting permissions.');
                     }
-                })
+                });
             },
             onError: () => {
                 toast({

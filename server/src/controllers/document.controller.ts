@@ -167,9 +167,8 @@ export class DocumentController {
                 googleDriveService.deleteFile(currentVersion.googleDriveFileId);
                 // re upload
                 const buffer = readFileSync(file.path);
-                const [originalname, ext] = file.originalname.split('.');
                 const result = await googleDriveService.uploadFileFromBuffer(buffer, {
-                    name: `${originalname}-${createVersion(1, 0)}.${ext}`,
+                    name: `${title} - ${currentVersion.version}`,
                     mimeType: file.mimetype,
                     parents: [document.folderId!],
                 });
@@ -355,7 +354,18 @@ export class DocumentController {
 
             const review = await this.reviewService.findByIdWithIncludedData(reviewId!);
             if (!review) {
-                res.status(404).json({ error: 'Review not found' });
+                res.status(404).json({
+                    error: 'Review not found',
+                    code: 'ERR_REVIEW_NOT_FOUND',
+                });
+                return;
+            }
+
+            if (review.isCompleted) {
+                res.status(400).json({
+                    error: 'Review already completed',
+                    code: 'ERR_REVIEW_ALREADY_COMPLETED',
+                });
                 return;
             }
 
@@ -363,7 +373,10 @@ export class DocumentController {
 
             const version = await this.versionService.getCurrentVersionByDocumentId(documentId!);
             if (!version) {
-                res.status(404).json({ error: 'Document not found' });
+                res.status(404).json({
+                    error: 'Version not found',
+                    code: 'ERR_VERSION_NOT_FOUND',
+                });
                 return;
             }
 

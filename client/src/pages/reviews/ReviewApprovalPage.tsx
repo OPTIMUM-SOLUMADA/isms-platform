@@ -2,6 +2,7 @@ import BackButton from '@/components/BackButton';
 import HtmlContent from '@/components/HTMLContent';
 import CircleLoading from '@/components/loading/CircleLoading';
 import RTERichText from '@/components/RTERichText';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/user-avatar';
@@ -59,11 +60,16 @@ const ReviewApprovalPage = () => {
 
     return (
         <WithTitle title={t('reviewApproval.title')}>
-            <div className="mb-2 flex items-center gap-2">
-                <BackButton />
-                <div>
-                    <h1 className="page-title">{t("reviewApproval.title")}</h1>
-                    <p className="page-description">{data?.document?.title}</p>
+            <div className="mb-2 flex items-center gap-5 justify-between">
+                <div className="mb-2 flex items-center gap-2">
+                    <BackButton />
+                    <div>
+                        <h1 className="page-title">{t("reviewApproval.title")}</h1>
+                        <p className="page-description">{data?.document?.title}</p>
+                    </div>
+                </div>
+                <div className='flex items-center gap-2'>
+                    <Badge>{data.documentVersion?.version}</Badge>
                 </div>
             </div>
             <Card className="flex-grow flex flex-col p-0">

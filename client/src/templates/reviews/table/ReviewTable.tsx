@@ -38,19 +38,16 @@ const Table = ({
             header: t("review.table.columns.document"),
             size: 100,
             cell: ({ row }) => {
-                const { document, documentVersion, decision } = row.original;
+                const { document, decision } = row.original;
                 if (!document) return;
                 return (
                     <div className="flex gap-2 w-full items-center">
-                        <div className="p-1">
-                            <FileCheck className={cn("h-7 w-7 text-muted-foregound opacity-0", !!decision && "text-green-600 opacity-100")} />
+                        <div className="p-1 relative">
+                            <FileCheck className={cn("h-7 w-7 text-muted-foregound opacity-10", !!decision && "text-green-600 opacity-100")} />
                         </div>
                         <div className="w-full space-y-1">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <span className="text-foreground">{document.title}</span>
-                                {documentVersion && (
-                                    <Badge variant="outline">{documentVersion.version}</Badge>
-                                )}
                             </div>
                             <div className="items-center gap-2 text-muted-foreground hidden">
                                 {t("review.table.columns.authors")}:

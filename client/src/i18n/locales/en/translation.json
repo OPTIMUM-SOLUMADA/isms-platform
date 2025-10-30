@@ -864,6 +864,11 @@
           "reset": {
             "label": "Reset"
           }
+        },
+        "fields": {
+          "file": {
+            "warning": "If you upload a new file, the current version will be overwritten."
+          }
         }
       },
       "toast": {

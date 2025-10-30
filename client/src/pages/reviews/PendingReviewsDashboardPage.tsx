@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import LoadingSplash from "@/components/loading";
 import { PendingReviewItem, PrendingItemPreview } from "@/templates/reviews/PendingReviewItem";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Filter } from "lucide-react";
@@ -10,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DocumentReview } from "@/types";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import CircleLoading from "@/components/loading/CircleLoading";
 
 type StatusFilter = "approved" | "rejected" | "all";
 
@@ -62,7 +62,7 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
   }
 
 
-  if (isLoading) return <LoadingSplash />;
+  if (isLoading) return <CircleLoading />;
 
   return (
     <WithTitle title={t("pendingReviews.title")}>

@@ -239,5 +239,6 @@ export const useCreateDraftVersion = (reviewId?: string) => {
     queryKey: ['create-draft-version', reviewId],
     queryFn: async () => (await documentService.createDraftVersion(reviewId!)).data,
     enabled: !!reviewId,
+    staleTime: 1000 * 60 * 60,
   });
 }
