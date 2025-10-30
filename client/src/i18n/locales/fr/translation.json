@@ -956,7 +956,7 @@
             "columns": {
                 "name": "Nom",
                 "type": "Type",
-                "isoClause": "clause/numéro de contrôle",
+                "isoClause": "Clause/numéro de contrôle",
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
