@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "exclude": ["tests", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["__tests__", "**/*.spec.ts", "**/*.test.ts", "**/mocks/**"]
 }
