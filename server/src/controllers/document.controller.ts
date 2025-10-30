@@ -167,9 +167,8 @@ export class DocumentController {
                 googleDriveService.deleteFile(currentVersion.googleDriveFileId);
                 // re upload
                 const buffer = readFileSync(file.path);
-                const [originalname, ext] = file.originalname.split('.');
                 const result = await googleDriveService.uploadFileFromBuffer(buffer, {
-                    name: `${originalname}-${createVersion(1, 0)}.${ext}`,
+                    name: `${title} - ${currentVersion.version}`,
                     mimeType: file.mimetype,
                     parents: [document.folderId!],
                 });

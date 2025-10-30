@@ -446,7 +446,7 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium">
-                  {t("document.add.form.fields.file.label")}
+                  {t("document.add.form.fields.file.label")} <span className="text-amber-600 text-xs">({t("document.edit.form.fields.file.warning")})</span>
                 </FormLabel>
                 <FormControl>
                   <DocumentFileUpload

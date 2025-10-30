@@ -841,6 +841,11 @@
                     "reset": {
                         "label": "Réinitialiser"
                     }
+                },
+                "fields": {
+                    "file": {
+                        "warning": "Si vous téléchargez un nouveau fichier, la version actuelle sera écrasée."
+                    }
                 }
             },
             "toast": {

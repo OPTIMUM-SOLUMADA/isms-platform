@@ -7,6 +7,7 @@ import { GoogleAccountService } from '@/services/google-account.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { env } from '@/configs/env';
+import { openDocumentInBrowser } from '@/utils/puppeteer';
 
 const gAccountService = new GoogleAccountService();
 const documentVersion = new DocumentVersionService();
@@ -91,19 +92,34 @@ export class GoogleDriveController {
 
             const driveService = useGoogleDriveService(req);
 
-            for (const version of versions) {
-                const { document, googleDriveFileId } = version;
-                const authorsEmail = document.authors.map((e) => e.user.email);
-                const reviewersEmail = document.reviewers.map((e) => e.user.email);
-                // Grant permissions (Authors)
-                await driveService.grantPermissions(googleDriveFileId, authorsEmail, 'writer');
-                // Grant permissions (Reviewers)
-                await driveService.grantPermissions(googleDriveFileId, reviewersEmail, 'commenter');
-            }
+            // Map each version to a Promise for parallel processing
+            const tasks = versions.map(async (version) => {
+                // Grant permissions
+                const grantPromise = grantDocumentPermissions(version, driveService);
+
+                // Open URL in Puppeteer (if exists)
+                const openPromise = version.fileUrl
+                    ? openDocumentInBrowser(version.fileUrl)
+                    : Promise.resolve();
+
+                // Run both concurrently
+                await Promise.all([grantPromise, openPromise]);
+            });
+
+            await Promise.all(tasks);
 
             return res.status(200).json({ message: 'Permissions granted successfully' });
         } catch {
             return res.status(500).json({ error: 'Failed to grant permissions' });
         }
     }
+}
+
+async function grantDocumentPermissions(version: any, driveService: any) {
+    const authorsEmail = version.document.authors.map((e: any) => e.user.email);
+    const reviewersEmail = version.document.reviewers.map((e: any) => e.user.email);
+
+    // Grant permissions
+    await driveService.grantPermissions(version.googleDriveFileId, authorsEmail, 'writer');
+    await driveService.grantPermissions(version.googleDriveFileId, reviewersEmail, 'commenter');
 }
