@@ -1,6 +1,5 @@
-import { PrismaClient, AuditEventType, Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/database/prisma';
+import { AuditEventType, Prisma } from '@prisma/client';
 
 /**
  * Payload for creating an audit log
@@ -24,20 +23,10 @@ export class AuditService {
     /**
      * Create a new audit log entry
      */
-    static async create(params: CreateAuditLogParams) {
+    static async create(data: Prisma.AuditLogCreateInput) {
         try {
             const log = await prisma.auditLog.create({
-                data: {
-                    userId: params.userId,
-                    documentId: params.documentId,
-                    organizationId: params.organizationId,
-                    eventType: params.eventType,
-                    details: params.details,
-                    ipAddress: params.ipAddress,
-                    userAgent: params.userAgent,
-                    status: params.status,
-                    sessionId: params.sessionId,
-                },
+                data,
             });
             return log;
         } catch (error) {
@@ -57,21 +46,13 @@ export class AuditService {
         limit?: number;
         skip?: number;
     }) {
-        const {
-            userId,
-            documentId,
-            organizationId,
-            eventType,
-            limit = 50,
-            skip = 0,
-        } = filters || {};
+        const { userId, documentId, eventType, limit = 50, skip = 0 } = filters || {};
 
         return prisma.auditLog.findMany({
             where: {
-                userId,
-                documentId,
-                organizationId,
-                eventType,
+                ...(userId && { userId }),
+                ...(documentId && { documentId }),
+                ...(eventType && { eventType }),
             },
             include: {
                 user: { select: { id: true, name: true, email: true } },
