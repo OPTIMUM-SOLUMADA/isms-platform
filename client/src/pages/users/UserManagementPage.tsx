@@ -28,6 +28,7 @@ import { userRoleColors } from '@/constants/color';
 import useUserStore from '@/stores/user/useUserStore';
 import useDepartmentStore from '@/stores/department/useDepatrmentStore';
 import { useFetchUsers } from '@/hooks/queries/useUserMutations';
+import CollapsibleStats from '@/components/CollapsibleStats';
 
 export default function UserManagementPage() {
   const { t } = useTranslation();
@@ -99,39 +100,41 @@ export default function UserManagementPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-primary">{t("user.stats.total.title")}</p>
-                  <p className="text-2xl font-bold">{users.length}</p>
-                </div>
-                <Users className="h-8 w-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {Object.entries(roleStats).map(([role, count]) => (
-            <Card key={role}>
+        <CollapsibleStats>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">
-                      {t(`user.stats.${role.toLowerCase()}.title`)}
-                    </p>
-                    <p className={cn(
-                      "text-2xl font-bold",
-                      userRoleColors[role as RoleType],
-                      "bg-transparent"
-                    )}>{count}</p>
+                    <p className="text-sm text-primary">{t("user.stats.total.title")}</p>
+                    <p className="text-2xl font-bold">{users.length}</p>
                   </div>
-                  <Shield className="h-8 w-8 text-gray-400" />
+                  <Users className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+
+            {Object.entries(roleStats).map(([role, count]) => (
+              <Card key={role}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">
+                        {t(`user.stats.${role.toLowerCase()}.title`)}
+                      </p>
+                      <p className={cn(
+                        "text-2xl font-bold",
+                        userRoleColors[role as RoleType],
+                        "bg-transparent"
+                      )}>{count}</p>
+                    </div>
+                    <Shield className="h-8 w-8 text-gray-400" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CollapsibleStats>
 
         {/* Filters */}
         <Card>
