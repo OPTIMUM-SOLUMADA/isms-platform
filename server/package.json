@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc --project tsconfig.build.json && tsc-alias",
+    "build": "tsc && tsc-alias",
     "build:app": "rimraf build && tsc && tsc-alias",
     "start": "node build/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
@@ -27,7 +27,6 @@
   "description": "Server app for ISMS Solumada Platform",
   "dependencies": {
     "@prisma/client": "^6.13.0",
-    "@types/node": "^24.9.2",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "connect-mongo": "^5.1.0",
@@ -64,6 +63,7 @@
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
+    "@types/node": "^24.9.2",
     "@types/nodemailer": "^6.4.17",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
