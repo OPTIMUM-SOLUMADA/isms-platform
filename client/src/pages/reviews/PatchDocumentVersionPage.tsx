@@ -40,8 +40,8 @@ const PatchDocumentVersionPage = () => {
         setNextVersion(newVersion);
     }, [currentVersion]);
 
-    if (isLoading) return <CircleLoading text='Fetching document review...' />;
-    if (isCreatingDraft) return <CircleLoading text='Creating draft version...' />;
+    if (isLoading) return <CircleLoading text={t('patchDocumentReview.loading.fetching')} />;
+    if (isCreatingDraft) return <CircleLoading text={t('patchDocumentReview.loading.creatingDraft')} />;
 
     if (!data) {
         return <div>404</div>

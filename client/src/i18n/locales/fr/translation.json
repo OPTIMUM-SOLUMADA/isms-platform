@@ -354,6 +354,10 @@
                 "title": "Erreur",
                 "description": "Une erreur s'est produite lors de l'enregistrement de la nouvelle version du document. Veuillez réessayer."
             }
+        },
+        "loading": {
+            "fetching": "Récupération des données du document...",
+            "creatingDraft": "Création d'un brouillon de la version actuelle..."
         }
     },
     "upcomingReviews": {

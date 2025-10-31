@@ -354,6 +354,10 @@
         "title": "Error",
         "description": "An error occurred while saving the new version of the document. Please try again."
       }
+    },
+    "loading": {
+      "fetching": "Fetching review data...",
+      "creatingDraft": "Creating draft version..."
     }
   },
   "upcomingReviews": {
