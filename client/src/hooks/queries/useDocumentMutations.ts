@@ -57,7 +57,9 @@ export const useCreateDocument = () => {
       const formData = new FormData();
       const { files, ...rest } = data;
       formData.append("document", files[0]);
-      Object.entries(rest).forEach(([k, v]) => formData.append(k, v.toString()));
+      Object.entries(rest).forEach(([k, v]) =>
+        formData.append(k, v.toString())
+      );
       return (await documentService.create(formData)).data;
     },
     onSuccess: (newDoc) => {
@@ -90,12 +92,18 @@ export const useUpdateDocument = () => {
   const docs = useDocumentStore((s) => s.documents);
   const queryClient = useQueryClient();
 
-  return useMutation<any, ApiAxiosError, { id: string; data: EditDocumentFormData }>({
+  return useMutation<
+    any,
+    ApiAxiosError,
+    { id: string; data: EditDocumentFormData }
+  >({
     mutationFn: async ({ id, data }) => {
       const formData = new FormData();
       const { files, ...rest } = data;
       if (files) formData.append("document", files[0]);
-      Object.entries(rest).forEach(([k, v]) => formData.append(k, v.toString()));
+      Object.entries(rest).forEach(([k, v]) =>
+        formData.append(k, v.toString())
+      );
       return (await documentService.update(id, formData)).data;
     },
     onSuccess: (updatedDoc, vars) => {
@@ -217,7 +225,10 @@ export const useDownloadDocument = () => {
       let filename = "downloaded-file";
       const disposition = res.headers["content-disposition"];
       if (disposition && disposition.includes("filename=")) {
-        filename = disposition.split("filename=")[1].trim().replace(/["']/g, "");
+        filename = disposition
+          .split("filename=")[1]
+          .trim()
+          .replace(/["']/g, "");
       }
       const link = document.createElement("a");
       link.href = url;
@@ -230,15 +241,15 @@ export const useDownloadDocument = () => {
   });
 };
 
-
 // --------------------------
 // Create draft version
 // --------------------------
 export const useCreateDraftVersion = (reviewId?: string) => {
   return useQuery<DocumentVersion, ApiAxiosError>({
-    queryKey: ['create-draft-version', reviewId],
-    queryFn: async () => (await documentService.createDraftVersion(reviewId!)).data,
+    queryKey: ["create-draft-version", reviewId],
+    queryFn: async () =>
+      (await documentService.createDraftVersion(reviewId!)).data,
     enabled: !!reviewId,
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 3,
   });
-}
+};
