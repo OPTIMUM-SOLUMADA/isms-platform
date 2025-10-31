@@ -1,0 +1,23 @@
+{
+  "name": "isms-solumada",
+  "version": "1.0.0",
+  "description": "ISMS Platform is a full stack application designed to help organizations manage **ISO documents** and their Information Security Management System (ISMS) efficiently.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OPTIMUM-SOLUMADA/isms-platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OPTIMUM-SOLUMADA/isms-platform/issues"
+  },
+  "homepage": "https://github.com/OPTIMUM-SOLUMADA/isms-platform#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
