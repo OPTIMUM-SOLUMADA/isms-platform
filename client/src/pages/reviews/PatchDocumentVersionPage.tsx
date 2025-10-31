@@ -25,9 +25,6 @@ const PatchDocumentVersionPage = () => {
     const navigate = useNavigate();
 
 
-    console.log(nextVersion)
-
-
     const { data, isLoading } = useGetReview(reviewId);
     const { data: draftVersion, isLoading: isCreatingDraft } = useCreateDraftVersion(data?.id);
 
@@ -43,7 +40,8 @@ const PatchDocumentVersionPage = () => {
         setNextVersion(newVersion);
     }, [currentVersion]);
 
-    if (isLoading || isCreatingDraft) return <CircleLoading />;
+    if (isLoading) return <CircleLoading text='Fetching document review...' />;
+    if (isCreatingDraft) return <CircleLoading text='Creating draft version...' />;
 
     if (!data) {
         return <div>404</div>

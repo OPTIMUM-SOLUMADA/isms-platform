@@ -92,6 +92,7 @@ export const useGetReview = (id: string | undefined) =>
     queryKey: ["reviews", id],
     queryFn: async () => (await documentReviewService.findById(id!)).data,
     enabled: !!id,
+    staleTime: 1000 * 60 * 3,
   });
 
 export const useSubmitReview = (id: string | undefined) => {
@@ -141,10 +142,10 @@ export const useUpdateComment = (id: string | undefined) => {
 
 export const useFetchPendingReviews = () => {
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ['pending-reviews'],
-    queryFn: async () => (await documentReviewService.getPendingReviews()).data
-  })
-}
+    queryKey: ["pending-reviews"],
+    queryFn: async () => (await documentReviewService.getPendingReviews()).data,
+  });
+};
 
 export const useMarkAsCompleted = () => {
   const queryClient = useQueryClient();
@@ -157,42 +158,46 @@ export const useMarkAsCompleted = () => {
       queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
     },
   });
-}
+};
 
 export const useGetMyReviewsDueSoon = () => {
   const { user } = useAuth();
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ['my-reviews-due-soon', user?.id],
-    queryFn: async () => (await documentReviewService.getMyReviewsDueSoon(user!.id)).data,
+    queryKey: ["my-reviews-due-soon", user?.id],
+    queryFn: async () =>
+      (await documentReviewService.getMyReviewsDueSoon(user!.id)).data,
     enabled: !!user,
     refetchInterval: 5 * 60 * 1000,
   });
-}
+};
 
 export const useGetSubmittedReviewByDocument = (documentId: string) => {
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ['submitted-review', documentId],
-    queryFn: async () => (await documentReviewService.getSubmittedReviews(documentId)).data,
+    queryKey: ["submitted-review", documentId],
+    queryFn: async () =>
+      (await documentReviewService.getSubmittedReviews(documentId)).data,
     enabled: !!documentId,
     refetchInterval: 5 * 60 * 1000,
   });
-}
+};
 
 export const useGetCompletedReviewByDocument = (documentId: string) => {
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ['completed-review', documentId],
-    queryFn: async () => (await documentReviewService.getCompletedReviews(documentId)).data,
+    queryKey: ["completed-review", documentId],
+    queryFn: async () =>
+      (await documentReviewService.getCompletedReviews(documentId)).data,
     enabled: !!documentId,
     refetchInterval: 4 * 60 * 1000,
   });
-}
+};
 
 export const useGetExpiredReviewsByUser = () => {
   const { user } = useAuth();
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ['expired-reviews', user?.id],
-    queryFn: async () => (await documentReviewService.getExpiredReviews(user?.id)).data,
+    queryKey: ["expired-reviews", user?.id],
+    queryFn: async () =>
+      (await documentReviewService.getExpiredReviews(user?.id)).data,
     enabled: !!user,
     refetchInterval: 5 * 60 * 1000,
   });
-}
+};
