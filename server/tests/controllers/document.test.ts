@@ -2,9 +2,14 @@ import app from '@/app';
 import prismaMock from '@/database/mocks/prisma';
 import request from 'supertest';
 import { document } from '../fixtures/document.fixture';
+import { googleAccount } from '../fixtures/account.fixture';
 
 describe('Document controller', () => {
     const BASE_URL = '/documents';
+
+    beforeEach(() => {
+        prismaMock.googleAccount.findFirst.mockResolvedValue(googleAccount);
+    });
 
     describe('Document controller - Create document', () => {
         it('should return 500 if creation fails', async () => {
@@ -18,7 +23,6 @@ describe('Document controller', () => {
                 .field('reviewers', 'user1')
                 .field('userId', 'creator123')
                 .attach('file', Buffer.from('PDF content'), 'test.pdf');
-
             expect(res.status).toBe(500);
         });
 
@@ -32,9 +36,10 @@ describe('Document controller', () => {
                 .field('status', 'draft')
                 .field('reviewers', 'user1,user2')
                 .field('owners', 'owner1')
-                .field('reviewFrequency', '6')
-                .field('userId', 'owner1');
-            // .attach('file', Buffer.from('PDF content'), 'test.pdf');
+                .field('authors', 'author2,author3')
+                .field('reviewFrequency', 'DAILY')
+                .field('userId', 'owner1')
+                .attach('file', Buffer.from('PDF content'), 'test.pdf');
 
             expect(res.status).toBe(201);
         });
@@ -53,10 +58,10 @@ describe('Document controller', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 400 if prisma throws an error', async () => {
+        it('should return 500 if prisma throws an error', async () => {
             prismaMock.document.findUnique.mockRejectedValue(new Error('Database error'));
             const res = await request(app).get(`${BASE_URL}/${document.id}`);
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(500);
         });
     });
 
@@ -97,11 +102,11 @@ describe('Document controller', () => {
             expect(res.status).toBe(204);
         });
 
-        it('should return 400 if delete fails', async () => {
+        it('should return 500 if delete fails', async () => {
             prismaMock.document.delete.mockRejectedValue(new Error('Delete failed'));
 
             const res = await request(app).delete(`${BASE_URL}/invalid-id`);
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(500);
         });
     });
 });
