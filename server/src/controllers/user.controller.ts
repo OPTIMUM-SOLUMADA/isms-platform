@@ -5,6 +5,7 @@ import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import { JwtService } from '@/services/jwt.service';
 import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
+import { withClient } from '@/configs/url';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -78,7 +79,9 @@ export class UserController {
                     html: await EmailTemplate.welcome({
                         userName: user.name!,
                         orgName: env.ORG_NAME,
-                        inviteLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}&invitation=true`,
+                        inviteLink: withClient(
+                            `/reset-password?token=${resetToken}&invitation=true`,
+                        ),
                         year: new Date().getFullYear().toString(),
                         headerDescription: '',
                     }),
@@ -111,7 +114,7 @@ export class UserController {
                     const html = await EmailTemplate.emailVerification({
                         userName: user.name!,
                         orgName: env.ORG_NAME,
-                        verificationLink: `${env.CORS_ORIGIN}/verify-account/${token}`,
+                        verificationLink: withClient(`/verify-account/${token}`),
                         year: new Date().getFullYear().toString(),
                         headerDescription: '',
                         role: user.role,

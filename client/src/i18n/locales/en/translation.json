@@ -354,6 +354,10 @@
         "title": "Error",
         "description": "An error occurred while saving the new version of the document. Please try again."
       }
+    },
+    "loading": {
+      "fetching": "Fetching review data...",
+      "creatingDraft": "Creating draft version..."
     }
   },
   "upcomingReviews": {
@@ -1910,6 +1914,18 @@
         "approve": "Approved",
         "requestChanges": "Changes requested",
         "reject": "Rejected"
+      }
+    },
+    "notFoundItem": {
+      "title": "Item not found",
+      "description": "The Item you are looking for does not exist.",
+      "actions": {
+        "goBack": {
+          "label": "Return to the previous page"
+        },
+        "contactSupport": {
+          "label": "Contact support"
+        }
       }
     }
   }

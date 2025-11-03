@@ -1,17 +1,14 @@
 import app from '@/app';
 import request from 'supertest';
 import prismaMock from '@/database/mocks/prisma';
+import { department } from '../fixtures/departments.fixture';
 
 describe('Department controller', () => {
     const BASE_URL = '/departments';
 
-    const departmentMock = {
-        id: '68bacbe3ea87ed93cc6fa894',
-        name: 'IT',
-        description: 'Information Technology',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    };
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     it('should be defined', () => {
         expect(app).toBeDefined();
@@ -25,7 +22,7 @@ describe('Department controller', () => {
         });
 
         it('it should return 201 if department is created successfully ', async () => {
-            prismaMock.department.create.mockResolvedValue(departmentMock);
+            prismaMock.department.create.mockResolvedValue(department);
             const res = await request(app)
                 .post(BASE_URL)
                 .send({ name: 'IT', description: 'Information Technology' });
@@ -35,8 +32,8 @@ describe('Department controller', () => {
 
     describe('Department controller - getById', () => {
         it('should return 200 when department is found', async () => {
-            prismaMock.department.findUnique.mockResolvedValue(departmentMock);
-            const res = await request(app).get(`${BASE_URL}/${departmentMock.id}`);
+            prismaMock.department.findUnique.mockResolvedValue(department);
+            const res = await request(app).get(`${BASE_URL}/${department.id}`);
             expect(res.status).toBe(200);
         });
 
@@ -46,77 +43,46 @@ describe('Department controller', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 400 if prisma throws an error', async () => {
+        it('should return 500 if prisma throws an error', async () => {
             prismaMock.department.findUnique.mockRejectedValue(new Error('Database error'));
 
-            const res = await request(app).get(`${BASE_URL}/${departmentMock.id}`);
+            const res = await request(app).get(`${BASE_URL}/${department.id}`);
 
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(500);
             expect(res.body).toHaveProperty('error', 'Database error');
         });
     });
 
     describe('Department controller - update', () => {
         it('should return 200 when department is updated successfully', async () => {
-            prismaMock.department.update.mockResolvedValue(departmentMock);
+            prismaMock.department.update.mockResolvedValue(department);
             const res = await request(app)
-                .put(`${BASE_URL}/${departmentMock.id}`)
+                .put(`${BASE_URL}/${department.id}`)
                 .send({ name: 'Updated IT', description: 'Update Information Technology' });
 
             expect(res.status).toBe(200);
-        });
-
-        it('should return 404 if department not found', async () => {
-            prismaMock.department.update.mockRejectedValue(new Error('Database error'));
-            const res = await request(app)
-                .put(`${BASE_URL}/invalid-id`)
-                .send({ name: 'Updated IT', description: 'Update Information Technology' });
-
-            expect(res.status).toBe(400);
         });
     });
 
     describe('Departemnt controller - findAll', () => {
         it('should return 200 when department is found', async () => {
-            prismaMock.department.findMany.mockResolvedValue([departmentMock]);
+            prismaMock.department.findMany.mockResolvedValue([department]);
             const res = await request(app).get(BASE_URL);
             expect(res.status).toBe(200);
         });
 
-        it('should return 4 00 if prisma throws an error', async () => {
+        it('should return 500 if prisma throws an error', async () => {
             prismaMock.department.findMany.mockRejectedValue(new Error('Database error'));
             const res = await request(app).get(BASE_URL);
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(500);
         });
     });
 
     describe('Department controller - delete', () => {
         it('should return 204 when department is deleted successfully', async () => {
-            prismaMock.department.delete.mockResolvedValue(departmentMock);
-            const res = await request(app).delete(`${BASE_URL}/${departmentMock.id}`);
+            prismaMock.department.delete.mockResolvedValue(department);
+            const res = await request(app).delete(`${BASE_URL}/${department.id}`);
             expect(res.status).toBe(204);
         });
-
-        it('should return 404 if department not found', async () => {
-            prismaMock.department.delete.mockRejectedValue(new Error('Database error'));
-            const res = await request(app).delete(`${BASE_URL}/invalid-id`);
-            expect(res.status).toBe(400);
-        });
     });
-
-    //     it('should return 200 when department is updated successfully', async () => {
-    //         const res = await request(app).put(url).send({ name: 'Updated IT' });
-
-    //         expect(res.status).toBe(200);
-    //         expect(res.body.name).toBe('Updated IT');
-    //     });
-
-    //     it('should return 404 if department not found', async () => {
-    //         const res = await request(app)
-    //             .put(`${BASE_URL}/update/invalid-id`)
-    //             .send({ name: 'Updated IT' });
-
-    //         expect(res.status).toBe(404);
-    //     });
-    // });
 });

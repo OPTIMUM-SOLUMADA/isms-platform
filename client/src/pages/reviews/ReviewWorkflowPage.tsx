@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useQueryState, parseAsStringEnum } from "nuqs";
 
 export default function ReviewWorkflowPage() {
-  const { reviews, setFilter, filter } = useReviewStore();
+  const { reviews, setFilter, filter, setPagination, pagination } = useReviewStore();
   const [activeTab, setActiveTab] = useQueryState<FilterStatus>(
     "tab",
     parseAsStringEnum<FilterStatus>(["ALL", "PENDING", "APPROVED", "REJECTED", "EXPIRED"]).withDefault("ALL")
@@ -35,10 +35,12 @@ export default function ReviewWorkflowPage() {
 
   function handleTabClick(tab: FilterStatus) {
     setActiveTab(tab);
+    setPagination({ ...pagination, page: 1 });
     setFilter({
       ...filter,
       status: tab,
     });
+
   }
 
   const getStageIcon = (stage: string) => {
