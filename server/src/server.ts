@@ -5,8 +5,12 @@ import { registerCronJobs } from './jobs';
 
 app.listen(env.PORT, () => {
     console.log(`Server is running on port ${env.PORT}`);
+
     // init data
     initData();
+
     // start cron jobs
-    registerCronJobs();
+    if (env.NODE_ENV !== 'development') {
+        registerCronJobs();
+    }
 });

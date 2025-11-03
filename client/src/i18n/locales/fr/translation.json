@@ -1904,6 +1904,18 @@
                 "requestChanges": "Modifications demandées",
                 "reject": "Rejeté"
             }
+        },
+        "notFoundItem": {
+            "title": "Elément non trouvé",
+            "message": "L'élément que vous recherchez n'existe pas.",
+            "actions": {
+                "goBack": {
+                    "label": "Retourner à la page précédente"
+                },
+                "goHome": {
+                    "label": "Aller à la page d'accueil"
+                }
+            }
         }
     }
 }
