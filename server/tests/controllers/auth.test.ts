@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@/app';
 import prisma from '@/database/mocks/prisma';
-import { mockUser } from '../mocks/data';
+import { user } from '../fixtures/users.fixture';
 
 describe('Auth controller', () => {
     describe('login', () => {
@@ -17,7 +17,7 @@ describe('Auth controller', () => {
         });
 
         it('should allow login with valid credentials', async () => {
-            prisma.user.findUnique.mockResolvedValue(mockUser);
+            prisma.user.findUnique.mockResolvedValue(user);
             const res = await request(app).post(baseUrl).send({
                 email: 'test@test.com',
                 password: 'test007',

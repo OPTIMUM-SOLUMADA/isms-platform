@@ -39,7 +39,7 @@ export class DepartmentController {
                 res.json(department);
             }
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -62,7 +62,7 @@ export class DepartmentController {
                     });
                 }
             }
-            return res.status(400).json({ error: (err as Error).message });
+            return res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -71,7 +71,7 @@ export class DepartmentController {
             await service.deleteDepartment(req.params.id!);
             res.status(204).send();
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 
@@ -105,7 +105,7 @@ export class DepartmentController {
             const departments = await service.init();
             res.json(departments);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     };
 
@@ -168,7 +168,7 @@ export class DepartmentController {
 
             res.json(department);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     };
 
@@ -180,7 +180,7 @@ export class DepartmentController {
             const department = await serviceRole.removeRoles(req.params.id);
             res.json(department);
         } catch (err) {
-            res.status(400).json({ error: (err as Error).message });
+            res.status(500).json({ error: (err as Error).message });
         }
     };
 }

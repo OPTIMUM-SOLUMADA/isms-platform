@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc && tsc-alias",
-    "build:app": "rimraf build && tsc && tsc-alias",
+    "test:watch": "jest --watchAll",
+    "build": "tsc -p tsconfig.app.json && tsc-alias",
+    "build:app": "rimraf build && tsc -p tsconfig.app.json && tsc-alias",
     "start": "node build/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
     "postinstall": "prisma generate",
