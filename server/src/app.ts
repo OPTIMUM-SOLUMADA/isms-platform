@@ -14,6 +14,7 @@ import invitationRoutes from '@/routes/invitation.routes';
 import ownerRoutes from '@/routes/owner.routes';
 import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import googleDriveRoutes from '@/routes/googledrive.routes';
+import versionRoutes from '@/routes/version.routes';
 import { env } from '@/configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from '@/configs/upload';
 import { PUBLIC_PATH } from '@/configs/public';
@@ -60,5 +61,6 @@ app.use('/invitation', invitationRoutes);
 app.use('/owners', ownerRoutes);
 app.use('/department-roles', departmentRoleRoutes);
 app.use('/google-drive', googleDriveRoutes);
+app.use('/document-versions', versionRoutes);
 
 export default app;
