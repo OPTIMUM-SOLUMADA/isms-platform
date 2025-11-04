@@ -360,6 +360,55 @@
             "creatingDraft": "Création d'un brouillon de la version actuelle..."
         }
     },
+    "reviewsAlert": {
+        "title": "Alertes de révision des documents",
+        "subtitle": "Voir les révisions qui nécessitent votre attention",
+        "actions": {
+            "close": {
+                "label": "Fermer"
+            }
+        },
+        "upcomingReviews": {
+            "title": "Prochaines révisions",
+            "subtitle": "Documents nécessitant bientôt votre attention",
+            "item": {
+                "version": "Version",
+                "status": "Statut",
+                "reviewer": "Réviseur",
+                "important": "Doit être révisé avant le {{date}}",
+                "actions": {
+                    "reviewNow": {
+                        "label": "Réviser maintenant"
+                    }
+                }
+            },
+            "actions": {
+                "viewAll": {
+                    "label": "Voir toutes les révisions"
+                }
+            }
+        },
+        "expiredReviews": {
+            "title": "Révisions expirées",
+            "subtitle": "Documents nécessitant une attention immédiate",
+            "item": {
+                "version": "Version",
+                "status": "Statut",
+                "reviewer": "Réviseur",
+                "important": "Devait être révisé avant le {{date}}",
+                "actions": {
+                    "reviewNow": {
+                        "label": "Réviser maintenant"
+                    }
+                }
+            },
+            "actions": {
+                "viewAll": {
+                    "label": "Voir toutes les révisions"
+                }
+            }
+        }
+    },
     "upcomingReviews": {
         "title": "Prochaines révisions",
         "subtitle": "Documents nécessitant bientôt votre attention",

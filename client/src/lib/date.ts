@@ -26,7 +26,6 @@ export function formatDate(
 
 export const getDateFnsLocale = () => {
     const lng = i18n.language;
-
     switch (lng) {
         case "fr":
             return fr;

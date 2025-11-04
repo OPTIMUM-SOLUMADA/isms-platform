@@ -383,6 +383,55 @@
       }
     }
   },
+  "reviewsAlert": {
+    "title": "Document Review Alerts",
+    "subtitle": "View the reviews that require your attention",
+    "actions": {
+      "close": {
+        "label": "Close"
+      }
+    },
+    "upcomingReviews": {
+      "title": "Upcoming Reviews",
+      "subtitle": "Documents that will soon require your attention",
+      "item": {
+        "version": "Version",
+        "status": "Status",
+        "reviewer": "Reviewer",
+        "important": "Must be reviewed before {{date}}",
+        "actions": {
+          "reviewNow": {
+            "label": "Review Now"
+          }
+        }
+      },
+      "actions": {
+        "viewAll": {
+          "label": "View All Reviews"
+        }
+      }
+    },
+    "expiredReviews": {
+      "title": "Expired Reviews",
+      "subtitle": "Documents requiring immediate attention",
+      "item": {
+        "version": "Version",
+        "status": "Status",
+        "reviewer": "Reviewer",
+        "important": "Was due for review before {{date}}",
+        "actions": {
+          "reviewNow": {
+            "label": "Review Now"
+          }
+        }
+      },
+      "actions": {
+        "viewAll": {
+          "label": "View All Reviews"
+        }
+      }
+    }
+  },
   "expiredReviews": {
     "title": "Expired Reviews",
     "subtitle": "Documents that are past their review date",

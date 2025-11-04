@@ -171,6 +171,20 @@ export const useGetMyReviewsDueSoon = () => {
   });
 };
 
+export const useGetMyExpiredReviewsAndReviewsDueSoon = () => {
+  const { user } = useAuth();
+  return useQuery<
+    { expired: DocumentReview[]; dueSoon: DocumentReview[] },
+    ApiAxiosError
+  >({
+    queryKey: ["my-expired-and-reviews-due-soon", user?.id],
+    queryFn: async () =>
+      (await documentReviewService.getExpiredAndDueSoonReviews(user!.id)).data,
+    enabled: !!user,
+    refetchInterval: 5 * 60 * 1000,
+  });
+};
+
 export const useGetSubmittedReviewByDocument = (documentId: string) => {
   return useQuery<DocumentReview[], ApiAxiosError>({
     queryKey: ["submitted-review", documentId],

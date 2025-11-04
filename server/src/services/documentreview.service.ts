@@ -606,4 +606,37 @@ export class DocumentReviewService {
             include: includes,
         });
     }
+
+    async getExpiredAndDueSoonReviewsByUser(userId: string) {
+        const now = new Date();
+        const treeHoursLater = addHours(now, 3);
+
+        const [expired, dueSoon] = await prisma.$transaction([
+            // EXPIRED REVIEWS
+            prisma.documentReview.findMany({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    decision: { isSet: false },
+                    dueDate: { lte: new Date() },
+                },
+                include: includes,
+            }),
+            // DUE SOON REVIEWS
+            prisma.documentReview.findMany({
+                where: {
+                    ...(userId && { reviewerId: userId }),
+                    isCompleted: false,
+                    decision: { isSet: false },
+                    dueDate: {
+                        gte: now,
+                        lte: treeHoursLater,
+                    },
+                },
+                include: includes,
+            }),
+        ]);
+
+        return { expired, dueSoon };
+    }
 }

@@ -23,6 +23,12 @@ router.get('/expired-reviews/:userId', controller.getExpiredReviewsByUser.bind(c
 router.get('/my-reviews/:userId', controller.getMyReviews.bind(controller));
 router.get('/my-reviews/:userId/stats', controller.getMyReviewsStats.bind(controller));
 router.get('/my-reviews/:userId/due-soon', controller.getMyReviewsDueSoon.bind(controller));
+// Expired and due soon reviews
+router.get(
+    '/my-reviews/:userId/expired-and-due-soon-reviews',
+    controller.getMyExpiredAndDueSoonReviews.bind(controller),
+);
+
 router.get(
     '/document/:documentId/submitted',
     controller.getSubmittedReviewsByDocument.bind(controller),
