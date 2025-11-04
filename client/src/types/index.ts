@@ -101,12 +101,14 @@ export type DocumentVersion = {
   documentId: string;
   version: string;
   comment?: string | null;
-  createdAt: Date;
+  createdAt: string;
   isCurrent: boolean; // optional: flag the latest version
   fileUrl?: string;
+  downloadUrl?: string;
   googleDriveFileId: string;
   draftUrl?: string;
   draftId?: string;
+  createdBy: User;
 
   document: Document;
   approvals?: DocumentApproval[];

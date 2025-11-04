@@ -21,6 +21,7 @@ export class DocumentVersionService {
                     select: {
                         id: true,
                         title: true,
+                        folderId: true,
                         authors: {
                             select: {
                                 user: {

@@ -208,6 +208,8 @@ export class DocumentReviewController {
                 return res.status(400).json({ error: 'Review already completed' });
             }
 
+            console.log(review.documentVersion);
+
             // 1 - Create the patched version file on google drive (by renaming the draft file)
             const patchedFile = await gdService.updateFileName(
                 review.documentVersion.draftId!,

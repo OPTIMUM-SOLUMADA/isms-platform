@@ -495,7 +495,7 @@
           }
         }
       },
-      "empty": "No "
+      "empty": "No data available"
     },
     "preview": {
       "noReviewSelected": "No review selected. Please select a review from the list to see its details.",

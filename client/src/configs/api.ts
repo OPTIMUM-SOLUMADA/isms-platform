@@ -96,6 +96,7 @@ export const API_CONFIG = {
       GET_BY_DOCUMENT: (id: string | number) =>
         `/document-versions/document/${id}`,
       SEARCH: "/document-versions/search",
+      DOWNLOAD: (id: string | number) => `/document-versions/download/${id}`,
     },
     OWNERS: {
       BASE: "/owners",
