@@ -7,6 +7,7 @@ import {
 import { validate } from '@/middlewares/validate';
 import { DocumentReviewController } from '@/controllers/documentreview.controller';
 import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { markAsCompletedSchema } from '@/validators/approval.validator';
 
 const router = Router();
 const controller = new DocumentReviewController();
@@ -44,7 +45,11 @@ router.get('/:id', controller.findById.bind(controller));
 router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(controller));
 
 // mark as completed
-router.patch('/mark-as-completed/:id', controller.markAsCompleted.bind(controller));
+router.put(
+    '/mark-as-completed/:id',
+    validate(markAsCompletedSchema),
+    controller.markAsCompleted.bind(controller),
+);
 // patch
 router.patch(
     '/:id/patch-document-version',

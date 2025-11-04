@@ -2,9 +2,13 @@ import { Request, Response } from 'express';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
+import { DocumentApprovalService } from '@/services/documentapproval.service';
+import { DocumentService } from '@/services/document.service';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
+const approvalService = new DocumentApprovalService();
+const documentService = new DocumentService();
 
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
@@ -92,6 +96,9 @@ export class DocumentReviewController {
 
     async markAsCompleted(req: Request, res: Response) {
         try {
+            console.log(req.body);
+            const { userId } = req.body;
+
             const review = await service.findById(req.params.id!);
 
             if (!review) {
@@ -107,7 +114,20 @@ export class DocumentReviewController {
                 return;
             }
 
+            // 1 - CREATE APPROVAL
+            await approvalService.create({
+                document: { connect: { id: review.document.id! } },
+                version: { connect: { id: review.documentVersion.id! } },
+                approver: { connect: { id: userId } },
+                approvedAt: new Date(),
+            });
+
+            // 2 - UPDATE DOCUMENT STATUS
+            await documentService.update(review.document.id!, { status: 'APPROVED' });
+
+            // 3 - MARK REVIEW AS COMPLETED
             const type = await service.markAsCompleted(req.params.id!);
+
             return res.json(type);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });

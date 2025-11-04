@@ -149,13 +149,14 @@ export const useFetchPendingReviews = () => {
 
 export const useMarkAsCompleted = () => {
   const queryClient = useQueryClient();
-  return useMutation<any, ApiAxiosError, { id: string }>({
+  return useMutation<any, ApiAxiosError, { id: string, userId: string; }>({
     mutationFn: async (payload) =>
-      documentReviewService.markAsCompleted(payload.id),
+      documentReviewService.markAsCompleted(payload.id, payload.userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
       queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
   });
 };

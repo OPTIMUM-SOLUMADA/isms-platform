@@ -47,8 +47,8 @@ export async function generateDocumentReviewsJob() {
             continue;
         }
 
-        // Upate document next review date
-        await docService.updateDocument(doc.id, { nextReviewDate });
+        // Upate document next review date and status
+        await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
 
         // Create review
         await reviewService.assignReviewersToDocument({

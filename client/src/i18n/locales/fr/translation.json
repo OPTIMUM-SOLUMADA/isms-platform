@@ -272,6 +272,12 @@
                 "title": "Approuver le document",
                 "message": "Êtes-vous sûr de vouloir approuver ce document ?",
                 "description": "Vous êtes sur le point d’approuver le document <strong>{{entity}}</strong>. Une fois approuvé, le document sera marqué comme examiné et passera à l’étape suivante du processus.",
+                "form": {
+                    "comments": {
+                        "label": "Commentaires (optionnel)",
+                        "placeholder": "Ajoutez des commentaires supplémentaires..."
+                    }
+                },
                 "actions": {
                     "cancel": {
                         "label": "Annuler"
@@ -291,7 +297,23 @@
                         "description": "Votre examen a été soumis avec succès. Le document a été approuvé."
                     }
                 },
-                "done": "Vous avez déjà approuvé ce document."
+                "done": "Vous avez déjà approuvé ce document.",
+                "dialogs": {
+                    "finalApproval": {
+                        "title": "Approbation finale du document",
+                        "message": "Êtes-vous sûr de vouloir approuver définitivement ce document ?",
+                        "description": "Une fois approuvé définitivement, le document sera marqué comme finalisé et ne pourra plus être modifié qu'à la prochaine revision.",
+                        "actions": {
+                            "cancel": {
+                                "label": "Annuler"
+                            },
+                            "confirm": {
+                                "label": "Oui, approuver définitivement",
+                                "loading": "Approbation finale en cours..."
+                            }
+                        }
+                    }
+                }
             }
         },
         "actions": {

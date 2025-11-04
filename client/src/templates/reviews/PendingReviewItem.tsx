@@ -6,15 +6,15 @@ import { FileText, Calendar, AlertCircle, CheckCircle2, FilePen, CheckCheck } fr
 import { DocumentReview } from '@/types';
 import HtmlContent from '@/components/HTMLContent';
 import { useTranslation } from 'react-i18next';
-import { useMarkAsCompleted } from '@/hooks/queries/useReviewMutation';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { UserHoverCard } from '../users/hovercard/UserHoverCard';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, getDateFnsLocale } from '@/lib/date';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import FinalDocumentApprovalDialog from './dialogs/FinalDocumentApprovalDialog';
 
 interface PendingReviewItemProps {
     review: DocumentReview;
@@ -42,7 +42,7 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
         <Card key={review.id}
             onClick={handleSelect}
             className={cn(
-                "overflow-hidden hover:shadow-md transition-shadow hover:cursor-pointer",
+                "hover:shadow-md transition-shadow hover:cursor-pointer",
                 isSelected ? "border border-indigo-600 from-indigo-400/10 to-indigo-400/10" :
                     "hover:from-indigo-300/10 hover:to-indigo-300/10 hover:border-indigo-900/20"
             )}>
@@ -102,25 +102,17 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
 
 interface PendingReviewItemPreviewProps {
     review: DocumentReview;
-    onSuccess?: (id: string) => void;
+    onSuccess?: (id?: string) => void;
 }
 
 export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPreviewProps) => {
 
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const [approvalOpen, setApprovalOpen] = useState(false);
 
-    const {
-        mutate: markAsCompleted,
-        isPending: isMarkingAsCompleted
-    } = useMarkAsCompleted();
-
-    function handleMarkAsCompleted() {
-        markAsCompleted({ id: review.id }, {
-            onSuccess: () => {
-                onSuccess?.(review.id);
-            },
-        });
+    function handleOpenConfirmDialog() {
+        setApprovalOpen(true);
     }
 
     function handleUpdateDocument() {
@@ -156,13 +148,16 @@ export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPrev
                     </div>
                 )}
 
-                {review.comment && review.decision === 'REJECT' && (
+                {review.comment && (
                     <div className="space-y-2">
                         <p className="text-sm font-medium flex items-center gap-2">
                             <AlertCircle className="h-4 w-4 text-destructive" />
                             {t("pendingReviews.preview.comments")}
                         </p>
-                        <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
+                        <div className={cn(
+                            "bg-destructive/5 border border-destructive/20 rounded-lg p-3",
+                            review.decision === "APPROVE" && "bg-theme/5 border-theme/20",
+                        )}>
                             <HtmlContent
                                 html={review.comment}
                             />
@@ -184,10 +179,8 @@ export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPrev
                 )}
                 {review.decision === 'APPROVE' && !review.isCompleted && (
                     <LoadingButton
-                        onClick={handleMarkAsCompleted}
+                        onClick={handleOpenConfirmDialog}
                         size="sm"
-                        isLoading={isMarkingAsCompleted}
-
                     >
                         <CheckCheck className="h-4 w-4 mr-1" />
                         {t("pendingReviews.preview.actions.markAsComplete.label")}
@@ -200,6 +193,13 @@ export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPrev
                     </Badge>
                 )}
             </CardFooter>
+
+            <FinalDocumentApprovalDialog
+                item={review}
+                onOpenChange={setApprovalOpen}
+                open={approvalOpen}
+                onSuccess={onSuccess}
+            />
         </>
     )
 }
