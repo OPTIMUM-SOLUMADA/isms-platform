@@ -272,6 +272,12 @@
         "title": "Approve Document",
         "message": "Are you sure you want to approve this document?",
         "description": "You are about to approve the document <strong>{{entity}}</strong>. Once approved, the document will be marked as reviewed and move to the next stage of the process.",
+        "form": {
+          "comments": {
+            "label": "Comments (optional)",
+            "placeholder": "Add any additional comments..."
+          }
+        },
         "actions": {
           "cancel": {
             "label": "Cancel"
@@ -383,6 +389,55 @@
       }
     }
   },
+  "reviewsAlert": {
+    "title": "Document Review Alerts",
+    "subtitle": "View the reviews that require your attention",
+    "actions": {
+      "close": {
+        "label": "Close"
+      }
+    },
+    "upcomingReviews": {
+      "title": "Upcoming Reviews",
+      "subtitle": "Documents that will soon require your attention",
+      "item": {
+        "version": "Version",
+        "status": "Status",
+        "reviewer": "Reviewer",
+        "important": "Must be reviewed before {{date}}",
+        "actions": {
+          "reviewNow": {
+            "label": "Review Now"
+          }
+        }
+      },
+      "actions": {
+        "viewAll": {
+          "label": "View All Reviews"
+        }
+      }
+    },
+    "expiredReviews": {
+      "title": "Expired Reviews",
+      "subtitle": "Documents requiring immediate attention",
+      "item": {
+        "version": "Version",
+        "status": "Status",
+        "reviewer": "Reviewer",
+        "important": "Was due for review before {{date}}",
+        "actions": {
+          "reviewNow": {
+            "label": "Review Now"
+          }
+        }
+      },
+      "actions": {
+        "viewAll": {
+          "label": "View All Reviews"
+        }
+      }
+    }
+  },
   "expiredReviews": {
     "title": "Expired Reviews",
     "subtitle": "Documents that are past their review date",
@@ -440,7 +495,7 @@
           }
         }
       },
-      "empty": "No "
+      "empty": "No data available"
     },
     "preview": {
       "noReviewSelected": "No review selected. Please select a review from the list to see its details.",

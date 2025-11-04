@@ -16,6 +16,7 @@ import {
   Users,
   Building2,
   BookLock,
+  GitBranch,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
@@ -47,6 +48,7 @@ import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 import DepartmentRoleHoverCard from "@/templates/departments/hovercard/departmentRoleHoverCard";
 import ChangeLog from "@/templates/documents/tabs/ChangeLog";
+import DocumentVersionHistory from "@/templates/documents/tabs/DocumentVersionHistory";
 
 const tabs = [
   {
@@ -67,6 +69,15 @@ const tabs = [
       return <ChangeLog document={document} />
     }
   },
+  {
+    id: "version-history",
+    label: "document.view.tabs.changeLogs",
+    icon: GitBranch,
+    content: (document: Document) => {
+      return <DocumentVersionHistory document={document} />
+    }
+  },
+
 ];
 
 const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {

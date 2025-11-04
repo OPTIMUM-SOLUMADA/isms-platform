@@ -1,120 +1,123 @@
 import { env } from "./env";
 
 export const API_CONFIG = {
-    BASE_URL: env.BASE_URL,
-    ENDPOINTS: {
-        AUTH: {
-            LOGIN: "/auth/login",
-            CHANGE_PASSWORD: "/auth/change-password",
-            RESET_PASSWORD: "/auth/reset-password",
-            REFRESH: "/auth/refresh",
-            VERIFY: "/auth/verify",
-            LOGOUT: "/auth/logout",
-            VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
-            VERIFY_ACCOUNT: "/auth/verify-account",
-        },
-        USERS: {
-            BASE: "/users",
-            GET: (id: string | number) => `/users/${id}`,
-            UPDATE: (id: string | number) => `/users/${id}`,
-            DELETE: (id: string | number) => `/users/${id}`,
-            INVITE: (id: string | number) => `/users/${id}/invite`,
-            DEACTIVATE: (id: string | number) => `/users/${id}/deactivate`,
-            ACTIVATE: (id: string | number) => `/users/${id}/activate`,
-            GET_USER_BY_IDS: "/users/by-ids",
-            SEARCH: "/users/search",
-        },
-        DEPARTMENTS: {
-            BASE: "/departments",
-            GET: (id: string | number) => `/departments/${id}`,
-            UPDATE: (id: string | number) => `/departments/${id}`,
-            DELETE: (id: string | number) => `/departments/${id}`,
-            SEARCH: "/departments/search",
-            GET_ROLES: (id: string | number) => `/departments/${id}/roles`,
-            SEARCH_ROLES: "/users/search",
-            GET_ROLE_BY_ID: (id: string | number) => `/deparmtents/role/${id}`,
-            // UPDATE_ROLES: (id: string | number) => `/departments/${id}/roles`,
-            // DELETE_ROLES: (id: string | number) => `/departments/${id}/roles`,
-        },
-        DOCUMENTS: {
-            BASE: "/documents",
-            STATS: "/documents/statistics",
-            GET: (id: string | number) => `/documents/${id}`,
-            DOWNLOAD: (id: string | number) => `/documents/download/${id}`,
-            PUBLISH: (id: string | number) => `/documents/publish/${id}`,
-            UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
-            CREATE_DRAFT_VERSION: (id: string | number) =>
-                `/documents/create-draft-version/${id}`,
-        },
-        REVIEWS: {
-            BASE: "/document-reviews",
-            GET: (id: string | number) => `/document-reviews/${id}`,
-            UPDATE: (id: string | number) => `/document-reviews/${id}`,
-            DELETE: (id: string | number) => `/document-reviews/${id}`,
-            SEARCH: "/document-reviews/search",
-            MAKE_DECISION: (id: string | number) =>
-                `/document-reviews/make-decision/${id}`,
-            GET_MY_REVIEWS: (id: string | number) =>
-                `/document-reviews/my-reviews/${id}`,
-            GET_MY_REVIEWS_STATS: (id: string | number) =>
-                `/document-reviews/my-reviews/${id}/stats`,
-            GET_MY_REVIEWS_DUE_SOON: (id: string | number) =>
-                `/document-reviews/my-reviews/${id}/due-soon`,
-            GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
-            MARK_AS_COMPLETED: (id: string | number) =>
-                `/document-reviews/mark-as-completed/${id}`,
-            PATCH_DOCUMENT_VERSION: (id: string | number) =>
-                `/document-reviews/${id}/patch-document-version`,
-            GET_SUBMITTED_REVIEWS_BY_DOCUMENT: (id: string | number) =>
-                `/document-reviews/document/${id}/submitted`,
-            GET_COMPLETED_REVIEWS_BY_DOCUMENT: (id: string | number) =>
-                `/document-reviews/document/${id}/completed`,
-            GET_EXPIRED_REVIEWS_BY_USER: (id: string | number) =>
-                `/document-reviews/expired-reviews/${id}`,
-        },
-        ISO_CLAUSES: {
-            BASE: "/iso-clauses",
-            GET: (id: string | number) => `/iso-clauses/${id}`,
-            UPDATE: (id: string | number) => `/iso-clauses/${id}`,
-            DELETE: (id: string | number) => `/iso-clauses/${id}`,
-            SEARCH: "/iso-clauses/search",
-        },
-        DOCUMENT_TYPES: {
-            BASE: "/document-types",
-            GET: (id: string | number) => `/document-types/${id}`,
-            UPDATE: (id: string | number) => `/document-types/${id}`,
-            DELETE: (id: string | number) => `/document-types/${id}`,
-            SEARCH: "/document-types/search",
-        },
-        DOCUMENT_VERSIONS: {
-            BASE: "/document-versions",
-            GET: (id: string | number) => `/document-versions/${id}`,
-            UPDATE: (id: string | number) => `/document-versions/${id}`,
-            DELETE: (id: string | number) => `/document-versions/${id}`,
-            GET_BY_DOCUMENT: (id: string | number) =>
-                `/document-versions/document/${id}`,
-            SEARCH: "/document-versions/search",
-        },
-        OWNERS: {
-            BASE: "/owners",
-            GET: (id: string | number) => `/owners/${id}`,
-        },
-        EXCEL_IMAGE: "/excel/image",
-        DEPARTMENT_ROLE_DOCUMENTS: {
-            BASE: "/department-role-documents",
-            GET: (id: string | number) => `/department-role-documents/${id}`,
-        },
-        DEPARTMENT_ROLE: {
-            BASE: "/department-roles",
-            GET: (id: string | number) => `/department-roles/${id}`,
-        },
-        GOOGLE_DRIVE: {
-            BASE: "/google-drive",
-            GET_FILES: () => `/google-drive/files`,
-            GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
-                `/google-drive/grant-permissions/${id}`,
-        },
+  BASE_URL: env.BASE_URL,
+  ENDPOINTS: {
+    AUTH: {
+      LOGIN: "/auth/login",
+      CHANGE_PASSWORD: "/auth/change-password",
+      RESET_PASSWORD: "/auth/reset-password",
+      REFRESH: "/auth/refresh",
+      VERIFY: "/auth/verify",
+      LOGOUT: "/auth/logout",
+      VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
+      VERIFY_ACCOUNT: "/auth/verify-account",
     },
+    USERS: {
+      BASE: "/users",
+      GET: (id: string | number) => `/users/${id}`,
+      UPDATE: (id: string | number) => `/users/${id}`,
+      DELETE: (id: string | number) => `/users/${id}`,
+      INVITE: (id: string | number) => `/users/${id}/invite`,
+      DEACTIVATE: (id: string | number) => `/users/${id}/deactivate`,
+      ACTIVATE: (id: string | number) => `/users/${id}/activate`,
+      GET_USER_BY_IDS: "/users/by-ids",
+      SEARCH: "/users/search",
+    },
+    DEPARTMENTS: {
+      BASE: "/departments",
+      GET: (id: string | number) => `/departments/${id}`,
+      UPDATE: (id: string | number) => `/departments/${id}`,
+      DELETE: (id: string | number) => `/departments/${id}`,
+      SEARCH: "/departments/search",
+      GET_ROLES: (id: string | number) => `/departments/${id}/roles`,
+      SEARCH_ROLES: "/users/search",
+      GET_ROLE_BY_ID: (id: string | number) => `/deparmtents/role/${id}`,
+      // UPDATE_ROLES: (id: string | number) => `/departments/${id}/roles`,
+      // DELETE_ROLES: (id: string | number) => `/departments/${id}/roles`,
+    },
+    DOCUMENTS: {
+      BASE: "/documents",
+      STATS: "/documents/statistics",
+      GET: (id: string | number) => `/documents/${id}`,
+      DOWNLOAD: (id: string | number) => `/documents/download/${id}`,
+      PUBLISH: (id: string | number) => `/documents/publish/${id}`,
+      UNPUBLISH: (id: string | number) => `/documents/unpublish/${id}`,
+      CREATE_DRAFT_VERSION: (id: string | number) =>
+        `/documents/create-draft-version/${id}`,
+    },
+    REVIEWS: {
+      BASE: "/document-reviews",
+      GET: (id: string | number) => `/document-reviews/${id}`,
+      UPDATE: (id: string | number) => `/document-reviews/${id}`,
+      DELETE: (id: string | number) => `/document-reviews/${id}`,
+      SEARCH: "/document-reviews/search",
+      MAKE_DECISION: (id: string | number) =>
+        `/document-reviews/make-decision/${id}`,
+      GET_MY_REVIEWS: (id: string | number) =>
+        `/document-reviews/my-reviews/${id}`,
+      GET_MY_REVIEWS_STATS: (id: string | number) =>
+        `/document-reviews/my-reviews/${id}/stats`,
+      GET_MY_REVIEWS_DUE_SOON: (id: string | number) =>
+        `/document-reviews/my-reviews/${id}/due-soon`,
+      GET_MY_EXPIRED_AND_DUE_SOON_REVIEWS_BY_USER: (id: string | number) =>
+        `/document-reviews/my-reviews/${id}/expired-and-due-soon-reviews`,
+      GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
+      MARK_AS_COMPLETED: (id: string | number) =>
+        `/document-reviews/mark-as-completed/${id}`,
+      PATCH_DOCUMENT_VERSION: (id: string | number) =>
+        `/document-reviews/${id}/patch-document-version`,
+      GET_SUBMITTED_REVIEWS_BY_DOCUMENT: (id: string | number) =>
+        `/document-reviews/document/${id}/submitted`,
+      GET_COMPLETED_REVIEWS_BY_DOCUMENT: (id: string | number) =>
+        `/document-reviews/document/${id}/completed`,
+      GET_EXPIRED_REVIEWS_BY_USER: (id: string | number) =>
+        `/document-reviews/expired-reviews/${id}`,
+    },
+    ISO_CLAUSES: {
+      BASE: "/iso-clauses",
+      GET: (id: string | number) => `/iso-clauses/${id}`,
+      UPDATE: (id: string | number) => `/iso-clauses/${id}`,
+      DELETE: (id: string | number) => `/iso-clauses/${id}`,
+      SEARCH: "/iso-clauses/search",
+    },
+    DOCUMENT_TYPES: {
+      BASE: "/document-types",
+      GET: (id: string | number) => `/document-types/${id}`,
+      UPDATE: (id: string | number) => `/document-types/${id}`,
+      DELETE: (id: string | number) => `/document-types/${id}`,
+      SEARCH: "/document-types/search",
+    },
+    DOCUMENT_VERSIONS: {
+      BASE: "/document-versions",
+      GET: (id: string | number) => `/document-versions/${id}`,
+      UPDATE: (id: string | number) => `/document-versions/${id}`,
+      DELETE: (id: string | number) => `/document-versions/${id}`,
+      GET_BY_DOCUMENT: (id: string | number) =>
+        `/document-versions/document/${id}`,
+      SEARCH: "/document-versions/search",
+      DOWNLOAD: (id: string | number) => `/document-versions/download/${id}`,
+    },
+    OWNERS: {
+      BASE: "/owners",
+      GET: (id: string | number) => `/owners/${id}`,
+    },
+    EXCEL_IMAGE: "/excel/image",
+    DEPARTMENT_ROLE_DOCUMENTS: {
+      BASE: "/department-role-documents",
+      GET: (id: string | number) => `/department-role-documents/${id}`,
+    },
+    DEPARTMENT_ROLE: {
+      BASE: "/department-roles",
+      GET: (id: string | number) => `/department-roles/${id}`,
+    },
+    GOOGLE_DRIVE: {
+      BASE: "/google-drive",
+      GET_FILES: () => `/google-drive/files`,
+      GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
+        `/google-drive/grant-permissions/${id}`,
+    },
+  },
 } as const;
 
 export const apiUrl = (endpoint: string) => `${API_CONFIG.BASE_URL}${endpoint}`;

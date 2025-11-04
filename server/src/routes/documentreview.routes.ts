@@ -7,6 +7,7 @@ import {
 import { validate } from '@/middlewares/validate';
 import { DocumentReviewController } from '@/controllers/documentreview.controller';
 import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { markAsCompletedSchema } from '@/validators/approval.validator';
 
 const router = Router();
 const controller = new DocumentReviewController();
@@ -23,6 +24,12 @@ router.get('/expired-reviews/:userId', controller.getExpiredReviewsByUser.bind(c
 router.get('/my-reviews/:userId', controller.getMyReviews.bind(controller));
 router.get('/my-reviews/:userId/stats', controller.getMyReviewsStats.bind(controller));
 router.get('/my-reviews/:userId/due-soon', controller.getMyReviewsDueSoon.bind(controller));
+// Expired and due soon reviews
+router.get(
+    '/my-reviews/:userId/expired-and-due-soon-reviews',
+    controller.getMyExpiredAndDueSoonReviews.bind(controller),
+);
+
 router.get(
     '/document/:documentId/submitted',
     controller.getSubmittedReviewsByDocument.bind(controller),
@@ -38,7 +45,11 @@ router.get('/:id', controller.findById.bind(controller));
 router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(controller));
 
 // mark as completed
-router.patch('/mark-as-completed/:id', controller.markAsCompleted.bind(controller));
+router.put(
+    '/mark-as-completed/:id',
+    validate(markAsCompletedSchema),
+    controller.markAsCompleted.bind(controller),
+);
 // patch
 router.patch(
     '/:id/patch-document-version',

@@ -13,10 +13,9 @@ import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
 import type { DocumentReview } from "@/types";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
-import { useSubmitReview } from "@/hooks/queries/useReviewMutation";
+import { useMarkAsCompleted } from "@/hooks/queries/useReviewMutation";
 import { useToast } from "@/hooks/use-toast";
-import RTERichText from "@/components/RTERichText";
-import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean;
@@ -25,7 +24,7 @@ interface Props {
     onSuccess?: () => void;
 }
 
-const ApproveDocumentDialog = ({
+const FinalDocumentApprovalDialog = ({
     open = false,
     onOpenChange,
     item,
@@ -34,11 +33,14 @@ const ApproveDocumentDialog = ({
     const { t } = useTranslation();
     const { setCurrentDocument } = useDocumentUI();
     const { toast } = useToast();
-    const [comment, setComment] = useState('');
+    const { user } = useAuth();
 
     const { document } = item;
 
-    const { mutate: submitReview, isPending } = useSubmitReview(item.id);
+    const {
+        mutate: markAsCompleted,
+        isPending: isMarkingAsCompleted
+    } = useMarkAsCompleted();
 
     function handleOpenChange(value: boolean) {
         if (!value) setCurrentDocument(null);
@@ -46,9 +48,9 @@ const ApproveDocumentDialog = ({
     }
 
     function handleApprove() {
-        submitReview({
-            decision: "APPROVE",
-            comment: comment,
+        markAsCompleted({
+            id: item.id,
+            userId: user?.id,
         }, {
             onSuccess: () => {
                 toast({
@@ -76,37 +78,28 @@ const ApproveDocumentDialog = ({
                     <div className="flex items-center gap-2 mb-2">
                         <AlertCircle className="w-6 h-6 text-theme-danger" />
                         <DialogTitle>
-                            {t("reviewApproval.dialogs.approve.title", { entity: document?.title })}
+                            {t("reviewApproval.dialogs.approve.dialogs.finalApproval.title", { entity: document?.title })}
                         </DialogTitle>
                     </div>
                     <DialogDescription
                         dangerouslySetInnerHTML={{
-                            __html: t("reviewApproval.dialogs.approve.description", { entity: document?.title })
+                            __html: t("reviewApproval.dialogs.approve.dialogs.finalApproval.description", { entity: document?.title })
                         }}
                     />
                     <p className="mt-3 text-primary">
-                        {t("reviewApproval.dialogs.approve.message")}
+                        {t("reviewApproval.dialogs.approve.dialogs.finalApproval.message")}
                     </p>
-                    <div className="mt-4">
-
-                        <RTERichText
-                            placeholder={t(
-                                "reviewApproval.dialogs.approve.form.comments.placeholder"
-                            )}
-                            onChange={setComment}
-                        />
-                    </div>
                 </DialogHeader>
                 <DialogFooter className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={() => handleOpenChange(false)}>
-                        {t("reviewApproval.dialogs.approve.actions.cancel.label")}
+                        {t("reviewApproval.dialogs.approve.dialogs.finalApproval.actions.cancel.label")}
                     </Button>
                     <LoadingButton
                         onClick={handleApprove}
-                        isLoading={isPending}
-                        loadingText={t("reviewApproval.dialogs.approve.actions.confirm.loading")}
+                        isLoading={isMarkingAsCompleted}
+                        loadingText={t("reviewApproval.dialogs.approve.dialogs.finalApproval.actions.confirm.loading")}
                     >
-                        {t("reviewApproval.dialogs.approve.actions.confirm.label")}
+                        {t("reviewApproval.dialogs.approve.dialogs.finalApproval.actions.confirm.label")}
                     </LoadingButton>
                 </DialogFooter>
             </DialogContent>
@@ -114,4 +107,4 @@ const ApproveDocumentDialog = ({
     )
 }
 
-export default ApproveDocumentDialog;
+export default FinalDocumentApprovalDialog;

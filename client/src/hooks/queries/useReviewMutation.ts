@@ -149,13 +149,14 @@ export const useFetchPendingReviews = () => {
 
 export const useMarkAsCompleted = () => {
   const queryClient = useQueryClient();
-  return useMutation<any, ApiAxiosError, { id: string }>({
+  return useMutation<any, ApiAxiosError, { id: string, userId: string; }>({
     mutationFn: async (payload) =>
-      documentReviewService.markAsCompleted(payload.id),
+      documentReviewService.markAsCompleted(payload.id, payload.userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
       queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
   });
 };
@@ -166,6 +167,20 @@ export const useGetMyReviewsDueSoon = () => {
     queryKey: ["my-reviews-due-soon", user?.id],
     queryFn: async () =>
       (await documentReviewService.getMyReviewsDueSoon(user!.id)).data,
+    enabled: !!user,
+    refetchInterval: 5 * 60 * 1000,
+  });
+};
+
+export const useGetMyExpiredReviewsAndReviewsDueSoon = () => {
+  const { user } = useAuth();
+  return useQuery<
+    { expired: DocumentReview[]; dueSoon: DocumentReview[] },
+    ApiAxiosError
+  >({
+    queryKey: ["my-expired-and-reviews-due-soon", user?.id],
+    queryFn: async () =>
+      (await documentReviewService.getExpiredAndDueSoonReviews(user!.id)).data,
     enabled: !!user,
     refetchInterval: 5 * 60 * 1000,
   });

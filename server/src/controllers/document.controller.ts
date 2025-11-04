@@ -314,8 +314,8 @@ export class DocumentController {
             const driveFile = await gdService.getStreamFileById(fileId);
 
             // Set minimal headers to prompt download
-            res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
-            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
+            res.setHeader('Content-Type', file.mimeType ?? 'application/octet-stream');
 
             driveFile
                 .on('end', () => console.log(`File ${file.name} streamed successfully`))
@@ -369,9 +369,10 @@ export class DocumentController {
                 return;
             }
 
-            const documentId = review.documentId;
+            // const documentId = review.documentId;
 
-            const version = await this.versionService.getCurrentVersionByDocumentId(documentId!);
+            // const version = await this.versionService.getCurrentVersionByDocumentId(documentId!);
+            const version = await this.versionService.getById(review.documentVersionId!);
             if (!version) {
                 res.status(404).json({
                     error: 'Version not found',

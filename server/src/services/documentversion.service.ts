@@ -21,6 +21,7 @@ export class DocumentVersionService {
                     select: {
                         id: true,
                         title: true,
+                        folderId: true,
                         authors: {
                             select: {
                                 user: {
@@ -172,7 +173,7 @@ export class DocumentVersionService {
             });
 
             // set current to true for the new version
-            await tx.documentVersion.create({
+            return await tx.documentVersion.create({
                 data: {
                     document: { connect: { id: documentId } },
                     isCurrent: true,

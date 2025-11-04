@@ -2,6 +2,7 @@ import { google, drive_v3 } from 'googleapis';
 import { Readable } from 'stream';
 import { GoogleAuthConfig } from '@/configs/google.config';
 import fs from 'fs';
+import mime from 'mime-types';
 
 export interface IGoogleDriveService {
     listFiles(): Promise<drive_v3.Schema$FileList>;
@@ -60,9 +61,15 @@ export class GoogleDriveService implements IGoogleDriveService {
     async getFileById(fileId: string) {
         const res = await this.drive.files.get({
             fileId,
-            fields: 'id, name, mimeType, parents, createdTime, modifiedTime, size, webViewLink, webContentLink',
+            fields: 'id, name, originalFilename, mimeType, parents, createdTime, modifiedTime, size, webViewLink, webContentLink',
         });
-        return res.data;
+        const file = res.data;
+        const extension = mime.extension(file.mimeType!) || '';
+        const filenameWithExt = extension ? `${file.name}.${extension}` : file.name;
+        return {
+            ...file,
+            originalName: filenameWithExt,
+        };
     }
 
     async getStreamFileById(fileId: string) {
