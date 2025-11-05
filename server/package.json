@@ -10,8 +10,7 @@
     "start": "node build/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
     "postinstall": "prisma generate",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "prepare": "husky install"
+    "lint": "eslint \"src/**/*.ts\" --fix"
   },
   "lint-staged": {
     "src/**/*.{ts,js}": [
