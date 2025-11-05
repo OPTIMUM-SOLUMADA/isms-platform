@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { createSearchParams, Link, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import AuthLayout from "@/templates/layout/AuthLayout";
@@ -13,16 +13,23 @@ export default function VerifyAccountPage() {
     const { t } = useTranslation();
     const [isVerified, setIsVerified] = useState(false);
     const [isAlreadyVerified, setIsAlreadyVerified] = useState(false);
-    const [resetPasswordLink, setResetPasswordLink] = useState<string | null>(null);
+    const [searchParams, setSearchParams] = useState<string | null>(null);
     // get token from params
     const { token } = useParams();
     const { mutate: verify, isPending, error, isError } = useVerifyAccount();
+
+    console.log(searchParams);
 
     const handleVerifyAccount = () => {
         if (token) verify({ token }, {
             onSuccess: (res) => {
                 setIsVerified(true);
-                setResetPasswordLink(`/reset-password?token=${res.data.token}&invitation=true`);
+                setSearchParams(
+                    createSearchParams({
+                        token: res.data.token,
+                        invitation: "true",
+                    }).toString()
+                );
             },
             onError: (err) => {
                 if (err.response?.data.code === "ERR_USER_ALREADY_VERIFIED") {
@@ -97,9 +104,12 @@ export default function VerifyAccountPage() {
                                 {t("authentification.accountVerification.verified.message")}
                             </p>
                         </CardHeader>
-                        {resetPasswordLink && (
+                        {searchParams && (
                             <CardContent className="space-y-4">
-                                <Link to={resetPasswordLink} className="text-inherit">
+                                <Link to={{
+                                    pathname: "/reset-password",
+                                    search: searchParams,
+                                }} className="text-inherit">
                                     <Button
                                         className="w-full"
                                         variant="outline"

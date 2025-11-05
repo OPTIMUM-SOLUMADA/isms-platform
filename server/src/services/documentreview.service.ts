@@ -4,7 +4,7 @@ import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
 import { EmailService } from './email.service';
 import { addHours } from 'date-fns';
-import { withClient } from '@/configs/url';
+import { toHashRouterUrl } from '@/utils/baseurl';
 
 const emailService = new EmailService();
 
@@ -531,8 +531,8 @@ export class DocumentReviewService {
             dueDate: dueDate?.toDateString() || '',
             reviewer: { name: reviewer.name },
             year: new Date().getFullYear().toString(),
-            viewDocLink: withClient(`/documents/view/${document.id}`),
-            reviewLink: withClient(`/review-approval/${review.id}`),
+            viewDocLink: toHashRouterUrl(`/documents/view/${document.id}`),
+            reviewLink: toHashRouterUrl(`/review-approval/${review.id}`),
             headerDescription: 'Automated email',
             orgName: env.ORG_NAME,
         });
