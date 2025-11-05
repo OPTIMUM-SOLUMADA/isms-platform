@@ -1087,8 +1087,42 @@
                 "compliance": "Conformité"
             },
             "tabs": {
-                "preview": "Aperçu du fichier",
-                "changeLogs": "Journal des modifications"
+                "preview": {
+                    "label": "Aperçu",
+                    "content": {
+                        "title": "Aperçu du document",
+                        "subtitle": "Voir le contenu du document"
+                    }
+                },
+                "changeLog": {
+                    "label": "Journal des modifications",
+                    "content": {
+                        "title": "Journal des modifications",
+                        "subtitle": "Voir les modifications apportées à ce document"
+                    }
+                },
+                "versionsHistory": {
+                    "label": "Historique des versions",
+                    "content": {
+                        "title": "Historique des versions",
+                        "subtitle": "Voir les versions précédentes de ce document",
+                        "item": {
+                            "version": "Version",
+                            "download": "Télécharger la version",
+                            "currentVersion": "Version actuelle",
+                            "createdAt": "Créé le",
+                            "createdBy": "Créé par",
+                            "comments": "Commentaires"
+                        }
+                    }
+                },
+                "reviewsLog": {
+                    "label": "Journal des révisions",
+                    "content": {
+                        "title": "Historique des révisions",
+                        "subtitle": "Voir l'historique des révisions de ce document"
+                    }
+                }
             },
             "actions": {
                 "edit": {

@@ -30,6 +30,12 @@ router.get(
     controller.getMyExpiredAndDueSoonReviews.bind(controller),
 );
 
+// Other users review on same document and version
+router.get(
+    '/other-users-reviews/:documentId/:versionId',
+    controller.getOtherUsersReviews.bind(controller),
+);
+
 router.get(
     '/document/:documentId/submitted',
     controller.getSubmittedReviewsByDocument.bind(controller),
@@ -40,7 +46,7 @@ router.get(
 );
 router.post('/', validate(documentReviewCreateSchema), controller.create.bind(controller));
 router.get('/', controller.findAll.bind(controller));
-router.get('/pending-reviews', controller.findPendingReviews.bind(controller));
+router.get('/pending-reviews/:userId', controller.findPendingReviews.bind(controller));
 router.get('/:id', controller.findById.bind(controller));
 router.put('/:id', validate(documentReviewUpdateSchema), controller.update.bind(controller));
 

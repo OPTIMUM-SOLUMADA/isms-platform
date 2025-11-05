@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { useGrantPermissionsToDocumentVersion } from "@/hooks/queries/useGoogleDriveMutation";
+import { useState } from "react";
+import RTERichText from "@/components/RTERichText";
 
 interface Props {
     open: boolean;
@@ -38,6 +40,7 @@ const PatchDocumentDialog = ({
     const { setCurrentDocument } = useDocumentUI();
     const { toast } = useToast();
     const { user } = useAuth();
+    const [comment, setComment] = useState('');
 
     const { document } = item;
 
@@ -53,7 +56,8 @@ const PatchDocumentDialog = ({
         patchDocument({
             reviewId: "APPROVE",
             patchedVersion: nextVersion,
-            userId: user?.id || ""
+            userId: user?.id || "",
+            comment,
         }, {
             onSuccess: () => {
                 toast({
@@ -104,9 +108,18 @@ const PatchDocumentDialog = ({
                         <span className="text-theme-2 underline underline-offset-4 text-sm">{t("patchDocumentReview.dialogs.confirm.nextVersion")}</span>
                         <Badge variant="outline">{nextVersion}</Badge>
                     </div>
+
+                    <div className="mt-4">
+                        <RTERichText
+                            placeholder={t(
+                                "reviewApproval.dialogs.approve.form.comments.placeholder"
+                            )}
+                            onChange={setComment}
+                        />
+                    </div>
                 </DialogHeader>
                 <DialogFooter className="flex justify-end gap-2">
-                    <Button variant="ghost" onClick={() => handleOpenChange(false)}>
+                    <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={isPending}>
                         {t("patchDocumentReview.dialogs.confirm.actions.cancel.label")}
                     </Button>
                     <LoadingButton

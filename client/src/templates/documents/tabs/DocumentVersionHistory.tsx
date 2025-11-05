@@ -13,40 +13,20 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Button } from "@/components/ui/button";
+import { format, formatRelative } from "date-fns";
+import { getDateFnsLocale } from "@/lib/date";
+import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   document: Document;
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-};
-
-const getRelativeTime = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  return formatDate(dateString);
-};
-
-
 const DocumentVersionHistory = ({ document }: Props) => {
   const { data, isLoading, isError } = useGetDocumentVersions(document.id);
 
   const { mutate: download } = useDownloadVersion();
-
+  const { t } = useTranslation();
 
   if (isLoading) return <CircleLoading />
 
@@ -59,23 +39,25 @@ const DocumentVersionHistory = ({ document }: Props) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Version History
+          {t("document.view.tabs.versionsHistory.content.title")}
         </CardTitle>
         <CardDescription>
-          Track all document versions and their approval status
+          {t("document.view.tabs.versionsHistory.content.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[600px] pr-4">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {data.map((version, index) => {
               const isSelected = false;
 
               return (
                 <div key={version.id}>
                   <div
-                    className={`group relative rounded-lg border p-4 transition-all hover:border-primary hover:shadow-md cursor-pointer ${isSelected ? 'border-primary bg-accent' : 'bg-card'
-                      }`}
+                    className={cn(
+                      "group relative rounded-lg border p-3: lg:p-4 transition-all hover:border-primary hover:shadow-md cursor-pointer",
+                      isSelected ? 'border-primary bg-accent' : 'bg-card'
+                    )}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3 flex-1">
@@ -86,24 +68,12 @@ const DocumentVersionHistory = ({ document }: Props) => {
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-semibold text-base">
-                              Version {version.version}
+                              {t("document.view.tabs.versionsHistory.content.item.version")} {version.version}
                             </h3>
                             {version.isCurrent && (
-                              <Badge variant="default">Current</Badge>
-                            )}
-                            {version.draftId && (
-                              <Badge variant="secondary">Draft</Badge>
+                              <Badge variant="default">{t("document.view.tabs.versionsHistory.content.item.currentVersion")}</Badge>
                             )}
                           </div>
-
-                          {version.comment && (
-                            <div className="flex items-start gap-2">
-                              <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                              <p className="text-sm text-muted-foreground">
-                                {version.comment}
-                              </p>
-                            </div>
-                          )}
 
                           <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                             {version.createdBy && (
@@ -112,17 +82,31 @@ const DocumentVersionHistory = ({ document }: Props) => {
                                 <span>{version.createdBy?.name}</span>
                               </div>
                             )}
+
+                            {Array.isArray(version.documentReviews) && (
+                              <div className="flex items-start gap-2">
+                                <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                                <p className="text-sm text-muted-foreground">
+                                  {version.documentReviews.filter(e => e.comment).length}
+                                </p>
+                              </div>
+                            )}
+
                             <div className="flex items-center gap-1.5">
                               <Clock className="h-3.5 w-3.5" />
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <span className="cursor-help">
-                                      {getRelativeTime(version.createdAt)}
+                                      {formatRelative(version.createdAt, new Date(), {
+                                        locale: getDateFnsLocale(),
+                                      })}
                                     </span>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>{formatDate(version.createdAt)}</p>
+                                    <p>{format(version.createdAt, 'PPpp', {
+                                      locale: getDateFnsLocale(),
+                                    })}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>

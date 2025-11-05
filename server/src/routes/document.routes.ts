@@ -17,7 +17,7 @@ router.post(
 );
 router.get('/statistics', controller.getStatistics.bind(controller));
 router.get('/:id', controller.getById.bind(controller));
-router.put('/:id', uploadSingleDocument, controller.update.bind(controller));
+router.put('/:id', googleAuthMiddleware, uploadSingleDocument, controller.update.bind(controller));
 router.delete('/:id', googleAuthMiddleware, controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
 router.get('/download/:id', controller.downloadFromGoogleDrive.bind(controller));

@@ -37,7 +37,7 @@ export class VersionController {
             const driveFile = await gdService.getStreamFileById(fileId);
 
             // Set minimal headers to prompt download
-            res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+            res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
             res.setHeader('Content-Type', file.mimeType ?? 'application/octet-stream');
 
             driveFile
