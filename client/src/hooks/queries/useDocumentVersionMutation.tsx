@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetDocumentVersions = (documentId?: string) => {
     return useQuery<DocumentVersion[], ApiAxiosError>({
-        queryKey: ["create-draft-version", documentId],
+        queryKey: ["document-versions", documentId],
         queryFn: async () =>
             (await documentVersionService.getByDocument(documentId!)).data,
         enabled: !!documentId,

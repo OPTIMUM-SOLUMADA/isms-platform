@@ -24,7 +24,7 @@ export const documentReviewService = {
         id: string,
         data: { decision: ReviewDecision; comment: string }
     ) => axios.put(api.MAKE_DECISION(id), data),
-    getPendingReviews: async () => axios.get(api.GET_PENDING_REVIEWS),
+    getPendingReviews: async (userId: string) => axios.get(api.GET_PENDING_REVIEWS(userId)),
     markAsCompleted: async (id: string, userId: string) => axios.put(api.MARK_AS_COMPLETED(id), { userId: userId }),
     patchDocumentReview: async (id: string, data: any) =>
         axios.patch(api.PATCH_DOCUMENT_VERSION(id), data),
@@ -38,4 +38,6 @@ export const documentReviewService = {
         axios.get(api.GET_EXPIRED_REVIEWS_BY_USER(id)),
     getExpiredAndDueSoonReviews: async (id: string) =>
         axios.get(api.GET_MY_EXPIRED_AND_DUE_SOON_REVIEWS_BY_USER(id)),
+    getOtherUsersReviews: async (documentId: string, versionId: string) =>
+        axios.get(api.GET_OTHER_USERS_REVIEWS(documentId, versionId)),
 };

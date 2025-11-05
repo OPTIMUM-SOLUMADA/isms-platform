@@ -100,7 +100,6 @@ export type DocumentVersion = {
   id: string;
   documentId: string;
   version: string;
-  comment?: string | null;
   createdAt: string;
   isCurrent: boolean; // optional: flag the latest version
   fileUrl?: string;
@@ -112,6 +111,7 @@ export type DocumentVersion = {
 
   document: Document;
   approvals?: DocumentApproval[];
+  documentReviews: DocumentReview[];
 };
 export type ReviewDecision = "APPROVE" | "REJECT" | "REQUEST_CHANGES";
 
@@ -131,6 +131,7 @@ export interface DocumentReview {
   assignedBy?: User | null;
 
   documentVersion?: DocumentVersion;
+  documentVersionId: string;
 
   versions?: DocumentVersion[];
 

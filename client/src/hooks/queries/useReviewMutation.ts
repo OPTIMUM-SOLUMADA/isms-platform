@@ -116,7 +116,7 @@ export const usePatchDocumentReview = (id: string | undefined) => {
   return useMutation<
     any,
     ApiAxiosError,
-    { reviewId: string; patchedVersion: string; userId: string }
+    { reviewId: string; patchedVersion: string; userId: string; comment: string; }
   >({
     mutationFn: async (payload) =>
       documentReviewService.patchDocumentReview(id!, payload),
@@ -141,9 +141,10 @@ export const useUpdateComment = (id: string | undefined) => {
 };
 
 export const useFetchPendingReviews = () => {
+  const { user } = useAuth();
   return useQuery<DocumentReview[], ApiAxiosError>({
-    queryKey: ["pending-reviews"],
-    queryFn: async () => (await documentReviewService.getPendingReviews()).data,
+    queryKey: ["pending-reviews", user.id],
+    queryFn: async () => (await documentReviewService.getPendingReviews(user.id)).data,
   });
 };
 
@@ -160,6 +161,16 @@ export const useMarkAsCompleted = () => {
     },
   });
 };
+
+export const useOtherUsersReviews = ({ documentId, versionId }: { documentId?: string, versionId?: string }) => {
+  return useQuery<DocumentReview[], ApiAxiosError>({
+    queryKey: ["other-reviews", documentId, versionId],
+    queryFn: async () =>
+      (await documentReviewService.getOtherUsersReviews(documentId!, versionId!)).data,
+    enabled: !!documentId && !!versionId,
+    refetchInterval: 5 * 60 * 1000,
+  });
+}
 
 export const useGetMyReviewsDueSoon = () => {
   const { user } = useAuth();

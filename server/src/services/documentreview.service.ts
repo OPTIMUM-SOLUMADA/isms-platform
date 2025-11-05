@@ -4,7 +4,7 @@ import prisma from '@/database/prisma'; // adjust path to your prisma client
 import { DocumentReview, Prisma } from '@prisma/client';
 import { EmailService } from './email.service';
 import { addHours } from 'date-fns';
-import { withClient } from '@/configs/url';
+import { toHashRouterUrl } from '@/utils/baseurl';
 
 const emailService = new EmailService();
 
@@ -69,6 +69,7 @@ export class DocumentReviewService {
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
         return prisma.documentReview.create({
             data,
+            include: includes,
         });
     }
 
@@ -218,11 +219,20 @@ export class DocumentReviewService {
         });
     }
 
-    async findPendingReviews(): Promise<DocumentReview[]> {
+    async findPendingReviews(userId?: string): Promise<DocumentReview[]> {
         return prisma.documentReview.findMany({
             where: {
                 decision: { isSet: true },
                 isCompleted: false,
+                ...(userId && {
+                    document: {
+                        authors: {
+                            some: {
+                                userId,
+                            },
+                        },
+                    },
+                }),
             },
             include: {
                 document: {
@@ -230,6 +240,7 @@ export class DocumentReviewService {
                         id: true,
                         title: true,
                         status: true,
+                        fileUrl: true,
                         isoClause: {
                             select: {
                                 name: true,
@@ -334,7 +345,10 @@ export class DocumentReviewService {
 
     async submitReviewDecision(
         reviewId: string,
-        data: Pick<Prisma.DocumentReviewCreateInput, 'comment' | 'decision' | 'isCompleted'>,
+        data: Pick<
+            Prisma.DocumentReviewCreateInput,
+            'comment' | 'decision' | 'isCompleted' | 'completedAt' | 'completedBy'
+        >,
     ) {
         return prisma.documentReview.update({
             where: { id: reviewId },
@@ -528,11 +542,11 @@ export class DocumentReviewService {
                 description: document.description,
                 status: document.status,
             },
-            dueDate: dueDate?.toDateString() || '',
+            dueDate: dueDate?.toDateString() || 'ASAP',
             reviewer: { name: reviewer.name },
             year: new Date().getFullYear().toString(),
-            viewDocLink: withClient(`/documents/view/${document.id}`),
-            reviewLink: withClient(`/review-approval/${review.id}`),
+            viewDocLink: toHashRouterUrl(`/documents/view/${document.id}`),
+            reviewLink: toHashRouterUrl(`/review-approval/${review.id}`),
             headerDescription: 'Automated email',
             orgName: env.ORG_NAME,
         });
@@ -638,5 +652,16 @@ export class DocumentReviewService {
         ]);
 
         return { expired, dueSoon };
+    }
+
+    async getOtherUsersReviews(documentId: string, versionId: string) {
+        return prisma.documentReview.findMany({
+            where: {
+                documentId,
+                documentVersionId: versionId,
+            },
+            include: includes,
+            orderBy: { completedAt: 'desc' },
+        });
     }
 }

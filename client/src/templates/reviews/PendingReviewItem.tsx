@@ -143,7 +143,6 @@ export const PrendingItemPreview = ({ review, onSuccess }: PendingReviewItemPrev
                         <p className="text-xs font-medium text-muted-foreground">{t("pendingReviews.preview.documentVersion")}</p>
                         <div className="flex items-center gap-2 text-sm">
                             <Badge variant="secondary" className="text-xs">v{review.document?.versions[0].version}</Badge>
-                            <span className="text-xs text-muted-foreground truncate">{review.document?.versions[0]?.fileUrl}</span>
                         </div>
                     </div>
                 )}

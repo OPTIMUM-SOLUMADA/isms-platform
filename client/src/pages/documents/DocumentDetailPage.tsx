@@ -17,6 +17,7 @@ import {
   Building2,
   BookLock,
   GitBranch,
+  FileStack,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/BackButton";
@@ -53,7 +54,7 @@ import DocumentVersionHistory from "@/templates/documents/tabs/DocumentVersionHi
 const tabs = [
   {
     id: "preview",
-    label: "document.view.tabs.preview",
+    label: "document.view.tabs.preview.label",
     icon: FileText,
     content: (document: Document) => {
       const currentVersion = document.versions.find(v => v.isCurrent);
@@ -63,7 +64,7 @@ const tabs = [
   },
   {
     id: "change-log",
-    label: "document.view.tabs.changeLogs",
+    label: "document.view.tabs.changeLog.label",
     icon: Clock,
     content: (document: Document) => {
       return <ChangeLog document={document} />
@@ -71,13 +72,20 @@ const tabs = [
   },
   {
     id: "version-history",
-    label: "document.view.tabs.changeLogs",
-    icon: GitBranch,
+    label: "document.view.tabs.versionsHistory.label",
+    icon: FileStack,
     content: (document: Document) => {
       return <DocumentVersionHistory document={document} />
     }
   },
-
+  {
+    id: "reviews-log",
+    label: "document.view.tabs.reviewsLog.label",
+    icon: GitBranch,
+    content: (document: Document) => {
+      return <ChangeLog document={document} />
+    }
+  },
 ];
 
 const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {
@@ -309,7 +317,7 @@ export default function DocumentDetailPage() {
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
-                <TabsTrigger key={tab.id} value={tab.id} className="flex items-center justify-start gap-2 py-2 text-sm">
+                <TabsTrigger key={tab.id} value={tab.id} className="flex items-center justify-start gap-2 py-2 text-sm min-w-52">
                   <Icon className="w-4 h-4" />
                   {t(tab.label)}
                 </TabsTrigger>

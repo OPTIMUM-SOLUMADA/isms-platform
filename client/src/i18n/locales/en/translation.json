@@ -1094,8 +1094,42 @@
         "compliance": "Compliance"
       },
       "tabs": {
-        "preview": "File preview",
-        "changeLogs": "Change logs"
+        "preview": {
+          "label": "Preview",
+          "content": {
+            "title": "Document Preview",
+            "subtitle": "View the document content"
+          }
+        },
+        "changeLog": {
+          "label": "Change Log",
+          "content": {
+            "title": "Change Log",
+            "subtitle": "View the changes made to this document"
+          }
+        },
+        "versionsHistory": {
+          "label": "Version History",
+          "content": {
+            "title": "Version History",
+            "subtitle": "View previous versions of this document",
+            "item": {
+              "version": "Version",
+              "download": "Download Version",
+              "currentVersion": "Current Version",
+              "createdAt": "Created On",
+              "createdBy": "Created By",
+              "comments": "Comments"
+            }
+          }
+        },
+        "reviewsLog": {
+          "label": "Review Log",
+          "content": {
+            "title": "Review History",
+            "subtitle": "View the review history of this document"
+          }
+        }
       },
       "actions": {
         "edit": {

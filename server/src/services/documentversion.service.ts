@@ -102,6 +102,7 @@ export class DocumentVersionService {
                         },
                     },
                 },
+                documentReviews: true,
             },
         });
     }
@@ -163,6 +164,7 @@ export class DocumentVersionService {
             version: string;
             fileUrl?: string;
             googleDriveFileId: string;
+            comment?: string;
         },
     ) {
         return prisma.$transaction(async (tx) => {
@@ -181,6 +183,7 @@ export class DocumentVersionService {
                     ...(data.fileUrl && { fileUrl: data.fileUrl }),
                     createdBy: { connect: { id: data.userId } },
                     googleDriveFileId: data.googleDriveFileId,
+                    ...(data.comment && { comment: data.comment }),
                 },
             });
         });

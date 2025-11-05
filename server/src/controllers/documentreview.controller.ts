@@ -37,7 +37,8 @@ export class DocumentReviewController {
 
     async findPendingReviews(req: Request, res: Response) {
         try {
-            const allPending = await service.findPendingReviews();
+            const { userId } = req.params;
+            const allPending = await service.findPendingReviews(userId);
             return res.json(allPending);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
@@ -86,7 +87,6 @@ export class DocumentReviewController {
             const type = await service.submitReviewDecision(req.params.id!, {
                 decision,
                 comment,
-                isCompleted: false,
             });
             return res.json(type);
         } catch (error: any) {
@@ -197,18 +197,17 @@ export class DocumentReviewController {
     async patchReview(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { userId, patchedVersion } = req.body;
+            const { userId, patchedVersion, comment = '' } = req.body;
             const gdService = useGoogleDriveService(req);
             const review = await service.findById(id!);
+
             if (!review) {
-                return res.status(404).json({ error: 'Version not found' });
+                return res.status(404).json({ error: 'Review not found' });
             }
 
             if (review.isCompleted) {
                 return res.status(400).json({ error: 'Review already completed' });
             }
-
-            console.log(review.documentVersion);
 
             // 1 - Create the patched version file on google drive (by renaming the draft file)
             const patchedFile = await gdService.updateFileName(
@@ -230,16 +229,31 @@ export class DocumentReviewController {
             });
 
             // 4 - Create new version of the doc and mark it as current
-            await versionService.createPatchedVersion(data.documentId, {
+            const newVersion = await versionService.createPatchedVersion(data.documentId, {
                 userId: userId,
                 version: patchedVersion,
                 googleDriveFileId: patchedFile.id!,
                 fileUrl: patchedFile.webViewLink!,
+                comment,
             });
+
+            // 6 - Create new review for the new version
+            const newReview = await service.create({
+                document: { connect: { id: data.documentId } },
+                documentVersion: { connect: { id: newVersion.id } },
+                reviewer: { connect: { id: review.reviewerId } },
+                createdAt: new Date(),
+            });
+
+            // 7 - Notify reviewers
+            await service.sendReviewNotification(newReview);
+
+            // 8 - Update document status
+            await documentService.update(data.documentId, { status: 'IN_REVIEW' });
 
             return res.json(data);
         } catch (error: any) {
-            console.log(error.message);
+            console.log(error);
             return res.status(500).json({ error: error.message });
         }
     }
@@ -250,8 +264,6 @@ export class DocumentReviewController {
             const { userId = '' } = req.params;
             const data = await service.getMyReviewsDueSoon(userId);
             return res.set('Content-Type', 'application/json').send(JSON.stringify(data, null, 2));
-
-            return res.json(data);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
         }
@@ -290,6 +302,16 @@ export class DocumentReviewController {
         try {
             const { userId } = req.params;
             const data = await service.getExpiredAndDueSoonReviewsByUser(userId!);
+            return res.json(data);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getOtherUsersReviews(req: Request, res: Response) {
+        try {
+            const { documentId, versionId } = req.params;
+            const data = await service.getOtherUsersReviews(documentId!, versionId!);
             return res.json(data);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });

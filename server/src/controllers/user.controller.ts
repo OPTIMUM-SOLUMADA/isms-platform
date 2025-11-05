@@ -5,7 +5,7 @@ import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import { JwtService } from '@/services/jwt.service';
 import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
-import { withClient } from '@/configs/url';
+import { toHashRouterUrl } from '@/utils/baseurl';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -72,6 +72,12 @@ export class UserController {
                 // upate user passwordReset
                 await service.updateUser(user.id, { passwordResetToken: resetToken });
 
+                // Create hash router url for the react app
+                const invitationLink = toHashRouterUrl('/reset-password', {
+                    token: resetToken,
+                    invitation: true,
+                });
+
                 // SEND EMAIL INVITATION
                 await emailService.sendMail({
                     to: user.email,
@@ -79,9 +85,7 @@ export class UserController {
                     html: await EmailTemplate.welcome({
                         userName: user.name!,
                         orgName: env.ORG_NAME,
-                        inviteLink: withClient(
-                            `/reset-password?token=${resetToken}&invitation=true`,
-                        ),
+                        inviteLink: invitationLink,
                         year: new Date().getFullYear().toString(),
                         headerDescription: '',
                     }),
@@ -110,11 +114,14 @@ export class UserController {
                 } else {
                     const token = await jwtService.generateEmailInvitationToken(user);
 
+                    // Create hash router url to verify account
+                    const verificationLink = toHashRouterUrl(`/verify-account/${token}`);
+
                     // template html
                     const html = await EmailTemplate.emailVerification({
                         userName: user.name!,
                         orgName: env.ORG_NAME,
-                        verificationLink: withClient(`/verify-account/${token}`),
+                        verificationLink,
                         year: new Date().getFullYear().toString(),
                         headerDescription: '',
                         role: user.role,

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { PendingReviewItem, PrendingItemPreview } from "@/templates/reviews/PendingReviewItem";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Filter } from "lucide-react";
+import { ArrowRight, Filter } from "lucide-react";
 import { useFetchPendingReviews } from "@/hooks/queries/useReviewMutation";
 import WithTitle from "@/templates/layout/WithTitle";
 import { Card } from "@/components/ui/card";
@@ -10,13 +10,17 @@ import { DocumentReview } from "@/types";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import CircleLoading from "@/components/loading/CircleLoading";
+import { getFileIconByName } from "@/lib/icon";
+import { Button } from "@/components/ui/button";
+import { parseAsString, useQueryState } from "nuqs";
 
 type StatusFilter = "approved" | "rejected" | "all";
 
 export default function PendingReviewsDashboardPage(): JSX.Element {
-  const [filterDocument, setFilterDocument] = useState<string>("all");
+  // const [filterDocument, setFilterDocument] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<StatusFilter>("all");
   const [selectedItem, setSelectedItem] = useState<DocumentReview | null>(null);
+  const [filterDocument, setFilterDocument] = useQueryState("docId", parseAsString.withDefault(""))
   const { t } = useTranslation();
 
   const { data, isLoading } = useFetchPendingReviews();
@@ -61,6 +65,9 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
     }
   }
 
+  const reviewCountByDocument = (documentId: string) => {
+    return data?.filter((r) => r.documentId === documentId).length || 0;
+  }
 
   if (isLoading) return <CircleLoading />;
 
@@ -77,27 +84,46 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
           </div>
         </div>
 
-        <div className="flex flex-col grow h-full">
-          <div className="grid gap-4 sm:grid-cols-2 grow minh-0">
-            <div className="flex flex-col grow space-y-2 min-h-0">
+        <div className="flex flex-col grow h-full w-full">
+          <div className="flex items-stretch gap-5 grow min-h-0 w-full p-5 border bg-gray-50">
+
+            {/* Document list */}
+            <div className="space-y-2 w-full max-w-64 bg-gray-100 border p-2">
+              <div className="flex items-center justify-between gap-2 shrink-0  pr-5">
+                <h2 className="text-sm text-muted-foreground">{t("Documents")}</h2>
+              </div>
+              <div className="flex flex-col gap-1">
+                {documents.map((d, index) => (
+                  <Button
+                    key={index}
+                    type="button"
+                    variant={filterDocument === d.id ? "outline" : "ghost"}
+                    onClick={() => {
+                      setFilterDocument(d.id);
+                      setSelectedItem(null);
+                    }}
+                    className="flex items-center justify-start gap-2 normal-case"
+                  >
+                    <div className="shrink-0">
+                      {getFileIconByName(d.fileUrl || "")}
+                    </div>
+                    <div className="text-sm ml-1 flex items-center line-clamp-1 whitespace-nowrap">
+                      {d.title} ({reviewCountByDocument(d.id)})
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Separator */}
+            <ArrowSeparator />
+
+            <div className="flex-1 flex flex-col grow space-y-2 min-h-0 p-2">
               {/* Head */}
               <div className="flex items-center justify-between gap-2 shrink-0  pr-5">
                 <h2 className="text-sm text-muted-foreground">{t("pendingReviews.list.total", { count: filteredReviews.length })}</h2>
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4" />
-                  <Select value={filterDocument} onValueChange={setFilterDocument}>
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder={t("pendingReviews.list.filter.document.label")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t("pendingReviews.list.filter.document.options.all")}</SelectItem>
-                      {documents.map((d, index) => (
-                        <SelectItem key={index} value={d.id}>
-                          {d.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   {/* Status */}
                   <Select value={filterStatus} onValueChange={v => setFilterStatus(v as StatusFilter)}>
                     <SelectTrigger className="w-full sm:w-40">
@@ -145,8 +171,11 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
               </div>
             </div>
 
+            {/* Separator */}
+            <ArrowSeparator />
+
             {/* Preview */}
-            <Card className="sticky top-10">
+            <Card className="sticky top-10 flex-1">
               {!selectedItem ? (
                 <p className="text-muted-foreground p-10 text-center">
                   {t("pendingReviews.preview.noReviewSelected")}
@@ -159,5 +188,14 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
         </div>
       </div>
     </WithTitle>
+  );
+}
+
+
+const ArrowSeparator = () => {
+  return (
+    <div className="flex items-start gap-1">
+      <ArrowRight className="w-4 h-4 text-muted-foreground opacity-45" />
+    </div>
   );
 }

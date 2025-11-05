@@ -62,7 +62,7 @@ export const API_CONFIG = {
         `/document-reviews/my-reviews/${id}/due-soon`,
       GET_MY_EXPIRED_AND_DUE_SOON_REVIEWS_BY_USER: (id: string | number) =>
         `/document-reviews/my-reviews/${id}/expired-and-due-soon-reviews`,
-      GET_PENDING_REVIEWS: "/document-reviews/pending-reviews",
+      GET_PENDING_REVIEWS: (id: string | number) => `/document-reviews/pending-reviews/${id}`,
       MARK_AS_COMPLETED: (id: string | number) =>
         `/document-reviews/mark-as-completed/${id}`,
       PATCH_DOCUMENT_VERSION: (id: string | number) =>
@@ -73,6 +73,8 @@ export const API_CONFIG = {
         `/document-reviews/document/${id}/completed`,
       GET_EXPIRED_REVIEWS_BY_USER: (id: string | number) =>
         `/document-reviews/expired-reviews/${id}`,
+      GET_OTHER_USERS_REVIEWS: (documentId: string, versionId: string) =>
+        `/document-reviews/other-users-reviews/${documentId}/${versionId}`,
     },
     ISO_CLAUSES: {
       BASE: "/iso-clauses",
