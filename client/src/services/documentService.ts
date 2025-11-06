@@ -29,5 +29,6 @@ export const documentService = {
     }),
     publish: async (id: string) => axios.put(docApi.PUBLISH(id)),
     unpublish: async (id: string) => axios.put(docApi.UNPUBLISH(id)),
-    createDraftVersion: async (id: string) => axios.get(docApi.CREATE_DRAFT_VERSION(id))
+    createDraftVersion: async (id: string) => axios.get(docApi.CREATE_DRAFT_VERSION(id)),
+    getPublished: async (userId: string) => axios.get(docApi.GET_PUBLISHED(userId)),
 };

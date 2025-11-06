@@ -46,4 +46,5 @@ export type AccessPermission =
     | "audit.page.access"
     | "departments.page.access"
     | "document-types.page.access"
+    | "published-document.page.access"
     | "iso-clauses.page.access";

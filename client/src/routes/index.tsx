@@ -25,6 +25,7 @@ import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
 import ReviewApprovalPage from "@/pages/reviews/ReviewApprovalPage";
 import PendingReviewsDashboardPage from "@/pages/reviews/PendingReviewsDashboardPage";
 import PatchDocumentVersionPage from "@/pages/reviews/PatchDocumentVersionPage";
+import PublishedDocumentPage from "@/pages/documents/PublishedDocumentPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -189,6 +190,12 @@ const routeConfig: AppRoute[] = [
                 path: "patch-document-version/:reviewId",
                 permission: "documents.page.access",
                 children: [{ index: true, element: <PatchDocumentVersionPage /> }],
+            },
+            // Patch Document Version
+            {
+                path: "published-documents",
+                permission: "published-document.page.access",
+                children: [{ index: true, element: <PublishedDocumentPage /> }],
             },
             // Special pages
             { path: "unauthorized", element: <UnauthorizedPage /> },

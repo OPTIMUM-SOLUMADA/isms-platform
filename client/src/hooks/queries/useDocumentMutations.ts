@@ -8,6 +8,7 @@ import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentFo
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import useDocumentStore from "@/stores/document/useDocumentStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 // -----------------------------
 // Fetch Documents
@@ -253,3 +254,13 @@ export const useCreateDraftVersion = (reviewId?: string) => {
     staleTime: 1000 * 60 * 3,
   });
 };
+
+
+export const useGetPublishedDocuments = () => {
+  const { user } = useAuth();
+  return useQuery<Document[], ApiAxiosError>({
+    queryKey: ["published-documents"],
+    queryFn: async () => (await documentService.getPublished(user.id)).data,
+    staleTime: 1000 * 60 * 3,
+  });
+}

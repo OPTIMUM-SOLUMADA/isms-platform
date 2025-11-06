@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Calendar, User } from "lucide-react";
+import { AlertCircle, Calendar, CircleCheck, CircleX, Hourglass, MessageCircle, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@/components/ui/loading-button";
 import type { DocumentReview } from "@/types";
@@ -21,6 +21,8 @@ import { reviewStatusColors } from "@/constants/color";
 import { format } from "date-fns";
 import { useMemo } from "react";
 import HtmlContent from "@/components/HTMLContent";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface Props {
     open: boolean;
@@ -57,7 +59,8 @@ const FinalDocumentApprovalDialog = ({
 
     // check if all other reviews are approved
     const allApproved = otherReviews.every(i => i.decision === "APPROVE");
-
+    // Review count that is not submitted yet
+    const pendingReviewsCount = otherReviews.filter(i => !i.decision && !i.reviewDate).length;
 
     const filteredOtherReviews = useMemo(
         () => otherReviews.filter(i => i.id !== item.id)
@@ -102,43 +105,33 @@ const FinalDocumentApprovalDialog = ({
                             {t("reviewApproval.dialogs.approve.dialogs.finalApproval.title", { entity: document?.title })}
                         </DialogTitle>
                     </div>
-                    <DialogDescription
-                        dangerouslySetInnerHTML={{
-                            __html: t("reviewApproval.dialogs.approve.dialogs.finalApproval.description", { entity: document?.title })
-                        }}
-                    />
-                    <p className="mt-3 text-primary">
-                        {t("reviewApproval.dialogs.approve.dialogs.finalApproval.message")}
-                    </p>
-                    <div className="w-full space-y-3">
-                        <div className="div">
-                            <h2>Autre reviews de l&apos;utilisateur</h2>
-                        </div>
-                        {filteredOtherReviews.map((review) => (
-                            <div
-                                key={review.id}
-                                className="p-4 border rounded-lg bg-white shadow-sm text-xs"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 ">
-                                        <User className="h-4 w-4 text-gray-500" />
-                                        <span className="font-medium">{review.reviewer?.name}</span>
-                                    </div>
-                                    {review.decision && (
-                                        <Badge className={reviewStatusColors[review.decision]}>
-                                            {review.decision}
-                                        </Badge>
-                                    )}
+                    {allApproved && (
+                        <DialogDescription
+                            dangerouslySetInnerHTML={{
+                                __html: t("reviewApproval.dialogs.approve.dialogs.finalApproval.description", { entity: document?.title })
+                            }}
+                        />
+                    )}
+                    <div className="w-full space-y-3 flex flex-col max-h-80">
+                        {allApproved ? (
+                            <p className="mt-3 text-primary">
+                                {t("reviewApproval.dialogs.approve.dialogs.finalApproval.message")}
+                            </p>
+                        ) : (
+                            <>
+                                <div className="text-sm text-amber-600">
+                                    <p >
+                                        Avant d'approuver le document, veuillez attendre que tous les autres réviseurs aient donné leur avis.
+                                        Il y a encore {pendingReviewsCount} avis en attente de validation.
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-2 mt-2 text-gray-600">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{format(new Date(review.createdAt), "dd/MM/yyyy")}</span>
-                                </div>
-                                <div className="mt-2 text-gray-700">
-                                    <HtmlContent html={review.comment} />
-                                </div>
-                            </div>
-                        ))}
+                                <ScrollArea className="scroll-p-6">
+                                    {filteredOtherReviews.map((review, index) => (
+                                        <Item review={review} key={index} />
+                                    ))}
+                                </ScrollArea>
+                            </>
+                        )}
                     </div>
                 </DialogHeader>
                 <DialogFooter className="flex justify-end gap-2">
@@ -157,6 +150,47 @@ const FinalDocumentApprovalDialog = ({
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+    )
+}
+
+const Item = ({ review }: { review: DocumentReview }) => {
+    return (
+        <div
+            className="p-4 border rounded-lg bg-white shadow-sm text-xs flex items-center gap-4"
+        >
+            <div className="shrink-0">
+                {review.decision === "APPROVE" ? (
+                    <CircleCheck className="h-6 w-6 text-theme" />
+                ) : review.decision === "REJECT" ? (
+                    <CircleX className="h-6 w-6 text-theme-danger" />
+                ) : (
+                    <Hourglass className="h-6 w-6 text-muted-foreground" />
+                )}
+            </div>
+            <div className="space-y-1 w-full">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 ">
+                        <User className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{review.reviewer?.name}</span>
+                    </div>
+                    {review.decision && (
+                        <Badge className={cn(reviewStatusColors[review.decision], "text-xs")}>
+                            {review.decision}
+                        </Badge>
+                    )}
+                </div>
+                <div className="flex items-center gap-2 mt-2 text-gray-500">
+                    <Calendar className="h-4 w-4" />
+                    <span>{format(new Date(review.createdAt), "dd/MM/yyyy")}</span>
+                </div>
+                {review.comment && (
+                    <div className="flex items-center gap-2 mt-2 text-gray-500">
+                        <MessageCircle className="h-4 w-4" />
+                        <HtmlContent html={review.comment} renderNoContent={false} className="line-clamp-2 text-gray-400" />
+                    </div>
+                )}
+            </div>
+        </div>
     )
 }
 

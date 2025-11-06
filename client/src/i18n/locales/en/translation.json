@@ -1914,6 +1914,10 @@
       "label": "Audit log",
       "description": "Track and trace changes"
     },
+    "publishedDocuments": {
+      "label": "Published documents",
+      "description": "Access published documents"
+    },
     "others": {
       "title": "Other menus",
       "departments": {

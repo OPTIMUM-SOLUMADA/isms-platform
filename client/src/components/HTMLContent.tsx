@@ -5,16 +5,17 @@ import clsx from "clsx";
 interface HtmlContentProps {
     html: string;
     className?: string;
+    renderNoContent?: boolean;
 }
 
-const HtmlContent: FC<HtmlContentProps> = ({ html, className }) => {
+const HtmlContent: FC<HtmlContentProps> = ({ html, className, renderNoContent = true }) => {
     // Sanitize HTML to prevent XSS
     const sanitized = DOMPurify.sanitize(html);
 
     // If no visible text, show fallback
     const isEmpty = !sanitized.replace(/<[^>]*>/g, "").trim();
 
-    if (isEmpty) {
+    if (isEmpty && renderNoContent) {
         return (
             <p className="text-gray-400 italic text-sm">No content available</p>
         );

@@ -169,7 +169,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                     isActive
                       ? "bg-theme-2-muted/60 text-theme"
                       : "text-gray-300 hover:bg-white/5 hover:text-white",
-                    "border-b border-theme-2-muted",
+                    "border-b border-theme-2-muted text-sm",
                   )}
                 >
                   {({ isActive }) => !sidebarCollapsed ? (

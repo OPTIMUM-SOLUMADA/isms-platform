@@ -421,4 +421,14 @@ export class DocumentController {
             res.status(500).json({ error: (err as Error).message });
         }
     }
+
+    async getPublishedDocumentsUserId(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const document = await this.service.getPublishedDocumentsByUserId(userId!);
+            res.json(document);
+        } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
 }
