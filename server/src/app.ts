@@ -15,9 +15,10 @@ import ownerRoutes from '@/routes/owner.routes';
 import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import googleDriveRoutes from '@/routes/googledrive.routes';
 import versionRoutes from '@/routes/version.routes';
+import pageRoutes from '@/routes/page.routes';
 import { env } from '@/configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from '@/configs/upload';
-import { PUBLIC_PATH } from '@/configs/public';
+import { PUBLIC_PATH, VIEWS_PATH } from '@/configs/public';
 import { sessionMiddleware } from '@/configs/session.config';
 
 const app = express();
@@ -39,8 +40,12 @@ app.use(
 // session
 app.use(sessionMiddleware);
 
+// Tell Express where views are and that we use EJS
+app.set('views', VIEWS_PATH);
+app.set('view engine', 'ejs');
+
 // Public folder
-app.use(express.static(PUBLIC_PATH));
+app.use('/static', express.static(PUBLIC_PATH));
 
 // make uploads folder to be public
 app.use(UPLOAD_URL, express.static(UPLOAD_PATH));
@@ -48,19 +53,22 @@ app.use(UPLOAD_URL, express.static(UPLOAD_PATH));
 app.use(cookieParser());
 app.set('trust proxy', true);
 
-// Routes
-app.use('/auth', authRoutes);
-app.use('/departments', departmentRoutes);
-app.use('/users', userRoutes);
-app.use('/documents', documentRoutes);
-app.use('/iso-clauses', isoClauseRoutes);
-app.use('/document-types', documentTypeRoutes);
-app.use('/document-reviews', documentReviewRoutes);
-app.use('/excel', excelRoutes);
-app.use('/invitation', invitationRoutes);
-app.use('/owners', ownerRoutes);
-app.use('/department-roles', departmentRoleRoutes);
+// Pages
+app.use('/', pageRoutes);
+// Google Drive
 app.use('/google-drive', googleDriveRoutes);
-app.use('/document-versions', versionRoutes);
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/iso-clauses', isoClauseRoutes);
+app.use('/api/document-types', documentTypeRoutes);
+app.use('/api/document-reviews', documentReviewRoutes);
+app.use('/api/excel', excelRoutes);
+app.use('/api/invitation', invitationRoutes);
+app.use('/api/owners', ownerRoutes);
+app.use('/api/department-roles', departmentRoleRoutes);
+app.use('/api/document-versions', versionRoutes);
 
 export default app;

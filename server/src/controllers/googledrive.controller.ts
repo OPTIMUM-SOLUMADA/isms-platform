@@ -62,7 +62,7 @@ export class GoogleDriveController {
                 workingDirId: workingDirId,
             });
 
-            return res.redirect('/google-drive/files');
+            return res.redirect('/');
         } catch (error) {
             logger.error(error);
             res.status(500).json({ error: 'Google authentication failed' });
@@ -71,14 +71,13 @@ export class GoogleDriveController {
 
     static async listDriveFiles(req: Request, res: Response) {
         try {
-            // @ts-ignore
             const user = (req.session as any)?.user;
             if (!user) return res.status(401).json({ error: 'Not authenticated' });
 
             const driveService = new GoogleDriveService(user.tokens);
             const files = await driveService.listFiles();
 
-            return res.json(files);
+            return res.set('Content-Type', 'application/json').send(JSON.stringify(files, null, 2));
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Failed to list files' });

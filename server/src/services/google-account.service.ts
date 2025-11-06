@@ -22,4 +22,8 @@ export class GoogleAccountService {
     async getAll() {
         return prisma.googleAccount.findMany();
     }
+
+    async deleteAll() {
+        return prisma.googleAccount.deleteMany();
+    }
 }
