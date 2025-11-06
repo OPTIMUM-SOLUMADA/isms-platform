@@ -54,7 +54,7 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                    <CardTitle className="text-base truncate">{review.document?.title}</CardTitle>
+                                    <CardTitle className="text-sm truncate">{review.document?.title}</CardTitle>
                                     <CardDescription className="flex items-center gap-2 text-xs mt-1">
                                         <span className="font-medium">{review.document?.isoClause.code}</span>
                                         <Separator orientation="vertical" className="h-3" />
@@ -90,7 +90,6 @@ export function PendingReviewItem({ review, isSelected = false, onSelect }: Pend
                                     <span>Due: {formatDate(review.dueDate)}</span>
                                 </div>
                             )}
-                            <Badge variant="outline" className="text-xs">{review.document?.status}</Badge>
                         </div>
                     </div>
                 </div>

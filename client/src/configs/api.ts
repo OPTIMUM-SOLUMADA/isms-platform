@@ -45,6 +45,7 @@ export const API_CONFIG = {
       UNPUBLISH: (id: string | number) => `/api/documents/unpublish/${id}`,
       CREATE_DRAFT_VERSION: (id: string | number) =>
         `/api/documents/create-draft-version/${id}`,
+      GET_PUBLISHED: (id: string | number) => `/api/documents/published/${id}`,
     },
     REVIEWS: {
       BASE: "/api/document-reviews",

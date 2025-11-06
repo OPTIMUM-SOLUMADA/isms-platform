@@ -1903,6 +1903,10 @@
             "label": "Journal d'audit",
             "description": "Suivi et traçabilité des modifications"
         },
+        "publishedDocuments": {
+            "label": "Documents publiés",
+            "description": "Accéder aux documents publiés"
+        },
         "others": {
             "title": "Autres menus",
             "departments": {

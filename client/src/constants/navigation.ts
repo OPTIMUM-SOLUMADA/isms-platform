@@ -11,6 +11,7 @@ import {
     FileType2,
     FileLock2,
     Lightbulb,
+    BookCheck,
 } from 'lucide-react';
 
 type MenuItem = {
@@ -35,6 +36,13 @@ export const menuItems: MenuItem[] = [
         icon: FileText,
         descriptionKey: 'navigation.documents.description',
         requiredPermission: "documents.page.access"
+    },
+    {
+        path: '/published-documents',
+        labelKey: 'navigation.publishedDocuments.label',
+        icon: BookCheck,
+        descriptionKey: 'navigation.publishedDocuments.description',
+        requiredPermission: "published-document.page.access"
     },
     {
         path: '/reviews',

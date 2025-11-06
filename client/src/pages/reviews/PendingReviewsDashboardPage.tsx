@@ -102,13 +102,16 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
                       setFilterDocument(d.id);
                       setSelectedItem(null);
                     }}
-                    className="flex items-center justify-start gap-2 normal-case"
+                    className="flex items-center justify-start gap-2 normal-case w-full"
                   >
-                    <div className="shrink-0">
+                    <div className="shrink-0 relative">
                       {getFileIconByName(d.fileUrl || "")}
+                      <span className="absolute -top-1 -right-1 text-[8px] h-4 w-4 flex items-center justify-center bg-amber-500 text-white rounded-full">
+                        {reviewCountByDocument(d.id)}
+                      </span>
                     </div>
-                    <div className="text-sm ml-1 flex items-center line-clamp-1 whitespace-nowrap">
-                      {d.title} ({reviewCountByDocument(d.id)})
+                    <div className="text-sm ml-1 flex items-center truncate w-full whitespace-nowrap">
+                      {d.title} 
                     </div>
                   </Button>
                 ))}

@@ -297,7 +297,23 @@
             "description": "Your review has been submitted successfully. The document has been approved."
           }
         },
-        "done": "You have already approved this document."
+        "done": "You have already approved this document.",
+        "dialogs": {
+          "finalApproval": {
+            "title": "Final Document Approval",
+            "message": "Are you sure you want to permanently approve this document?",
+            "description": "Once permanently approved, the document will be marked as finalized and can only be modified during the next revision.",
+            "actions": {
+              "cancel": {
+                "label": "Cancel"
+              },
+              "confirm": {
+                "label": "Yes, permanently approve",
+                "loading": "Final approval in progress..."
+              }
+            }
+          }
+        }
       }
     },
     "actions": {
@@ -1897,6 +1913,10 @@
     "auditLog": {
       "label": "Audit log",
       "description": "Track and trace changes"
+    },
+    "publishedDocuments": {
+      "label": "Published documents",
+      "description": "Access published documents"
     },
     "others": {
       "title": "Other menus",

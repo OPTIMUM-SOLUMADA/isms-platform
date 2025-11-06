@@ -426,4 +426,48 @@ export class DocumentService {
             },
         });
     }
+
+    // Get published document where user is in department or its classification is PUBLIC
+    async getPublishedDocumentsByUserId(userId: string) {
+        // get user
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return prisma.document.findMany({
+            where: {
+                AND: [
+                    { published: true },
+
+                    {
+                        ...(user.role === 'ADMIN' || user.role === 'CONTRIBUTOR'
+                            ? {}
+                            : {
+                                  OR: [
+                                      {
+                                          departmentRoles: {
+                                              some: {
+                                                  departmentRole: {
+                                                      departmentRoleUsers: { some: { userId } },
+                                                  },
+                                              },
+                                          },
+                                      },
+                                      {
+                                          classification: 'PUBLIC',
+                                      },
+                                  ],
+                              }),
+                    },
+                ],
+            },
+            include: this.documentInclude,
+        });
+    }
 }

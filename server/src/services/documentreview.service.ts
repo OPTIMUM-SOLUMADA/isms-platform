@@ -659,6 +659,7 @@ export class DocumentReviewService {
             where: {
                 documentId,
                 documentVersionId: versionId,
+                isCompleted: false,
             },
             include: includes,
             orderBy: { completedAt: 'desc' },

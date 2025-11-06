@@ -158,6 +158,7 @@ export const useMarkAsCompleted = () => {
       queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
       queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
       queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["other-reviews"] });
     },
   });
 };
@@ -168,7 +169,6 @@ export const useOtherUsersReviews = ({ documentId, versionId }: { documentId?: s
     queryFn: async () =>
       (await documentReviewService.getOtherUsersReviews(documentId!, versionId!)).data,
     enabled: !!documentId && !!versionId,
-    refetchInterval: 5 * 60 * 1000,
   });
 }
 
