@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connected</title>
+  <link rel="stylesheet" href="/static/styles/globals.css">
+</head>
+<body>
+  <div style="text-align:center;display: flex;flex-direction: column;align-items: center; justify-content: center;min-height: 100vh;">
+    <img src="/static/images/solumada-long.png" alt="logo">
+    <h2>✅ Your Google Drive is connected</h2>
+    <ul style="list-style: none; margin-block: 2rem; text-align: left;">
+        <li>Google ID: <span><%= account.googleId %></span></li>
+        <li>Email: <a href="mailto:<%= account.email %>" style="color:cornflowerblue"><%= account.email %></a></li>
+    </ul>
+    <div class="cta">
+        <a href="/google-drive/files" class="btn">List Drive Files (test)</a>
+        <a href="/logout" class="btn">Disconnect</a>
+    </div>
+  </div>
+</body>
+</html>
