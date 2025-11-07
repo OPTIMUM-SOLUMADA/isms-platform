@@ -10,6 +10,8 @@ import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { RecentlyViewedService } from '@/services/recenltyview.service';
+import { Classification } from '@prisma/client';
+import { openDocumentInBrowser } from '@/utils/puppeteer';
 
 export class DocumentController {
     private service: DocumentService;
@@ -335,7 +337,19 @@ export class DocumentController {
 
     async publish(req: Request, res: Response) {
         try {
+            // 1- Publish document
             const document = await this.service.publishDocument(req.params.id!);
+            // 2- Check its classification and share it to anyone if Public
+            if (document.classification === Classification.PUBLIC) {
+                const gdService = useGoogleDriveService(req);
+                await gdService.makeFilePublicReadable(document.folderId!);
+                // Get current version
+                const currentVersion = document.versions.find((v) => v.isCurrent)!;
+                if (currentVersion)
+                    // open it to avoid permission error
+                    await openDocumentInBrowser(currentVersion.fileUrl!);
+            }
+
             res.json(document);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
@@ -345,6 +359,16 @@ export class DocumentController {
     async unpublish(req: Request, res: Response) {
         try {
             const document = await this.service.unpublishDocument(req.params.id!);
+            // 2- Check its classification and share it to anyone if Public
+            if (document.classification === Classification.PUBLIC) {
+                const gdService = useGoogleDriveService(req);
+                await gdService.makeFileUnreadable(document.folderId!);
+                // Get current version
+                const currentVersion = document.versions.find((v) => v.isCurrent)!;
+                if (currentVersion)
+                    // open it to avoid permission error
+                    await openDocumentInBrowser(currentVersion.fileUrl!);
+            }
             res.json(document);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });

@@ -24,9 +24,9 @@ router.get('/download/:id', controller.downloadFromGoogleDrive.bind(controller))
 // Published documents
 router.get('/published/:userId', controller.getPublishedDocumentsUserId.bind(controller));
 // publish document
-router.put('/publish/:id', controller.publish.bind(controller));
+router.put('/publish/:id', googleAuthMiddleware, controller.publish.bind(controller));
 // unpublish document
-router.put('/unpublish/:id', controller.unpublish.bind(controller));
+router.put('/unpublish/:id', googleAuthMiddleware, controller.unpublish.bind(controller));
 // create draft document
 router.get(
     '/create-draft-version/:id',

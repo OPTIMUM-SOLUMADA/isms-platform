@@ -166,7 +166,7 @@ const Table = ({
             enableSorting: true,
             header: t("document.table.columns.status"),
             cell: ({ row }) => {
-                return <span className={cn("px-1 py-0.5 rounded", documentStatusColors[row.original.status.toLowerCase()])}>
+                return <span className={cn("px-1 py-0.5 rounded text-xs", documentStatusColors[row.original.status.toLowerCase()])}>
                     {t(`common.document.status.${row.original.status.toLowerCase()}`)}
                 </span>;
             },

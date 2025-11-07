@@ -1,7 +1,7 @@
 import { LoadingButton } from '@/components/ui/loading-button';
-import { useDocument } from '@/contexts/DocumentContext';
+import { usePublishDocument } from '@/hooks/queries/useDocumentMutations';
 import { usePermissions } from '@/hooks/use-permissions';
-import { PropsWithChildren, useState } from 'react'
+import { PropsWithChildren } from 'react'
 import { useTranslation } from 'react-i18next';
 
 interface PublishDocumentProps extends PropsWithChildren {
@@ -19,26 +19,24 @@ const PublishDocument = ({
     disabled = false,
     onSuccess
 }: PublishDocumentProps) => {
-    const { publish } = useDocument();
+    const { mutate: publish, isPending } = usePublishDocument();
     const { hasActionPermission } = usePermissions();
     const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
+
 
     if (!hasActionPermission('document.publish')) return null;
 
     const handleClick = async () => {
-        try {
-            setLoading(true);
-            await publish({ id: documentId });
-            onSuccess?.();
-        } finally {
-            setLoading(false);
-        }
+        publish({ id: documentId }, {
+            onSuccess: () => {
+                onSuccess?.();
+            }
+        });
     }
 
     return (
         <LoadingButton
-            isLoading={loading}
+            isLoading={isPending}
             loadingText={loadingText}
             onClick={handleClick}
             title={t("document.actions.publish.label")}

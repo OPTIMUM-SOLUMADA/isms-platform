@@ -163,18 +163,21 @@ export const useDeleteDocument = () => {
 export const usePublishDocument = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const setDocuments = useDocumentStore((s) => s.setDocuments);
-  const docs = useDocumentStore((s) => s.documents);
-
+  // const setDocuments = useDocumentStore((s) => s.setDocuments);
+  // const docs = useDocumentStore((s) => s.documents);
+  const queryClient = useQueryClient();
   return useMutation<any, ApiAxiosError, { id: string }>({
     mutationFn: async ({ id }) => await documentService.publish(id),
-    onSuccess: (res, vars) => {
+    onSuccess: () => {
       toast({
         title: t("document.publish.toast.success.title"),
         description: t("document.publish.toast.success.description"),
         variant: "success",
       });
-      setDocuments(docs.map((d) => (d.id === vars.id ? res.data : d)));
+      // setDocuments(docs.map((d) => (d.id === vars.id ? res.data : d)));
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["document-versions"] });
+      queryClient.invalidateQueries({ queryKey: ["published-documents"] });
     },
     onError: () => {
       toast({
@@ -192,18 +195,18 @@ export const usePublishDocument = () => {
 export const useUnpublishDocument = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const setDocuments = useDocumentStore((s) => s.setDocuments);
-  const docs = useDocumentStore((s) => s.documents);
-
+  const queryClient = useQueryClient();
   return useMutation<any, ApiAxiosError, { id: string }>({
     mutationFn: async ({ id }) => await documentService.unpublish(id),
-    onSuccess: (res, vars) => {
+    onSuccess: () => {
       toast({
         title: t("document.unpublish.toast.success.title"),
         description: t("document.unpublish.toast.success.description"),
         variant: "success",
       });
-      setDocuments(docs.map((d) => (d.id === vars.id ? res.data : d)));
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["document-versions"] });
+      queryClient.invalidateQueries({ queryKey: ["published-documents"] });
     },
     onError: () => {
       toast({

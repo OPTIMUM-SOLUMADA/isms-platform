@@ -1,7 +1,7 @@
 import { LoadingButton } from '@/components/ui/loading-button';
-import { useDocument } from '@/contexts/DocumentContext';
+import { useUnpublishDocument } from '@/hooks/queries/useDocumentMutations';
 import { usePermissions } from '@/hooks/use-permissions';
-import { PropsWithChildren, useState } from 'react'
+import { PropsWithChildren } from 'react'
 import { useTranslation } from 'react-i18next';
 
 interface UnpublishDocumentProps extends PropsWithChildren {
@@ -19,26 +19,23 @@ const UnpublishDocument = ({
     disabled = false,
     onSuccess
 }: UnpublishDocumentProps) => {
-    const { unpublish } = useDocument();
+    const { mutate: unpublish, isPending } = useUnpublishDocument();
     const { hasActionPermission } = usePermissions();
     const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
 
     if (!hasActionPermission('document.unpublish')) return null;
 
     const handleClick = async () => {
-        try {
-            setLoading(true);
-            await unpublish({ id: documentId });
-            onSuccess?.();
-        } finally {
-            setLoading(false);
-        }
+        unpublish({ id: documentId }, {
+            onSuccess: () => {
+                onSuccess?.();
+            }
+        });
     }
 
     return (
         <LoadingButton
-            isLoading={loading}
+            isLoading={isPending}
             loadingText={loadingText}
             variant="outline-primary"
             onClick={handleClick}
