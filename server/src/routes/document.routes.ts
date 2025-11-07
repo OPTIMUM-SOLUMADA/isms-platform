@@ -33,5 +33,11 @@ router.get(
     googleAuthMiddleware,
     controller.createDraftDocumentVersion.bind(controller),
 );
+// Add document to recently view
+router.get('/recently-viewed/:userId', controller.getRecentlyViewed.bind(controller));
+router.post(
+    '/recently-viewed/add/:userId/:documentId',
+    controller.addDocumentToRecentView.bind(controller),
+);
 
 export default router;

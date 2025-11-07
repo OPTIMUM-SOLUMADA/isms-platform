@@ -1,6 +1,5 @@
-import CircleLoading from '@/components/loading/CircleLoading';
 import SearchInput from '@/components/SearchInput';
-import { useGetPublishedDocuments } from '@/hooks/queries/useDocumentMutations'
+import { useGetPublishedDocuments, useGetRecenltyViewedDocuments } from '@/hooks/queries/useDocumentMutations'
 import { getFileIconByName } from '@/lib/icon';
 import { PublishedDocumentTable } from '@/templates/documents/table/PublishedDocumentTable';
 import WithTitle from '@/templates/layout/WithTitle'
@@ -18,12 +17,16 @@ import { useTranslation } from 'react-i18next';
 import { Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const PublishedDocumentPage = () => {
     const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''));
     const [filterClause, setFilterClause] = useQueryState('isoClause', parseAsString.withDefault('all'));
     const { clauses } = useISOClause();
     const { data: documents, isLoading, isError, error } = useGetPublishedDocuments();
+    // get recently viewed
+    const { data: recenltyViewedDocuments, isLoading: isRecenltyViewedLoading } = useGetRecenltyViewedDocuments();
+
     const navigate = useNavigate();
 
     const { t } = useTranslation();
@@ -39,8 +42,6 @@ const PublishedDocumentPage = () => {
         });
     }, [search, filterClause, documents]);
 
-    if (isLoading) return <CircleLoading />
-
     if (isError) return <div>{error.message}</div>;
 
     return (
@@ -53,24 +54,31 @@ const PublishedDocumentPage = () => {
                         {t('publishedDocument.sections.recentlyViewed.title')}
                     </h1>
                     <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,180px),1fr))] gap-5">
-                        {documents.map((doc, index) => (
-                            <Link to={`/published-documents/view/${doc.id}`} key={index} className="space-y-3 group hover:bg-black/5 p-2">
-                                <div key={doc.id} className={cn(
+                        {isRecenltyViewedLoading && (
+                            <>
+                                <Skeleton className="aspect-video" />
+                                <Skeleton className="aspect-video" />
+                            </>
+                        )}
+                        {recenltyViewedDocuments?.map((item, index) => (
+                            <Link to={`/published-documents/view/${item.documentId}`} key={index} className="space-y-3 group hover:bg-black/5 p-2">
+                                <div key={item.id} className={cn(
                                     "p-4 aspect-video border bg-white border-gray-200 rounded-md flex items-center justify-center flex-col",
                                     "group-hover:bg-slate-50 [&>svg]:group-hover:scale-110 [&>svg]:transition-all [&>svg]:ease-linear [&>svg]:duration-300",
                                 )}>
-                                    {getFileIconByName(doc.fileUrl!, 50)}
+                                    {getFileIconByName(item.document.fileUrl!, 50)}
                                 </div>
                                 <div className="">
-                                    <h2 className="text-sm font-semibold text-black line-clamp-1">{doc.title}</h2>
-                                    <p className="text-xs text-muted-foreground line-clamp-1">{doc.description}</p>
+                                    <h2 className="text-sm font-semibold text-black line-clamp-1">{item.document?.title}</h2>
+                                    <p className="text-xs text-muted-foreground line-clamp-1">{item.document?.description}</p>
                                 </div>
                             </Link>
                         ))}
+
                         {/* Empty */}
-                        {documents.length === 0 && (
+                        {recenltyViewedDocuments?.length === 0 && (
                             <div className="space-y-3">
-                                <div className="p-4 aspect-video rounded-md flex items-center justify-center flex-col gap-">
+                                <div className="p-4 aspect-video border rounded-md flex items-center justify-center flex-col gap-">
                                     <div className="div">
                                         <p className="text-sm text-muted-foreground">
                                             {t('publishedDocument.sections.recentlyViewed.empty')}
@@ -84,7 +92,7 @@ const PublishedDocumentPage = () => {
 
                 <div className="space-y-3 grow flex flex-col">
                     <h1 className="font-normal text-xl text-black">
-                        {t('publishedDocument.sections.allDocuments.title')} ({documents.length})</h1>
+                        {t('publishedDocument.sections.allDocuments.title')} ({documents?.length})</h1>
                     {/* Filter */}
                     <div className="flex items-center justify-between">
                         <SearchInput
@@ -115,6 +123,7 @@ const PublishedDocumentPage = () => {
                     <PublishedDocumentTable
                         data={filteredDocuments}
                         onView={(doc) => navigate(`/published-documents/view/${doc.id}`)}
+                        isLoading={isLoading}
                     />
                 </div>
             </div>

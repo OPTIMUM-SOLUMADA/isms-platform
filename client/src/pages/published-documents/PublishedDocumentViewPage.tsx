@@ -1,4 +1,4 @@
-import { useGetDocument } from '@/hooks/queries/useDocumentMutations'
+import { useAddDocumentToRecenltyViewed, useGetDocument } from '@/hooks/queries/useDocumentMutations'
 import { useParams } from 'react-router-dom';
 import ItemNotFound from '../ItemNotFound';
 import CircleLoading from '@/components/loading/CircleLoading';
@@ -6,6 +6,7 @@ import WithTitle from '@/templates/layout/WithTitle';
 import DocumentPreview from '@/templates/documents/tabs/DocumentPreview';
 import BackButton from '@/components/BackButton';
 import DownloadDocument from '@/templates/documents/actions/DownloadDocument';
+import { useEffect } from 'react';
 
 const PublishedDocumentViewPage = () => {
 
@@ -15,6 +16,14 @@ const PublishedDocumentViewPage = () => {
         isLoading,
         isError
     } = useGetDocument(documentId);
+
+    const { mutate: addToRecenlyViewed } = useAddDocumentToRecenltyViewed();
+
+    useEffect(() => {
+        if (documentId) {
+            addToRecenlyViewed({ documentId });
+        }
+    }, [documentId, addToRecenlyViewed]);
 
     const currentVersion = document?.versions?.find(v => v.isCurrent);
 

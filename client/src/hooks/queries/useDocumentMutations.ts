@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { documentService } from "@/services/documentService";
-import type { Document, DocumentVersion } from "@/types";
+import type { Document, DocumentVersion, RecentlyViewedDocument } from "@/types";
 import type { ApiAxiosError } from "@/types/api";
 import { AddDocumentFormData } from "@/templates/documents/forms/AddDocumentForm";
 import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
@@ -262,5 +262,29 @@ export const useGetPublishedDocuments = () => {
     queryKey: ["published-documents"],
     queryFn: async () => (await documentService.getPublished(user.id)).data,
     staleTime: 1000 * 60 * 3,
+  });
+}
+
+// Recently viewed documents
+export const useGetRecenltyViewedDocuments = () => {
+  const { user } = useAuth();
+  return useQuery<RecentlyViewedDocument[], ApiAxiosError>({
+    queryKey: ["recenly-viewed-documents"],
+    queryFn: async () => (await documentService.getRecenlyViewed(user.id)).data,
+    staleTime: 1000 * 60 * 3,
+  });
+}
+
+export const useAddDocumentToRecenltyViewed = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation<any, ApiAxiosError, { documentId: string }>({
+    mutationFn: async ({ documentId }) => await documentService.addToRecenlyViewed(user.id, documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recenly-viewed-documents"] });
+    },
+    onError: () => {
+      console.error("Failed to add document to recenly viewed");
+    },
   });
 }
