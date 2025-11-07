@@ -10,41 +10,42 @@ import {
     FileText,
 } from "lucide-react";
 
-export function getFileIconByName(fileName: string) {
+export function getFileIconByName(fileName: string, size?: number) {
     const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
+    const iconSize = size || 22;
 
     if (["mp4", "avi", "mkv", "mov"].includes(extension)) {
-        return <FileVideoIcon />;
+        return <FileVideoIcon size={iconSize}/>;
     }
 
     if (["mp3", "wav", "ogg", "flac"].includes(extension)) {
-        return <FileAudioIcon />;
+        return <FileAudioIcon size={iconSize}/>;
     }
 
     if (["txt", "md", "rtf", "pdf"].includes(extension)) {
-        return <FileTextIcon className="text-theme-danger" />;
+        return <FileTextIcon className="text-theme-danger" size={iconSize}/>;
     }
 
     if (["html", "css", "js", "jsx", "ts", "tsx", "json", "xml", "php", "py", "rb", "java", "c", "cpp", "cs"].includes(extension)) {
-        return <FileCodeIcon />;
+        return <FileCodeIcon size={iconSize}/>;
     }
 
     if (["zip", "rar", "7z", "tar", "gz", "bz2"].includes(extension)) {
-        return <FileArchiveIcon />;
+        return <FileArchiveIcon size={iconSize}/>;
     }
 
     if (["xls", "xlsx"].includes(extension)) {
-        return <FileSpreadsheet className="text-theme" />; // Excel icon placeholder
+        return <FileSpreadsheet className="text-theme" size={iconSize}/>; // Excel icon placeholder
     }
 
     if (["doc", "docx"].includes(extension)) {
-        return <FileText className="text-theme-2" />; // Word icon placeholder
+        return <FileText className="text-theme-2" size={iconSize}/>; // Word icon placeholder
     }
 
     if (["ppt", "pptx"].includes(extension)) {
-        return <FileIcon className="text-orange-600" />; // PowerPoint icon placeholder
+        return <FileIcon className="text-orange-600" size={iconSize}/>; // PowerPoint icon placeholder
     }
 
     // default fallback
-    return <FileCogIcon />;
+    return <FileCogIcon size={iconSize}/>;
 }

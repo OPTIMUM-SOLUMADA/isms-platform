@@ -1058,6 +1058,7 @@
         "status": "Status",
         "owner": "Owner",
         "version": "Version",
+        "classification": "Classification",
         "nextReview": "Next review",
         "reviewDue": "Review date",
         "reviewFrequency": "Review frequency",
@@ -1677,6 +1678,51 @@
     "actions": {
       "add": {
         "label": "Add a role"
+      }
+    }
+  },
+  "publishedDocument": {
+    "title": "Published Document",
+    "subtitle": "Explore the documents published on the platform",
+    "sections": {
+      "recentlyViewed": {
+        "title": "Recently Viewed Documents",
+        "empty": "No viewed documents"
+      },
+      "allDocuments": {
+        "title": "All Documents",
+        "empty": "No documents",
+        "filters": {
+          "search": {
+            "label": "Search",
+            "placeholder": "Search for a document..."
+          }
+        },
+        "table": {
+          "title": "Document List",
+          "columns": {
+            "document": "Document",
+            "version": "Version",
+            "type": "Type",
+            "classification": "Classification",
+            "isoClause": "Clause/Control Number",
+            "publishedBy": "Published by",
+            "publishedAt": "Published on",
+            "actions": "Actions"
+          },
+          "actions": {
+            "view": {
+              "label": "View"
+            },
+            "download": {
+              "label": "Download"
+            }
+          },
+          "empty": {
+            "title": "No documents",
+            "message": "Try adjusting the filters"
+          }
+        }
       }
     }
   },

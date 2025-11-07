@@ -25,7 +25,8 @@ import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
 import ReviewApprovalPage from "@/pages/reviews/ReviewApprovalPage";
 import PendingReviewsDashboardPage from "@/pages/reviews/PendingReviewsDashboardPage";
 import PatchDocumentVersionPage from "@/pages/reviews/PatchDocumentVersionPage";
-import PublishedDocumentPage from "@/pages/documents/PublishedDocumentPage";
+import PublishedDocumentPage from "@/pages/published-documents/PublishedDocumentPage";
+import PublishedDocumentViewPage from "@/pages/published-documents/PublishedDocumentViewPage";
 
 // Lazy load pages
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
@@ -195,7 +196,10 @@ const routeConfig: AppRoute[] = [
             {
                 path: "published-documents",
                 permission: "published-document.page.access",
-                children: [{ index: true, element: <PublishedDocumentPage /> }],
+                children: [
+                    { index: true, element: <PublishedDocumentPage /> },
+                    { path: "view/:documentId", element: <PublishedDocumentViewPage /> },
+                ],
             },
             // Special pages
             { path: "unauthorized", element: <UnauthorizedPage /> },

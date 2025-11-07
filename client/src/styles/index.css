@@ -95,10 +95,10 @@ a:hover {
 
 @layer utilities {
   .page-title {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-bold line-clamp-1 max-w-lg;
   }
   .page-description {
-    @apply text-sm text-muted-foreground font-normal;
+    @apply text-sm text-muted-foreground font-normal line-clamp-1 max-w-md;
   }
 }
 

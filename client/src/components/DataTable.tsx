@@ -275,10 +275,12 @@ export function DataTable<TData, TValue>({
 
                 <div className="mt-4 flex items-center justify-between gap-2">
                     <div className="text-sm text-muted-foreground">
-                        {t("components.table.selection.selected", {
-                            count: table.getFilteredSelectedRowModel().rows.length,
-                            total: table.getFilteredRowModel().rows.length,
-                        })}
+                        {enableRowSelection && (
+                            t("components.table.selection.selected", {
+                                count: table.getFilteredSelectedRowModel().rows.length,
+                                total: table.getFilteredRowModel().rows.length,
+                            })
+                        )}
                     </div>
                     {page !== undefined && totalCount !== undefined && onPageChange && (
                         <Pagination

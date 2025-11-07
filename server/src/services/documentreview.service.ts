@@ -437,7 +437,7 @@ export class DocumentReviewService {
                     reviewerId: userId,
                     isCompleted: false,
                     decision: { isSet: false },
-                    dueDate: { gte: now },
+                    OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: now } }],
                 },
             }),
 

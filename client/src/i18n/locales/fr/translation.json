@@ -1035,6 +1035,7 @@
                 "status": "Statut",
                 "owner": "Propriétaire",
                 "version": "Version",
+                "classification": "Classification",
                 "nextReview": "Prochaine révision",
                 "reviewDue": "Date de révision",
                 "reviewFrequency": "Fréquence de révision",
@@ -1666,6 +1667,51 @@
         "actions": {
             "add": {
                 "label": "Ajouter un rôle"
+            }
+        }
+    },
+    "publishedDocument": {
+        "title": "Document publié",
+        "subtitle": "Découvrez les documents publiés sur la plateforme",
+        "sections": {
+            "recentlyViewed": {
+                "title": "Derniers documents vues",
+                "empty": "Aucun document vu"
+            },
+            "allDocuments": {
+                "title": "Tous les documents",
+                "empty": "Aucun document",
+                "filters": {
+                    "search": {
+                        "label": "Rechercher",
+                        "placeholder": "Rechercher un document..."
+                    }
+                },
+                "table": {
+                    "title": "Liste des documents",
+                    "columns": {
+                        "document": "Document",
+                        "version": "Version",
+                        "type": "Type",
+                        "classification": "Classification",
+                        "isoClause": "Clause/Numéro de contrôle",
+                        "publishedBy": "Publié par",
+                        "publishedAt": "Publié le",
+                        "actions": "Actions"
+                    },
+                    "actions": {
+                        "view": {
+                            "label": "Voir"
+                        },
+                        "download": {
+                            "label": "Telecharger"
+                        }
+                    },
+                    "empty": {
+                        "title": "Aucun document",
+                        "message": "Essaiez de modifier les filtres"
+                    }
+                }
             }
         }
     },

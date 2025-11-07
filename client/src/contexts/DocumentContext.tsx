@@ -280,6 +280,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "success",
             });
             setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
+            queryClient.invalidateQueries({ queryKey: ["published-documents"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
