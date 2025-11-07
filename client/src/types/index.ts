@@ -296,3 +296,13 @@ export type DepartmentRoleDocument = {
   document: Document;
   departmentRole: DepartmentRole;
 }
+
+export type RecentlyViewedDocument = {
+  id: string;
+  userId: string;
+  documentId: string;
+  viewedAt: Date;
+
+  document: Document;
+  user: User;
+}

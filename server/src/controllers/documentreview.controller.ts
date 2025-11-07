@@ -147,7 +147,7 @@ export class DocumentReviewController {
                     ...(status === 'PENDING' && {
                         isCompleted: false,
                         decision: { isSet: false },
-                        dueDate: { gte: new Date() },
+                        OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: new Date() } }],
                     }),
                     ...(status === 'EXPIRED' && {
                         isCompleted: false,

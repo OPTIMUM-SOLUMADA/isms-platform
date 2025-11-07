@@ -46,6 +46,10 @@ export const API_CONFIG = {
       CREATE_DRAFT_VERSION: (id: string | number) =>
         `/api/documents/create-draft-version/${id}`,
       GET_PUBLISHED: (id: string | number) => `/api/documents/published/${id}`,
+      ADD_TO_RECENTLY_VIEWED: (userId: string | number, documentId: string) =>
+        `/api/documents/recently-viewed/add/${userId}/${documentId}`,
+      GET_RECENTLY_VIEWED: (userId: string | number) =>
+        `/api/documents/recently-viewed/${userId}`,
     },
     REVIEWS: {
       BASE: "/api/document-reviews",

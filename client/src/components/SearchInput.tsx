@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 interface SearchInputProps {
     placeholder?: string;
     value?: string;
-    onValueChange: (value: string) => void;
+    onValueChange?: (value: string) => void;
 }
 const SearchInput = ({
     placeholder = "",
@@ -25,7 +25,7 @@ const SearchInput = ({
             <Input
                 placeholder={placeholder}
                 value={searchTerm}
-                onChange={(e) => onValueChange(e.target.value)}
+                onChange={(e) => onValueChange?.(e.target.value)}
                 className="pl-10"
             />
         </div>

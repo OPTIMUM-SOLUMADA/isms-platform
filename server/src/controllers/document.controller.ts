@@ -9,18 +9,21 @@ import { readFileSync } from 'fs';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
+import { RecentlyViewedService } from '@/services/recenltyview.service';
 
 export class DocumentController {
     private service: DocumentService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
+    private recenltyViewed: RecentlyViewedService;
 
     constructor() {
         this.service = new DocumentService();
         this.departmentRoleDocument = new DepartmentRoleDocumentService();
         this.versionService = new DocumentVersionService();
         this.reviewService = new DocumentReviewService();
+        this.recenltyViewed = new RecentlyViewedService();
     }
 
     async create(req: Request, res: Response) {
@@ -426,6 +429,27 @@ export class DocumentController {
         try {
             const { userId } = req.params;
             const document = await this.service.getPublishedDocumentsByUserId(userId!);
+            res.json(document);
+        } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    // Add document to recent view
+    async addDocumentToRecentView(req: Request, res: Response) {
+        try {
+            const { documentId, userId } = req.params;
+            const document = await this.recenltyViewed.markDocumentAsViewed(userId!, documentId!);
+            res.json(document);
+        } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    async getRecentlyViewed(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const document = await this.recenltyViewed.getByUser(userId!);
             res.json(document);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });

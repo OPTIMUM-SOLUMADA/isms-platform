@@ -101,12 +101,13 @@ model User {
   createdVersions         DocumentVersion[]  @relation("VersionCreatedByUser")
 
   // Reverse relations: must break referential action cycles
-  createdUsers           User[]           @relation("CreatedUsers")
-  invitationsSent        Invitation[]     @relation("InvitationsSent")
-  createdDocumentTypes   DocumentType[]   @relation("CreatedDocumentTypes")
-  createdDepartments     Department[]     @relation("CreatedDepartments")
-  createdDepartmentRoles DepartmentRole[] @relation("DepartmentRolesCreated")
-  createdISOClauses      ISOClause[]      @relation("CreatedISOClauses")
+  createdUsers           User[]                   @relation("CreatedUsers")
+  invitationsSent        Invitation[]             @relation("InvitationsSent")
+  createdDocumentTypes   DocumentType[]           @relation("CreatedDocumentTypes")
+  createdDepartments     Department[]             @relation("CreatedDepartments")
+  createdDepartmentRoles DepartmentRole[]         @relation("DepartmentRolesCreated")
+  createdISOClauses      ISOClause[]              @relation("CreatedISOClauses")
+  recentlyViews          RecentlyViewedDocument[]
 
   @@index([email, isActive])
   @@index([role])
@@ -240,7 +241,8 @@ model Document {
   auditlogs     AuditLog[]
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
 
-  authors DocumentAuthor[] @relation("DocumentAuthorDocument")
+  authors       DocumentAuthor[]         @relation("DocumentAuthorDocument")
+  recentlyViews RecentlyViewedDocument[]
 
   @@index([title])
   @@map("documents")
@@ -454,4 +456,16 @@ model GoogleAccount {
   createdAt DateTime @default(now())
 
   @@map("google_accounts")
+}
+
+model RecentlyViewedDocument {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  viewedAt   DateTime @default(now())
+  documentId String   @db.ObjectId
+  userId     String   @db.ObjectId
+
+  document Document @relation(fields: [documentId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@map("recently_viewed_documents")
 }

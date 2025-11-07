@@ -31,4 +31,6 @@ export const documentService = {
     unpublish: async (id: string) => axios.put(docApi.UNPUBLISH(id)),
     createDraftVersion: async (id: string) => axios.get(docApi.CREATE_DRAFT_VERSION(id)),
     getPublished: async (userId: string) => axios.get(docApi.GET_PUBLISHED(userId)),
+    addToRecenlyViewed: async (userId: string, documentId: string) => axios.post(docApi.ADD_TO_RECENTLY_VIEWED(userId, documentId)),
+    getRecenlyViewed: async (userId: string) => axios.get(docApi.GET_RECENTLY_VIEWED(userId)),
 };
