@@ -551,19 +551,23 @@ export class DocumentReviewService {
             orgName: env.ORG_NAME,
         });
 
-        await emailService.sendMail({
-            subject: `ISMS Solumada - Review Reminder (${document.title})`,
-            to: reviewer.email,
-            html,
-        });
+        try {
+            await emailService.sendMail({
+                subject: `ISMS Solumada - Review Reminder (${document.title})`,
+                to: reviewer.email,
+                html,
+            });
 
-        await prisma.documentReview.update({
-            where: { id: review.id },
-            data: {
-                notifiedAt: new Date(),
-                isNotified: true,
-            },
-        });
+            await prisma.documentReview.update({
+                where: { id: review.id },
+                data: {
+                    notifiedAt: new Date(),
+                    isNotified: true,
+                },
+            });
+        } catch (err) {
+            console.log('Unable to send emails', err);
+        }
     }
 
     async getActiveReviews() {
