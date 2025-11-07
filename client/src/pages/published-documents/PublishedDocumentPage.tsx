@@ -60,8 +60,8 @@ const PublishedDocumentPage = () => {
                                 <Skeleton className="aspect-video" />
                             </>
                         )}
-                        {recenltyViewedDocuments?.map((item, index) => (
-                            <Link to={`/published-documents/view/${item.documentId}`} key={index} className="space-y-3 group hover:bg-black/5 p-2">
+                        {recenltyViewedDocuments?.map((item) => (
+                            <Link to={`/published-documents/view/${item.documentId}`} key={item.id} className="space-y-3 group hover:bg-black/5 p-2">
                                 <div key={item.id} className={cn(
                                     "p-4 aspect-video border bg-white border-gray-200 rounded-md flex items-center justify-center flex-col",
                                     "group-hover:bg-slate-50 [&>svg]:group-hover:scale-110 [&>svg]:transition-all [&>svg]:ease-linear [&>svg]:duration-300",
