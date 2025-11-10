@@ -2,21 +2,6 @@ import prisma from '@/database/prisma';
 import { AuditEventType, Prisma } from '@prisma/client';
 
 /**
- * Payload for creating an audit log
- */
-export interface CreateAuditLogParams {
-    userId?: string;
-    documentId?: string;
-    organizationId?: string;
-    eventType: AuditEventType;
-    details?: Prisma.InputJsonValue;
-    ipAddress?: string;
-    userAgent?: string;
-    status?: 'SUCCESS' | 'FAILED';
-    sessionId?: string;
-}
-
-/**
  * Service handling creation and retrieval of audit logs
  */
 export class AuditService {
@@ -56,7 +41,6 @@ export class AuditService {
             },
             include: {
                 user: { select: { id: true, name: true, email: true } },
-                document: { select: { id: true, title: true } },
             },
             orderBy: { timestamp: 'desc' },
             skip,
@@ -69,7 +53,6 @@ export class AuditService {
      */
     static async findByDocument(documentId: string, limit = 50) {
         return prisma.auditLog.findMany({
-            where: { documentId },
             orderBy: { timestamp: 'desc' },
             take: limit,
         });

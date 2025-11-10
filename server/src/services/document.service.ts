@@ -18,7 +18,6 @@ export class DocumentService {
         this.documentAuthorService = new DocumentAuthorService();
         this.documentInclude = {
             approvals: true,
-            auditlogs: true,
             isoClause: true,
             reviews: true,
             versions: true,
