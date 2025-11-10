@@ -20,6 +20,7 @@ import { env } from '@/configs/env';
 import { UPLOAD_PATH, UPLOAD_URL } from '@/configs/upload';
 import { PUBLIC_PATH, VIEWS_PATH } from '@/configs/public';
 import { sessionMiddleware } from '@/configs/session.config';
+import { auditLogMiddleware } from './middlewares/auditlog.middleware';
 
 const app = express();
 
@@ -52,6 +53,9 @@ app.use(UPLOAD_URL, express.static(UPLOAD_PATH));
 
 app.use(cookieParser());
 app.set('trust proxy', true);
+
+// Audit middleware
+app.use(auditLogMiddleware);
 
 // Pages
 app.use('/', pageRoutes);

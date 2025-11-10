@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.app.json && tsc-alias",
     "build:app": "rimraf build && tsc -p tsconfig.app.json && tsc-alias",
     "start": "node build/server.js",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --files src/server.ts",
     "postinstall": "prisma generate",
     "lint": "eslint \"src/**/*.ts\" --fix"
   },
@@ -69,6 +69,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.9.2",
     "@types/nodemailer": "^6.4.17",
+    "@types/passport": "^1.0.17",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "eslint": "^9.34.0",

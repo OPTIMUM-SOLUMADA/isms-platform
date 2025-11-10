@@ -238,7 +238,6 @@ model Document {
   reviews       DocumentReview[]
   approvals     DocumentApproval[]
   notifications Notification[]
-  auditlogs     AuditLog[]
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
 
   authors       DocumentAuthor[]         @relation("DocumentAuthorDocument")
@@ -407,16 +406,28 @@ model Notification {
 // ===========================================================================================
 
 enum AuditEventType {
+  // Auth
+  AUTH_LOGIN
+  AUTH_LOGOUT
   // Document
-  DOCUMENT_UPLOAD
   DOCUMENT_UPDATE
+  DOCUMENT_EDIT
+  DOCUMENT_CREATE
+  // Document version
   DOCUMENT_VERSION_CREATED
+  DOCUMENT_VERSION_APPROVED
+  DOCUMENT_VERSION_REJECTED
+
   DOCUMENT_STATUS_CHANGE
   DOCUMENT_REVIEW_SUBMITTED
   // User
-  USER_ROLE_CHANGE
+  USER_UPDATE
   USER_ADD
   USER_DELETE
+  // Departement
+  DEPARTMENT_CREATE
+  DEPARTMENT_UPDATE
+  DEPARTMENT_DELETE
   // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux
@@ -427,22 +438,34 @@ enum AuditStatus {
   FAILED
 }
 
+enum AuditTargetType {
+  DOCUMENT
+  USER
+  DEPARTMENT
+  VERSION
+  REVIEW
+  APPROVAL
+}
+
+type AuditTarget {
+  id   String          @db.ObjectId
+  type AuditTargetType
+}
+
 model AuditLog {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String?        @db.ObjectId
-  eventType  AuditEventType
-  documentId String?        @db.ObjectId
-  details    Json?
-  ipAddress  String?
-  userAgent  String?
-  status     AuditStatus    @default(SUCCESS)
-  sessionId  String?
-  timestamp  DateTime       @default(now())
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?        @db.ObjectId
+  eventType AuditEventType
+  details   Json?
+  targets   AuditTarget[]
+  ipAddress String?
+  userAgent String?
+  status    AuditStatus    @default(SUCCESS)
+  sessionId String?
+  timestamp DateTime       @default(now())
+  user      User?          @relation(fields: [userId], references: [id])
 
-  user     User?     @relation(fields: [userId], references: [id])
-  document Document? @relation(fields: [documentId], references: [id])
-
-  @@index([userId, documentId, eventType, timestamp])
+  @@index([userId, eventType, timestamp])
   @@map("audit_logs")
 }
 
