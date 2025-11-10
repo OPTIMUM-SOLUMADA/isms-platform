@@ -6,7 +6,7 @@ const googleAccountService = new GoogleAccountService();
 export class PageController {
     async index(req: Request, res: Response) {
         const account = await googleAccountService.getLast();
-        if (!account) {
+        if (!account || account?.isLoggedIn === false) {
             return res.render('auth/google-login');
         }
 
@@ -15,7 +15,11 @@ export class PageController {
 
     async logout(req: Request, res: Response) {
         try {
-            await googleAccountService.deleteAll();
+            const account = await googleAccountService.getLast();
+            if (!account) {
+                return res.status(404).json({ error: 'Account not found' });
+            }
+            await googleAccountService.update(account.id, { isLoggedIn: false, tokens: {} });
             return res.redirect('/');
         } catch (error) {
             console.error(error);

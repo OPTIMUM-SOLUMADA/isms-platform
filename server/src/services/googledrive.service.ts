@@ -235,6 +235,10 @@ export class GoogleDriveService implements IGoogleDriveService {
         await this.createPermission(fileId, { role: 'reader', type: 'anyone' });
     }
 
+    async makeFileUnreadable(fileId: string) {
+        await this.drive.permissions.delete({ fileId, permissionId: 'anyone' });
+    }
+
     // ---------------------------
     // Folder helpers
     // ---------------------------

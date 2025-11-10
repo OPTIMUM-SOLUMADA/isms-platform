@@ -126,8 +126,8 @@ const FinalDocumentApprovalDialog = ({
                                     </p>
                                 </div>
                                 <ScrollArea className="scroll-p-6">
-                                    {filteredOtherReviews.map((review, index) => (
-                                        <Item review={review} key={index} />
+                                    {filteredOtherReviews.map((review) => (
+                                        <Item review={review} key={review.id} />
                                     ))}
                                 </ScrollArea>
                             </>

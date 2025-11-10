@@ -3,7 +3,7 @@ import prisma from '@/database/prisma';
 export class RecentlyViewedService {
     async getByUser(userId: string) {
         return prisma.recentlyViewedDocument.findMany({
-            where: { userId },
+            where: { userId, document: { published: true } },
             orderBy: { viewedAt: 'desc' },
             include: { document: true },
         });

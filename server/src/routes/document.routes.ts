@@ -20,13 +20,17 @@ router.get('/:id', controller.getById.bind(controller));
 router.put('/:id', googleAuthMiddleware, uploadSingleDocument, controller.update.bind(controller));
 router.delete('/:id', googleAuthMiddleware, controller.delete.bind(controller));
 router.get('/', controller.list.bind(controller));
-router.get('/download/:id', controller.downloadFromGoogleDrive.bind(controller));
+router.get(
+    '/download/:id',
+    googleAuthMiddleware,
+    controller.downloadFromGoogleDrive.bind(controller),
+);
 // Published documents
 router.get('/published/:userId', controller.getPublishedDocumentsUserId.bind(controller));
 // publish document
-router.put('/publish/:id', controller.publish.bind(controller));
+router.put('/publish/:id', googleAuthMiddleware, controller.publish.bind(controller));
 // unpublish document
-router.put('/unpublish/:id', controller.unpublish.bind(controller));
+router.put('/unpublish/:id', googleAuthMiddleware, controller.unpublish.bind(controller));
 // create draft document
 router.get(
     '/create-draft-version/:id',
