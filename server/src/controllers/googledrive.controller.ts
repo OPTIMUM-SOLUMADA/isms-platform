@@ -39,14 +39,17 @@ export class GoogleDriveController {
             const driveService = new GoogleDriveService(tokens);
 
             // get Account if exists
-            const existingAccount = await gAccountService.getLast();
+            const existingAccount = await gAccountService.getFirst();
 
             let workingDirId = '';
+
+            console.log(existingAccount);
 
             if (existingAccount) {
                 // Find working directory if exists
                 const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
                 workingDirId = workingDir?.id || '';
+                console.log('workingDirId', workingDir);
             } else {
                 // Create working directory
                 const workingDir = await driveService.createFolder(

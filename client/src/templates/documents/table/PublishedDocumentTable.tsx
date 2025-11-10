@@ -121,6 +121,7 @@ const Table = ({
                             variant="default"
                             size="sm"
                             className="mr-2"
+                            onClick={() => onView?.(doc)}
                         >
                             <EyeIcon className="h-4 w-4 mr-2" />
                             View document
