@@ -12,10 +12,10 @@ export const googleAuthMiddleware = async (req: Request, res: Response, next: Ne
 
         // Create OAuth client
         if (req.session) {
-            (req.session as any).user = {
+            req.session.gooleAccount = {
                 email: account.email,
                 googleId: account.googleId,
-                tokens: account.tokens,
+                tokens: account.tokens as any,
                 workingDirId: account.workingDirId,
             };
         }

@@ -43,13 +43,10 @@ export class GoogleDriveController {
 
             let workingDirId = '';
 
-            console.log(existingAccount);
-
             if (existingAccount) {
                 // Find working directory if exists
                 const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
                 workingDirId = workingDir?.id || '';
-                console.log('workingDirId', workingDir);
             } else {
                 // Create working directory
                 const workingDir = await driveService.createFolder(
@@ -74,7 +71,7 @@ export class GoogleDriveController {
 
     static async listDriveFiles(req: Request, res: Response) {
         try {
-            const user = (req.session as any)?.user;
+            const user = req.session?.gooleAccount;
             if (!user) return res.status(401).json({ error: 'Not authenticated' });
 
             const driveService = new GoogleDriveService(user.tokens);

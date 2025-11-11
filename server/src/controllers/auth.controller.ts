@@ -178,7 +178,6 @@ export class AuthController {
     changePassword = async (req: Request, res: Response) => {
         const { resetToken, password } = req.body;
         try {
-            console.log(resetToken);
             const decoded = await jwtService.verifyPasswordResetToken(resetToken);
 
             // find user

@@ -12,7 +12,6 @@ declare global {
     namespace Express {
         interface Request {
             user?: User;
-            session: any;
             log: (data: LogPayload) => Promise<void>;
         }
     }
