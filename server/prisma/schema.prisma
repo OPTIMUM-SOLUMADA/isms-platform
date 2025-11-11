@@ -435,7 +435,7 @@ enum AuditEventType {
 
 enum AuditStatus {
   SUCCESS
-  FAILED
+  FAILURE
 }
 
 enum AuditTargetType {

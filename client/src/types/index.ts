@@ -151,17 +151,32 @@ export type DocumentApproval = {
   approver?: User;
 };
 
+export type AuditTargetType =
+  | 'DOCUMENT'
+  | 'USER'
+  | 'DEPARTMENT'
+  | 'VERSION'
+  | 'REVIEW'
+  | 'APPROVAL';
+export type AuditStatus = 'SUCCESS' | 'FAILED';
+
+export type AuditTarget = {
+  id: string;
+  type: AuditTargetType;
+}
+
 export type AuditLog = {
   id: string;
   userId?: string | null;
   eventType: AuditEventType;
-  documentId?: string | null;
   details?: Record<string, any> | null; // Json en Prisma => Record<string, any>
   timestamp: Date;
+  targets: AuditTarget[];
+  status: AuditStatus;
+  ipAddress?: string;
 
   // Relations
   user?: User | null;
-  document?: Document | null;
 };
 export type AuditEventType =
   | "DOCUMENT_UPLOAD"

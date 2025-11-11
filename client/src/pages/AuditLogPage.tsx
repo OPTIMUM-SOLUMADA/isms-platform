@@ -34,6 +34,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { auditEntries } from '@/mocks/audit';
 import { resourceTypeColors, statusColors } from '@/constants/color';
 import WithTitle from '@/templates/layout/WithTitle';
+import { useFetchAudits } from '@/hooks/queries/useAuditMutation';
+import { AuditTable } from '@/templates/audits/AuditTable';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 const actionIcons = {
   'Document Approved': CheckCircle,
@@ -51,6 +54,9 @@ const actionIcons = {
 };
 
 export default function AuditLogPage() {
+
+  const { data, isLoading, isError } = useFetchAudits()
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
   const [filterResourceType, setFilterResourceType] = useState('all');
@@ -90,6 +96,8 @@ export default function AuditLogPage() {
 
   const uniqueUsers = [...new Set(auditEntries.map(entry => entry.user))];
   const uniqueActions = [...new Set(auditEntries.map(entry => entry.action))];
+
+  console.log(data, isLoading, isError);
 
   return (
     <WithTitle title="Audit Log">
@@ -228,10 +236,20 @@ export default function AuditLogPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                <DateRangePicker
+                  onUpdate={(values) => console.log(values)}
+                  initialDateFrom="2023-01-01"
+                  initialDateTo="2023-12-31"
+                  align="start"
+                  locale="en-GB"
+                  showCompare={false}
+                />
               </div>
             </div>
           </CardContent>
         </Card>
+
+        <AuditTable data={data} isLoading={isLoading} />
 
         {/* Audit Entries */}
         <Card>

@@ -126,6 +126,10 @@ export const API_CONFIG = {
       GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
         `/api/google-drive/grant-permissions/${id}`,
     },
+    AUDIT: {
+      BASE: "/api/audits",
+      GET: (id: string | number) => `/api/audits/${id}`,
+    },
   },
 } as const;
 
