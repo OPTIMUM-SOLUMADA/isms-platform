@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { VersionController } from '@/controllers/version.controller';
-import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { googleAuthMiddleware } from '@/middlewares/google-auth.middleware';
 
 const router = Router();
 const controller = new VersionController();

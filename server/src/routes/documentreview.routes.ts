@@ -4,9 +4,9 @@ import {
     documentReviewMakeDecisionSchema,
     documentReviewUpdateSchema,
 } from '@/validators/documentreview.validator';
-import { validate } from '@/middlewares/validate';
+import { validate } from '@/middlewares/validate.middleware';
 import { DocumentReviewController } from '@/controllers/documentreview.controller';
-import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { googleAuthMiddleware } from '@/middlewares/google-auth.middleware';
 import { markAsCompletedSchema } from '@/validators/approval.validator';
 
 const router = Router();

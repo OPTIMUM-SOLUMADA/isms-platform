@@ -1,9 +1,9 @@
 import express from 'express';
 import { DocumentController } from '@/controllers/document.controller';
-import { validate } from '@/middlewares/validate';
+import { validate } from '@/middlewares/validate.middleware';
 import { documentCreateSchema } from '@/validators/document.validator';
-import { uploadSingleDocument } from '@/middlewares/upload-document';
-import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { uploadSingleDocument } from '@/middlewares/upload-document.middleware';
+import { googleAuthMiddleware } from '@/middlewares/google-auth.middleware';
 
 const router = express.Router();
 const controller = new DocumentController();

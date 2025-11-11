@@ -1,6 +1,6 @@
 import express from 'express';
 import { DepartmentController } from '@/controllers/department.controller';
-import { validate } from '@/middlewares/validate';
+import { validate } from '@/middlewares/validate.middleware';
 import { departmentCreateSchema } from '@/validators/department.validator';
 
 const router = express.Router();

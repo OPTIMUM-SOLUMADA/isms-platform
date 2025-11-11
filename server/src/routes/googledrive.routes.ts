@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { GoogleDriveController } from '@/controllers/googledrive.controller';
-import { googleAuthMiddleware } from '@/middlewares/google-auth';
+import { googleAuthMiddleware } from '@/middlewares/google-auth.middleware';
 
 const router = Router();
 
