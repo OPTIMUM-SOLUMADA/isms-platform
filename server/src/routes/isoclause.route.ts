@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ISOClauseController } from '@/controllers/isoclause.controller';
 import { isoClauseCreateSchema, isoClauseUpdateSchema } from '@/validators/isoclause.validator';
-import { validate } from '@/middlewares/validate';
+import { validate } from '@/middlewares/validate.middleware';
 
 const router = Router();
 const controller = new ISOClauseController();

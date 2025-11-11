@@ -7,6 +7,7 @@ import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import { hashPassword } from '@/utils/password';
 import jwt from 'jsonwebtoken';
+import { AuditEventType, AuditTargetType } from '@prisma/client';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -38,6 +39,22 @@ export class AuthController {
             // generate token
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
+
+            // Audit log for login
+            await req.log({
+                event: AuditEventType.AUTH_LOGIN,
+                details: {
+                    email: user.email,
+                    role: user.role,
+                    rememberMe,
+                },
+                targets: [
+                    {
+                        type: AuditTargetType.USER,
+                        id: user.id,
+                    },
+                ],
+            });
 
             // set cookie and header, then send json response
             res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
@@ -178,7 +195,6 @@ export class AuthController {
     changePassword = async (req: Request, res: Response) => {
         const { resetToken, password } = req.body;
         try {
-            console.log(resetToken);
             const decoded = await jwtService.verifyPasswordResetToken(resetToken);
 
             // find user

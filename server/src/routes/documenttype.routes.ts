@@ -4,7 +4,7 @@ import {
     documentTypeCreateSchema,
     documentTypeUpdateSchema,
 } from '@/validators/documenttype.validator';
-import { validate } from '@/middlewares/validate';
+import { validate } from '@/middlewares/validate.middleware';
 
 const router = Router();
 const controller = new DocumentTypeController();

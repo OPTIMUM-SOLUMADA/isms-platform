@@ -456,7 +456,7 @@ model AuditLog {
   id        String         @id @default(auto()) @map("_id") @db.ObjectId
   userId    String?        @db.ObjectId
   eventType AuditEventType
-  details   Json?
+  details   Json?          @default("{}")
   targets   AuditTarget[]
   ipAddress String?
   userAgent String?
@@ -473,7 +473,7 @@ model GoogleAccount {
   id           String  @id @default(auto()) @map("_id") @db.ObjectId
   email        String  @unique
   googleId     String
-  tokens       Json
+  tokens       Json    @default("{}")
   workingDirId String
   isLoggedIn   Boolean @default(true)
 

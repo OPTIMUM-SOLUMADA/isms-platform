@@ -15,7 +15,6 @@ const depRoleUserService = new DepartmentRoleUserService();
 export class UserController {
     async create(req: Request, res: Response) {
         try {
-            console.log('req', req.body);
             // check if user email exists
             const userExists = await service.findByEmail(req.body.email);
 
