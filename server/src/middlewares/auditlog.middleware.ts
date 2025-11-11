@@ -14,7 +14,7 @@ export const auditLogMiddleware = (req: Request, res: Response, next: NextFuncti
                 eventType: data.event,
                 details: data.details,
                 targets: data.targets,
-                ipAddress: Array.isArray(ip) ? ip.join(', ') : ip,
+                ipAddress: Array.isArray(ip) ? ip.join(',') : ip,
                 userAgent,
                 timestamp: new Date(),
                 status: data.status,
