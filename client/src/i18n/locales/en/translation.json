@@ -1726,6 +1726,72 @@
       }
     }
   },
+  "auditLog": {
+    "title": "Audit Log",
+    "subtitle": "Track all system activities and changes for compliance",
+    "events": {
+      "AUTH_LOGIN_ATTEMPT": "Login Attempt",
+      "AUTH_LOGIN": "Login",
+      "AUTH_LOGOUT": "Logout",
+      "DOCUMENT_CREATE": "Document Created",
+      "DOCUMENT_EDIT": "Document Edited",
+      "DOCUMENT_UPDATE": "Document Updated",
+      "DOCUMENT_VERSION_CREATED": "Version Created",
+      "DOCUMENT_VERSION_APPROVED": "Version Approved",
+      "DOCUMENT_VERSION_REJECTED": "Version Rejected",
+      "DOCUMENT_STATUS_CHANGE": "Status Changed",
+      "DOCUMENT_REVIEW_SUBMITTED": "Review Submitted",
+      "USER_ADD": "User Added",
+      "USER_UPDATE": "User Updated",
+      "USER_DELETE": "User Deleted",
+      "DEPARTMENT_CREATE": "Department Created",
+      "DEPARTMENT_UPDATE": "Department Updated",
+      "DEPARTMENT_DELETE": "Department Deleted",
+      "ACCESS_LOG": "Access Log",
+      "EXPORT_LOGS": "Logs Exported"
+    },
+    "status": {
+      "SUCCESS": "Success",
+      "FAILURE": "Failure"
+    },
+    "table": {
+      "columns": {
+        "event": "Event",
+        "status": "Status",
+        "user": "User",
+        "action": "Action",
+        "ipAddress": "IP Address",
+        "timestamp": "Timestamp",
+        "details": "Details",
+        "types": "Types"
+      },
+      "empty": {
+        "title": "No logs",
+        "message": "Try adjusting the filters"
+      },
+      "cells": {
+        "details": {
+          "title": "Details",
+          "actions": {
+            "view": {
+              "label": "View more"
+            }
+          }
+        }
+      }
+    },
+    "stats": {
+      "total": "Total Events",
+      "success": "Success",
+      "failure": "Failure",
+      "today": "Today's Events"
+    },
+    "actions": {
+      "export": {
+        "label": "Export Logs"
+      }
+    }
+  },
   "unauthorized": {
     "title": "Unauthorized access",
     "subtitle": "You do not have the necessary permissions to access this page.",

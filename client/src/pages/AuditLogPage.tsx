@@ -19,13 +19,15 @@ import {
 } from '@/components/ui/select';
 import { auditEntries } from '@/mocks/audit';
 import WithTitle from '@/templates/layout/WithTitle';
-import { useFetchAudits } from '@/hooks/queries/useAuditMutation';
+import { useFetchAudits, useFetchStats } from '@/hooks/queries/useAuditMutation';
 import { AuditTable } from '@/templates/audits/AuditTable';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { useTranslation } from 'react-i18next';
 
 export default function AuditLogPage() {
-
-  const { data = [], isLoading } = useFetchAudits()
+  const { t } = useTranslation();
+  const { data = [], isLoading } = useFetchAudits();
+  const { data: stats } = useFetchStats();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
@@ -42,12 +44,12 @@ export default function AuditLogPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Audit Log</h1>
-            <p className="text-gray-600 mt-1">Track all system activities and changes for compliance</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t("auditLog.title")}</h1>
+            <p className="text-gray-600 mt-1">{t("auditLog.subtitle")}</p>
           </div>
           <Button className="flex items-center space-x-2">
             <Download className="h-4 w-4" />
-            <span>Export Log</span>
+            <span>{t("auditLog.actions.export.label")}</span>
           </Button>
         </div>
 
@@ -57,8 +59,8 @@ export default function AuditLogPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Events</p>
-                  <p className="text-2xl font-bold">{data.length}</p>
+                  <p className="text-sm text-gray-600">{t("auditLog.stats.total")}</p>
+                  <p className="text-2xl font-bold">{stats?.total ?? '-'}</p>
                 </div>
                 <Activity className="h-8 w-8 text-blue-600" />
               </div>
@@ -69,9 +71,9 @@ export default function AuditLogPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Success</p>
+                  <p className="text-sm text-gray-600">{t("auditLog.stats.success")}</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {auditEntries.filter(e => e.status === 'success').length}
+                    {stats?.success ?? '-'}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -83,9 +85,9 @@ export default function AuditLogPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Warnings</p>
+                  <p className="text-sm text-gray-600">{t("auditLog.stats.failure")}</p>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {auditEntries.filter(e => e.status === 'warning').length}
+                    {stats?.failure ?? '-'}
                   </p>
                 </div>
                 <AlertTriangle className="h-8 w-8 text-yellow-600" />
@@ -97,9 +99,9 @@ export default function AuditLogPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Today's Events</p>
+                  <p className="text-sm text-gray-600">{t("auditLog.stats.today")}</p>
                   <p className="text-2xl font-bold text-blue-600">
-                    {auditEntries.filter(e => new Date(e.timestamp).toDateString() === new Date().toDateString()).length}
+                    {stats?.today ?? '-'}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-blue-600" />

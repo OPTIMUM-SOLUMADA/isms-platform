@@ -22,4 +22,15 @@ export class AuditController {
             res.status(500).json({ error: (err as Error).message });
         }
     }
+
+    // get stats (total, success, failures, errors, warnings)
+    async getStats(req: Request, res: Response) {
+        try {
+            const stats = await this.service.getStats();
+            res.json(stats);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
 }

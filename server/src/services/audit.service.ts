@@ -1,5 +1,6 @@
 import prisma from '@/database/prisma';
 import { AuditEventType, AuditTargetType, Prisma } from '@prisma/client';
+import { endOfDay, startOfDay } from 'date-fns';
 
 /**
  * Service handling creation and retrieval of audit logs
@@ -84,5 +85,32 @@ export class AuditService {
             where: { timestamp: { lt: date } },
         });
         return result.count;
+    }
+
+    async getStats() {
+        const now = new Date();
+        const start = startOfDay(now);
+        const end = endOfDay(now);
+        const [total, success, failure, today] = await prisma.$transaction([
+            prisma.auditLog.count(),
+            prisma.auditLog.count({ where: { status: 'SUCCESS' } }),
+            prisma.auditLog.count({ where: { status: 'FAILURE' } }),
+            // todays events
+            prisma.auditLog.count({
+                where: {
+                    timestamp: {
+                        gte: start,
+                        lte: end,
+                    },
+                },
+            }),
+        ]);
+
+        return {
+            total,
+            success,
+            failure,
+            today,
+        };
     }
 }
