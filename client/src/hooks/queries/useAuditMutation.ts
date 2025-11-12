@@ -7,6 +7,6 @@ export const useFetchAudits = () => {
     return useQuery<AuditLog[], ApiAxiosError>({
         queryFn: async () => (await AuditService.getAll()).data,
         queryKey: ["audits"],
-        staleTime: 1000 * 60 * 3
+        staleTime: 1000 * 60,
     });
 };

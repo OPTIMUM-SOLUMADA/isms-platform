@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import {Files } from "lucide-react";
+import { Files } from "lucide-react";
 import { DataTable } from "@/components/DataTable";
 import type { AuditLog } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,10 +40,10 @@ const Table = ({
                 return (
                     <div className="space-y-0 text-sm">
                         <div className="font-medium">
-                            {format(audit.timestamp!, "P", { locale: getDateFnsLocale()})}
+                            {format(audit.timestamp!, "P", { locale: getDateFnsLocale() })}
                         </div>
                         <div className="opacity-70">
-                            {format(audit.timestamp!, "p", { locale: getDateFnsLocale()})}
+                            {format(audit.timestamp!, "p", { locale: getDateFnsLocale() })}
                         </div>
                     </div>
                 );
@@ -71,17 +71,17 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
-                const { color, icon: Icon  } = auditEventMeta[audit.eventType] || {};
+                const { color, icon: Icon } = auditEventMeta[audit.eventType] || {};
                 return (
-                <Badge
-                    className={cn(
-                        "border-0 flex items-center gap-1 w-fit p-1",
-                        color
-                    )}
-                >
-                    {Icon && <Icon className="h-4 w-4" />}
-                    {audit.eventType}
-                </Badge>
+                    <Badge
+                        className={cn(
+                            "border-0 flex items-center gap-1 w-fit p-1",
+                            color
+                        )}
+                    >
+                        {Icon && <Icon className="h-4 w-4" />}
+                        {audit.eventType}
+                    </Badge>
                 );
             },
         },
@@ -141,16 +141,9 @@ const Table = ({
                 const { details } = row.original;
                 if (!details) return null;
                 // show json
-                return Object.entries(details).map(([key, value], index) => (
-                    <div key={index} className="space-y-0 text-sm flex gap-2 items-start">
-                        <div className="font-light uppercase">
-                            {key}:
-                        </div>
-                        <div className="opacity-70">
-                            {JSON.stringify(value)}
-                        </div>
-                    </div>
-                ))
+                return (
+                    <DetailsCell details={details} />
+                )
             },
         },
 
@@ -178,5 +171,46 @@ const Table = ({
         />
     );
 }
+
+
+interface DetailsCellProps {
+    details: Record<string, any>;
+}
+export const DetailsCell = ({ details }: DetailsCellProps) => {
+    const entries = Object.entries(details);
+    const hasMore = entries.length > 2;
+    const [viewMore, setViewMore] = useState(false);
+
+    const visibleEntries = viewMore ? entries : entries.slice(0, 2);
+
+    return (
+        <ul
+            className={cn(
+                "list-inside list-disc space-y-0.5 text-sm",
+                !viewMore && "max-h-[4.5rem] overflow-hidden" // roughly 3 lines
+            )}
+        >
+            {visibleEntries.map(([key, value], index) => (
+                <li key={index}>
+                    <span className="font-medium opacity-60">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}:
+                    </span>{" "}
+                    <span className="opacity-90 break-all">
+                        {typeof value === "object" ? JSON.stringify(value) : String(value)}
+                    </span>
+                </li>
+            ))}
+
+            {hasMore && !viewMore && (
+                <li
+                    className="text-primary underline text-right cursor-pointer list-none text-xs"
+                    onClick={() => setViewMore(true)}
+                >
+                    View More
+                </li>
+            )}
+        </ul>
+    );
+};
 
 export const AuditTable = React.memo(Table);
