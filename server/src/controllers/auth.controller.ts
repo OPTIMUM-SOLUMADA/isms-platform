@@ -163,6 +163,28 @@ export class AuthController {
             sameSite: 'strict',
             secure: process.env.NODE_ENV === 'production',
         });
+
+        const { userId } = req.params;
+        const user = await userService.getUserById(userId!);
+        if (!user) {
+            res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+            return;
+        }
+
+        // Audit log logout
+        await req.log({
+            event: AuditEventType.AUTH_LOGOUT,
+            details: {
+                email: user.email,
+                role: user.role,
+            },
+            targets: [
+                {
+                    type: AuditTargetType.USER,
+                    id: user.id,
+                },
+            ],
+        });
         res.status(200).json({ message: 'Logged out successfully' });
     };
 

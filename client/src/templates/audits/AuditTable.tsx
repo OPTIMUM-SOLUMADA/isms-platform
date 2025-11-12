@@ -10,6 +10,9 @@ import { getDateFnsLocale } from "@/lib/date";
 import { UserHoverCard } from "../users/hovercard/UserHoverCard";
 import CellNoValue from "@/components/CellNoValue";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { auditEventMeta } from "@/constants/auditevent";
+import { auditStatusColors } from "@/constants/color";
 
 // Table component using the reusable DataTable
 interface TableProps {
@@ -68,7 +71,18 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
-                return audit.eventType;
+                const { color, icon: Icon  } = auditEventMeta[audit.eventType] || {};
+                return (
+                <Badge
+                    className={cn(
+                        "border-0 flex items-center gap-1 w-fit p-1",
+                        color
+                    )}
+                >
+                    {Icon && <Icon className="h-4 w-4" />}
+                    {audit.eventType}
+                </Badge>
+                );
             },
         },
         {
@@ -80,7 +94,7 @@ const Table = ({
             cell: ({ row }) => {
                 const audit = row.original;
                 return audit.targets?.map((item, index) => (
-                    <Badge key={index}>{item.type}</Badge>
+                    <Badge key={index} variant="secondary">{item.type}</Badge>
                 ));
             },
         },
@@ -92,7 +106,17 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
-                return audit.status;
+                const color = auditStatusColors[audit.status];
+                return (
+                    <Badge
+                        className={cn(
+                            "border-0 flex items-center gap-1 w-fit p-1",
+                            color
+                        )}
+                    >
+                        {audit.status}
+                    </Badge>
+                );
             },
         },
         {
