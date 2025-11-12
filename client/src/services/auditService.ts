@@ -15,4 +15,5 @@ export const AuditService = {
                 ...(params && params),
             },
         }),
+    getStats: () => axios.get(api.STATS),
 };

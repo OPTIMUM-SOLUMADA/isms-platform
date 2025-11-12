@@ -10,3 +10,19 @@ export const useFetchAudits = () => {
         staleTime: 1000 * 60,
     });
 };
+
+// get stats
+type Stats = {
+    total: number;
+    success: number;
+    failure: number;
+    today: number;
+}
+
+export const useFetchStats = () => {
+    return useQuery<Stats, ApiAxiosError>({
+        queryFn: async () => (await AuditService.getStats()).data,
+        queryKey: ["stats"],
+        staleTime: 1000 * 60,
+    });
+};

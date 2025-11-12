@@ -1715,6 +1715,72 @@
             }
         }
     },
+    "auditLog": {
+        "title": "Journal d'audit",
+        "subtitle": "Suivre toutes les activités et les modifications du système pour la conformité.",
+        "events": {
+            "AUTH_LOGIN_ATTEMPT": "Tentative de connexion",
+            "AUTH_LOGIN": "Connexion",
+            "AUTH_LOGOUT": "Déconnexion",
+            "DOCUMENT_CREATE": "Document créé",
+            "DOCUMENT_EDIT": "Document modifié",
+            "DOCUMENT_UPDATE": "Document mis à jour",
+            "DOCUMENT_VERSION_CREATED": "Version créée",
+            "DOCUMENT_VERSION_APPROVED": "Version approuvée",
+            "DOCUMENT_VERSION_REJECTED": "Version rejetée",
+            "DOCUMENT_STATUS_CHANGE": "Statut modifié",
+            "DOCUMENT_REVIEW_SUBMITTED": "Revue soumise",
+            "USER_ADD": "Utilisateur ajouté",
+            "USER_UPDATE": "Utilisateur mis à jour",
+            "USER_DELETE": "Utilisateur supprimé",
+            "DEPARTMENT_CREATE": "Département créé",
+            "DEPARTMENT_UPDATE": "Département mis à jour",
+            "DEPARTMENT_DELETE": "Département supprimé",
+            "ACCESS_LOG": "Journal d’accès",
+            "EXPORT_LOGS": "Journaux exportés"
+        },
+        "status": {
+            "SUCCESS": "Succès",
+            "FAILURE": "Echec"
+        },
+        "table": {
+            "columns": {
+                "event": "Evenement",
+                "status": "Statut",
+                "user": "Utilisateur",
+                "action": "Action",
+                "ipAddress": "Adresse IP",
+                "timestamp": "Date et heure",
+                "details": "Détails",
+                "types": "Types"
+            },
+            "empty": {
+                "title": "Aucun journal",
+                "message": "Essaiez de modifier les filtres"
+            },
+            "cells": {
+                "details": {
+                    "title": "Détails",
+                    "actions": {
+                        "view": {
+                            "label": "Voir plus"
+                        }
+                    }
+                }
+            }
+        },
+        "stats": {
+            "total": "Total",
+            "success": "Succès",
+            "failure": "Echec",
+            "today": "Aujourd'hui"
+        },
+        "actions": {
+            "export": {
+                "label": "Exporter les journaux"
+            }
+        }
+    },
     "unauthorized": {
         "title": "Accès non autorisé",
         "subtitle": "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",

@@ -32,7 +32,7 @@ const Table = ({
         {
             accessorKey: "name",
             enableSorting: true,
-            header: t("Timestamp"),
+            header: t("auditLog.table.columns.timestamp"),
             enableHiding: false,
             size: 20,
             cell: ({ row }) => {
@@ -52,7 +52,7 @@ const Table = ({
         {
             accessorKey: "user",
             enableSorting: true,
-            header: t("User"),
+            header: t("auditLog.table.columns.user"),
             enableHiding: false,
             size: 100,
             cell: ({ row }) => {
@@ -66,12 +66,12 @@ const Table = ({
         {
             accessorKey: "action",
             enableSorting: true,
-            header: t("Action"),
+            header: t("auditLog.table.columns.action"),
             enableHiding: false,
             size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
-                const { color, icon: Icon } = auditEventMeta[audit.eventType] || {};
+                const { color, icon: Icon, labelKey = '' } = auditEventMeta[audit.eventType] || {};
                 return (
                     <Badge
                         className={cn(
@@ -80,7 +80,7 @@ const Table = ({
                         )}
                     >
                         {Icon && <Icon className="h-4 w-4" />}
-                        {audit.eventType}
+                        {t(labelKey)}
                     </Badge>
                 );
             },
@@ -88,7 +88,7 @@ const Table = ({
         {
             accessorKey: "types",
             enableSorting: true,
-            header: t("Types"),
+            header: t("auditLog.table.columns.types"),
             enableHiding: false,
             size: 100,
             cell: ({ row }) => {
@@ -101,7 +101,7 @@ const Table = ({
         {
             accessorKey: "status",
             enableSorting: true,
-            header: t("Status"),
+            header: t("auditLog.table.columns.status"),
             enableHiding: false,
             size: 100,
             cell: ({ row }) => {
@@ -110,11 +110,11 @@ const Table = ({
                 return (
                     <Badge
                         className={cn(
-                            "border-0 flex items-center gap-1 w-fit p-1",
-                            color
+                            "border-0 flex items-center gap-1 w-fit p-1 uppercase",
+                            color,
                         )}
                     >
-                        {audit.status}
+                        {t(`auditLog.status.${audit.status}`)}
                     </Badge>
                 );
             },
@@ -122,7 +122,7 @@ const Table = ({
         {
             accessorKey: "ip",
             enableSorting: true,
-            header: t("IP Address"),
+            header: t("auditLog.table.columns.ipAddress"),
             enableHiding: false,
             size: 100,
             cell: ({ row }) => {
@@ -134,7 +134,7 @@ const Table = ({
         {
             accessorKey: "details",
             enableSorting: true,
-            header: t("Details"),
+            header: t("auditLog.table.columns.details"),
             enableHiding: false,
             size: 200,
             cell: ({ row }) => {
@@ -161,8 +161,8 @@ const Table = ({
                 <Card className="shadow-none flex-grow">
                     <CardContent className="p-12 text-center">
                         <Files className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t("publishedDocument.sections.allDocuments.table.empty.title")}</h3>
-                        <p className="text-gray-500 mb-4">{t("publishedDocument.sections.allDocuments.table.empty.message")}</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t("auditLog.table.empty.title")}</h3>
+                        <p className="text-gray-500 mb-4">{t("auditLog.table.empty.message")}</p>
                     </CardContent>
                 </Card>
             )}
@@ -180,6 +180,7 @@ export const DetailsCell = ({ details }: DetailsCellProps) => {
     const entries = Object.entries(details);
     const hasMore = entries.length > 2;
     const [viewMore, setViewMore] = useState(false);
+    const { t } = useTranslation();
 
     const visibleEntries = viewMore ? entries : entries.slice(0, 2);
 
@@ -187,7 +188,7 @@ export const DetailsCell = ({ details }: DetailsCellProps) => {
         <ul
             className={cn(
                 "list-inside list-disc space-y-0.5 text-sm",
-                !viewMore && "max-h-[4.5rem] overflow-hidden" // roughly 3 lines
+                !viewMore && "max-h-[4.5rem] overflow-hidden",
             )}
         >
             {visibleEntries.map(([key, value], index) => (
@@ -206,7 +207,7 @@ export const DetailsCell = ({ details }: DetailsCellProps) => {
                     className="text-primary underline text-right cursor-pointer list-none text-xs"
                     onClick={() => setViewMore(true)}
                 >
-                    View More
+                    {t("auditLog.table.cells.details.actions.view.label")}
                 </li>
             )}
         </ul>
