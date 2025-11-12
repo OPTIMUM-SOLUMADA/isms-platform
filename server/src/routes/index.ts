@@ -13,6 +13,7 @@ import invitationRoutes from '@/routes/invitation.routes';
 import ownerRoutes from '@/routes/owner.routes';
 import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import versionRoutes from '@/routes/version.routes';
+import auditRoutes from '@/routes/audit.routes';
 
 export default function applyRoutes(app: Application) {
     // Pages
@@ -34,4 +35,5 @@ export default function applyRoutes(app: Application) {
     app.use('/api/owners', ownerRoutes);
     app.use('/api/department-roles', departmentRoleRoutes);
     app.use('/api/document-versions', versionRoutes);
+    app.use('/api/audits', auditRoutes);
 }

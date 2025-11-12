@@ -8,13 +8,13 @@ export const auditLogMiddleware = (req: Request, res: Response, next: NextFuncti
 
     req.log = async (data) => {
         try {
-            const userId = req.body.userId || data.details.userId || req.user?.id || null;
+            const userId = req.body?.userId || data.details?.userId || req.user?.id || null;
 
             await AuditService.create({
                 eventType: data.event,
                 details: data.details,
                 targets: data.targets,
-                ipAddress: Array.isArray(ip) ? ip.join(', ') : ip,
+                ipAddress: Array.isArray(ip) ? ip.join(',') : ip,
                 userAgent,
                 timestamp: new Date(),
                 status: data.status,

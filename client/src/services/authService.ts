@@ -5,8 +5,8 @@ const AuthService = {
     login: async ({ email, password, rememberMe = false }: { email: string, password: string, rememberMe?: boolean }) => {
         return axios.post(API.ENDPOINTS.AUTH.LOGIN, { email, password, rememberMe });
     },
-    logout: async () => {
-        return axios.post(API.ENDPOINTS.AUTH.LOGOUT);
+    logout: async (id: string) => {
+        return axios.post(API.ENDPOINTS.AUTH.LOGOUT(id));
     },
     refreshToken: async () => {
         return axios.post(API.ENDPOINTS.AUTH.REFRESH);

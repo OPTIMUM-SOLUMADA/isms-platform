@@ -407,6 +407,7 @@ model Notification {
 
 enum AuditEventType {
   // Auth
+  AUTH_LOGIN_ATTEMPT
   AUTH_LOGIN
   AUTH_LOGOUT
   // Document
@@ -435,7 +436,7 @@ enum AuditEventType {
 
 enum AuditStatus {
   SUCCESS
-  FAILED
+  FAILURE
 }
 
 enum AuditTargetType {

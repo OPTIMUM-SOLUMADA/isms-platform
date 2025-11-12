@@ -57,6 +57,7 @@ export type DataTableProps<TData, TValue> = {
     renderNoData?: () => React.ReactNode;
     renderSelectionHeader?: (selectedIds: string[]) => React.ReactNode;
     isLoading?: boolean;
+    showHeader?: boolean;
 
 };
 
@@ -73,6 +74,7 @@ export function DataTable<TData, TValue>({
     enableSearch = false,
     className,
     isLoading = false,
+    showHeader = true,
     renderNoData
 }: DataTableProps<TData, TValue>) {
     const { t } = useTranslation();
@@ -148,77 +150,79 @@ export function DataTable<TData, TValue>({
 
     return (
         <Card className={cn("w-full flex flex-col shadow-none", className)}>
-            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                {title && <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>}
-                <div className="flex w-full items-center gap-2 sm:w-auto">
-                    {enableSearch && (
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder={t("components.table.search.placeholder")}
-                                value={searchValue}
-                                onChange={(e) => onSearchChange(e.target.value)}
-                                className="pl-10 w-full sm:w-64"
-                            />
-                        </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => table.resetRowSelection()}
-                                className="h-8"
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                {t("components.table.actions.deleteSelected.label", {
-                                    count: table.getFilteredSelectedRowModel().rows.length
-                                })}
-                            </Button>
+            {showHeader && (
+                <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    {title && <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>}
+                    <div className="flex w-full items-center gap-2 sm:w-auto">
+                        {enableSearch && (
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder={t("components.table.search.placeholder")}
+                                    value={searchValue}
+                                    onChange={(e) => onSearchChange(e.target.value)}
+                                    className="pl-10 w-full sm:w-64"
+                                />
+                            </div>
                         )}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2 h-9">
-                                    {t("components.table.actions.toggleColumns.placeholder")}{" "}
-                                    <ChevronDown className="h-4 w-4" />
+
+                        <div className="flex items-center gap-2">
+                            {table.getFilteredSelectedRowModel().rows.length > 0 && (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => table.resetRowSelection()}
+                                    className="h-8"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    {t("components.table.actions.deleteSelected.label", {
+                                        count: table.getFilteredSelectedRowModel().rows.length
+                                    })}
                                 </Button>
-                            </DropdownMenuTrigger>
+                            )}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-2 h-9">
+                                        {t("components.table.actions.toggleColumns.placeholder")}{" "}
+                                        <ChevronDown className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
 
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>
-                                    {t("components.table.actions.toggleColumns.label")}
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>
+                                        {t("components.table.actions.toggleColumns.label")}
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
 
-                                {table.getAllLeafColumns().map((column) => {
-                                    if (column.id === "_select") return null;
+                                    {table.getAllLeafColumns().map((column) => {
+                                        if (column.id === "_select") return null;
 
-                                    const label =
-                                        (typeof column.columnDef.header === "function"
-                                            ? column.columnDef.header(table.getHeaderGroups()[0].headers[0].headerGroup.headers[0].getContext())
-                                            : column.columnDef.header) ?? column.id;
+                                        const label =
+                                            (typeof column.columnDef.header === "function"
+                                                ? column.columnDef.header(table.getHeaderGroups()[0].headers[0].headerGroup.headers[0].getContext())
+                                                : column.columnDef.header) ?? column.id;
 
-                                    return (
-                                        <DropdownMenuCheckboxItem
-                                            key={column.id}
-                                            className="flex items-center gap-2"
-                                            onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                                            onSelect={(event) => event.preventDefault()}
-                                            checked={column.getIsVisible()}
-                                        >
-                                            <span>{label}</span>
-                                        </DropdownMenuCheckboxItem>
-                                    );
-                                })}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                        return (
+                                            <DropdownMenuCheckboxItem
+                                                key={column.id}
+                                                className="flex items-center gap-2"
+                                                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                                                onSelect={(event) => event.preventDefault()}
+                                                checked={column.getIsVisible()}
+                                            >
+                                                <span>{label}</span>
+                                            </DropdownMenuCheckboxItem>
+                                        );
+                                    })}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
-                </div>
-            </CardHeader>
+                </CardHeader>
+            )}
 
-            <CardContent className="flex-1 flex flex-col flex-grow">
+            <CardContent className={cn("flex-1 flex flex-col flex-grow", !showHeader && "p-5")}>
                 <div className="rounded-lg border overflow-hidden flex flex-col flex-grow bg-white">
                     <div className="flex-grow overflow-auto rounded-lg flex flex-col">
                         <Table className={cn("w-full", !table.getRowModel().rows?.length && "grow")}>

@@ -16,26 +16,24 @@ import { AccessPermission } from "@/types/role";
 // import { ReviewWorkflowPage } from "@/pages/documents/DocumentReviewPage";
 import { AppProviders } from "@/providers/AppProviders";
 import { PageSkeleton } from "@/components/page-skeleton";
-import DepartmentPage from "@/pages/departments/DepartmentPage";
-import DocumentTypePage from "@/pages/document-types/DocumentTypePage";
-import ISOClausePage from "@/pages/ISOClausePage";
-import DepartmentDetail from "@/pages/departments/DepartmentDetail";
-import VerifyAccountPage from "@/pages/auth/VerifyAccountPage";
-import DocumentEditorPage from "@/pages/documents/DocumentEditorPage";
-import ReviewApprovalPage from "@/pages/reviews/ReviewApprovalPage";
-import PendingReviewsDashboardPage from "@/pages/reviews/PendingReviewsDashboardPage";
-import PatchDocumentVersionPage from "@/pages/reviews/PatchDocumentVersionPage";
-import PublishedDocumentPage from "@/pages/published-documents/PublishedDocumentPage";
-import PublishedDocumentViewPage from "@/pages/published-documents/PublishedDocumentViewPage";
 
 // Lazy load pages
+const DepartmentPage = lazy(() => import("@/pages/departments/DepartmentPage"));
+const DocumentTypePage = lazy(() => import("@/pages/document-types/DocumentTypePage"));
+const ISOClausePage = lazy(() => import("@/pages/ISOClausePage"));
+const VerifyAccountPage = lazy(() => import("@/pages/auth/VerifyAccountPage"));
+const DocumentEditorPage = lazy(() => import("@/pages/documents/DocumentEditorPage"));
+const ReviewApprovalPage = lazy(() => import("@/pages/reviews/ReviewApprovalPage"));
+const PendingReviewsDashboardPage = lazy(() => import("@/pages/reviews/PendingReviewsDashboardPage"));
+const PatchDocumentVersionPage = lazy(() => import("@/pages/reviews/PatchDocumentVersionPage"));
+const PublishedDocumentPage = lazy(() => import("@/pages/published-documents/PublishedDocumentPage"));
+const PublishedDocumentViewPage = lazy(() => import("@/pages/published-documents/PublishedDocumentViewPage"));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const DocumentRepositoryPage = lazy(() => import('@/pages/documents/DocumentRepositoryPage'));
 const DocumentAddPage = lazy(() => import('@/pages/documents/DocumentAddPage'));
 const DocumentEditPage = lazy(() => import('@/pages/documents/DocumentEditPage'));
-const DocumentDetail = lazy(() => import('@/pages/documents/DocumentDetailPage'));
-
-// const DepartmentDetail = lazy(() => import('@/pages/departments/DepartmentDetail'));
+const DocumentDetailPage = lazy(() => import('@/pages/documents/DocumentDetailPage'));
+const DepartmentDetailPage = lazy(() => import('@/pages/departments/DepartmentDetailPage'));
 
 const ReviewWorkflowPage = lazy(() => import('@/pages/reviews/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
@@ -91,7 +89,7 @@ const routeConfig: AppRoute[] = [
                     { index: true, element: <DocumentRepositoryPage /> },
                     { path: "add", element: <DocumentAddPage /> },
                     { path: "edit/:id", element: <DocumentEditPage /> },
-                    { path: "view/:id", element: <DocumentDetail /> },
+                    { path: "view/:id", element: <DocumentDetailPage /> },
                     { path: "review/:id", element: <ReviewWorkflowPage /> }
                 ],
             },
@@ -158,7 +156,7 @@ const routeConfig: AppRoute[] = [
                 permission: "documents.page.access",
                 children: [
                     { index: true, element: <DepartmentPage /> },
-                    { path: "view/:id", element: <DepartmentDetail /> },
+                    { path: "view/:id", element: <DepartmentDetailPage /> },
                 ],
             },
             // Document types

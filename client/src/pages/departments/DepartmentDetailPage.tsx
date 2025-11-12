@@ -12,7 +12,7 @@ import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 import { useFetchDepartmentRoles } from "@/hooks/queries/useDepartmentRoleMutations";
 import { useFetchDepartment } from "@/hooks/queries/useDepartmentMutations";
 
-export default function DepartmentDetail() {
+export default function DepartmentDetailPage() {
 
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();

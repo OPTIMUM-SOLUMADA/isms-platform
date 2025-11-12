@@ -9,7 +9,7 @@ export const API_CONFIG = {
       RESET_PASSWORD: "/api/auth/reset-password",
       REFRESH: "/api/auth/refresh",
       VERIFY: "/api/auth/verify",
-      LOGOUT: "/api/auth/logout",
+      LOGOUT: (userId: string) => `/api/auth/logout/${userId}`,
       VERIFY_RESET_TOKEN: "/api/auth/verify-reset-token",
       VERIFY_ACCOUNT: "/api/auth/verify-account",
     },
@@ -125,6 +125,10 @@ export const API_CONFIG = {
       GET_FILES: () => `/api/google-drive/files`,
       GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
         `/api/google-drive/grant-permissions/${id}`,
+    },
+    AUDIT: {
+      BASE: "/api/audits",
+      GET: (id: string | number) => `/api/audits/${id}`,
     },
   },
 } as const;

@@ -1,5 +1,5 @@
 import prisma from '@/database/prisma';
-import { AuditEventType, Prisma } from '@prisma/client';
+import { AuditEventType, AuditTargetType, Prisma } from '@prisma/client';
 
 /**
  * Service handling creation and retrieval of audit logs
@@ -20,24 +20,42 @@ export class AuditService {
         }
     }
 
-    /**
+    /***
      * Get all logs (with optional filters)
      */
-    static async findAll(filters?: {
+    async findAll(filters?: {
         userId?: string;
-        documentId?: string;
+        type?: AuditTargetType;
         organizationId?: string;
         eventType?: AuditEventType;
         limit?: number;
         skip?: number;
+        startDate?: Date;
+        endDate?: Date;
     }) {
-        const { userId, documentId, eventType, limit = 50, skip = 0 } = filters || {};
+        const {
+            userId,
+            type,
+            eventType,
+            limit = 100,
+            skip = 0,
+            startDate,
+            endDate,
+        } = filters || {};
 
         return prisma.auditLog.findMany({
             where: {
                 ...(userId && { userId }),
-                ...(documentId && { documentId }),
+                ...(type && { targets: { some: { type } } }),
                 ...(eventType && { eventType }),
+                ...(startDate || endDate
+                    ? {
+                          timestamp: {
+                              ...(startDate && { gte: startDate }),
+                              ...(endDate && { lte: endDate }),
+                          },
+                      }
+                    : {}),
             },
             include: {
                 user: { select: { id: true, name: true, email: true } },

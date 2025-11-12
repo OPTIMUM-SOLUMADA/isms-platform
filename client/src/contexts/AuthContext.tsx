@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     const logoutMutation = useMutation<any, ApiAxiosError, void>({
-        mutationFn: async () => AuthService.logout(),
+        mutationFn: async () => AuthService.logout(user.id),
         onSuccess: () => {
             setToken(null);
             setUser(null);
