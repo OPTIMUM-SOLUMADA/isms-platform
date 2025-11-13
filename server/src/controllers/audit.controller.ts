@@ -1,5 +1,6 @@
 import { AuditService } from '@/services/audit.service';
 import { AuditTargetType } from '@prisma/client';
+import { endOfDay, startOfDay } from 'date-fns';
 import { Request, Response } from 'express';
 
 export class AuditController {
@@ -10,10 +11,10 @@ export class AuditController {
 
     async getAll(req: Request, res: Response) {
         try {
-            const { startDate, endDate, type } = req.params;
+            const { from, to, type } = req.query;
             const audits = await this.service.findAll({
-                ...(startDate && { startDate: new Date(startDate) }),
-                ...(endDate && { endDate: new Date(endDate) }),
+                ...(from && { startDate: startOfDay(new Date(String(from))) }),
+                ...(to && { endDate: endOfDay(new Date(String(to))) }),
                 ...(type && { type: type as AuditTargetType }),
             });
             res.json(audits);

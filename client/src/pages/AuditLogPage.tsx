@@ -17,30 +17,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { auditEntries } from '@/mocks/audit';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useFetchAudits, useFetchStats } from '@/hooks/queries/useAuditMutation';
 import { AuditTable } from '@/templates/audits/AuditTable';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { useTranslation } from 'react-i18next';
+import { addMonths, format, subMonths } from 'date-fns';
+import i18n from '@/i18n/config';
 
 export default function AuditLogPage() {
-  const { t } = useTranslation();
-  const { data = [], isLoading } = useFetchAudits();
-  const { data: stats } = useFetchStats();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
   const [filterResourceType, setFilterResourceType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  // const [filterUser, setFilterUser] = useState('all');
+  const now = new Date();
+  const [filterDateRange, setFilterDateRange] = useState<{ from: string; to: string } | null>({
+    from: format(subMonths(now, 3), "yyyy-MM-dd"), // 3 months ago
+    to: format(addMonths(now, 0), "yyyy-MM-dd"),
+  });
 
-  // const uniqueUsers = [...new Set(data.map(entry => entry.user))];
+  const { t } = useTranslation();
+  const { data = [], isLoading } = useFetchAudits(filterDateRange);
+  const { data: stats } = useFetchStats();
+
+
   const uniqueActions = [...new Set(data.map(entry => entry.eventType))];
 
   return (
     <WithTitle title="Audit Log">
-      <div className="space-y-6">
+      <div className="space-y-6 grow flex flex-col">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -164,23 +169,15 @@ export default function AuditLogPage() {
                   </SelectContent>
                 </Select>
 
-                {/* <Select value={filterUser} onValueChange={setFilterUser}>
-                  <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="User" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Users</SelectItem>
-                    {uniqueUsers.map(user => (
-                      <SelectItem key={user} value={user}>{user}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select> */}
                 <DateRangePicker
-                  onUpdate={(values) => console.log(values)}
-                  initialDateFrom="2023-01-01"
-                  initialDateTo="2023-12-31"
+                  onUpdate={(values) => setFilterDateRange({
+                    from: values.range.from.toISOString(),
+                    to: values.range.to.toISOString(),
+                  })}
+                  initialDateFrom={filterDateRange.from}
+                  initialDateTo={filterDateRange.to}
                   align="start"
-                  locale="en-GB"
+                  locale={i18n.language === 'fr' ? "fr-FR" : "en-GB"}
                   showCompare={false}
                 />
               </div>
