@@ -2,7 +2,7 @@ import { GoogleDriveService } from '@/services/googledrive.service';
 import { Request } from 'express';
 
 export const useGoogleDriveService = (req: Request) => {
-    const user = (req.session as any)?.user;
+    const user = req.session.gooleAccount;
     if (!user) {
         throw new Error('A google account is not authenticated');
     }
