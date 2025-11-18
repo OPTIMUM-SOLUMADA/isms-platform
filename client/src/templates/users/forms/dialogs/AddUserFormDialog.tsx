@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect } from "react";
 import { useCreateUser, useSendInvitation } from "@/hooks/queries/useUserMutations";
 import useDepartmentStore from "@/stores/department/useDepatrmentStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean;
@@ -15,6 +16,7 @@ const AddUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
+    const { user } = useAuth();
     const { departments } = useDepartmentStore();
     const {
         mutateAsync: createUser,
@@ -26,7 +28,6 @@ const AddUserFormDialog = ({
 
     const { mutate: sendInvitation } = useSendInvitation();
 
-
     useEffect(() => {
         if (isSuccess) {
             onOpenChange(false);
@@ -35,11 +36,12 @@ const AddUserFormDialog = ({
     }, [isSuccess, reset, onOpenChange]);
 
     async function handleCreateUser(data: AddUserFormData) {
-        console.log("data", data);
-        
-        const res = await createUser(data);
-        console.log("res", res);
-        
+
+        const res = await createUser({
+            ...data,
+            userId: user.id,
+        });
+
         // request send email invitation
         if (res.data && data.sendInvitationLink) {
             sendInvitation({ id: res.data.id });
