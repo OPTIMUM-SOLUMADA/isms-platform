@@ -48,7 +48,7 @@ export class UserController {
                 event: AuditEventType.USER_ADD,
                 targets: [
                     {
-                        id: user.id,
+                        id: userId,
                         type: 'USER',
                     },
                 ],
@@ -220,6 +220,24 @@ export class UserController {
     async delete(req: Request, res: Response) {
         try {
             const user = await service.delete(req.params.id!);
+            // const { userId } = req.query;
+
+            // Audit log
+            await req.log({
+                event: AuditEventType.USER_DELETE,
+                targets: [
+                    {
+                        id: user.id,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    email: user.email,
+                    role: user.role,
+                    name: user.name,
+                },
+                status: 'SUCCESS',
+            });
             res.json(user);
         } catch (err) {
             console.log(err);
