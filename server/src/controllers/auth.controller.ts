@@ -165,6 +165,10 @@ export class AuthController {
         });
 
         const { userId } = req.params;
+        if (!userId) {
+            res.status(400).json({ error: 'User ID is required' });
+            return;
+        }
         const user = await userService.getUserById(userId!);
         if (!user) {
             res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });

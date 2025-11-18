@@ -6,6 +6,7 @@ import { env } from '@/configs/env';
 import { JwtService } from '@/services/jwt.service';
 import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { AuditEventType } from '@prisma/client';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -26,10 +27,11 @@ export class UserController {
                 return;
             }
 
-            const { departmentRoleUsers, sendInvitationLink, ...rest } = req.body;
+            const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
             const user = await service.createUser({
                 ...rest,
+                ...(userId && { createdBy: { connect: { id: userId } } }),
                 isActive: false,
             });
 
@@ -40,6 +42,23 @@ export class UserController {
             }));
 
             await depRoleUserService.createMany(userRoles);
+
+            // Audit log
+            await req.log({
+                event: AuditEventType.USER_ADD,
+                targets: [
+                    {
+                        id: user.id,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    email: user.email,
+                    role: user.role,
+                    name: user.name,
+                },
+                status: 'SUCCESS',
+            });
 
             res.status(201).json(user);
         } catch (err) {
