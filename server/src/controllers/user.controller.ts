@@ -221,7 +221,7 @@ export class UserController {
         try {
             const user = await service.delete(req.params.id!);
             // const { userId } = req.query;
-            
+
             // Audit log
             await req.log({
                 event: AuditEventType.USER_DELETE,
