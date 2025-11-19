@@ -1790,6 +1790,13 @@
       "export": {
         "label": "Export Logs"
       }
+    },
+    "details": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "department": "Department",
+      "status": "Status"
     }
   },
   "unauthorized": {
