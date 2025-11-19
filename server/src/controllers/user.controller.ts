@@ -210,10 +210,7 @@ export class UserController {
                     },
                 ],
                 details: {
-                    ...getChanges(
-                        sanitizeUser(user),
-                        sanitizeUser(updated),
-                    ),
+                    ...getChanges(sanitizeUser(user), sanitizeUser(updated)),
                 },
                 status: 'SUCCESS',
             });
