@@ -201,9 +201,8 @@ export class UserController {
                 departmentRoleId: roleId,
             }));
 
-
             await depRoleUserService.reCreateMany(updated.id, userRoles);
-            
+
             // reget updated user after updating department roles
             const regetUpdatedUser = await service.getUserById(id!);
 

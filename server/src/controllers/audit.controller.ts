@@ -41,11 +41,7 @@ export class AuditController {
         try {
             const now = new Date();
 
-            const {
-                from = f(startOfDay(now)),
-                to = f(endOfDay(now)),
-                type
-            } = req.query;
+            const { from = f(startOfDay(now)), to = f(endOfDay(now)), type } = req.query;
             const audits = await this.service.findAll({
                 ...(from && { startDate: startOfDay(new Date(String(from))) }),
                 ...(to && { endDate: endOfDay(new Date(String(to))) }),
@@ -60,7 +56,10 @@ export class AuditController {
             const filename = `ISMS Audit Logs ${from} - ${to}.xlsx`;
 
             res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            );
             res.send(generatedExcel);
         } catch (err) {
             console.error(err);

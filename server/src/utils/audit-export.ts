@@ -13,7 +13,7 @@ function calculateRowHeight(content: string, baseHeight: number = 20): number {
     if (!content) return baseHeight;
 
     const lineCount = (content.match(/\n/g) || []).length + 1;
-    const estimatedHeight = baseHeight + (lineCount * 15);
+    const estimatedHeight = baseHeight + lineCount * 15;
 
     // Set a reasonable maximum height
     return Math.min(estimatedHeight, 400);
@@ -46,11 +46,11 @@ function calculateColumnWidth(content: string, baseWidth: number = 10): number {
  */
 export async function generateAuditLogsExcel(
     auditLogs: AuditLogPayload[],
-    options: ExportOptions = {}
+    options: ExportOptions = {},
 ): Promise<ExcelJS.Buffer> {
     const {
         filename = `audit-logs-${new Date().toISOString().split('T')[0]}.xlsx`,
-        includeHeaders = true
+        includeHeaders = true,
     } = options;
 
     console.log(filename);
@@ -77,7 +77,7 @@ export async function generateAuditLogsExcel(
         { header: 'Details', key: 'details', width: 40 },
         { header: 'IP Address', key: 'ipAddress', width: 20 },
         { header: 'User Agent', key: 'userAgent', width: 50 },
-        { header: 'Session ID', key: 'sessionId', width: 30 }
+        { header: 'Session ID', key: 'sessionId', width: 30 },
     ];
 
     // Configure default row and cell properties
@@ -90,18 +90,18 @@ export async function generateAuditLogsExcel(
         headerRow.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FFE6E6FA' }
+            fgColor: { argb: 'FFE6E6FA' },
         };
         headerRow.border = {
             bottom: { style: 'thin', color: { argb: 'FF000000' } },
             top: { style: 'thin', color: { argb: 'FF000000' } },
             left: { style: 'thin', color: { argb: 'FF000000' } },
-            right: { style: 'thin', color: { argb: 'FF000000' } }
+            right: { style: 'thin', color: { argb: 'FF000000' } },
         };
         headerRow.alignment = {
             vertical: 'middle',
             horizontal: 'center',
-            wrapText: true
+            wrapText: true,
         };
         headerRow.height = 25;
     }
@@ -114,8 +114,8 @@ export async function generateAuditLogsExcel(
         const rowNumber = includeHeaders ? index + 2 : index + 1;
 
         // Extract target information
-        const targetIds = log.targets.map(target => target.id).join(', ');
-        const targetTypes = log.targets.map(target => target.type).join(', ');
+        const targetIds = log.targets.map((target) => target.id).join(', ');
+        const targetTypes = log.targets.map((target) => target.type).join(', ');
 
         // Extract user information
         const userName = log.user?.name || 'System';
@@ -139,7 +139,7 @@ export async function generateAuditLogsExcel(
             details: detailsString,
             ipAddress: log.ipAddress,
             userAgent: log.userAgent,
-            sessionId: log.sessionId || 'N/A'
+            sessionId: log.sessionId || 'N/A',
         };
 
         // Configure cell alignment and wrapping for ALL cells
@@ -147,7 +147,7 @@ export async function generateAuditLogsExcel(
             cell.alignment = {
                 vertical: 'top',
                 horizontal: 'left',
-                wrapText: true
+                wrapText: true,
             };
 
             // Track maximum width for this column
@@ -163,7 +163,7 @@ export async function generateAuditLogsExcel(
             cell.border = {
                 bottom: { style: 'thin', color: { argb: 'FFD3D3D3' } },
                 left: { style: 'thin', color: { argb: 'FFD3D3D3' } },
-                right: { style: 'thin', color: { argb: 'FFD3D3D3' } }
+                right: { style: 'thin', color: { argb: 'FFD3D3D3' } },
             };
         });
 
@@ -172,7 +172,7 @@ export async function generateAuditLogsExcel(
         detailsCell.alignment = {
             vertical: 'top',
             horizontal: 'left',
-            wrapText: true
+            wrapText: true,
         };
 
         // Calculate and set dynamic row height based on content
@@ -184,19 +184,19 @@ export async function generateAuditLogsExcel(
             row.getCell('status').fill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: 'FF90EE90' } // Light green
+                fgColor: { argb: 'FF90EE90' }, // Light green
             };
         } else if (log.status === 'FAILURE') {
             row.getCell('status').fill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: 'FFFFB6C1' } // Light red
+                fgColor: { argb: 'FFFFB6C1' }, // Light red
             };
         }
     });
 
     // Apply auto-fitting to columns based on content
-    worksheet.columns.forEach(column => {
+    worksheet.columns.forEach((column) => {
         const columnKey = column.key as string;
         const headerWidth = includeHeaders ? String(column.header).length * 1.5 : 0;
         const contentWidth = maxColumnWidths[columnKey] || 0;
@@ -214,7 +214,7 @@ export async function generateAuditLogsExcel(
     if (includeHeaders) {
         worksheet.autoFilter = {
             from: { row: 1, column: 1 },
-            to: { row: 1, column: worksheet.columnCount }
+            to: { row: 1, column: worksheet.columnCount },
         };
     }
 
@@ -224,8 +224,8 @@ export async function generateAuditLogsExcel(
             state: 'frozen',
             xSplit: 0,
             ySplit: includeHeaders ? 1 : 0,
-            activeCell: includeHeaders ? 'A2' : 'A1'
-        }
+            activeCell: includeHeaders ? 'A2' : 'A1',
+        },
     ];
 
     // Generate and return the Excel buffer
@@ -287,11 +287,11 @@ function formatDetails(details: any): string {
     }
     // Handle any other properties not covered above
     const coveredProperties = ['email', 'role', 'name', 'roles', 'reason'];
-    const additionalProps = Object.keys(details).filter(key => !coveredProperties.includes(key));
+    const additionalProps = Object.keys(details).filter((key) => !coveredProperties.includes(key));
 
     if (additionalProps.length > 0) {
         lines.push('Additional Info:');
-        additionalProps.forEach(prop => {
+        additionalProps.forEach((prop) => {
             if (typeof details[prop] === 'object') {
                 lines.push(`  ${prop}: ${JSON.stringify(details[prop])}`);
             } else {
