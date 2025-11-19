@@ -1,7 +1,7 @@
 import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
 
-const userIncludes: Prisma.UserInclude = {
+export const userIncludes: Prisma.UserInclude = {
     documentReviews: true,
     documentApprovals: true,
     notifications: true,
@@ -37,7 +37,6 @@ const userIncludes: Prisma.UserInclude = {
 };
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
-        console.log('data', data);
         return prisma.user.create({
             data,
             include: {

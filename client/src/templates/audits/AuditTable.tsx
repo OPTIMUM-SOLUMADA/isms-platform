@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { auditEventMeta } from "@/constants/auditevent";
 import { auditStatusColors } from "@/constants/color";
+import AuditDetailsViewer from "./AuditDetailsViewer";
 
 // Table component using the reusable DataTable
 interface TableProps {
@@ -34,15 +35,15 @@ const Table = ({
             enableSorting: true,
             header: t("auditLog.table.columns.timestamp"),
             enableHiding: false,
-            size: 20,
+            size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
                 return (
-                    <div className="space-y-0 text-sm">
+                    <div className="text-sm space-y-1">
                         <div className="font-medium">
                             {format(audit.timestamp!, "P", { locale: getDateFnsLocale() })}
                         </div>
-                        <div className="opacity-70">
+                        <div className="opacity-70 text-xs">
                             {format(audit.timestamp!, "p", { locale: getDateFnsLocale() })}
                         </div>
                     </div>
@@ -68,7 +69,6 @@ const Table = ({
             enableSorting: true,
             header: t("auditLog.table.columns.action"),
             enableHiding: false,
-            size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
                 const { color, icon: Icon, labelKey = '' } = auditEventMeta[audit.eventType] || {};
@@ -142,7 +142,7 @@ const Table = ({
                 if (!details) return null;
                 // show json
                 return (
-                    <DetailsCell details={details} />
+                    <AuditDetailsViewer details={details} />
                 )
             },
         },

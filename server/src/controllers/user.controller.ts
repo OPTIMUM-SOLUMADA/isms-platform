@@ -7,6 +7,8 @@ import { JwtService } from '@/services/jwt.service';
 import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
 import { toHashRouterUrl } from '@/utils/baseurl';
 import { AuditEventType } from '@prisma/client';
+import { getChanges } from '@/utils/change';
+import { sanitizeUser } from '@/utils/sanitize-user';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -179,6 +181,13 @@ export class UserController {
     async update(req: Request, res: Response) {
         try {
             const { name, email, role, departmentRoleUsers } = req.body;
+            // get user by id
+            const user = await service.getUserById(req.params.id!);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
             const updated = await service.updateUser(req.params.id!, {
                 name,
                 email,
@@ -190,6 +199,24 @@ export class UserController {
                 userId: updated.id,
                 departmentRoleId: roleId,
             }));
+
+            // Update user audit log
+            await req.log({
+                event: AuditEventType.USER_UPDATE,
+                targets: [
+                    {
+                        id: updated.id,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    ...getChanges(
+                        sanitizeUser(user),
+                        sanitizeUser(updated),
+                    ),
+                },
+                status: 'SUCCESS',
+            });
 
             await depRoleUserService.reCreateMany(updated.id, userRoles);
             res.json(updated);

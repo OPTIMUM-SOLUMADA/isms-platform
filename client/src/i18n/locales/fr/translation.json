@@ -1779,6 +1779,13 @@
             "export": {
                 "label": "Exporter les journaux"
             }
+        },
+        "details": {
+            "name": "Nom",
+            "email": "Email",
+            "role": "Rôle",
+            "department": "Départment",
+            "status": "Statut"
         }
     },
     "unauthorized": {
