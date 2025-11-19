@@ -130,6 +130,7 @@ export const API_CONFIG = {
       BASE: "/api/audits",
       GET: (id: string | number) => `/api/audits/${id}`,
       STATS: "/api/audits/stats",
+      EXPORT: "/api/audits/export",
     },
   },
 } as const;

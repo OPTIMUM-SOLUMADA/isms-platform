@@ -2,6 +2,13 @@ import prisma from '@/database/prisma';
 import { AuditEventType, AuditTargetType, Prisma } from '@prisma/client';
 import { endOfDay, startOfDay } from 'date-fns';
 
+const includes: Prisma.AuditLogInclude = {
+    user: {
+        select: { id: true, name: true, email: true },
+    },
+};
+
+export type AuditLogPayload = Prisma.AuditLogGetPayload<{ include: typeof includes }>;
 /**
  * Service handling creation and retrieval of audit logs
  */
