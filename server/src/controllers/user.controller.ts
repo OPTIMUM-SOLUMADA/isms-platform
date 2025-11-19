@@ -180,15 +180,16 @@ export class UserController {
 
     async update(req: Request, res: Response) {
         try {
+            const { id } = req.params;
             const { name, email, role, departmentRoleUsers } = req.body;
             // get user by id
-            const user = await service.getUserById(req.params.id!);
+            const user = await service.getUserById(id!);
             if (!user) {
                 res.status(404).json({ error: 'User not found' });
                 return;
             }
 
-            const updated = await service.updateUser(req.params.id!, {
+            const updated = await service.updateUser(id!, {
                 name,
                 email,
                 role,
@@ -200,6 +201,12 @@ export class UserController {
                 departmentRoleId: roleId,
             }));
 
+
+            await depRoleUserService.reCreateMany(updated.id, userRoles);
+            
+            // reget updated user after updating department roles
+            const regetUpdatedUser = await service.getUserById(id!);
+
             // Update user audit log
             await req.log({
                 event: AuditEventType.USER_UPDATE,
@@ -210,12 +217,11 @@ export class UserController {
                     },
                 ],
                 details: {
-                    ...getChanges(sanitizeUser(user), sanitizeUser(updated)),
+                    ...getChanges(sanitizeUser(user), sanitizeUser(regetUpdatedUser!)),
                 },
                 status: 'SUCCESS',
             });
 
-            await depRoleUserService.reCreateMany(updated.id, userRoles);
             res.json(updated);
         } catch (err) {
             console.log(err);

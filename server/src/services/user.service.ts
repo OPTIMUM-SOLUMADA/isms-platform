@@ -35,6 +35,12 @@ export const userIncludes: Prisma.UserInclude = {
         },
     },
 };
+
+export type UserPayload = Prisma.UserGetPayload<{ include: typeof userIncludes }>;
+
+/**
+ * Service for managing users
+ */
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
         return prisma.user.create({
