@@ -1796,7 +1796,18 @@
       "email": "Email",
       "role": "Role",
       "department": "Department",
-      "status": "Status"
+      "status": "Status",
+      "description": "Description",
+      "title": "Titre",
+      "type": "Type",
+      "version": "Version",
+      "reviewers": "Reviewers",
+      "owners": "Owners",
+      "departments": "Departments",
+      "authors": "Authors",
+      "reviewFrequency": "Review Frequency",
+      "classification": "Classification",
+      "isoClause": "Clause/Control Number"
     }
   },
   "unauthorized": {

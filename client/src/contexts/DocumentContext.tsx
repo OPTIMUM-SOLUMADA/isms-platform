@@ -171,6 +171,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "success",
             });
             setDocuments(prev => [...prev, data]);
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -211,6 +212,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             setDocuments(prev => prev.map(document => document.id === data.id ? data : document));
             queryClient.invalidateQueries({ queryKey: ["departements"] });
             queryClient.invalidateQueries({ queryKey: ["departements", data.id] });
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -235,6 +237,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             queryClient.invalidateQueries({ queryKey: ["departements"] });
             // Invalidate a single document by id
             queryClient.invalidateQueries({ queryKey: ["documents"] });
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -249,7 +252,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     const { mutateAsync: downloadDocument, isPending: isDownloading } = useMutation<any, ApiAxiosError, { id: string, name?: string }>({
         mutationFn: async ({ id }) => await documentService.download(id),
         onSuccess: (res) => {
-            console.log(res.headers);
             // get file
             const url = URL.createObjectURL(res.data);
             // Extract filename from Content-Disposition header
@@ -267,6 +269,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             window.document.body.removeChild(link);
 
             URL.revokeObjectURL(url);
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         }
     });
 
@@ -281,6 +284,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             });
             setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
             queryClient.invalidateQueries({ queryKey: ["published-documents"] });
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         },
         onError: (err) => {
             console.error(err.response?.data);
@@ -302,6 +306,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 variant: "success",
             });
             setDocuments(prev => prev.map(document => document.id === id ? res.data : document));
+            queryClient.invalidateQueries({ queryKey: ["audits"] });
         },
         onError: (err) => {
             console.error(err.response?.data);

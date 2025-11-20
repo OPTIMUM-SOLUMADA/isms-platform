@@ -9,6 +9,78 @@ import prisma from '@/database/prisma';
 import { UserService } from './user.service';
 import { DocumentAuthorService } from './documentauthor.service';
 
+const includes: Prisma.DocumentInclude = {
+    approvals: true,
+    isoClause: true,
+    reviews: true,
+    versions: true,
+    type: true,
+    owner: {
+        select: {
+            id: true,
+            name: true,
+            logo: true,
+            createdAt: true,
+        },
+    },
+    authors: {
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    departmentRoleUsers: {
+                        select: {
+                            id: true,
+                            departmentRole: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    reviewers: {
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    departmentRoleUsers: {
+                        select: {
+                            id: true,
+                            departmentRole: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    departmentRoles: {
+        select: {
+            id: true,
+            departmentRole: true,
+        },
+    },
+};
+
+export type DocumentPayload = Prisma.DocumentGetPayload<{ include: typeof includes }>;
+
 export class DocumentService {
     protected userService: UserService;
     protected documentAuthorService: DocumentAuthorService;
@@ -16,75 +88,7 @@ export class DocumentService {
     constructor() {
         this.userService = new UserService();
         this.documentAuthorService = new DocumentAuthorService();
-        this.documentInclude = {
-            approvals: true,
-            isoClause: true,
-            reviews: true,
-            versions: true,
-            type: true,
-            owner: {
-                select: {
-                    id: true,
-                    name: true,
-                    logo: true,
-                    createdAt: true,
-                },
-            },
-            authors: {
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true,
-                            role: true,
-                            createdAt: true,
-                            departmentRoleUsers: {
-                                select: {
-                                    id: true,
-                                    departmentRole: {
-                                        select: {
-                                            id: true,
-                                            name: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            reviewers: {
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true,
-                            role: true,
-                            createdAt: true,
-                            departmentRoleUsers: {
-                                select: {
-                                    id: true,
-                                    departmentRole: {
-                                        select: {
-                                            id: true,
-                                            name: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            departmentRoles: {
-                select: {
-                    id: true,
-                    departmentRole: true,
-                },
-            },
-        };
+        this.documentInclude = includes;
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
