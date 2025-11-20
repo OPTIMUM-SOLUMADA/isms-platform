@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface Props {
   details: Record<string, any>;
@@ -21,7 +22,7 @@ export default function AuditDetailsViewer({ details, level = 0 }: Props) {
   const visibleEntries = showAll ? entries : entries.slice(0, 3);
 
   return (
-    <div className="font-mono text-sm">
+    <div className="font-mono text-sm border-l-2 pl-2">
       {visibleEntries.map(([key, value]) => (
         <AuditItem key={key} k={key} value={value} level={level} />
       ))}
@@ -57,24 +58,30 @@ function AuditItem({ k, value, level }: { k: string; value: any; level: number }
     <div className="" style={{ marginLeft: level * 16 }}>
       <div className="flex items-center gap-1">
         {isObject && !isChangeItem ? (
-          <button
+          <div
             onClick={() => setOpen(!open)}
             className="text-muted-foreground hover:text-foreground flex items-center gap-1"
           >
-            {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             <span className="text-blue-700">
               <FormatKey _key={k} />
             </span>
             <span className="text-gray-400 ml-1 text-xs">{`(${Object.keys(value).length})`}</span>
-          </button>
+          </div>
         ) : isChangeItem ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-start gap-1">
             <span className="text-blue-700">
               <FormatKey _key={k} />:
             </span>
-            <span className="text-theme-danger/60 ml-1 line-through">{String(value.before)}</span>
-            <ArrowRight size={14} className="text-gray-400" xlinkTitle="After" />
-            <span className="text-green-600 ml-1">{String(value.after)}</span>
+            {/* Before or new value */}
+            {value.before && (
+              <span className={cn("text-amber-700/60 ml-1", !value.after ?  "text-theme-2" : "line-through")}>{String(value.before)}</span>
+            )}
+            {/* Arrow */}
+            {value.before && value.after && (<ArrowRight className="shrink-0 mx-1 my-auto h-3 w-3 text-gray-400" />)}
+            {/* After or updated value */}
+            {value.after && (
+              <span className="text-green-700 ml-1">{String(value.after)}</span>
+            )}
           </div>
         ) : (
           <>
@@ -98,5 +105,5 @@ function AuditItem({ k, value, level }: { k: string; value: any; level: number }
 }
 
 function isChange(value: any): value is { before: any; after: any } {
-  return value && typeof value === "object" && "before" in value && "after" in value;
+  return value && typeof value === "object" && ("before" in value || "after" in value);
 }

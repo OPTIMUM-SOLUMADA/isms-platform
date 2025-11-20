@@ -110,12 +110,13 @@ export class DocumentController {
 
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
 
+            const document = await this.service.getDocumentById(createdDoc.id);
             // Audit
             await req.log({
                 event: AuditEventType.DOCUMENT_CREATE,
                 status: 'SUCCESS',
                 details: {
-                    title: createdDoc.title,
+                    ...getChanges(sanitizeDocument(document!), {}),
                 },
                 targets: [{ id: createdDoc.id, type: 'DOCUMENT' }],
             });
@@ -277,6 +278,17 @@ export class DocumentController {
             const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
             await googleDriveService.deleteFiles(versionsIds);
             await googleDriveService.deleteFolder(deleted.folderId!);
+
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_DELETE,
+                status: 'SUCCESS',
+                details: {
+                    title: deleted.title,
+                    authors: deleted.authors.map((a: any) => a.user?.name),
+                },
+                targets: [{ id: deleted.id, type: 'DOCUMENT' }],
+            });
 
             res.status(204).json(deleted);
         } catch (err) {

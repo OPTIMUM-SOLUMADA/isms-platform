@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { auditEventMeta } from "@/constants/auditevent";
 import { auditStatusColors } from "@/constants/color";
 import AuditDetailsViewer from "./AuditDetailsViewer";
+import { AuditTarget } from "./AuditTarget";
 
 // Table component using the reusable DataTable
 interface TableProps {
@@ -94,7 +95,9 @@ const Table = ({
             cell: ({ row }) => {
                 const audit = row.original;
                 return audit.targets?.map((item, index) => (
-                    <Badge key={index} variant="secondary">{item.type}</Badge>
+                    <Badge key={index} variant="secondary" className="uppercase">
+                        {t(`auditLog.table.cells.types.${item.type}`, { defaultValue: item.type})}
+                    </Badge>
                 ));
             },
         },
@@ -129,6 +132,19 @@ const Table = ({
                 const { ipAddress } = row.original;
                 if (!ipAddress) return <CellNoValue />;
                 return <span className="font-mono opacity-90">{ipAddress.split(',')[0]}</span>;
+            },
+        },
+        {
+            accessorKey: "target",
+            enableSorting: true,
+            header: t("auditLog.table.columns.targets"),
+            enableHiding: false,
+            size: 100,
+            cell: ({ row }) => {
+                const { targets } = row.original;
+                return targets?.map((target, index) => (
+                    <AuditTarget key={index} id={target.id} type={target.type} />
+                )) || <CellNoValue />;
             },
         },
         {

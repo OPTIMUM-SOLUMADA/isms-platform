@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { EditDocumentFormData } from "@/templates/documents/forms/EditDocumentForm";
 import { useTranslation } from "react-i18next";
 import { useGrantPermissionsToDocumentVersion } from "@/hooks/queries/useGoogleDriveMutation";
+import { useAuth } from "./AuthContext";
 
 // Define shape of context
 interface DocumentContextType {
@@ -88,6 +89,7 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
     const { t } = useTranslation();
     const queryClient = useQueryClient();
+    const { user } = useAuth();
 
     const { mutate: grantPermissions } = useGrantPermissionsToDocumentVersion();
 
@@ -156,6 +158,9 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
                 formData.append(key, value.toString());
             });
 
+            // user id
+            formData.append("userId", user.id);
+
             const res = await documentService.create(formData);
             return res.data;
         },
@@ -194,6 +199,9 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             Object.entries(rest).forEach(([key, value]) => {
                 formData.append(key, value.toString());
             });
+
+            // user id
+            formData.append("userId", user.id);
 
             const res = await documentService.update(id, formData);
             return res.data;
