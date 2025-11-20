@@ -109,6 +109,7 @@ export const useUpdateUser = () => {
             });
             replaceUser(variables.id, res.data);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -133,6 +134,7 @@ export const useDeleteUser = () => {
             });
             removeUser(variables.id);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -147,6 +149,7 @@ export const useToggleUserActivation = () => {
             active ? userService.activate(id) : userService.deactivate(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };

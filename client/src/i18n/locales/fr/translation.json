@@ -1762,8 +1762,11 @@
                 "details": {
                     "title": "Détails",
                     "actions": {
-                        "view": {
+                        "viewMore": {
                             "label": "Voir plus"
+                        },
+                        "viewLess": {
+                            "label": "Voir moins"
                         }
                     }
                 }
@@ -1784,8 +1787,19 @@
             "name": "Nom",
             "email": "Email",
             "role": "Rôle",
-            "department": "Départment",
-            "status": "Statut"
+            "department": "Département",
+            "status": "Statut",
+            "description": "Description",
+            "title": "Titre",
+            "type": "Type",
+            "version": "Version",
+            "reviewers": "Réviseurs",
+            "owners": "Propriétaires",
+            "departments": "Départements",
+            "authors": "Auteurs",
+            "reviewFrequency": "Fréquence de révision",
+            "classification": "Classification",
+            "isoClause": "Clause/Numéro de contrôle"
         }
     },
     "unauthorized": {
