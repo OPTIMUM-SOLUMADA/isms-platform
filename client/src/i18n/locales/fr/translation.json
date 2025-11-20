@@ -1725,6 +1725,7 @@
             "DOCUMENT_CREATE": "Document créé",
             "DOCUMENT_EDIT": "Document modifié",
             "DOCUMENT_UPDATE": "Document mis à jour",
+            "DOCUMENT_DELETE": "Document supprimé",
             "DOCUMENT_VERSION_CREATED": "Version créée",
             "DOCUMENT_VERSION_APPROVED": "Version approuvée",
             "DOCUMENT_VERSION_REJECTED": "Version rejetée",
@@ -1752,7 +1753,8 @@
                 "ipAddress": "Adresse IP",
                 "timestamp": "Date et heure",
                 "details": "Détails",
-                "types": "Types"
+                "types": "Types",
+                "targets": "Targets"
             },
             "empty": {
                 "title": "Aucun journal",
@@ -1769,6 +1771,10 @@
                             "label": "Voir moins"
                         }
                     }
+                },
+                "types": {
+                    "DOCUMENT": "Document",
+                    "USER": "Utilisateur"
                 }
             }
         },

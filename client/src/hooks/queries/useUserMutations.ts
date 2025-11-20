@@ -56,6 +56,14 @@ export const useFetchUsersByIds = (ids: string[]) => {
     });
 };
 
+export const useGetUser = (id: string) => {
+    return useQuery<User, ApiAxiosError>({
+        queryKey: ["users", "getUser", id],
+        queryFn: async () => (await userService.getById(id)).data,
+        staleTime: 1000 * 60 * 5,
+    });
+};
+
 
 // -----------------------------
 // Create User

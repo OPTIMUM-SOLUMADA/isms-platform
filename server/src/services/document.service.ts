@@ -237,13 +237,7 @@ export class DocumentService {
         });
         return prisma.document.delete({
             where: { id },
-            include: {
-                versions: {
-                    select: {
-                        googleDriveFileId: true,
-                    },
-                },
-            },
+            include: this.documentInclude,
         });
     }
 
