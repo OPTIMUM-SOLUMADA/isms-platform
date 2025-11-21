@@ -1785,7 +1785,8 @@
         },
         "types": {
           "DOCUMENT": "Document",
-          "USER": "User"
+          "USER": "User",
+          "REVIEW": "Review"
         }
       }
     },
@@ -1816,7 +1817,9 @@
       "authors": "Authors",
       "reviewFrequency": "Review Frequency",
       "classification": "Classification",
-      "isoClause": "Clause/Control Number"
+      "isoClause": "Clause/Control Number",
+      "comment": "Comment",
+      "decision": "Decision"
     }
   },
   "unauthorized": {

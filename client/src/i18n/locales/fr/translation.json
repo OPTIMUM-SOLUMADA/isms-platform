@@ -1731,6 +1731,7 @@
             "DOCUMENT_VERSION_REJECTED": "Version rejetée",
             "DOCUMENT_STATUS_CHANGE": "Statut modifié",
             "DOCUMENT_REVIEW_SUBMITTED": "Revue soumise",
+            "DOCUMENT_REVIEW_APPROVED": "Revue approuvée",
             "USER_ADD": "Utilisateur ajouté",
             "USER_UPDATE": "Utilisateur mis à jour",
             "USER_DELETE": "Utilisateur supprimé",
@@ -1774,7 +1775,8 @@
                 },
                 "types": {
                     "DOCUMENT": "Document",
-                    "USER": "Utilisateur"
+                    "USER": "Utilisateur",
+                    "REVIEW": "Révision"
                 }
             }
         },
@@ -1805,7 +1807,9 @@
             "authors": "Auteurs",
             "reviewFrequency": "Fréquence de révision",
             "classification": "Classification",
-            "isoClause": "Clause/Numéro de contrôle"
+            "isoClause": "Clause/Numéro de contrôle",
+            "comment": "Commentaire",
+            "decision": "Décision"
         }
     },
     "unauthorized": {

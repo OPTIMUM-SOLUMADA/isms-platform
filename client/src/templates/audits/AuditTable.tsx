@@ -94,11 +94,15 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const audit = row.original;
-                return audit.targets?.map((item, index) => (
-                    <Badge key={index} variant="secondary" className="uppercase">
-                        {t(`auditLog.table.cells.types.${item.type}`, { defaultValue: item.type})}
-                    </Badge>
-                ));
+                return (
+                    <div className="space-y-1">
+                        {audit.targets?.map((item, index) => (
+                            <Badge key={index} variant="secondary" className="uppercase">
+                                {t(`auditLog.table.cells.types.${item.type}`, { defaultValue: item.type })}
+                            </Badge>
+                        ))}
+                    </div>
+                );
             },
         },
         {
