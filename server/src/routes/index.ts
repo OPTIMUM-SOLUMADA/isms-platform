@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import express, { Application } from 'express';
 import pageRoutes from '@/routes/page.routes';
 import googleDriveRoutes from '@/routes/googledrive.routes';
 import authRoutes from '@/routes/auth.routes';
@@ -14,26 +14,38 @@ import ownerRoutes from '@/routes/owner.routes';
 import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import versionRoutes from '@/routes/version.routes';
 import auditRoutes from '@/routes/audit.routes';
+import { authenticateToken } from '@/middlewares/auth.middleware';
 
 export default function applyRoutes(app: Application) {
     // Pages
     app.use('/', pageRoutes);
-
     // Google Drive
     app.use('/google-drive', googleDriveRoutes);
 
-    // API
-    app.use('/api/auth', authRoutes);
-    app.use('/api/departments', departmentRoutes);
-    app.use('/api/users', userRoutes);
-    app.use('/api/documents', documentRoutes);
-    app.use('/api/iso-clauses', isoClauseRoutes);
-    app.use('/api/document-types', documentTypeRoutes);
-    app.use('/api/document-reviews', documentReviewRoutes);
-    app.use('/api/excel', excelRoutes);
-    app.use('/api/invitation', invitationRoutes);
-    app.use('/api/owners', ownerRoutes);
-    app.use('/api/department-roles', departmentRoleRoutes);
-    app.use('/api/document-versions', versionRoutes);
-    app.use('/api/audits', auditRoutes);
+    // ******** API Routes ********
+    // Create a new router for API routes
+    const apiRouter = express.Router();
+    // Use authentication middleware for all API routes (secure routes)
+    apiRouter.use(authenticateToken);
+    // Define API routes
+    apiRouter.use('/users', userRoutes);
+    // Documents and Versions
+    apiRouter.use('/documents', documentRoutes);
+    apiRouter.use('/document-versions', versionRoutes);
+    apiRouter.use('/document-types', documentTypeRoutes);
+    apiRouter.use('/document-reviews', documentReviewRoutes);
+    // Department and Roles
+    apiRouter.use('/departments', departmentRoutes);
+    apiRouter.use('/department-roles', departmentRoleRoutes);
+    // Other routes
+    apiRouter.use('/iso-clauses', isoClauseRoutes);
+    apiRouter.use('/excel', excelRoutes);
+    apiRouter.use('/invitation', invitationRoutes);
+    apiRouter.use('/owners', ownerRoutes);
+    apiRouter.use('/audits', auditRoutes);
+
+    // Apply the API router to the app
+    app.use('/api', apiRouter);
+    // Authentification and Authorization
+    app.use('/auth', authRoutes);
 }

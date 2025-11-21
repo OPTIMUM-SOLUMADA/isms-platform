@@ -8,7 +8,7 @@ export const auditLogMiddleware = (req: Request, res: Response, next: NextFuncti
 
     req.log = async (data) => {
         try {
-            const userId = req.body?.userId || data.details?.userId || req.user?.id || null;
+            const userId = req.user?.id || req.body?.userId || data.details?.userId || null;
 
             await AuditService.create({
                 eventType: data.event,
