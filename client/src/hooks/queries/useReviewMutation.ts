@@ -107,6 +107,7 @@ export const useSubmitReview = (id: string | undefined) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
     },
   });
 };
@@ -124,6 +125,7 @@ export const usePatchDocumentReview = (id: string | undefined) => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
       queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
     },
   });
 };
@@ -136,6 +138,7 @@ export const useUpdateComment = (id: string | undefined) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["reviews", id] });
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
     },
   });
 };
@@ -159,6 +162,7 @@ export const useMarkAsCompleted = () => {
       queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
       queryClient.invalidateQueries({ queryKey: ["documents"] });
       queryClient.invalidateQueries({ queryKey: ["other-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
     },
   });
 };

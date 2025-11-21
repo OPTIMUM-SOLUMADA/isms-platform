@@ -4,6 +4,10 @@ import { DocumentVersionService } from '@/services/documentversion.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
 import { DocumentService } from '@/services/document.service';
+import { AuditEventType, AuditTargetType } from '@prisma/client';
+import { stripHtmlAndClamp } from '@/utils/review';
+import { getChanges } from '@/utils/change';
+import { sanitizeDocument } from '@/utils/sanitize-document';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
@@ -73,9 +77,10 @@ export class DocumentReviewController {
 
     async makeDecision(req: Request, res: Response) {
         try {
+            const { id: reviewId } = req.params;
             const { decision, comment } = req.body;
 
-            const review = await service.findById(req.params.id!);
+            const review = await service.findById(reviewId!);
             if (!review) {
                 res.status(404).json({
                     error: 'Review not found',
@@ -84,9 +89,20 @@ export class DocumentReviewController {
                 return;
             }
 
-            const type = await service.submitReviewDecision(req.params.id!, {
+            const type = await service.submitReviewDecision(reviewId!, {
                 decision,
                 comment,
+            });
+
+            // Audit for decision made
+            await req.log({
+                event: AuditEventType.DOCUMENT_REVIEW_SUBMITTED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: reviewId! },
+                    { type: AuditTargetType.DOCUMENT, id: review.documentId },
+                ],
+                details: { decision, comment: stripHtmlAndClamp(comment, 200) },
+                status: 'SUCCESS',
             });
             return res.json(type);
         } catch (error: any) {
@@ -96,10 +112,10 @@ export class DocumentReviewController {
 
     async markAsCompleted(req: Request, res: Response) {
         try {
-            console.log(req.body);
+            const { id: reviewId } = req.params;
             const { userId } = req.body;
 
-            const review = await service.findById(req.params.id!);
+            const review = await service.findById(reviewId!);
 
             if (!review) {
                 res.status(404).json({
@@ -114,6 +130,8 @@ export class DocumentReviewController {
                 return;
             }
 
+            const document = await documentService.getDocumentById(review.document.id!);
+
             // 1 - CREATE APPROVAL
             await approvalService.create({
                 document: { connect: { id: review.document.id! } },
@@ -123,13 +141,35 @@ export class DocumentReviewController {
             });
 
             // 2 - UPDATE DOCUMENT STATUS
-            await documentService.update(review.document.id!, { status: 'APPROVED' });
+            const updatedDocument = await documentService.update(review.document.id!, {
+                status: 'APPROVED',
+            });
 
             // 3 - MARK REVIEW AS COMPLETED
-            const type = await service.markAsCompleted(req.params.id!);
+            const type = await service.markAsCompleted(reviewId!);
+
+            // 4 - Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_VERSION_APPROVED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: reviewId! },
+                    { type: AuditTargetType.DOCUMENT, id: review.documentId },
+                    { type: AuditTargetType.VERSION, id: review.documentVersion.id! },
+                ],
+                details: {
+                    document: {
+                        ...getChanges(
+                            sanitizeDocument(document),
+                            sanitizeDocument(updatedDocument),
+                        ),
+                    },
+                },
+                status: 'SUCCESS',
+            });
 
             return res.json(type);
         } catch (error: any) {
+            console.error(error);
             return res.status(400).json({ error: error.message });
         }
     }
