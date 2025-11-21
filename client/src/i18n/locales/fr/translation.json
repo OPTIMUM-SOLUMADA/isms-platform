@@ -2165,5 +2165,15 @@
                 }
             }
         }
+    },
+    "networkError": {
+        "title": "Erreur réseau",
+        "description": "Il semble y avoir un problème de connexion. Veuillez vérifier votre connexion Internet et réessayer.",
+        "actions": {
+            "retry": {
+                "label": "Réessayer"
+            }
+        },
+        "troubleshootHint": "Ou vérifiez votre connexion"
     }
 }

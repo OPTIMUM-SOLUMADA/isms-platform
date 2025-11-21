@@ -66,7 +66,7 @@ export class AuditService {
                     : {}),
             },
             include: {
-                user: { select: { id: true, name: true, email: true } },
+                user: { select: { id: true, name: true, role: true, email: true } },
             },
             orderBy: { timestamp: 'desc' },
             skip,

@@ -2,6 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import LoadingSplash from '@/components/loading';
+import NetworkError from '../NetworkError';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -9,7 +10,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
     const location = useLocation();
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading, netWorkError } = useAuth();
 
     if (isLoading) {
         return <LoadingSplash
@@ -23,6 +24,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                 "Preparing audit log…",
             ]}
         />
+    }
+
+    if (netWorkError) {
+        return <NetworkError />;
     }
 
     if (!isAuthenticated && !isLoading) {

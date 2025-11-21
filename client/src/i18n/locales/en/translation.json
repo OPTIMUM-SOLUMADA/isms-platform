@@ -2176,5 +2176,15 @@
         }
       }
     }
+  },
+  "networkError": {
+    "title": "Network Error",
+    "description": "There seems to be a connection problem. Please check your Internet connection and try again.",
+    "actions": {
+      "retry": {
+        "label": "Retry"
+      }
+    },
+    "troubleshootHint": "Or check your connection"
   }
 }
