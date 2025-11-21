@@ -24,4 +24,5 @@ export const userCreateSchema = Joi.object({
     }),
     sendInvitationLink: Joi.boolean().optional().default(true),
     isActive: Joi.boolean().optional().default(true),
+    userId: Joi.string().optional().allow(''),
 });

@@ -1736,6 +1736,7 @@
       "DOCUMENT_CREATE": "Document Created",
       "DOCUMENT_EDIT": "Document Edited",
       "DOCUMENT_UPDATE": "Document Updated",
+      "DOCUMENT_DELETE": "Document Deleted",
       "DOCUMENT_VERSION_CREATED": "Version Created",
       "DOCUMENT_VERSION_APPROVED": "Version Approved",
       "DOCUMENT_VERSION_REJECTED": "Version Rejected",
@@ -1762,8 +1763,9 @@
         "action": "Action",
         "ipAddress": "IP Address",
         "timestamp": "Timestamp",
-        "details": "Details",
-        "types": "Types"
+        "details": "Détails",
+        "types": "Types",
+        "targets": "Cibles"
       },
       "empty": {
         "title": "No logs",
@@ -1771,12 +1773,19 @@
       },
       "cells": {
         "details": {
-          "title": "Details",
+          "title": "Détails",
           "actions": {
-            "view": {
+            "viewMore": {
               "label": "View more"
+            },
+            "viewLess": {
+              "label": "Voir less"
             }
           }
+        },
+        "types": {
+          "DOCUMENT": "Document",
+          "USER": "User"
         }
       }
     },
@@ -1790,6 +1799,24 @@
       "export": {
         "label": "Export Logs"
       }
+    },
+    "details": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "department": "Department",
+      "status": "Status",
+      "description": "Description",
+      "title": "Titre",
+      "type": "Type",
+      "version": "Version",
+      "reviewers": "Reviewers",
+      "owners": "Owners",
+      "departments": "Departments",
+      "authors": "Authors",
+      "reviewFrequency": "Review Frequency",
+      "classification": "Classification",
+      "isoClause": "Clause/Control Number"
     }
   },
   "unauthorized": {
@@ -2149,5 +2176,15 @@
         }
       }
     }
+  },
+  "networkError": {
+    "title": "Network Error",
+    "description": "There seems to be a connection problem. Please check your Internet connection and try again.",
+    "actions": {
+      "retry": {
+        "label": "Retry"
+      }
+    },
+    "troubleshootHint": "Or check your connection"
   }
 }

@@ -23,6 +23,7 @@ const updateUserSchema = z.object({
     email: cz.email(),
     role: z.enum(roles),
     departmentRoleUsers: z.array(z.string()).min(1, i18n.t("zod.errors.department.required")),
+    userId: z.string().optional().default(''),
 });
 
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>;

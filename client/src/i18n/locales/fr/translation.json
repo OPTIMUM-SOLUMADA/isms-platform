@@ -1725,6 +1725,7 @@
             "DOCUMENT_CREATE": "Document créé",
             "DOCUMENT_EDIT": "Document modifié",
             "DOCUMENT_UPDATE": "Document mis à jour",
+            "DOCUMENT_DELETE": "Document supprimé",
             "DOCUMENT_VERSION_CREATED": "Version créée",
             "DOCUMENT_VERSION_APPROVED": "Version approuvée",
             "DOCUMENT_VERSION_REJECTED": "Version rejetée",
@@ -1752,7 +1753,8 @@
                 "ipAddress": "Adresse IP",
                 "timestamp": "Date et heure",
                 "details": "Détails",
-                "types": "Types"
+                "types": "Types",
+                "targets": "Targets"
             },
             "empty": {
                 "title": "Aucun journal",
@@ -1762,10 +1764,17 @@
                 "details": {
                     "title": "Détails",
                     "actions": {
-                        "view": {
+                        "viewMore": {
                             "label": "Voir plus"
+                        },
+                        "viewLess": {
+                            "label": "Voir moins"
                         }
                     }
+                },
+                "types": {
+                    "DOCUMENT": "Document",
+                    "USER": "Utilisateur"
                 }
             }
         },
@@ -1779,6 +1788,24 @@
             "export": {
                 "label": "Exporter les journaux"
             }
+        },
+        "details": {
+            "name": "Nom",
+            "email": "Email",
+            "role": "Rôle",
+            "department": "Département",
+            "status": "Statut",
+            "description": "Description",
+            "title": "Titre",
+            "type": "Type",
+            "version": "Version",
+            "reviewers": "Réviseurs",
+            "owners": "Propriétaires",
+            "departments": "Départements",
+            "authors": "Auteurs",
+            "reviewFrequency": "Fréquence de révision",
+            "classification": "Classification",
+            "isoClause": "Clause/Numéro de contrôle"
         }
     },
     "unauthorized": {
@@ -2138,5 +2165,15 @@
                 }
             }
         }
+    },
+    "networkError": {
+        "title": "Erreur réseau",
+        "description": "Il semble y avoir un problème de connexion. Veuillez vérifier votre connexion Internet et réessayer.",
+        "actions": {
+            "retry": {
+                "label": "Réessayer"
+            }
+        },
+        "troubleshootHint": "Ou vérifiez votre connexion"
     }
 }

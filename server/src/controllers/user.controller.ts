@@ -6,6 +6,9 @@ import { env } from '@/configs/env';
 import { JwtService } from '@/services/jwt.service';
 import { DepartmentRoleUserService } from '@/services/departmentrole-user.service';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { AuditEventType } from '@prisma/client';
+import { getChanges } from '@/utils/change';
+import { sanitizeUser } from '@/utils/sanitize-user';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -26,10 +29,11 @@ export class UserController {
                 return;
             }
 
-            const { departmentRoleUsers, sendInvitationLink, ...rest } = req.body;
+            const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
             const user = await service.createUser({
                 ...rest,
+                ...(userId && { createdBy: { connect: { id: userId } } }),
                 isActive: false,
             });
 
@@ -40,6 +44,23 @@ export class UserController {
             }));
 
             await depRoleUserService.createMany(userRoles);
+
+            // Audit log
+            await req.log({
+                event: AuditEventType.USER_ADD,
+                targets: [
+                    {
+                        id: userId,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    email: user.email,
+                    role: user.role,
+                    name: user.name,
+                },
+                status: 'SUCCESS',
+            });
 
             res.status(201).json(user);
         } catch (err) {
@@ -159,8 +180,16 @@ export class UserController {
 
     async update(req: Request, res: Response) {
         try {
+            const { id } = req.params;
             const { name, email, role, departmentRoleUsers } = req.body;
-            const updated = await service.updateUser(req.params.id!, {
+            // get user by id
+            const user = await service.getUserById(id!);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            const updated = await service.updateUser(id!, {
                 name,
                 email,
                 role,
@@ -173,6 +202,25 @@ export class UserController {
             }));
 
             await depRoleUserService.reCreateMany(updated.id, userRoles);
+
+            // reget updated user after updating department roles
+            const regetUpdatedUser = await service.getUserById(id!);
+
+            // Update user audit log
+            await req.log({
+                event: AuditEventType.USER_UPDATE,
+                targets: [
+                    {
+                        id: updated.id,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    ...getChanges(sanitizeUser(user), sanitizeUser(regetUpdatedUser!)),
+                },
+                status: 'SUCCESS',
+            });
+
             res.json(updated);
         } catch (err) {
             console.log(err);
@@ -201,6 +249,24 @@ export class UserController {
     async delete(req: Request, res: Response) {
         try {
             const user = await service.delete(req.params.id!);
+            // const { userId } = req.query;
+
+            // Audit log
+            await req.log({
+                event: AuditEventType.USER_DELETE,
+                targets: [
+                    {
+                        id: user.id,
+                        type: 'USER',
+                    },
+                ],
+                details: {
+                    email: user.email,
+                    role: user.role,
+                    name: user.name,
+                },
+                status: 'SUCCESS',
+            });
             res.json(user);
         } catch (err) {
             console.log(err);

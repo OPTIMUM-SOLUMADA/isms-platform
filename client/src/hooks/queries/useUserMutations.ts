@@ -56,6 +56,14 @@ export const useFetchUsersByIds = (ids: string[]) => {
     });
 };
 
+export const useGetUser = (id: string) => {
+    return useQuery<User, ApiAxiosError>({
+        queryKey: ["users", "getUser", id],
+        queryFn: async () => (await userService.getById(id)).data,
+        staleTime: 1000 * 60 * 5,
+    });
+};
+
 
 // -----------------------------
 // Create User
@@ -109,6 +117,7 @@ export const useUpdateUser = () => {
             });
             replaceUser(variables.id, res.data);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -133,6 +142,7 @@ export const useDeleteUser = () => {
             });
             removeUser(variables.id);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -147,6 +157,7 @@ export const useToggleUserActivation = () => {
             active ? userService.activate(id) : userService.deactivate(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };

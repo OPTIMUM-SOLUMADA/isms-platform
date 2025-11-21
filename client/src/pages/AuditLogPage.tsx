@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import WithTitle from '@/templates/layout/WithTitle';
-import { useFetchAudits, useFetchStats } from '@/hooks/queries/useAuditMutation';
+import { useExportAudits, useFetchAudits, useFetchStats } from '@/hooks/queries/useAuditMutation';
 import { AuditTable } from '@/templates/audits/AuditTable';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,17 @@ export default function AuditLogPage() {
   const { t } = useTranslation();
   const { data = [], isLoading } = useFetchAudits(filterDateRange);
   const { data: stats } = useFetchStats();
+  const { mutate: exportAudits, isPending } = useExportAudits();
 
+  function handleExport() {
+    exportAudits({
+      filter: filterDateRange
+    }, {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+    });
+  }
 
   const uniqueActions = [...new Set(data.map(entry => entry.eventType))];
 
@@ -52,7 +62,11 @@ export default function AuditLogPage() {
             <h1 className="text-3xl font-bold text-gray-900">{t("auditLog.title")}</h1>
             <p className="text-gray-600 mt-1">{t("auditLog.subtitle")}</p>
           </div>
-          <Button className="flex items-center space-x-2">
+          <Button
+            className="flex items-center space-x-2"
+            disabled={isPending}
+            onClick={handleExport}
+          >
             <Download className="h-4 w-4" />
             <span>{t("auditLog.actions.export.label")}</span>
           </Button>

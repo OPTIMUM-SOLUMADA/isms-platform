@@ -16,4 +16,10 @@ export const AuditService = {
             },
         }),
     getStats: () => axios.get(api.STATS),
+    exportExcel: (params?: GetParams) =>
+        axios.get(api.EXPORT, {
+            params: {
+                ...(params && params),
+            },
+        }),
 };

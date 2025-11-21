@@ -10,8 +10,10 @@ import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { RecentlyViewedService } from '@/services/recenltyview.service';
-import { Classification } from '@prisma/client';
+import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
+import { sanitizeDocument } from '@/utils/sanitize-document';
+import { getChanges } from '@/utils/change';
 
 export class DocumentController {
     private service: DocumentService;
@@ -107,6 +109,17 @@ export class DocumentController {
             );
 
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
+
+            const document = await this.service.getDocumentById(createdDoc.id);
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_CREATE,
+                status: 'SUCCESS',
+                details: {
+                    ...getChanges(sanitizeDocument(document!), {}),
+                },
+                targets: [{ id: createdDoc.id, type: 'DOCUMENT' }],
+            });
 
             res.status(201).json(createdDoc);
         } catch (err) {
@@ -233,6 +246,21 @@ export class DocumentController {
                 await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
             }
 
+            const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
+
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_EDIT,
+                status: 'SUCCESS',
+                details: {
+                    ...getChanges(
+                        sanitizeDocument(document),
+                        sanitizeDocument(reGetUpdatedDocument!),
+                    ),
+                },
+                targets: [{ id: updatedDocument.id, type: 'DOCUMENT' }],
+            });
+
             res.json(updatedDocument);
         } catch (err) {
             console.log(err);
@@ -250,6 +278,17 @@ export class DocumentController {
             const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
             await googleDriveService.deleteFiles(versionsIds);
             await googleDriveService.deleteFolder(deleted.folderId!);
+
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_DELETE,
+                status: 'SUCCESS',
+                details: {
+                    title: deleted.title,
+                    authors: deleted.authors.map((a: any) => a.user?.name),
+                },
+                targets: [{ id: deleted.id, type: 'DOCUMENT' }],
+            });
 
             res.status(204).json(deleted);
         } catch (err) {
