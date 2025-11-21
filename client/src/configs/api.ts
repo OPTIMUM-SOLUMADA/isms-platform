@@ -4,14 +4,14 @@ export const API_CONFIG = {
   BASE_URL: env.BASE_URL,
   ENDPOINTS: {
     AUTH: {
-      LOGIN: "/api/auth/login",
-      CHANGE_PASSWORD: "/api/auth/change-password",
-      RESET_PASSWORD: "/api/auth/reset-password",
-      REFRESH: "/api/auth/refresh",
-      VERIFY: "/api/auth/verify",
-      LOGOUT: (userId: string) => `/api/auth/logout/${userId}`,
-      VERIFY_RESET_TOKEN: "/api/auth/verify-reset-token",
-      VERIFY_ACCOUNT: "/api/auth/verify-account",
+      LOGIN: "/auth/login",
+      CHANGE_PASSWORD: "/auth/change-password",
+      RESET_PASSWORD: "/auth/reset-password",
+      REFRESH: "/auth/refresh",
+      VERIFY: "/auth/verify",
+      LOGOUT: (userId: string) => `/auth/logout/${userId}`,
+      VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
+      VERIFY_ACCOUNT: "/auth/verify-account",
     },
     USERS: {
       BASE: "/api/users",

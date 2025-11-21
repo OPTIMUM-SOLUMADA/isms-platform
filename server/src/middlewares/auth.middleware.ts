@@ -1,5 +1,6 @@
 import { JwtService } from '@/services/jwt.service';
 import { Request, Response, NextFunction } from 'express';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 const jwtService = new JwtService();
 
@@ -15,7 +16,10 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
         return next();
     } catch (error) {
-        console.log(error);
-        return res.sendStatus(403);
+        if (error instanceof TokenExpiredError) {
+            return res.sendStatus(401);
+        } else {
+            return res.sendStatus(403);
+        }
     }
 }

@@ -20,6 +20,7 @@ interface AuthContextType {
     login: (data: LoginCredentials) => Promise<void>;
     logout: () => Promise<void>;
     errorCode?: string | null;
+    netWorkError?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,7 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useLocalStorage<string | null>(env.ACCESS_TOKEN_KEY, null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
+    const [netWorkError, setNetworkError] = useState<boolean>(false);
     const isAuthenticated = useMemo(() => !!user, [user]);
 
     useEffect(() => {
@@ -46,9 +47,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .then(res => {
                 setUser(res.data);
             })
+            .catch((err) => {
+                if (err.message === 'Network Error') {
+                    setNetworkError(true);
+                    return;
+                }
+            })
             .finally(() => {
                 setIsLoading(false);
-            })
+            });
     }, [token]);
 
     const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
@@ -78,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         errorCode: loginMutation.error?.response?.data?.code,
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
+        netWorkError,
     };
 
     return (
