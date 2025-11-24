@@ -87,25 +87,6 @@ const Table = ({
             },
         },
         {
-            accessorKey: "types",
-            enableSorting: true,
-            header: t("auditLog.table.columns.types"),
-            enableHiding: false,
-            size: 100,
-            cell: ({ row }) => {
-                const audit = row.original;
-                return (
-                    <div className="space-y-1">
-                        {audit.targets?.map((item, index) => (
-                            <Badge key={index} variant="secondary" className="uppercase">
-                                {t(`auditLog.table.cells.types.${item.type}`, { defaultValue: item.type })}
-                            </Badge>
-                        ))}
-                    </div>
-                );
-            },
-        },
-        {
             accessorKey: "status",
             enableSorting: true,
             header: t("auditLog.table.columns.status"),
@@ -147,9 +128,11 @@ const Table = ({
             cell: ({ row }) => {
                 const { targets } = row.original;
                 if (targets.length === 0) return <CellNoValue />;
-                return targets.map((target, index) => (
-                    <AuditTarget key={index} id={target.id} type={target.type} />
-                ));
+                return <div className="flex items-center flex-wrap gap-1 divide-x">
+                    {targets.map((target, index) => (
+                        <AuditTarget key={index} id={target.id} type={target.type} />
+                    ))}
+                </div>;
             },
         },
         {
@@ -164,6 +147,20 @@ const Table = ({
                 // show json
                 return (
                     <AuditDetailsViewer details={details} />
+                )
+            },
+        },
+        {
+            accessorKey: "userAgent",
+            enableSorting: true,
+            header: t("auditLog.table.columns.userAgent"),
+            enableHiding: false,
+            cell: ({ row }) => {
+                const { userAgent } = row.original;
+                if (!userAgent) return <CellNoValue />;
+                // show json
+                return (
+                    <div className="line-clamp-1 text-xs">{userAgent}</div>
                 )
             },
         },

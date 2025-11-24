@@ -174,6 +174,7 @@ export type AuditLog = {
   targets: AuditTarget[];
   status: AuditStatus;
   ipAddress?: string;
+  userAgent?: string;
 
   // Relations
   user?: User | null;

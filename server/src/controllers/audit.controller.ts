@@ -49,7 +49,6 @@ export class AuditController {
             });
 
             const generatedExcel = await generateAuditLogsExcel(audits as AuditLogPayload[], {
-                filename: 'audit-logs.xlsx',
                 includeHeaders: true,
             });
 
