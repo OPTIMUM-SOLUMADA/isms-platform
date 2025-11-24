@@ -108,6 +108,8 @@ model User {
   createdDepartmentRoles DepartmentRole[]         @relation("DepartmentRolesCreated")
   createdISOClauses      ISOClause[]              @relation("CreatedISOClauses")
   recentlyViews          RecentlyViewedDocument[]
+  nonConformity          NonConformity[]
+  correctiveAction       CorrectiveAction[]
 
   @@index([email, isActive])
   @@index([role])
@@ -240,8 +242,10 @@ model Document {
   notifications Notification[]
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
 
-  authors       DocumentAuthor[]         @relation("DocumentAuthorDocument")
-  recentlyViews RecentlyViewedDocument[]
+  authors            DocumentAuthor[]         @relation("DocumentAuthorDocument")
+  recentlyViews      RecentlyViewedDocument[]
+  documentCompliance DocumentCompliance[]
+  nonConformity      NonConformity[]
 
   @@index([title])
   @@map("documents")
@@ -294,6 +298,8 @@ model ISOClause {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  clauseCompliance  ClauseCompliance[]
 
   @@map("iso_clauses")
 }
@@ -494,4 +500,102 @@ model RecentlyViewedDocument {
   user     User     @relation(fields: [userId], references: [id])
 
   @@map("recently_viewed_documents")
+}
+
+
+// ===========================================================================================
+// COMPLIANCE / CONFORMITE ISO 27001
+// ===========================================================================================
+
+enum ComplianceStatus {
+  COMPLIANT
+  NON_COMPLIANT
+  WARNING
+}
+
+model DocumentCompliance {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String           @db.ObjectId
+  status      ComplianceStatus @default(COMPLIANT)
+  description String?
+  checkedAt   DateTime         @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, status])
+  @@map("document_compliance")
+}
+
+enum NonConformityType {
+  DOCUMENT_EXPIRED
+  REVIEW_OVERDUE
+  UNAUTHORIZED_ACCESS
+  MISSING_APPROVAL
+  OTHER
+}
+
+enum NonConformityStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model NonConformity {
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
+  type        NonConformityType
+  status      NonConformityStatus @default(OPEN)
+  description String?
+  detectedAt  DateTime @default(now())
+  resolvedAt  DateTime?
+
+  documentId String? @db.ObjectId
+  userId     String? @db.ObjectId
+
+  document Document? @relation(fields: [documentId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+
+  correctiveActions CorrectiveAction[]
+
+  @@map("non_conformities")
+}
+
+enum ActionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model CorrectiveAction {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  nonConformityId String       @db.ObjectId
+  description     String
+  ownerId         String?      @db.ObjectId
+  dueDate         DateTime?
+  status          ActionStatus @default(PENDING)
+  completedAt     DateTime?
+
+  nonConformity NonConformity @relation(fields: [nonConformityId], references: [id], onDelete: Cascade)
+  owner         User?          @relation(fields: [ownerId], references: [id])
+
+  @@map("corrective_actions")
+}
+
+enum ClauseComplianceStatus {
+  COMPLIANT
+  PARTIALLY_COMPLIANT
+  NON_COMPLIANT
+  NOT_APPLICABLE
+}
+
+model ClauseCompliance {
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  isoClauseId String                 @db.ObjectId
+  status      ClauseComplianceStatus @default(COMPLIANT)
+  evidence    String?
+  checkedAt   DateTime               @default(now())
+
+  isoClause ISOClause @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+
+  @@map("clause_compliance")
 }

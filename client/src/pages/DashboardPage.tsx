@@ -7,15 +7,15 @@ import {
   Shield,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { complianceProgress, recentActivities } from '@/mocks/dashboard';
+import {  recentActivities } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import  { DashboardStats, UpdcommingDeadline } from '@/components/dashboard';
 import useReviewStore from '@/stores/review/useReviewStore';
 import { useFetchMyReviews } from '@/hooks/queries/useReviewMutation';
+import { useFetchAudits } from '@/hooks/queries/useAuditMutation';
 
 
 
@@ -24,7 +24,9 @@ export default function DashboardPage() {
 
   const { reviews } = useReviewStore()
   const { isLoading } = useFetchMyReviews()
-  console.log("review", reviews);
+  
+  const { data: audits } = useFetchAudits();
+  console.log("review", audits);
   const sortedData = [ ...reviews]
     .filter((item) => item.dueDate)
     .sort(
@@ -38,43 +40,11 @@ export default function DashboardPage() {
         {/* Stats Cards */}
 
         <DashboardStats />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Upcoming Deadlines */}
           <UpdcommingDeadline 
           data={ sortedData }
           isLoading = { isLoading } />
-
-          {/* <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <span>Upcoming Deadlines</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {upcomingDeadlines.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{item.document}</p>
-                    <p className="text-xs text-gray-500 mt-1">Owner: {item.owner}</p>
-                    <p className="text-xs text-gray-500">Due: {new Date(item.deadline).toLocaleDateString()}</p>
-                  </div>
-                  <Badge
-                    variant={
-                      item.priority === 'high' ? 'destructive' :
-                        item.priority === 'medium' ? 'default' : 'secondary'
-                    }
-                    className="text-xs"
-                  >
-                    {item.priority}
-                  </Badge>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full">
-                View All Deadlines
-              </Button>
-            </CardContent>
-          </Card> */}
 
           {/* Recent Activity */}
           <Card>
@@ -105,7 +75,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Compliance Overview */}
-          <Card>
+          {/* <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-blue-600" />
@@ -126,7 +96,7 @@ export default function DashboardPage() {
                 View Compliance Dashboard
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Quick Actions */}
