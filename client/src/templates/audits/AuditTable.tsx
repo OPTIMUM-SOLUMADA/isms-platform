@@ -146,9 +146,10 @@ const Table = ({
             size: 100,
             cell: ({ row }) => {
                 const { targets } = row.original;
-                return targets?.map((target, index) => (
+                if (targets.length === 0) return <CellNoValue />;
+                return targets.map((target, index) => (
                     <AuditTarget key={index} id={target.id} type={target.type} />
-                )) || <CellNoValue />;
+                ));
             },
         },
         {

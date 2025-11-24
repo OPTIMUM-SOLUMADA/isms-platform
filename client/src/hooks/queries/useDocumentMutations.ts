@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import useDocumentStore from "@/stores/document/useDocumentStore";
 import { useAuth } from "@/contexts/AuthContext";
+import { downloadBlob } from "@/lib/download";
 
 // -----------------------------
 // Fetch Documents
@@ -222,25 +223,13 @@ export const useUnpublishDocument = () => {
 // Download Document
 // -----------------------------
 export const useDownloadDocument = () => {
+  const queryClient = useQueryClient();
   return useMutation<any, ApiAxiosError, { id: string }>({
     mutationFn: async ({ id }) => await documentService.download(id),
     onSuccess: (res) => {
-      const url = URL.createObjectURL(res.data);
-      let filename = "downloaded-file";
       const disposition = res.headers["content-disposition"];
-      if (disposition && disposition.includes("filename=")) {
-        filename = disposition
-          .split("filename=")[1]
-          .trim()
-          .replace(/["']/g, "");
-      }
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      downloadBlob(res.data, disposition);
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
     },
   });
 };
