@@ -1,8 +1,8 @@
 import { AuditLogPayload, AuditService } from '@/services/audit.service';
 import { generateAuditLogsExcel } from '@/utils/audit-export';
 import { f } from '@/utils/date';
-import { AuditTargetType } from '@prisma/client';
-import { endOfDay, startOfDay } from 'date-fns';
+import { AuditEventType, AuditTargetType } from '@prisma/client';
+import { endOfDay, format, startOfDay } from 'date-fns';
 import { Request, Response } from 'express';
 
 export class AuditController {
@@ -49,8 +49,18 @@ export class AuditController {
             });
 
             const generatedExcel = await generateAuditLogsExcel(audits as AuditLogPayload[], {
-                filename: 'audit-logs.xlsx',
                 includeHeaders: true,
+            });
+
+            // Audit
+            await req.log({
+                event: AuditEventType.EXPORT_LOGS,
+                details: {
+                    from: format(startOfDay(now), 'dd-MM-yyyy'),
+                    to: format(endOfDay(now), 'dd-MM-yyyy'),
+                },
+                targets: [],
+                status: 'SUCCESS',
             });
 
             const filename = `ISMS Audit Logs ${from} - ${to}.xlsx`;

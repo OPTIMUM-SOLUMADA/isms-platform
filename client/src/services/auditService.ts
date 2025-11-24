@@ -21,5 +21,6 @@ export const AuditService = {
             params: {
                 ...(params && params),
             },
+            responseType: "blob",
         }),
 };

@@ -333,6 +333,17 @@ export class DocumentController {
 
                 const filename = `${document.title} ${document.versions.find((v) => v.isCurrent)?.version}${ext}`;
 
+                // audit log
+                await req.log({
+                    event: AuditEventType.DOCUMENT_DOWNLOAD,
+                    status: 'SUCCESS',
+                    details: {
+                        title: document.title,
+                        version: document.versions.find((v) => v.isCurrent)?.version,
+                    },
+                    targets: [{ id: document.id, type: 'DOCUMENT' }],
+                });
+
                 res.download(filePath, filename);
             }
         } catch (err) {
@@ -356,6 +367,17 @@ export class DocumentController {
             const file = await gdService.getFileById(fileId);
 
             const driveFile = await gdService.getStreamFileById(fileId);
+
+            // audit log
+            await req.log({
+                event: AuditEventType.DOCUMENT_DOWNLOAD,
+                status: 'SUCCESS',
+                details: {
+                    title: document.title,
+                    version: document.versions.find((v) => v.isCurrent)?.version,
+                },
+                targets: [{ id: document.id, type: 'DOCUMENT' }],
+            });
 
             // Set minimal headers to prompt download
             res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);

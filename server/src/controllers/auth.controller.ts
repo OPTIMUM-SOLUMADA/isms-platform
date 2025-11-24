@@ -96,7 +96,6 @@ export class AuthController {
     refresh = async (req: Request, res: Response) => {
         console.log('[AuthController] Refreshing token...');
         const refreshToken = req.cookies['refreshToken'];
-        console.log(refreshToken);
         if (!refreshToken) {
             res.status(403).send('Access Denied. No refresh token provided.');
             return;
