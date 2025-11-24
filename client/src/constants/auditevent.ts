@@ -56,6 +56,12 @@ export const auditEventMeta = {
         icon: FileX,
         color: "text-red-600 bg-red-50",
     },
+    DOCUMENT_DOWNLOAD: {
+        label: "Document Downloaded",
+        labelKey: "auditLog.events.DOCUMENT_DOWNLOAD",
+        icon: Download,
+        color: "text-cyan-600 bg-cyan-50",
+    },
 
     // 📑 Document Version
     DOCUMENT_VERSION_CREATED: {
@@ -88,6 +94,12 @@ export const auditEventMeta = {
         labelKey: "auditLog.events.DOCUMENT_REVIEW_SUBMITTED",
         icon: Eye,
         color: "text-violet-600 bg-violet-50",
+    },
+    DOCUMENT_REVIEW_COMPLETED: {
+        label: "Review Completed",
+        labelKey: "auditLog.events.DOCUMENT_REVIEW_COMPLETED",
+        icon: FileCheck,
+        color: "text-teal-600 bg-teal-50",
     },
 
     // 👤 User

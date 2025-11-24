@@ -291,6 +291,18 @@ export class DocumentReviewController {
             // 8 - Update document status
             await documentService.update(data.documentId, { status: 'IN_REVIEW' });
 
+            // 10 - Audit log
+            await req.log({
+                event: AuditEventType.DOCUMENT_VERSION_CREATED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: id! },
+                    { type: AuditTargetType.DOCUMENT, id: data.documentId },
+                    { type: AuditTargetType.VERSION, id: newVersion.id },
+                ],
+                details: { comment: stripHtmlAndClamp(comment, 200) },
+                status: 'SUCCESS',
+            });
+
             return res.json(data);
         } catch (error: any) {
             console.log(error);

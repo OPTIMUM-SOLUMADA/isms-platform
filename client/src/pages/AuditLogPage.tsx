@@ -8,7 +8,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -44,10 +44,6 @@ export default function AuditLogPage() {
   function handleExport() {
     exportAudits({
       filter: filterDateRange
-    }, {
-      onSuccess: (data) => {
-        console.log(data);
-      },
     });
   }
 
@@ -62,14 +58,14 @@ export default function AuditLogPage() {
             <h1 className="text-3xl font-bold text-gray-900">{t("auditLog.title")}</h1>
             <p className="text-gray-600 mt-1">{t("auditLog.subtitle")}</p>
           </div>
-          <Button
+          <LoadingButton
             className="flex items-center space-x-2"
-            disabled={isPending}
+            isLoading={isPending}
             onClick={handleExport}
           >
             <Download className="h-4 w-4" />
             <span>{t("auditLog.actions.export.label")}</span>
-          </Button>
+          </LoadingButton>
         </div>
 
         {/* Stats Cards */}

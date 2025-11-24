@@ -1,7 +1,8 @@
+import { downloadBlob } from "@/lib/download";
 import { AuditService } from "@/services/auditService";
 import { AuditLog } from "@/types";
 import { ApiAxiosError } from "@/types/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useFetchAudits = (filter?: any) => {
   return useQuery<AuditLog[], ApiAxiosError>({
@@ -28,10 +29,15 @@ export const useFetchStats = () => {
 };
 
 export const useExportAudits = () => {
-  return useMutation<Blob, ApiAxiosError, { filter?: any }>({
-    mutationFn: async (payload) => {
-      const response = await AuditService.exportExcel(payload.filter);
-      return response.data;
-    },
+  const queryClient = useQueryClient();
+  return useMutation<any, ApiAxiosError, { filter?: any }>({
+    mutationFn: async (payload) => await AuditService.exportExcel(payload.filter),
+
+    onSuccess: (res) => {
+      console.log('exported', res);
+      const disposition = res.headers["content-disposition"];
+      downloadBlob(res.data, disposition);
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
+    }
   });
 };
