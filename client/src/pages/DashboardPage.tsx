@@ -41,6 +41,7 @@ export default function DashboardPage() {
 
         <DashboardStats />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
           {/* Upcoming Deadlines */}
           <UpdcommingDeadline 
           data={ sortedData }
@@ -68,9 +69,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
-              <Button variant="outline" className="w-full">
-                View All Activity
-              </Button>
+              <Link to = "/audit" className="flex flex-col ">
+                <Button variant="outline" className="w-full">
+                  View All Activity
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
@@ -113,12 +116,16 @@ export default function DashboardPage() {
                 </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <Clock className="h-6 w-6" />
-                <span className="text-xs">Schedule Review</span>
+                <Link to = "/published-documents" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline  ">
+                  <Clock className="h-6 w-6" />
+                  <span className="text-xs">Publish Document</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <CheckCircle className="h-6 w-6" />
-                <span className="text-xs">Approve Policy</span>
+                <Link to = "/reviews" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <CheckCircle className="h-6 w-6" />
+                  <span className="text-xs">Approve Document</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
                 <Link to = "/users" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
@@ -127,12 +134,16 @@ export default function DashboardPage() {
                 </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <Shield className="h-6 w-6" />
-                <span className="text-xs">Risk Assessment</span>
+                <Link to = "/audit" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <Shield className="h-6 w-6" />
+                  <span className="text-xs">Audit log</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <TrendingUp className="h-6 w-6" />
-                <span className="text-xs">Generate Report</span>
+                <Link to = "/pending-reviews" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <TrendingUp className="h-6 w-6" />
+                  <span className="text-xs">Pending</span>
+                </Link>
               </Button>
             </div>
           </CardContent>

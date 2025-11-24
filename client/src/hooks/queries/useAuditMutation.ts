@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useFetchAudits = (filter?: any) => {
   return useQuery<AuditLog[], ApiAxiosError>({
-    queryFn: async () => (await AuditService.getAll(filter)).data,
+    queryFn: async () => (await AuditService.getAll()).data,
     queryKey: ["audits", filter],
     staleTime: 1000 * 60,
   });

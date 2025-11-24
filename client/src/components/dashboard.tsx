@@ -102,7 +102,7 @@ export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
   if (!data || data.length === 0) {
     return (
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader className=" p-6">
           <CardTitle className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-amber-600" />
             <span>
