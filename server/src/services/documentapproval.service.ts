@@ -10,7 +10,8 @@ export class DocumentApprovalService {
             return await prisma.documentApproval.create({ data });
         } catch (error) {
             console.error('Error creating document approval:', error);
-            throw error;
+            // throw error;
+            return null;
         }
     }
 

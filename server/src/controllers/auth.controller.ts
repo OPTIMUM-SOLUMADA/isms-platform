@@ -112,7 +112,7 @@ export class AuthController {
                 });
             } else {
                 const accessToken = jwtService.generateAccessToken(user);
-                const { passwordHash, ...rest } = user;
+                const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
                 // Exclude password
                 res.header('Authorization', `Bearer ${accessToken}`).status(200).send(rest);
             }

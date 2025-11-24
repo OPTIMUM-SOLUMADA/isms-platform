@@ -73,3 +73,16 @@ export function shouldNotifyReview({
             return isWithinInterval(dueDate, { start: targetStart, end: targetEnd });
     }
 }
+
+export function stripHtmlAndClamp(text: string, maxLength: number): string {
+    // 1. Remove all HTML tags
+    const noHtml = text.replace(/<[^>]+>/g, '');
+
+    // 2. Normalize whitespace
+    const trimmed = noHtml.replace(/\s+/g, ' ').trim();
+
+    // 3. Clamp if needed
+    if (trimmed.length <= maxLength) return trimmed;
+
+    return trimmed.slice(0, maxLength) + '…';
+}

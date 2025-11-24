@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
+import { WifiOff, RefreshCw } from "lucide-react";
 
 // shadcn/ui components (assumes your project has these available)
 import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
@@ -7,10 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 type NetworkErrorProps = {
-    /** Primary message shown to the user */
-    title?: string;
-    /** Optional secondary description */
-    description?: string;
     /** Whether to show the retry button */
     showRetry?: boolean;
     /** Callback for retry action */
@@ -25,8 +21,6 @@ type NetworkErrorProps = {
  * Uses Tailwind + shadcn/ui + lucide-react icons. Written in TypeScript.
  */
 export default function NetworkError({
-    title = "Network error",
-    description = "We couldn't reach the server. Check your connection and try again.",
     showRetry = true,
     onRetry = () => window.location.reload(),
     className = "",
@@ -39,12 +33,12 @@ export default function NetworkError({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className={`max-w-md mx-auto ${className}`}
+            className={`max-w-lg mx-auto ${className}`}
         >
             <Card className="flex items-center gap-4 p-4 md:p-6">
                 <div className="flex-shrink-0">
-                    <div className="rounded-full bg-red-50 p-3 shadow-sm">
-                        <AlertTriangle className="h-6 w-6 text-red-600" />
+                    <div className="p-2">
+                        <img src="/network-error.png" alt="Network Error Illustration" className="mt-6 w-full max-w-32 object-cover h-auto" />
                     </div>
                 </div>
 
