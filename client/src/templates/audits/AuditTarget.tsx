@@ -20,7 +20,7 @@ export const AuditTarget = ({ id, type }: AuditTargetProps) => {
         return (
             <HoverCard>
                 <HoverCardTrigger asChild>
-                    <span className="cursor-pointer underline text-blue-900 text-xs">
+                    <span className="cursor-pointer underline text-blue-900 text-xs pl-1">
                         {type}
                     </span>
                 </HoverCardTrigger>

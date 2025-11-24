@@ -1757,7 +1757,8 @@
                 "timestamp": "Date et heure",
                 "details": "Détails",
                 "types": "Types",
-                "targets": "Targets"
+                "targets": "Targets",
+                "userAgent": "User Agent"
             },
             "empty": {
                 "title": "Aucun journal",
@@ -1811,7 +1812,9 @@
             "classification": "Classification",
             "isoClause": "Clause/Numéro de contrôle",
             "comment": "Commentaire",
-            "decision": "Décision"
+            "decision": "Décision",
+            "from": "De",
+            "to": "À"
         }
     },
     "unauthorized": {
