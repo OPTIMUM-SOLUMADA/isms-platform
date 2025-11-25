@@ -1775,6 +1775,14 @@
       "ACCESS_LOG": "Access Log",
       "EXPORT_LOGS": "Logs Exported"
     },
+    "targets": {
+      "DOCUMENT": "Document",
+      "USER": "User",
+      "DEPARTMENT": "Department",
+      "REVIEW": "Review",
+      "VERSION": "Version",
+      "APPROVAL": "Approval"
+    },
     "status": {
       "SUCCESS": "Success",
       "FAILURE": "Failure"

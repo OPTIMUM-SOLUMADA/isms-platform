@@ -1765,6 +1765,14 @@
             "ACCESS_LOG": "Journal d’accès",
             "EXPORT_LOGS": "Journaux exportés"
         },
+        "targets": {
+            "DOCUMENT": "Document",
+            "USER": "Utilisateur",
+            "DEPARTMENT": "Départment",
+            "REVIEW": "Révision",
+            "VERSION": "Version",
+            "APPROVAL": "Approbation"
+        },
         "status": {
             "SUCCESS": "Succès",
             "FAILURE": "Echec"
