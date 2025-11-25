@@ -35,6 +35,14 @@ export const useFetchUsers = () => {
     return query;
 };
 
+export const useGetUsers = () => {
+    return useQuery<{ users: User[] }, ApiAxiosError>({
+        queryKey: ["users"],
+        queryFn: async () => (await userService.list({ page: 1, limit: 500 })).data,
+        staleTime: 1000 * 60 * 5,
+    });
+};
+
 export const useSearchUsers = () => {
     const { query } = useUserStore();
     const debounceQuery = useDebounce(query, 500);
