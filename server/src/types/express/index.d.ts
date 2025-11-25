@@ -12,6 +12,8 @@ interface LogPayload {
 declare global {
     namespace Express {
         interface Request {
+            // Accedena am alalan'ny req.user sy req.log ireto
+            // Raha tsy asina dia tsy mandeha ilay run dev tsy vanona
             user?: User;
             log: (data: LogPayload) => Promise<void>;
         }
