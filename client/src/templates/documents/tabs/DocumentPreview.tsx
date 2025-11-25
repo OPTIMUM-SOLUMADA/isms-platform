@@ -27,9 +27,12 @@ export default function DocumentPreview({
   const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
 
   return (
-    <Iframe
-      url={fileUrl}
-      className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
-    />
+    <div className="relative w-full h-full">
+      <Iframe
+        url={fileUrl}
+        className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
+        onLoad={() => console.log("loading iframe")}
+      />
+    </div>
   );
 }
