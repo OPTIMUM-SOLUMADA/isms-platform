@@ -4,7 +4,6 @@ import {
     FileText,
     GitBranch,
     Users,
-    Shield,
     Activity,
     type LucideIcon,
     Building2,
@@ -58,13 +57,13 @@ export const menuItems: MenuItem[] = [
         descriptionKey: 'navigation.pendingReviews.description',
         requiredPermission: "pendingReviews.page.access"
     },
-    {
-        path: '/compliance',
-        labelKey: 'navigation.compliance.label',
-        icon: Shield,
-        descriptionKey: 'navigation.compliance.description',
-        requiredPermission: "compliance.page.access"
-    },
+    // {
+    //     path: '/compliance',
+    //     labelKey: 'navigation.compliance.label',
+    //     icon: Shield,
+    //     descriptionKey: 'navigation.compliance.description',
+    //     requiredPermission: "compliance.page.access"
+    // },
     {
         path: '/users',
         labelKey: 'navigation.users.label',

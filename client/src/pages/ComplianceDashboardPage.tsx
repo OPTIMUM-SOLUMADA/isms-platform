@@ -1,37 +1,80 @@
-import {
-  Shield,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
-  Target,
-  TrendingUp,
-  FileText,
-  Calendar
-} from 'lucide-react';
+// pages/compliance/ComplianceDashboardPage.tsx
+import React, { useEffect, useState } from 'react';
+import { CheckCircle, AlertTriangle, Clock, Target, FileText, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { iso27001Clauses } from '@/mocks/compliance';
-import { complianceStatusColors } from '@/constants/color';
 import WithTitle from '@/templates/layout/WithTitle';
 
-const statusIcons = {
-  compliant: CheckCircle,
-  partial: AlertTriangle,
-  'non-compliant': AlertTriangle,
-  'not-started': Clock
+// -------------------------
+// Types
+// -------------------------
+export type ClauseStatus = 'COMPLIANT' | 'PARTIAL' | 'NON_COMPLIANT' | 'NOT_STARTED';
+
+export interface ComplianceClause {
+  id: string;
+  clause: string;
+  title: string;
+  owner: string;
+  status: ClauseStatus;
+  progress: number;
+  documents: number;
+  lastReviewed: string; // ISO date
+  nextReview: string;   // ISO date
+  priority: 'high' | 'medium' | 'low';
+}
+
+// -------------------------
+// Mapping status to icons and colors
+// -------------------------
+const statusIcons: Record<ClauseStatus, React.ElementType> = {
+  COMPLIANT: CheckCircle,
+  PARTIAL: AlertTriangle,
+  NON_COMPLIANT: AlertTriangle,
+  NOT_STARTED: Clock,
 };
 
-export default function ComplianceDashboardPage() {
-  const totalClauses = iso27001Clauses.length;
-  const compliantClauses = iso27001Clauses.filter(c => c.status === 'compliant').length;
-  const partialClauses = iso27001Clauses.filter(c => c.status === 'partial').length;
-  const overallCompliance = Math.round(iso27001Clauses.reduce((sum, clause) => sum + clause.progress, 0) / totalClauses);
+const complianceStatusColors: Record<ClauseStatus, string> = {
+  COMPLIANT: 'bg-green-100 text-green-700',
+  PARTIAL: 'bg-yellow-100 text-yellow-700',
+  NON_COMPLIANT: 'bg-red-100 text-red-700',
+  NOT_STARTED: 'bg-gray-100 text-gray-600',
+};
 
-  const upcomingReviews = iso27001Clauses
-    .filter(clause => {
-      const reviewDate = new Date(clause.nextReview);
+// -------------------------
+// Component
+// -------------------------
+export default function ComplianceDashboardPage() {
+  const [clauses, setClauses] = useState<ComplianceClause[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/compliance/clauses')
+      .then((res) => res.json())
+      .then((data: ComplianceClause[]) => {
+        setClauses(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  // Calculs
+  const totalClauses = clauses.length;
+  const compliantClauses = clauses.filter(c => c.status === 'COMPLIANT').length;
+  const partialClauses = clauses.filter(c => c.status === 'PARTIAL').length;
+  const overallCompliance = totalClauses === 0
+    ? 0
+    : Math.round(clauses.reduce((sum, clause) => sum + clause.progress, 0) / totalClauses);
+
+  const upcomingReviews = clauses
+    .filter(c => {
+      const reviewDate = new Date(c.nextReview);
       const today = new Date();
       const daysUntilReview = Math.ceil((reviewDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       return daysUntilReview <= 30 && daysUntilReview >= 0;
@@ -56,125 +99,106 @@ export default function ComplianceDashboardPage() {
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100">Overall Compliance</p>
-                  <p className="text-3xl font-bold">{overallCompliance}%</p>
-                </div>
-                <Target className="h-12 w-12 text-green-200" />
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-green-100">Overall Compliance</p>
+                <p className="text-3xl font-bold">{overallCompliance}%</p>
               </div>
+              <Target className="h-12 w-12 text-green-200" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Compliant Clauses</p>
-                  <p className="text-2xl font-bold text-green-600">{compliantClauses}/{totalClauses}</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Compliant Clauses</p>
+                <p className="text-2xl font-bold text-green-600">{compliantClauses}/{totalClauses}</p>
               </div>
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Partial Compliance</p>
-                  <p className="text-2xl font-bold text-yellow-600">{partialClauses}</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-yellow-600" />
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Partial Compliance</p>
+                <p className="text-2xl font-bold text-yellow-600">{partialClauses}</p>
               </div>
+              <AlertTriangle className="h-8 w-8 text-yellow-600" />
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Upcoming Reviews</p>
-                  <p className="text-2xl font-bold text-blue-600">{upcomingReviews.length}</p>
-                </div>
-                <Calendar className="h-8 w-8 text-blue-600" />
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Upcoming Reviews</p>
+                <p className="text-2xl font-bold text-blue-600">{upcomingReviews.length}</p>
               </div>
+              <Calendar className="h-8 w-8 text-blue-600" />
             </CardContent>
           </Card>
         </div>
 
+        {/* Compliance Progress */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Compliance Progress */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Shield className="h-5 w-5 text-blue-600" />
-                  <span>ISO 27001 Clauses Progress</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {iso27001Clauses.map((clause) => {
-                  const StatusIcon = statusIcons[clause.status];
-                  return (
-                    <div key={clause.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <StatusIcon className={`h-5 w-5 ${clause.status === 'compliant' ? 'text-green-600' :
-                            clause.status === 'partial' ? 'text-yellow-600' :
-                              clause.status === 'non-compliant' ? 'text-red-600' : 'text-gray-600'
-                            }`} />
-                          <div>
-                            <h4 className="font-semibold">{clause.clause} - {clause.title}</h4>
-                            <p className="text-sm text-gray-600">Owner: {clause.owner}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge className={complianceStatusColors[clause.status]}>
-                            {clause.status.replace('-', ' ')}
-                          </Badge>
-                          <Badge
-                            variant={
-                              clause.priority === 'high' ? 'destructive' :
-                                clause.priority === 'medium' ? 'default' : 'secondary'
-                            }
-                          >
-                            {clause.priority}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progress</span>
-                          <span>{clause.progress}%</span>
-                        </div>
-                        <Progress value={clause.progress} className="h-2" />
-                      </div>
-
-                      <div className="flex justify-between items-center mt-3 text-sm text-gray-600">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-1">
-                            <FileText className="h-4 w-4" />
-                            <span>{clause.documents} documents</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>Last reviewed: {new Date(clause.lastReviewed).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <span>Next review: {new Date(clause.nextReview).toLocaleDateString()}</span>
+          <div className="lg:col-span-2 space-y-4">
+            {clauses.map((clause) => {
+              const StatusIcon = statusIcons[clause.status];
+              return (
+                <Card key={clause.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <StatusIcon className={`h-5 w-5 ${
+                        clause.status === 'COMPLIANT' ? 'text-green-600' :
+                        clause.status === 'PARTIAL' ? 'text-yellow-600' :
+                        clause.status === 'NON_COMPLIANT' ? 'text-red-600' : 'text-gray-600'
+                      }`} />
+                      <div>
+                        <h4 className="font-semibold">{clause.clause} - {clause.title}</h4>
+                        <p className="text-sm text-gray-600">Owner: {clause.owner}</p>
                       </div>
                     </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
+                    <div className="flex items-center space-x-2">
+                      <Badge className={complianceStatusColors[clause.status]}>
+                        {clause.status.replace('_', ' ')}
+                      </Badge>
+                      <Badge variant={
+                        clause.priority === 'high' ? 'destructive' :
+                        clause.priority === 'medium' ? 'default' : 'secondary'
+                      }>
+                        {clause.priority}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span>{clause.progress}%</span>
+                    </div>
+                    <Progress value={clause.progress} className="h-2" />
+                  </div>
+
+                  <div className="flex justify-between items-center mt-3 text-sm text-gray-600">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <FileText className="h-4 w-4" />
+                        <span>{clause.documents} documents</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>Last reviewed: {new Date(clause.lastReviewed).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <span>Next review: {new Date(clause.nextReview).toLocaleDateString()}</span>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
 
+          {/* Sidebar: Upcoming Reviews */}
           <div className="space-y-6">
-            {/* Upcoming Reviews */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -187,7 +211,6 @@ export default function ComplianceDashboardPage() {
                   const daysUntilReview = Math.ceil(
                     (new Date(clause.nextReview).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
                   );
-
                   return (
                     <div key={clause.id} className="p-3 bg-gray-50 rounded-lg">
                       <h4 className="font-medium text-sm">{clause.clause} - {clause.title}</h4>
@@ -203,56 +226,7 @@ export default function ComplianceDashboardPage() {
                     </div>
                   );
                 })}
-
-                {upcomingReviews.length === 0 && (
-                  <p className="text-center text-gray-500 py-4">No upcoming reviews</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Compliance Trends */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                  <span>Compliance Trends</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">This Month</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">{overallCompliance}%</span>
-                      <Badge variant="default" className="text-xs">+2%</Badge>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Last Month</span>
-                    <span className="text-sm font-medium">{overallCompliance - 2}%</span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">3 Months Ago</span>
-                    <span className="text-sm font-medium">{overallCompliance - 5}%</span>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t">
-                  <h5 className="font-medium text-sm mb-2">Areas for Improvement</h5>
-                  <div className="space-y-2">
-                    {iso27001Clauses
-                      .filter(c => c.progress < 80)
-                      .sort((a, b) => a.progress - b.progress)
-                      .slice(0, 3)
-                      .map((clause) => (
-                        <div key={clause.id} className="text-xs text-gray-600">
-                          {clause.clause} - {clause.progress}%
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                {upcomingReviews.length === 0 && <p className="text-center text-gray-500 py-4">No upcoming reviews</p>}
               </CardContent>
             </Card>
           </div>

@@ -41,41 +41,6 @@ export const stats = [
     }
 ];
 
-export const recentActivities = [
-    {
-        id: 1,
-        action: 'Document approved',
-        document: 'Security Incident Response Plan v2.1',
-        user: 'Sarah Johnson',
-        time: '2 hours ago',
-        type: 'approval'
-    },
-    {
-        id: 2,
-        action: 'Review started',
-        document: 'Access Control Policy',
-        user: 'Mike Chen',
-        time: '4 hours ago',
-        type: 'review'
-    },
-    {
-        id: 3,
-        action: 'New document uploaded',
-        document: 'Business Continuity Plan',
-        user: 'Emma Davis',
-        time: '1 day ago',
-        type: 'upload'
-    },
-    {
-        id: 4,
-        action: 'Risk assessment updated',
-        document: 'Annual Risk Register',
-        user: 'David Wilson',
-        time: '2 days ago',
-        type: 'update'
-    }
-];
-
 export const upcomingDeadlines = [
     {
         id: 1,

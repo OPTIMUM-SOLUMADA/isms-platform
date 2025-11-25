@@ -7,15 +7,14 @@ import {
   Shield,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { complianceProgress, recentActivities } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import  { DashboardStats, UpdcommingDeadline } from '@/components/dashboard';
 import useReviewStore from '@/stores/review/useReviewStore';
 import { useFetchMyReviews } from '@/hooks/queries/useReviewMutation';
+import { useFetchAudits } from '@/hooks/queries/useAuditMutation';
 
 
 
@@ -24,7 +23,23 @@ export default function DashboardPage() {
 
   const { reviews } = useReviewStore()
   const { isLoading } = useFetchMyReviews()
-  console.log("review", reviews);
+  
+  const { data: audits } = useFetchAudits();
+  // Trier par date et prendre les 4 récents
+  const recentActivities = audits
+    ?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 4);
+
+  const mappedActivities = recentActivities?.map(audit => ({
+    id: audit.id,
+    type: audit.eventType, // utilisé pour mettre la couleur
+    action: audit.eventType.replaceAll("_", " ").toLowerCase(), // texte
+    document: audit.targets?.[0]?.name ?? "Unknown document",
+    user: audit.user?.name ?? "Unknown user",
+    role: audit.user?.role ?? "Unknown role",
+    time: new Date(audit.timestamp).toLocaleString(),
+  }));
+
   const sortedData = [ ...reviews]
     .filter((item) => item.dueDate)
     .sort(
@@ -32,49 +47,19 @@ export default function DashboardPage() {
           new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()
       )
     .slice(0, 3); // garder les 3 dernières
+
   return (
     <WithTitle title={t("dashboard.title")}>
       <div className="space-y-6">
         {/* Stats Cards */}
 
         <DashboardStats />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
           {/* Upcoming Deadlines */}
           <UpdcommingDeadline 
           data={ sortedData }
           isLoading = { isLoading } />
-
-          {/* <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <span>Upcoming Deadlines</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {upcomingDeadlines.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{item.document}</p>
-                    <p className="text-xs text-gray-500 mt-1">Owner: {item.owner}</p>
-                    <p className="text-xs text-gray-500">Due: {new Date(item.deadline).toLocaleDateString()}</p>
-                  </div>
-                  <Badge
-                    variant={
-                      item.priority === 'high' ? 'destructive' :
-                        item.priority === 'medium' ? 'default' : 'secondary'
-                    }
-                    className="text-xs"
-                  >
-                    {item.priority}
-                  </Badge>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full">
-                View All Deadlines
-              </Button>
-            </CardContent>
-          </Card> */}
 
           {/* Recent Activity */}
           <Card>
@@ -85,27 +70,32 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentActivities.map((activity) => (
+              {mappedActivities?.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-3">
-                  <div className={`mt-1 h-2 w-2 rounded-full ${activity.type === 'approval' ? 'bg-green-500' :
-                    activity.type === 'review' ? 'bg-blue-500' :
-                      activity.type === 'upload' ? 'bg-purple-500' : 'bg-amber-500'
+                  <div 
+                    className={`mt-1 h-2 w-2 rounded-full ${
+                      activity.type.includes("APPROVED") ? 'bg-green-500' :
+                      activity.type.includes('REJECTED') ? 'bg-blue-500' :
+                      activity.type.includes('UPDATE') ? 'bg-purple-500' : 
+                      'bg-amber-500'
                     }`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{activity.action}</p>
-                    <p className="text-xs text-gray-600 truncate">{activity.document}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.user} • {activity.time}</p>
+                    <p className="text-xs text-gray-600 truncate">{activity.user} • {activity.role}</p>
+                    <p className="text-xs text-gray-500 mt-1"> {activity.time}</p>
                   </div>
                 </div>
               ))}
-              <Button variant="outline" className="w-full">
-                View All Activity
-              </Button>
+              <Link to = "/audit" className="flex flex-col ">
+                <Button variant="outline" className="w-full">
+                  View All Activity
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
           {/* Compliance Overview */}
-          <Card>
+          {/* <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-blue-600" />
@@ -126,7 +116,7 @@ export default function DashboardPage() {
                 View Compliance Dashboard
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Quick Actions */}
@@ -143,12 +133,16 @@ export default function DashboardPage() {
                 </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <Clock className="h-6 w-6" />
-                <span className="text-xs">Schedule Review</span>
+                <Link to = "/published-documents" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline  ">
+                  <Clock className="h-6 w-6" />
+                  <span className="text-xs">Publish Document</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <CheckCircle className="h-6 w-6" />
-                <span className="text-xs">Approve Policy</span>
+                <Link to = "/reviews" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <CheckCircle className="h-6 w-6" />
+                  <span className="text-xs">Approve Document</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
                 <Link to = "/users" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
@@ -157,12 +151,16 @@ export default function DashboardPage() {
                 </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <Shield className="h-6 w-6" />
-                <span className="text-xs">Risk Assessment</span>
+                <Link to = "/audit" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <Shield className="h-6 w-6" />
+                  <span className="text-xs">Audit log</span>
+                </Link>
               </Button>
               <Button variant="outline" className="flex flex-col items-center space-y-2 h-20">
-                <TrendingUp className="h-6 w-6" />
-                <span className="text-xs">Generate Report</span>
+                <Link to = "/pending-reviews" className="flex flex-col items-center space-y-2 text-black hover:text-black no-underline">
+                  <TrendingUp className="h-6 w-6" />
+                  <span className="text-xs">Pending</span>
+                </Link>
               </Button>
             </div>
           </CardContent>
