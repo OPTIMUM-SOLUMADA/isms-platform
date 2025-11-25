@@ -1729,6 +1729,28 @@
   "auditLog": {
     "title": "Audit Log",
     "subtitle": "Track all system activities and changes for compliance",
+    "filters": {
+      "search": {
+        "label": "Search by user, action, IP address or user agent",
+        "placeholder": "Search logs..."
+      },
+      "event": {
+        "label": "Filter by event",
+        "placeholder": "All events"
+      },
+      "status": {
+        "label": "Filter by status",
+        "placeholder": "All statuses"
+      },
+      "user": {
+        "label": "Filter by user",
+        "placeholder": "All users"
+      },
+      "dateRange": {
+        "label": "Filter by date range",
+        "placeholder": "Select a date range"
+      }
+    },
     "events": {
       "AUTH_LOGIN_ATTEMPT": "Login Attempt",
       "AUTH_LOGIN": "Login",
@@ -1762,7 +1784,7 @@
         "event": "Event",
         "status": "Status",
         "user": "User",
-        "action": "Action",
+        "action": "Event",
         "ipAddress": "IP Address",
         "timestamp": "Timestamp",
         "details": "Détails",
@@ -1824,7 +1846,8 @@
       "comment": "Comment",
       "decision": "Decision",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "document": "Document"
     }
   },
   "unauthorized": {
@@ -2030,6 +2053,27 @@
     "dueDateProgress": {
       "left": "{{time}} left",
       "overdue": "Overdue by {{time}}"
+    },
+    "dateRangePicker": {
+      "presetRanges": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last7": "Last 7 days",
+        "last14": "Last 14 days",
+        "last30": "Last 30 days",
+        "thisWeek": "This week",
+        "lastWeek": "Last week",
+        "thisMonth": "This month",
+        "lastMonth": "Last month"
+      },
+      "actions": {
+        "cancel": {
+          "label": "Cancel"
+        },
+        "apply": {
+          "label": "Apply"
+        }
+      }
     }
   },
   "navigation": {

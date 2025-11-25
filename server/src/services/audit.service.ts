@@ -1,5 +1,5 @@
 import prisma from '@/database/prisma';
-import { AuditEventType, AuditTargetType, Prisma } from '@prisma/client';
+import { AuditEventType, AuditStatus, AuditTargetType, Prisma } from '@prisma/client';
 import { endOfDay, startOfDay } from 'date-fns';
 
 const includes: Prisma.AuditLogInclude = {
@@ -37,41 +37,63 @@ export class AuditService {
         organizationId?: string;
         eventType?: AuditEventType;
         limit?: number;
-        skip?: number;
+        page?: number;
         startDate?: Date;
         endDate?: Date;
+        status?: AuditStatus;
     }) {
         const {
             userId,
             type,
             eventType,
             limit = 100,
-            skip = 0,
+            page = 1,
             startDate,
             endDate,
+            status,
         } = filters || {};
 
-        return prisma.auditLog.findMany({
-            where: {
-                ...(userId && { userId }),
-                ...(type && { targets: { some: { type } } }),
-                ...(eventType && { eventType }),
-                ...(startDate || endDate
-                    ? {
-                          timestamp: {
-                              ...(startDate && { gte: startDate }),
-                              ...(endDate && { lte: endDate }),
-                          },
-                      }
-                    : {}),
-            },
-            include: {
-                user: { select: { id: true, name: true, role: true, email: true } },
-            },
-            orderBy: { timestamp: 'desc' },
-            skip,
-            take: limit,
-        });
+        const skip = (page - 1) * limit;
+
+        const customWhere: Prisma.AuditLogWhereInput = {
+            ...(userId && { userId }),
+            ...(type && { targets: { some: { type } } }),
+            ...(eventType && { eventType }),
+            ...(startDate || endDate
+                ? {
+                      timestamp: {
+                          ...(startDate && { gte: startDate }),
+                          ...(endDate && { lte: endDate }),
+                      },
+                  }
+                : {}),
+            ...(status && { status }),
+        };
+
+        const [items, total, events] = await prisma.$transaction([
+            prisma.auditLog.findMany({
+                where: customWhere,
+                include: {
+                    user: { select: { id: true, name: true, role: true, email: true } },
+                },
+                orderBy: { timestamp: 'desc' },
+                skip,
+                take: limit,
+            }),
+            prisma.auditLog.count({ where: customWhere }),
+            prisma.auditLog.findMany({
+                distinct: ['eventType'],
+                select: { eventType: true },
+            }),
+        ]);
+
+        return {
+            data: items,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+            events: events.map((e) => e.eventType),
+        };
     }
 
     /**

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Activity,
   Search,
@@ -24,11 +24,13 @@ import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { useTranslation } from 'react-i18next';
 import { addMonths, format, subMonths } from 'date-fns';
 import i18n from '@/i18n/config';
+import { useGetUsers } from '@/hooks/queries/useUserMutations';
+import { UserAvatar } from '@/components/user-avatar';
 
 export default function AuditLogPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
-  const [filterResourceType, setFilterResourceType] = useState('all');
+  const [filterUser, setFilterUser] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const now = new Date();
   const [filterDateRange, setFilterDateRange] = useState<{ from: string; to: string } | null>({
@@ -36,18 +38,33 @@ export default function AuditLogPage() {
     to: format(addMonths(now, 0), "yyyy-MM-dd"),
   });
 
+  const filter = useMemo(() => {
+    return {
+      ...filterDateRange,
+      eventType: filterAction !== 'all' ? filterAction : undefined,
+      userId: filterUser !== 'all' ? filterUser : undefined,
+      status: filterStatus !== 'all' ? filterStatus : undefined,
+    }
+  }, [filterDateRange, filterAction, filterUser, filterStatus]);
+
   const { t } = useTranslation();
-  const { data = [], isLoading } = useFetchAudits(filterDateRange);
+  const { data, isLoading } = useFetchAudits(filter);
   const { data: stats } = useFetchStats();
+  const { data: usersResponse } = useGetUsers();
   const { mutate: exportAudits, isPending } = useExportAudits();
+
+  const filteredAudits = useMemo(() => {
+    if (!data) return [];
+    if (!searchTerm) return data.data;
+    return data.data.filter((audit) => JSON.stringify(audit.details).toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [data, searchTerm]);
 
   function handleExport() {
     exportAudits({
-      filter: filterDateRange
+      filter: filter
     });
   }
 
-  const uniqueActions = [...new Set(data.map(entry => entry.eventType))];
 
   return (
     <WithTitle title="Audit Log">
@@ -129,56 +146,7 @@ export default function AuditLogPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search by resource, user, action, or details..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Select value={filterAction} onValueChange={setFilterAction}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Action" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Actions</SelectItem>
-                    {uniqueActions.map(action => (
-                      <SelectItem key={action} value={action}>{action}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={filterResourceType} onValueChange={setFilterResourceType}>
-                  <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="document">Document</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                    <SelectItem value="review">Review</SelectItem>
-                    <SelectItem value="policy">Policy</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-full sm:w-32">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="success">Success</SelectItem>
-                    <SelectItem value="warning">Warning</SelectItem>
-                    <SelectItem value="error">Error</SelectItem>
-                  </SelectContent>
-                </Select>
-
+              
                 <DateRangePicker
                   onUpdate={(values) => setFilterDateRange({
                     from: values.range.from.toISOString(),
@@ -190,12 +158,71 @@ export default function AuditLogPage() {
                   locale={i18n.language === 'fr' ? "fr-FR" : "en-GB"}
                   showCompare={false}
                 />
+              <div className="flex flex-1 flex-col sm:flex-row gap-2">
+                <Select value={filterAction} onValueChange={setFilterAction}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("auditLog.filters.event.label")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("auditLog.filters.event.label")}</SelectItem>
+                    {data && data.events.map(action => (
+                      <SelectItem key={action} value={action}>
+                        {t(`auditLog.events.${action}`, { defaultValue: action })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterUser} onValueChange={setFilterUser}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("auditLog.filters.user.label")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("auditLog.filters.user.label")}</SelectItem>
+                    {usersResponse && usersResponse.users.map(user => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <div className="flex items-center">
+                          <UserAvatar id={user.id} name={user.name} className="mr-2 size-5" />
+                          <span>{user.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("auditLog.filters.status.label")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("auditLog.filters.status.label")}</SelectItem>
+                    <SelectItem value="SUCCESS">
+                      {t("auditLog.status.SUCCESS", { defaultValue: 'Success' })}
+                    </SelectItem>
+                    <SelectItem value="FAILURE">
+                      {t("auditLog.status.FAILURE", { defaultValue: 'Failure' })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+              </div>
+              
+              <div className="w-full sm:w-64 lg:w-96 ml-auto">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder={t("auditLog.filters.search.placeholder", { defaultValue: "Search..."})}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <AuditTable data={data} isLoading={isLoading} />
+        <AuditTable data={filteredAudits} isLoading={isLoading} />
       </div>
     </WithTitle>
   );

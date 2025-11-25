@@ -149,6 +149,11 @@ export class DocumentReviewController {
             const type = await service.markAsCompleted(reviewId!);
 
             // 4 - Audit
+            const changes = getChanges(
+                sanitizeDocument(document),
+                sanitizeDocument(updatedDocument),
+            );
+
             await req.log({
                 event: AuditEventType.DOCUMENT_VERSION_APPROVED,
                 targets: [
@@ -157,12 +162,7 @@ export class DocumentReviewController {
                     { type: AuditTargetType.VERSION, id: review.documentVersion.id! },
                 ],
                 details: {
-                    document: {
-                        ...getChanges(
-                            sanitizeDocument(document),
-                            sanitizeDocument(updatedDocument),
-                        ),
-                    },
+                    ...(changes && { document: changes }),
                 },
                 status: 'SUCCESS',
             });
