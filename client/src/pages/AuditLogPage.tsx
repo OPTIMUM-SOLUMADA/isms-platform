@@ -143,7 +143,7 @@ export default function AuditLogPage() {
         </div>
 
         {/* Filters */}
-        <Card>
+        <Card className='sticky top-0 z-50'>
           <CardContent className="p-4">
             <div className="flex flex-col lg:flex-row gap-4">
               
