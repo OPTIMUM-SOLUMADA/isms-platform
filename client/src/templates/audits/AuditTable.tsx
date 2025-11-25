@@ -98,7 +98,7 @@ const Table = ({
                 return (
                     <Badge
                         className={cn(
-                            "border-0 flex items-center gap-1 w-fit p-1 uppercase",
+                            "border-0 flex items-center gap-1 w-fit p-1 text-xs font-medium uppercase",
                             color,
                         )}
                     >

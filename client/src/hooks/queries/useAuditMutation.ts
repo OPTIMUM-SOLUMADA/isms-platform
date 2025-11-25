@@ -5,19 +5,19 @@ import { ApiAxiosError } from "@/types/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useFetchAudits = (filter?: any) => {
-  return useQuery<AuditLog[], ApiAxiosError>({
-    queryFn: async () => (await AuditService.getAll()).data,
+  return useQuery<{ data: AuditLog[], total: number, page: number, totalPages: number, events: string[]}, ApiAxiosError>({
+    queryFn: async () => (await AuditService.getAll(filter)).data,
     queryKey: ["audits", filter],
     staleTime: 1000 * 60,
   });
-};
+};  
 
 // get stats
 type Stats = {
   total: number;
   success: number;
   failure: number;
-  today: number;
+  today: number;      
 };
 
 export const useFetchStats = () => {

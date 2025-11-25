@@ -121,10 +121,10 @@ export const API_CONFIG = {
       GET: (id: string | number) => `/api/department-roles/${id}`,
     },
     GOOGLE_DRIVE: {
-      BASE: "/api/google-drive",
-      GET_FILES: () => `/api/google-drive/files`,
+      BASE: "/google-drive",
+      GET_FILES: () => `/google-drive/files`,
       GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
-        `/api/google-drive/grant-permissions/${id}`,
+        `/google-drive/grant-permissions/${id}`,
     },
     AUDIT: {
       BASE: "/api/audits",

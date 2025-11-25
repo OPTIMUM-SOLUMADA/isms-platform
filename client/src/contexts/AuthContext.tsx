@@ -3,7 +3,7 @@ import AuthService from '@/services/authService';
 import { User } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { env } from '@/configs/env';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ApiAxiosError } from '@/types/api';
 
 export type LoginCredentials = {
@@ -36,6 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [netWorkError, setNetworkError] = useState<boolean>(false);
     const isAuthenticated = useMemo(() => !!user, [user]);
 
+    const queryClient = useQueryClient();
+
     useEffect(() => {
         if (!token) {
             setUser(null);
@@ -66,6 +68,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }),
         onSuccess: (res) => {
             setUser(res.data);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         }
     });
 

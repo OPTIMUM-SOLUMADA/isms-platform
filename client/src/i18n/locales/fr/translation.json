@@ -1718,6 +1718,28 @@
     "auditLog": {
         "title": "Journal d'audit",
         "subtitle": "Suivre toutes les activités et les modifications du système pour la conformité.",
+        "filters": {
+            "search": {
+                "label": "Rechercher par utilisateur, action, adresse IP ou user agent",
+                "placeholder": "Rechercher dans les logs..."
+            },
+            "event": {
+                "label": "Filtrer par événement",
+                "placeholder": "Tous les événements"
+            },
+            "status": {
+                "label": "Filtrer par statut",
+                "placeholder": "Tous les statuts"
+            },
+            "user": {
+                "label": "Filtrer par utilisateur",
+                "placeholder": "Tous les utilisateurs"
+            },
+            "dateRange": {
+                "label": "Filtrer par plage de dates",
+                "placeholder": "Sélectionnez une plage de dates"
+            }
+        },
         "events": {
             "AUTH_LOGIN_ATTEMPT": "Tentative de connexion",
             "AUTH_LOGIN": "Connexion",
@@ -1743,6 +1765,14 @@
             "ACCESS_LOG": "Journal d’accès",
             "EXPORT_LOGS": "Journaux exportés"
         },
+        "targets": {
+            "DOCUMENT": "Document",
+            "USER": "Utilisateur",
+            "DEPARTMENT": "Départment",
+            "REVIEW": "Révision",
+            "VERSION": "Version",
+            "APPROVAL": "Approbation"
+        },
         "status": {
             "SUCCESS": "Succès",
             "FAILURE": "Echec"
@@ -1752,7 +1782,7 @@
                 "event": "Evenement",
                 "status": "Statut",
                 "user": "Utilisateur",
-                "action": "Action",
+                "action": "Evénement",
                 "ipAddress": "Adresse IP",
                 "timestamp": "Date et heure",
                 "details": "Détails",
@@ -1814,7 +1844,8 @@
             "comment": "Commentaire",
             "decision": "Décision",
             "from": "De",
-            "to": "À"
+            "to": "À",
+            "document": "Document"
         }
     },
     "unauthorized": {
@@ -2020,6 +2051,27 @@
         "dueDateProgress": {
             "left": "Il reste {{time}}",
             "overdue": "En retard de {{time}}"
+        },
+        "dateRangePicker": {
+            "presetRanges": {
+                "today": "Aujourd'hui",
+                "yesterday": "Hier",
+                "last7": "Derniers 7 jours",
+                "last14": "Derniers 14 jours",
+                "last30": "Derniers 30 jours",
+                "thisWeek": "Cette semaine",
+                "lastWeek": "La semaine dernière",
+                "thisMonth": "Ce mois-ci",
+                "lastMonth": "Le mois dernier"
+            },
+            "actions": {
+                "cancel": {
+                    "label": "Annuler"
+                },
+                "apply": {
+                    "label": "Appliquer"
+                }
+            }
         }
     },
     "navigation": {

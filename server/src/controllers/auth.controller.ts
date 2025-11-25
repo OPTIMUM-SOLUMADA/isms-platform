@@ -60,6 +60,7 @@ export class AuthController {
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
+            req.user = user;
             // Audit log for login
             await req.log({
                 event: AuditEventType.AUTH_LOGIN,

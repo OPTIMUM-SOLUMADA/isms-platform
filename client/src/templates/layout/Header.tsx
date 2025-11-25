@@ -99,7 +99,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                     />
                     <div className="hidden md:block text-left">
                       <div className="font-medium text-sm text-gray-900">{user.name}</div>
-                      <div className="text-xs text-gray-500">{user.role}</div>
+                      <div className="text-xs text-gray-500">{t(`role.options.${user.role?.toLowerCase()}`, { defaultValue: user.role})}</div>
                     </div>
                   </div>
                 </Button>

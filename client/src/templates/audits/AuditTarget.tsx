@@ -5,6 +5,7 @@ import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 import { useGetUser } from "@/hooks/queries/useUserMutations";
 import { getFileIconByName } from "@/lib/icon";
 import { AuditTargetType } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface AuditTargetProps {
     id: string;
@@ -14,14 +15,15 @@ interface AuditTargetProps {
 
 export const AuditTarget = ({ id, type }: AuditTargetProps) => {
     const HoverComponent = HoverComponents[type];
+    const { t } = useTranslation();
 
     // If there's a hover component, wrap in Tooltip
     if (HoverComponent) {
         return (
             <HoverCard>
                 <HoverCardTrigger asChild>
-                    <span className="cursor-pointer underline text-blue-900 text-xs pl-1">
-                        {type}
+                    <span className="cursor-pointer uppercase underline text-blue-900 text-xs pl-1">
+                        {t(`auditLog.targets.${type}`, { defaultValue: type })}
                     </span>
                 </HoverCardTrigger>
 
@@ -57,7 +59,7 @@ export const DocumentTarget = ({ id }: { id: string }) => {
     if (!data) return "404";
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-sm">
             {getFileIconByName(data.fileUrl, 20)}
             {data.title}
         </div>
@@ -72,7 +74,7 @@ export const UserTarget = ({ id }: { id: string }) => {
     if (!data) return "404";
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-sm">
             <UserAvatar id={data.id} name={data.name} className="size-5" />
             {data.name}
         </div>
