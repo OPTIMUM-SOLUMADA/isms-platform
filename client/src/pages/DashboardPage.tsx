@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {  recentActivities } from '@/mocks/dashboard';
 import WithTitle from '@/templates/layout/WithTitle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -26,7 +25,21 @@ export default function DashboardPage() {
   const { isLoading } = useFetchMyReviews()
   
   const { data: audits } = useFetchAudits();
-  console.log("review", audits);
+  // Trier par date et prendre les 4 récents
+  const recentActivities = audits
+    ?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 4);
+
+  const mappedActivities = recentActivities?.map(audit => ({
+    id: audit.id,
+    type: audit.eventType, // utilisé pour mettre la couleur
+    action: audit.eventType.replaceAll("_", " ").toLowerCase(), // texte
+    document: audit.targets?.[0]?.name ?? "Unknown document",
+    user: audit.user?.name ?? "Unknown user",
+    role: audit.user?.role ?? "Unknown role",
+    time: new Date(audit.timestamp).toLocaleString(),
+  }));
+
   const sortedData = [ ...reviews]
     .filter((item) => item.dueDate)
     .sort(
@@ -34,6 +47,7 @@ export default function DashboardPage() {
           new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()
       )
     .slice(0, 3); // garder les 3 dernières
+
   return (
     <WithTitle title={t("dashboard.title")}>
       <div className="space-y-6">
@@ -56,16 +70,19 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentActivities.map((activity) => (
+              {mappedActivities?.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-3">
-                  <div className={`mt-1 h-2 w-2 rounded-full ${activity.type === 'approval' ? 'bg-green-500' :
-                    activity.type === 'review' ? 'bg-blue-500' :
-                      activity.type === 'upload' ? 'bg-purple-500' : 'bg-amber-500'
+                  <div 
+                    className={`mt-1 h-2 w-2 rounded-full ${
+                      activity.type.includes("APPROVED") ? 'bg-green-500' :
+                      activity.type.includes('REJECTED') ? 'bg-blue-500' :
+                      activity.type.includes('UPDATE') ? 'bg-purple-500' : 
+                      'bg-amber-500'
                     }`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{activity.action}</p>
-                    <p className="text-xs text-gray-600 truncate">{activity.document}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.user} • {activity.time}</p>
+                    <p className="text-xs text-gray-600 truncate">{activity.user} • {activity.role}</p>
+                    <p className="text-xs text-gray-500 mt-1"> {activity.time}</p>
                   </div>
                 </div>
               ))}
