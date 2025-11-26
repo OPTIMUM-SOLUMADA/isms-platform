@@ -1,10 +1,24 @@
-import { Prisma, ClauseComplianceStatus, ComplianceStatus, NonConformityStatus, ActionStatus } from '@prisma/client';
+import {
+    Prisma,
+    ClauseComplianceStatus,
+    ComplianceStatus,
+    NonConformityStatus,
+    ActionStatus,
+} from '@prisma/client';
 import prisma from '@/database/prisma';
 
-export type ClauseCompliancePayload = Prisma.ClauseComplianceGetPayload<{ include: { isoClause: true } }>;
-export type DocumentCompliancePayload = Prisma.DocumentComplianceGetPayload<{}>;
-export type NonConformityPayload = Prisma.NonConformityGetPayload<{ include: { correctiveActions: true, document: true, user: true } }>;
-export type CorrectiveActionPayload = Prisma.CorrectiveActionGetPayload<{ include: { owner: true } }>;
+export type ClauseCompliancePayload = Prisma.ClauseComplianceGetPayload<{
+    include: { isoClause: true };
+}>;
+export type DocumentCompliancePayload = Prisma.DocumentComplianceGetPayload<{
+    include: { document: true };
+}>;
+export type NonConformityPayload = Prisma.NonConformityGetPayload<{
+    include: { correctiveActions: true; document: true; user: true };
+}>;
+export type CorrectiveActionPayload = Prisma.CorrectiveActionGetPayload<{
+    include: { owner: true };
+}>;
 
 export class ComplianceService {
     // -------------------------
@@ -16,7 +30,11 @@ export class ComplianceService {
         });
     }
 
-    async updateClauseStatus(id: string, status: ClauseComplianceStatus, evidence?: string): Promise<ClauseCompliancePayload> {
+    async updateClauseStatus(
+        id: string,
+        status: ClauseComplianceStatus,
+        evidence?: string,
+    ): Promise<ClauseCompliancePayload> {
         const data = {
             status,
             checkedAt: new Date(),
@@ -33,17 +51,13 @@ export class ComplianceService {
     // -------------------------
     // Document Compliance
     // -------------------------
-    async getDocumentCompliance(documentId: string): Promise<DocumentCompliancePayload[]> {
+    async getDocumentCompliance(documentId: string) {
         return prisma.documentCompliance.findMany({
             where: { documentId },
         });
     }
 
-    async updateDocumentCompliance(
-        id: string,
-        status: ComplianceStatus,
-        description?: string
-    ): Promise<DocumentCompliancePayload> {
+    async updateDocumentCompliance(id: string, status: ComplianceStatus, description?: string) {
         const payload = {
             status,
             checkedAt: new Date(),
@@ -106,7 +120,10 @@ export class ComplianceService {
         });
     }
 
-    async updateNonConformityStatus(id: string, status: NonConformityStatus): Promise<NonConformityPayload> {
+    async updateNonConformityStatus(
+        id: string,
+        status: NonConformityStatus,
+    ): Promise<NonConformityPayload> {
         return prisma.nonConformity.update({
             where: { id },
             data: { status },
@@ -121,7 +138,7 @@ export class ComplianceService {
         nonConformityId: string,
         description: string,
         ownerId?: string,
-        dueDate?: Date
+        dueDate?: Date,
     ): Promise<CorrectiveActionPayload> {
         const createData: Prisma.CorrectiveActionCreateInput = {
             description,
@@ -151,7 +168,7 @@ export class ComplianceService {
     async updateCorrectiveActionStatus(
         id: string,
         status: ActionStatus,
-        completedAt?: Date
+        completedAt?: Date,
     ): Promise<CorrectiveActionPayload> {
         return prisma.correctiveAction.update({
             where: { id },
