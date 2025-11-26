@@ -141,6 +141,10 @@
       "departments": {
         "title": "Departments",
         "value": "{{count}} departments"
+      },
+      "pendingReviews": {
+        "title": "Pending reviews",
+        "value": "{{count}} reviews"
       }
     },
     "actions": {
@@ -152,6 +156,55 @@
       },
       "viewDepartments": {
         "label": "View departments"
+      }
+    },
+    "card": {
+      "recentActivity": {
+        "title": "Recent activity",
+        "subtitle": "Latest actions in the system",
+        "loading": "Loading recent activity...",
+        "actions": {
+          "viewAll": {
+            "label": "View all activities"
+          }
+        }
+      },
+      "deadline": {
+        "title": "Upcoming deadlines",
+        "subtitle": "Reviews approaching their due date",
+        "list": {
+          "empty": "There are no upcoming deadlines."
+        },
+        "loading": "Loading upcoming deadlines...",
+        "actions": {
+          "viewAll": {
+            "label": "View all deadlines"
+          }
+        }
+      },
+      "quickActions": {
+        "title": "Quick actions",
+        "newDocument": {
+          "label": "New document"
+        },
+        "publishedDocuments": {
+          "label": "Published documents"
+        },
+        "manageUsers": {
+          "label": "Manage users"
+        },
+        "auditLogs": {
+          "label": "Audit logs"
+        },
+        "documentReviews": {
+          "label": "Document reviews"
+        },
+        "pendingReview": {
+          "label": "Pending reviews"
+        }
+      },
+      "userRole": {
+        "title": "User roles"
       }
     }
   },

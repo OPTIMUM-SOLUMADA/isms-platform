@@ -170,7 +170,7 @@ export type AuditLog = {
   userId?: string | null;
   eventType: AuditEventType;
   details?: Record<string, any> | null; // Json en Prisma => Record<string, any>
-  timestamp: Date;
+  timestamp: string;
   targets: AuditTarget[];
   status: AuditStatus;
   ipAddress?: string;
@@ -179,13 +179,34 @@ export type AuditLog = {
   // Relations
   user?: User | null;
 };
+
 export type AuditEventType =
-  | "DOCUMENT_UPLOAD"
+  // Auth
+  | "AUTH_LOGIN_ATTEMPT"
+  | "AUTH_LOGIN"
+  | "AUTH_LOGOUT"
+  // Document
   | "DOCUMENT_UPDATE"
+  | "DOCUMENT_EDIT"
+  | "DOCUMENT_CREATE"
+  | "DOCUMENT_DELETE"
+  | "DOCUMENT_DOWNLOAD"
+  // Document version
   | "DOCUMENT_VERSION_CREATED"
+  | "DOCUMENT_VERSION_APPROVED"
+  | "DOCUMENT_VERSION_REJECTED"
   | "DOCUMENT_STATUS_CHANGE"
   | "DOCUMENT_REVIEW_SUBMITTED"
-  | "USER_ROLE_CHANGE"
+  | "DOCUMENT_REVIEW_COMPLETED"
+  // User
+  | "USER_UPDATE"
+  | "USER_ADD"
+  | "USER_DELETE"
+  // Department
+  | "DEPARTMENT_CREATE"
+  | "DEPARTMENT_UPDATE"
+  | "DEPARTMENT_DELETE"
+  // Action
   | "ACCESS_LOG"
   | "EXPORT_LOGS";
 

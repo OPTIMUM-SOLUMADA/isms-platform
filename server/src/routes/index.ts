@@ -14,7 +14,7 @@ import ownerRoutes from '@/routes/owner.routes';
 import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import versionRoutes from '@/routes/version.routes';
 import auditRoutes from '@/routes/audit.routes';
-import complianceRoutes from '@/routes/compliance.route'
+import complianceRoutes from '@/routes/compliance.route';
 // import notificationRoutes from '@/routes/notification.routes';
 import { authenticateToken } from '@/middlewares/auth.middleware';
 

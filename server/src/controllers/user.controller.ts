@@ -321,4 +321,14 @@ export class UserController {
             res.status(400).json({ error: (err as Error).message });
         }
     }
+
+    async getUserRolesStats(req: Request, res: Response) {
+        try {
+            const stats = await service.getUserRolesStats();
+            res.json(stats);
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
 }

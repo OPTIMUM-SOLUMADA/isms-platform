@@ -1,4 +1,4 @@
-import { RoleType } from "@/types";
+import { AuditEventType, RoleType } from "@/types";
 
 export const statusColors = {
     success: 'bg-green-100 text-green-800',
@@ -64,4 +64,41 @@ export const reviewStatusColors = {
 export const auditStatusColors = {
     SUCCESS: 'bg-green-100 text-green-800',
     FAILURE: 'bg-red-100 text-red-800'
+}
+
+export const auditEventColors: Record<AuditEventType, string> = {
+  // 🔐 Auth
+  AUTH_LOGIN_ATTEMPT: "bg-amber-500",
+  AUTH_LOGIN: "bg-indigo-500",
+  AUTH_LOGOUT: "bg-gray-500",
+
+  // 📄 Document
+  DOCUMENT_CREATE: "bg-green-500",
+  DOCUMENT_UPDATE: "bg-amber-500",
+  DOCUMENT_EDIT: "bg-amber-500",
+  DOCUMENT_DELETE: "bg-red-500",
+  DOCUMENT_DOWNLOAD: "bg-cyan-500",
+
+  // 📑 Document Version
+  DOCUMENT_VERSION_CREATED: "bg-teal-500",
+  DOCUMENT_VERSION_APPROVED: "bg-emerald-500",
+  DOCUMENT_VERSION_REJECTED: "bg-red-500",
+
+  DOCUMENT_STATUS_CHANGE: "bg-cyan-500",
+  DOCUMENT_REVIEW_SUBMITTED: "bg-violet-500",
+  DOCUMENT_REVIEW_COMPLETED: "bg-teal-500",
+
+  // 👤 User
+  USER_ADD: "bg-green-500",
+  USER_UPDATE: "bg-blue-500",
+  USER_DELETE: "bg-red-500",
+
+  // 🏢 Department
+  DEPARTMENT_CREATE: "bg-green-500",
+  DEPARTMENT_UPDATE: "bg-blue-500",
+  DEPARTMENT_DELETE: "bg-red-500",
+
+  // ⚙️ Action / System
+  ACCESS_LOG: "bg-slate-500",
+  EXPORT_LOGS: "bg-purple-500",
 }

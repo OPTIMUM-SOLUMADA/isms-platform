@@ -185,4 +185,18 @@ export class UserService {
             },
         });
     }
+
+    async getUserRolesStats() {
+        const roles = await prisma.user.groupBy({
+            by: ['role'],
+            _count: {
+                role: true,
+            },
+        });
+        const stats: Record<string, number> = {};
+        roles.forEach((role) => {
+            stats[role.role] = role._count.role;
+        });
+        return stats;
+    }
 }
