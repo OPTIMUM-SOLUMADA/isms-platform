@@ -6,7 +6,7 @@ import type { AddUserFormData } from "@/templates/users/forms/AddUserForm";
 import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 import { ApiAxiosError } from "@/types/api";
 import useUserStore from "@/stores/user/useUserStore";
-import { User } from "@/types";
+import { RoleType, User } from "@/types";
 import { useEffect, useMemo } from "react";
 import { useDebounce } from "../use-debounce";
 import { isEqual } from "lodash";
@@ -186,5 +186,14 @@ export const useSendInvitation = () => {
                 variant: "success",
             });
         },
+    });
+};
+
+
+export const useGetUserRolesStats = () => {
+    return useQuery<Record<RoleType, number>, ApiAxiosError>({
+        queryKey: ["users", "stats", "roles"],
+        queryFn: async () => (await userService.getUserRolesStats()).data,
+        staleTime: 1000 * 60 * 5,
     });
 };

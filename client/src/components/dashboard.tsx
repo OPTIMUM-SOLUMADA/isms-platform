@@ -10,10 +10,12 @@ import LoadingSplash from '@/components/loading';
 import { useFetchPendingReviews } from "@/hooks/queries/useReviewMutation";
 import { DocumentReview } from "@/types";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export function DashboardStats() {
   const { documents } = useDocument();
   const { data } = useFetchUsers();
   const { data: pending } = useFetchPendingReviews();
+  const { t } = useTranslation();
 
   const activeUsers =
     data?.data?.users?.filter((user: any) => user.isActive) || [];
@@ -21,7 +23,7 @@ export function DashboardStats() {
 
   const stats = [
     {
-      title: "Total Documents",
+      title: t("dashboard.stats.documents.title"),
       value:  documents.length ?? 0,
       change: "+12",
       changeType: "increase" as const,
@@ -29,7 +31,7 @@ export function DashboardStats() {
       color: "blue",
     },
     {
-      title: "Pending Reviews",
+      title: t("dashboard.stats.pendingReviews.title"),
       value: pending?.length ?? 0,
       change: "-5",
       changeType: "decrease" as const,
@@ -45,7 +47,7 @@ export function DashboardStats() {
     //   color: "green",
     // },
     {
-      title: "Active Users",
+      title: t("dashboard.stats.activeUsers.title"),
       value: activeUsers.length,
       change: "+8",
       changeType: "increase" as const,
@@ -93,7 +95,8 @@ interface UserTableProps {
 }
 
 export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return <LoadingSplash message="Loading deadlines…" subMessage="Fetching upcoming deadlines" />;
@@ -105,12 +108,14 @@ export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
         <CardHeader className=" p-6">
           <CardTitle className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-amber-600" />
-            <span>
-               Deadlines</span>
+            <span>{t("dashboard.card.deadline.title")}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600">There are no upcoming deadlines.</p>
+          <p className="text-sm text-gray-600">
+            {/* There are no upcoming deadlines. */}
+            {t("dashboard.card.deadline.list.empty")}
+          </p>
           <Button className="mt-3" onClick={() => navigate('/reviews')}>View Reviews</Button>
         </CardContent>
       </Card>
@@ -122,7 +127,7 @@ export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center space-x-2">
           <AlertCircle className="h-5 w-5 text-red-600" />
-          <span>Upcoming Deadlines</span>
+          <span>{t("dashboard.card.deadline.title")}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -136,8 +141,8 @@ export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
             <Badge className="text-xs">{/* {item.priority} */}</Badge>
           </div>
         ))}
-        <Button className="w-full" onClick={() => navigate('/reviews')}>
-          View All Deadlines
+        <Button className="w-fit" variant="outline" onClick={() => navigate('/reviews')}>
+          {t("dashboard.card.deadline.actions.viewAll.label")}
         </Button>
       </CardContent>
     </Card>

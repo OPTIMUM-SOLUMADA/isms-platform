@@ -124,7 +124,7 @@
     },
     "dashboard": {
         "title": "Tableau de bord",
-        "subtitle": "Bienvenue dans le portail ISMS",
+        "subtitle": "Bienvenue sur le portail ISMS",
         "stats": {
             "totalUsers": {
                 "title": "Utilisateurs totaux",
@@ -141,6 +141,10 @@
             "departments": {
                 "title": "Départements",
                 "value": "{{count}} départements"
+            },
+            "pendingReviews": {
+                "title": "Révisions en attente",
+                "value": "{{count}} révisions"
             }
         },
         "actions": {
@@ -152,6 +156,55 @@
             },
             "viewDepartments": {
                 "label": "Voir les départements"
+            }
+        },
+        "card": {
+            "recentActivity": {
+                "title": "Activité récente",
+                "subtitle": "Dernières actions dans le système",
+                "loading": "Chargement de l’activité récente...",
+                "actions": {
+                    "viewAll": {
+                        "label": "Voir toutes les activités"
+                    }
+                }
+            },
+            "deadline": {
+                "title": "Échéances à venir",
+                "subtitle": "Révisions approchant leur date limite",
+                "list": {
+                    "empty": "Aucune échéance à venir."
+                },
+                "loading": "Chargement des échéances...",
+                "actions": {
+                    "viewAll": {
+                        "label": "Voir toutes les échéances"
+                    }
+                }
+            },
+            "quickActions": {
+                "title": "Actions rapides",
+                "newDocument": {
+                    "label": "Nouveau document"
+                },
+                "publishedDocuments": {
+                    "label": "Documents publiés"
+                },
+                "manageUsers": {
+                    "label": "Gérer les utilisateurs"
+                },
+                "auditLogs": {
+                    "label": "Journaux d’audit"
+                },
+                "documentReviews": {
+                    "label": "Révisions de documents"
+                },
+                "pendingReview": {
+                    "label": "Révisions en attente"
+                }
+            },
+            "userRole": {
+                "title": "Rôles des utilisateurs"
             }
         }
     },

@@ -37,4 +37,5 @@ export const userService = {
     deactivate: async (id: string) => axios.patch(api.DEACTIVATE(id)),
     search: async (q: string) => axios.get(api.SEARCH, { params: { q } }),
     getUserByIds: async (ids: string[]) => axios.get(api.GET_USER_BY_IDS, { params: { ids: ids.join(',') } }),
+    getUserRolesStats: async () => axios.get(api.USER_ROLES_STATS),
 }

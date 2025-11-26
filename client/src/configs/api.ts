@@ -23,6 +23,7 @@ export const API_CONFIG = {
       ACTIVATE: (id: string | number) => `/api/users/${id}/activate`,
       GET_USER_BY_IDS: "/api/users/by-ids",
       SEARCH: "/api/users/search",
+      USER_ROLES_STATS: "/api/users/stats/roles",
     },
     DEPARTMENTS: {
       BASE: "/api/departments",
