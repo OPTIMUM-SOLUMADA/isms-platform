@@ -8,6 +8,7 @@ import { env } from '@/configs/env';
 import { hashPassword } from '@/utils/password';
 import jwt from 'jsonwebtoken';
 import { AuditEventType, AuditTargetType } from '@prisma/client';
+import { toHashRouterUrl } from '@/utils/baseurl';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -216,7 +217,7 @@ export class AuthController {
                 orgName: env.ORG_NAME,
                 year: new Date().getFullYear().toString(),
                 user: { name: user.name },
-                resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`,
+                resetLink: toHashRouterUrl(`/reset-password`, { token: resetToken }),
                 headerDescription: '',
             });
 

@@ -107,18 +107,18 @@ const Table = ({
                 );
             },
         },
-        {
-            accessorKey: "ip",
-            enableSorting: true,
-            header: t("auditLog.table.columns.ipAddress"),
-            enableHiding: false,
-            size: 100,
-            cell: ({ row }) => {
-                const { ipAddress } = row.original;
-                if (!ipAddress) return <CellNoValue />;
-                return <span className="font-mono opacity-90">{ipAddress.split(',')[0]}</span>;
-            },
-        },
+        // {
+        //     accessorKey: "ip",
+        //     enableSorting: true,
+        //     header: t("auditLog.table.columns.ipAddress"),
+        //     enableHiding: false,
+        //     size: 100,
+        //     cell: ({ row }) => {
+        //         const { ipAddress } = row.original;
+        //         if (!ipAddress) return <CellNoValue />;
+        //         return <span className="font-mono opacity-90">{ipAddress.split(',')[0]}</span>;
+        //     },
+        // },
         {
             accessorKey: "target",
             enableSorting: true,
@@ -150,20 +150,20 @@ const Table = ({
                 )
             },
         },
-        {
-            accessorKey: "userAgent",
-            enableSorting: true,
-            header: t("auditLog.table.columns.userAgent"),
-            enableHiding: false,
-            cell: ({ row }) => {
-                const { userAgent } = row.original;
-                if (!userAgent) return <CellNoValue />;
-                // show json
-                return (
-                    <div className="line-clamp-1 text-xs">{userAgent}</div>
-                )
-            },
-        },
+        // {
+        //     accessorKey: "userAgent",
+        //     enableSorting: true,
+        //     header: t("auditLog.table.columns.userAgent"),
+        //     enableHiding: false,
+        //     cell: ({ row }) => {
+        //         const { userAgent } = row.original;
+        //         if (!userAgent) return <CellNoValue />;
+        //         // show json
+        //         return (
+        //             <div className="line-clamp-1 text-xs">{userAgent}</div>
+        //         )
+        //     },
+        // },
 
     ], [t]);
 

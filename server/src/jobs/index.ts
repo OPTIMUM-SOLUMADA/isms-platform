@@ -16,7 +16,7 @@ function safeSchedule(cronExp: string, name: string, fn: () => Promise<void>) {
 }
 
 export function registerCronJobs() {
-    // Every day at 1:00 AM
+    // Every minute
     safeSchedule('* * * * *', 'GENERATE_DOCUMENT_REVIEWS', generateDocumentReviewsJob);
 
     // Every 15 minutes

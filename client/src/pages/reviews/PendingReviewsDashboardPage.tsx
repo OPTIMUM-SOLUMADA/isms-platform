@@ -60,9 +60,9 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
   }, [data, filterDocument, filterStatus]);
 
   function handleSuccess(reviewId: string) {
-    if (selectedItem?.id === reviewId) {
+    // if (selectedItem?.id === reviewId) {
       setSelectedItem(null);
-    }
+    // }
   }
 
   const reviewCountByDocument = (documentId: string) => {
