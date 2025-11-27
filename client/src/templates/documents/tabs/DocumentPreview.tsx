@@ -27,10 +27,10 @@ export default function DocumentPreview({
   const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex flex-col grow">
       <Iframe
         url={fileUrl}
-        className={cn("border-none bg-white overflow-hidden w-full min-h-[600px]", className)}
+        className={cn("border-none bg-white grow overflow-hidden w-full min-h-[600px]", className)}
         onLoad={() => console.log("loading iframe")}
       />
     </div>
