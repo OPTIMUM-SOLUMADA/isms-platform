@@ -1,6 +1,7 @@
 // controllers/compliance.controller.ts
 import { Request, Response } from 'express';
 import { ComplianceService } from '@/services/compliance.service';
+import NotificationService from '@/services/notification.service';
 
 export class ComplianceController {
   private service = new ComplianceService();
@@ -72,6 +73,18 @@ export class ComplianceController {
     try {
       const { type, description, documentId, userId } = req.body;
       const nc = await this.service.createNonConformity({ type, description, documentId, userId });
+
+      // Notification: Non-conformity created - notify owner/assigned user
+      if (userId) {
+        await NotificationService.create({
+          user: { connect: { id: userId } },
+          type: 'NONCONFORMITY_CREATED',
+          title: `Non-conformité créée : ${type}`,
+          message: `Une non-conformité de type "${type}" a été créée.`,
+          ...(documentId ? { document: { connect: { id: documentId } } } : {}),
+        } as any);
+      }
+
       res.status(201).json(nc);
     } catch (err) {
       console.error(err);
@@ -109,6 +122,17 @@ export class ComplianceController {
     try {
       const { nonConformityId, description, ownerId, dueDate } = req.body;
       const action = await this.service.createCorrectiveAction(nonConformityId, description, ownerId, dueDate);
+
+      // Notification: Corrective action created - notify owner
+      if (ownerId) {
+        await NotificationService.create({
+          user: { connect: { id: ownerId } },
+          type: 'ACTION_CREATED',
+          title: `Action corrective créée`,
+          message: `Une action corrective a été assignée avec la date d'échéance ${dueDate ? new Date(dueDate).toLocaleDateString('fr-FR') : 'non définie'}.`,
+        } as any);
+      }
+
       res.status(201).json(action);
     } catch (err) {
       console.error(err);
