@@ -135,7 +135,7 @@ export function UpdcommingDeadline({data, isLoading = false}: UserTableProps) {
           <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex-1">
               <p className="font-medium text-sm">{item.document.title}</p>
-              <p className="text-xs text-gray-500 mt-1">Owner: {item.document.authors[0].user.name}</p>
+              <p className="text-xs text-gray-500 mt-1">Owner: {item.document.authors[0]?.user?.name || ''}</p>
               <p className="text-xs text-gray-500">Due: {new Date(item.dueDate).toLocaleDateString()}</p>
             </div>
             <Badge className="text-xs">{/* {item.priority} */}</Badge>

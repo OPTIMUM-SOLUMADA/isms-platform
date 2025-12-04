@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ISOClauseService } from '@/services/isoclause.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, AuditEventType } from '@prisma/client';
+import { getChanges } from '@/utils/change';
 
 const service = new ISOClauseService();
 
@@ -13,6 +14,13 @@ export class ISOClauseController {
                 description,
                 code,
                 ...(userId && { createdBy: { connect: { id: userId } } }),
+            });
+            // Audit: ISO clause created
+            await req.log({
+                event: AuditEventType.DOCUMENT_CREATE,
+                targets: [{ id: clause.id, type: 'DOCUMENT' }],
+                details: { resource: 'ISO_CLAUSE', code: clause.code, name: clause.name, description: clause.description },
+                status: 'SUCCESS',
             });
             return res.status(201).json(clause);
         } catch (error: any) {
@@ -54,10 +62,18 @@ export class ISOClauseController {
     async update(req: Request, res: Response) {
         try {
             const { name, description, code } = req.body;
+            const before = await service.findById(req.params.id!);
             const clause = await service.update(req.params.id!, {
                 name,
                 description,
                 code,
+            });
+            // Audit: ISO clause updated
+            await req.log({
+                event: AuditEventType.DOCUMENT_UPDATE,
+                targets: [{ id: clause.id, type: 'DOCUMENT' }],
+                details: { resource: 'ISO_CLAUSE', ...(getChanges(before, clause) || {}) },
+                status: 'SUCCESS',
             });
             return res.json(clause);
         } catch (error: any) {
@@ -75,7 +91,17 @@ export class ISOClauseController {
 
     async delete(req: Request, res: Response) {
         try {
+            const clause = await service.findById(req.params.id!);
             await service.delete(req.params.id!);
+            // Audit: ISO clause deleted
+            if (clause) {
+                await req.log({
+                    event: AuditEventType.DOCUMENT_DELETE,
+                    targets: [{ id: clause.id, type: 'DOCUMENT' }],
+                    details: { resource: 'ISO_CLAUSE', code: clause.code, name: clause.name },
+                    status: 'SUCCESS',
+                });
+            }
             return res.status(204).send();
         } catch (error: any) {
             return res.status(400).json({ error: error.message });

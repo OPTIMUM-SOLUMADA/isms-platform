@@ -56,24 +56,37 @@ const SidebarItem = ({ path, icon: Icon, labelKey, onClick }: SidebarItemProps) 
 };
 
 type SidebarActionsProps = {
-  items: Array<{ path: string; icon: React.ComponentType<{ className?: string }>; labelKey: string }>;
+  // items: Array<{ path: string; icon: React.ComponentType<{ className?: string }>; labelKey: string }>;
   onLogout: () => void;
   collapsed?: boolean;
 };
 
 export const SidebarActions = ({
-  items,
   onLogout,
-  collapsed = false,
+  collapsed,
 }: SidebarActionsProps) => {
-  return (
-    <div className={cn("grid place-items-center", !collapsed ? "grid-cols-3" : "grid-cols-1 gap-3")}>
-      {
-        items.map((item, index) => (
-          <SidebarItem key={index} {...item} />
-        ))}
+  const { t } = useTranslation();
 
-      <SidebarItem icon={LogOut} labelKey="sidebar.logout" onClick={onLogout} />
+  // When collapsed, show the icon centered (compact). When expanded,
+  // align the logout action to the right side of the footer.
+  return (
+    <div className={cn('w-full')}>
+      {collapsed ? (
+        <div className={cn('grid place-items-center')}>
+          <SidebarItem icon={LogOut} labelKey="sidebar.logout" onClick={onLogout} />
+        </div>
+      ) : (
+        <div className="flex items-center justify-end">
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 text-sm text-gray-300 hover:text-white px-2 py-1 rounded"
+            aria-label={t('sidebar.logout')}
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden lg:inline">{t('sidebar.logout')}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -243,9 +256,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
           {/* Footer */}
           <div className="p-4 border-t border-theme-2-muted">
-            <div className="text-xs text-gray-500 text-center">
+            <div className="text-xs text-gray-500">
               {/* Actions */}
-              <SidebarActions collapsed={sidebarCollapsed} items={profileMenuItems} onLogout={logout} />
+              <SidebarActions collapsed={sidebarCollapsed} onLogout={logout} />
             </div>
           </div>
         </div>

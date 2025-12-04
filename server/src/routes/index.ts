@@ -15,7 +15,7 @@ import departmentRoleRoutes from '@/routes/departmentrole.routes';
 import versionRoutes from '@/routes/version.routes';
 import auditRoutes from '@/routes/audit.routes';
 import complianceRoutes from '@/routes/compliance.route';
-// import notificationRoutes from '@/routes/notification.routes';
+import notificationRoutes from '@/routes/notification.routes';
 import { authenticateToken } from '@/middlewares/auth.middleware';
 
 export default function applyRoutes(app: Application) {
@@ -46,7 +46,7 @@ export default function applyRoutes(app: Application) {
     apiRouter.use('/owners', ownerRoutes);
     apiRouter.use('/audits', auditRoutes);
     apiRouter.use('/compliance', complianceRoutes);
-    // apiRouter.use('/notifications', notificationRoutes);
+    apiRouter.use('/notifications', notificationRoutes);
 
     // Apply the API router to the app
     app.use('/api', apiRouter);

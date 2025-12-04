@@ -9,6 +9,7 @@ import { toHashRouterUrl } from '@/utils/baseurl';
 import { AuditEventType } from '@prisma/client';
 import { getChanges } from '@/utils/change';
 import { sanitizeUser } from '@/utils/sanitize-user';
+import { DocumentApprovalService } from '@/services/documentapproval.service';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -248,9 +249,13 @@ export class UserController {
 
     async delete(req: Request, res: Response) {
         try {
+            // remove any document approvals where this user is the approver
+            const docApprovalService = new DocumentApprovalService();
+            await docApprovalService.deleteByApproverId(req.params.id!);
+
             const user = await service.delete(req.params.id!);
             // const { userId } = req.query;
-
+                        
             // Audit log
             await req.log({
                 event: AuditEventType.USER_DELETE,
