@@ -15,6 +15,11 @@ import { useTranslation } from 'react-i18next';
 // import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useQuery } from '@tanstack/react-query';
+import { notificationService } from '@/services/notificationService';
+import { Skeleton } from '@/components/ui/skeleton';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -26,9 +31,31 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
+  // Fetch notifications
+  const { data: notificationsData, isLoading: notificationsLoading } = useQuery({
+    queryKey: ['notifications', user?.id],
+    queryFn: async () => {
+      const response = await notificationService.list({ limit: 5 });
+      return response.data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const notifications = notificationsData?.notifications || [];
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
   const signOut = async () => {
     await logout();
   }
+
+  const handleNotificationClick = async (notificationId: string, documentId?: string | null) => {
+    // Mark as read
+    await notificationService.markAsRead(notificationId);
+    // Navigate to document if exists
+    if (documentId) {
+      navigate(`/documents/${documentId}`);
+    }
+  };
 
   return (
     <header className="bg-background border-b border-gray-200 h-16">
@@ -60,29 +87,66 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="relative hover:bg-gray-100">
                 <Bell className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  3
-                </Badge>
+                {unreadCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
               <DropdownMenuLabel>{t("header.notifications.title")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex-col items-start py-3">
-                <div className="font-medium">Security Policy Review Due</div>
-                <div className="text-sm text-gray-500">Due in 2 days - Assigned to you</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex-col items-start py-3">
-                <div className="font-medium">New Risk Assessment</div>
-                <div className="text-sm text-gray-500">Requires your approval</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex-col items-start py-3">
-                <div className="font-medium">Document Updated</div>
-                <div className="text-sm text-gray-500">Incident Response Plan v2.1</div>
-              </DropdownMenuItem>
+              {notificationsLoading ? (
+                <div className="p-4 space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Aucune notification
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <DropdownMenuItem 
+                    key={notification.id}
+                    className="flex-col items-start py-3 cursor-pointer"
+                    onClick={() => handleNotificationClick(notification.id, notification.documentId)}
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <div className="font-medium flex-1">{notification.title}</div>
+                      {!notification.isRead && (
+                        <div className="h-2 w-2 rounded-full bg-blue-500" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">{notification.message}</div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      {formatDistanceToNow(new Date(notification.createdAt), {
+                        addSuffix: true,
+                        locale: fr,
+                      })}
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              )}
+              {notifications.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-center justify-center text-sm text-primary"
+                    onClick={() => navigate('/notifications')}
+                  >
+                    Voir toutes les notifications
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
