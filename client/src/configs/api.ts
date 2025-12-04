@@ -133,6 +133,14 @@ export const API_CONFIG = {
       STATS: "/api/audits/stats",
       EXPORT: "/api/audits/export",
     },
+    NOTIFICATIONS: {
+      BASE: "/api/notifications",
+      GET: (id: string | number) => `/api/notifications/${id}`,
+      MARK_READ: (id: string | number) => `/api/notifications/${id}/read`,
+      MARK_ALL_READ: "/api/notifications/mark-all-read",
+      DELETE: (id: string | number) => `/api/notifications/${id}`,
+      BY_DOCUMENT: (documentId: string | number) => `/api/notifications?documentId=${documentId}`,
+    },
   },
 } as const;
 
