@@ -10,7 +10,6 @@ import { AuditEventType } from '@prisma/client';
 import { getChanges } from '@/utils/change';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
-import NotificationService from '@/services/notification.service';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -63,14 +62,6 @@ export class UserController {
                 },
                 status: 'SUCCESS',
             });
-
-            // Notification: User invited
-            await NotificationService.create({
-                user: { connect: { id: user.id } },
-                type: 'USER_INVITED',
-                title: `Bienvenue ${user.name || user.email}`,
-                message: `Vous avez été invité à rejoindre la plateforme. Vérifiez votre email pour confirmer.`,
-            } as any);
 
             res.status(201).json(user);
         } catch (err) {
