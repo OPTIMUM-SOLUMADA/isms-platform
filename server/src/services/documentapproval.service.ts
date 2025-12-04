@@ -65,6 +65,22 @@ export class DocumentApprovalService {
     }
 
     /**
+     * Delete all approvals for a given approver (user) id.
+     */
+    async deleteByApproverId(approverId: string) {
+        try {
+            return await prisma.documentApproval.deleteMany({
+                where: { approverId },
+            });
+        } catch (error) {
+            console.error('Error deleting document approvals by approver id:', error);
+            throw error;
+        }
+    }
+
+
+
+    /**
      * Delete an approval record.
      */
     async delete(documentId: string, versionId: string, approverId: string) {

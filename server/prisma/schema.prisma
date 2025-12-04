@@ -84,7 +84,7 @@ model User {
 
   //Relation
   documentReviews   DocumentReview[]
-  documentApprovals DocumentApproval[]
+  documentApprovals DocumentApproval[] 
   notifications     Notification[]
   auditLogs         AuditLog[]
 
@@ -398,12 +398,14 @@ model Notification {
   title      String
   message    String
   isRead     Boolean          @default(false)
-  documentId String?          @db.ObjectId // Ajouté : Pour lier la notification à un document
+  readAt     DateTime?
+  documentId String?          @db.ObjectId // Lien optionnel vers un document
   createdAt  DateTime         @default(now())
 
-  user     User      @relation(fields: [userId], references: [id])
-  document Document? @relation(fields: [documentId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
 
+  @@index([userId, isRead, createdAt])
   @@map("notifications")
 }
 
@@ -422,6 +424,10 @@ enum AuditEventType {
   DOCUMENT_CREATE
   DOCUMENT_DELETE
   DOCUMENT_DOWNLOAD
+  // Document type (dedicated events)
+  DOCUMENT_TYPE_CREATE
+  DOCUMENT_TYPE_UPDATE
+  DOCUMENT_TYPE_DELETE
   // Document version
   DOCUMENT_VERSION_CREATED
   DOCUMENT_VERSION_APPROVED

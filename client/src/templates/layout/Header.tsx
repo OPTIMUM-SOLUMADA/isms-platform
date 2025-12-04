@@ -12,7 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { UserAvatar } from '@/components/user-avatar';
 import { useTranslation } from 'react-i18next';
-import { profileMenuItems } from '@/constants/header';
+// import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
@@ -106,14 +106,14 @@ export function Header({ onMenuClick }: HeaderProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{t("header.profile.title")}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                {/* <DropdownMenuSeparator />
                 {profileMenuItems.map((item, index) => (
                   <DropdownMenuItem key={index} onClick={() => navigate(item.path)}>
                     <item.icon className="mr-2 h-4 w-4" />
                     {t(item.labelKey)}
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator /> */}
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   {t("header.profile.logout")}

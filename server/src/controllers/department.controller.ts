@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { DepartmentService } from '@/services/department.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, AuditEventType } from '@prisma/client';
 import { DepartmentRoleService } from '@/services/departmentRole.service';
+import { getChanges } from '@/utils/change';
 
 const service = new DepartmentService();
 const serviceRole = new DepartmentRoleService();
@@ -15,6 +16,13 @@ export class DepartmentController {
                 name,
                 description,
                 ...(userId && { createdBy: { connect: { id: userId } } }),
+            });
+            // Audit
+            await req.log({
+                event: AuditEventType.DEPARTMENT_CREATE,
+                targets: [{ id: department.id, type: 'DEPARTMENT' }],
+                details: { name: department.name, description: department.description },
+                status: 'SUCCESS',
             });
             return res.status(201).json(department);
         } catch (err) {
@@ -47,9 +55,19 @@ export class DepartmentController {
         try {
             const { name, description } = req.body;
 
+            const before = await service.getDepartmentById(req.params.id!);
+
             const updated = await service.updateDepartment(req.params.id!, {
                 name,
                 description,
+            });
+
+            // Audit: record changes
+            await req.log({
+                event: AuditEventType.DEPARTMENT_UPDATE,
+                targets: [{ id: updated.id, type: 'DEPARTMENT' }],
+                details: { ...(getChanges(before, updated) || {}) },
+                status: 'SUCCESS',
             });
 
             return res.json(updated);
@@ -68,7 +86,19 @@ export class DepartmentController {
 
     async delete(req: Request, res: Response) {
         try {
+            const dept = await service.getDepartmentById(req.params.id!);
             await service.deleteDepartment(req.params.id!);
+
+            // Audit
+            if (dept) {
+                await req.log({
+                    event: AuditEventType.DEPARTMENT_DELETE,
+                    targets: [{ id: dept.id, type: 'DEPARTMENT' }],
+                    details: { name: dept.name, description: dept.description },
+                    status: 'SUCCESS',
+                });
+            }
+
             res.status(204).send();
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
@@ -129,7 +159,6 @@ export class DepartmentController {
         try {
             const { id } = req.params;
             if (!id) return res.status(400).json({ error: 'Id is required' });
-            console.log('getRole');
             const data = await serviceRole.getRole(id);
             return res.json(data);
         } catch (err) {
@@ -145,6 +174,13 @@ export class DepartmentController {
                 description,
                 createdBy: { connect: { id: userId } },
                 department: { connect: { id: req.params.id! } },
+            });
+            // Audit: adding a role to a department
+            await req.log({
+                event: AuditEventType.DEPARTMENT_UPDATE,
+                targets: [{ id: req.params.id!, type: 'DEPARTMENT' }],
+                details: { action: 'ADD_ROLE', role: { id: department.id, name: department.name, description: department.description } },
+                status: 'SUCCESS',
             });
             return res.json(department);
         } catch (err) {
@@ -164,7 +200,18 @@ export class DepartmentController {
     updateRoles = async (req: Request, res: Response) => {
         try {
             const { roles } = req.body;
+            // Capture snapshot before update (roles for this department)
+            const before = await serviceRole.list({ filter: { departmentId: req.params.id! }, page: 1, limit: 1000 });
+
             const department = await serviceRole.updateRoles(req.params.id!, roles);
+
+            // Audit: updating roles for department
+            await req.log({
+                event: AuditEventType.DEPARTMENT_UPDATE,
+                targets: [{ id: req.params.id!, type: 'DEPARTMENT' }],
+                details: { action: 'UPDATE_ROLES', before: before.departmentRoles, after: department },
+                status: 'SUCCESS',
+            });
 
             res.json(department);
         } catch (err) {
@@ -178,6 +225,17 @@ export class DepartmentController {
                 throw new Error('Missing parameter: id');
             }
             const department = await serviceRole.removeRoles(req.params.id);
+
+            // Audit: remove role
+            if (department) {
+                await req.log({
+                    event: AuditEventType.DEPARTMENT_UPDATE,
+                    targets: [{ id: department.departmentId, type: 'DEPARTMENT' }],
+                    details: { action: 'REMOVE_ROLE', role: { id: department.id, name: department.name } },
+                    status: 'SUCCESS',
+                });
+            }
+
             res.json(department);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
