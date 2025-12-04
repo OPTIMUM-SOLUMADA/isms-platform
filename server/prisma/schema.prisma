@@ -385,10 +385,23 @@ model DocumentApproval {
 
 // Les notifications sont essentielles pour les rappels et les alertes.
 enum NotificationType {
+  // Review notifications
   REVIEW_NEEDED
   REVIEW_OVERDUE
-  DOCUMENT_APPROVED
+  REVIEW_COMPLETED
+  // Document notifications
+  DOCUMENT_CREATED
   DOCUMENT_UPDATED
+  DOCUMENT_APPROVED
+  // Version notifications
+  VERSION_CREATED
+  VERSION_APPROVED
+  VERSION_REJECTED
+  // User & invitation notifications
+  USER_INVITED
+  // Compliance notifications
+  NONCONFORMITY_CREATED
+  ACTION_CREATED
 }
 
 model Notification {

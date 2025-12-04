@@ -8,6 +8,7 @@ import { AuditEventType, AuditTargetType } from '@prisma/client';
 import { stripHtmlAndClamp } from '@/utils/review';
 import { getChanges } from '@/utils/change';
 import { sanitizeDocument } from '@/utils/sanitize-document';
+import NotificationService from '@/services/notification.service';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
@@ -104,6 +105,18 @@ export class DocumentReviewController {
                 details: { decision, comment: stripHtmlAndClamp(comment, 200) },
                 status: 'SUCCESS',
             });
+
+            // Notification: Review completed - notify assigner/owner
+            if (review.assignedById) {
+                await NotificationService.create({
+                    user: { connect: { id: review.assignedById } },
+                    type: 'REVIEW_COMPLETED',
+                    title: `Revue complétée : ${review.document.title}`,
+                    message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
+                    document: { connect: { id: review.documentId } },
+                } as any);
+            }
+
             return res.json(type);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
@@ -166,6 +179,15 @@ export class DocumentReviewController {
                 },
                 status: 'SUCCESS',
             });
+
+            // Notification: Version approved - notify document owner/authors
+            await NotificationService.create({
+                user: { connect: { id: document!.ownerId } },
+                type: 'VERSION_APPROVED',
+                title: `Version approuvée : ${document!.title}`,
+                message: `La version du document "${document!.title}" a été approuvée.`,
+                document: { connect: { id: review.documentId } },
+            } as any);
 
             return res.json(type);
         } catch (error: any) {

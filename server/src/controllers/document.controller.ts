@@ -11,6 +11,7 @@ import { DocumentVersionService } from '@/services/documentversion.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { RecentlyViewedService } from '@/services/recenltyview.service';
 import { AuditEventType, Classification } from '@prisma/client';
+import NotificationService from '@/services/notification.service';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
@@ -120,6 +121,15 @@ export class DocumentController {
                 },
                 targets: [{ id: createdDoc.id, type: 'DOCUMENT' }],
             });
+
+            // Notification: Document created
+            await NotificationService.create({
+                user: { connect: { id: createdDoc.ownerId } },
+                type: 'DOCUMENT_CREATED',
+                title: `Document créé : ${createdDoc.title}`,
+                message: `Le document "${createdDoc.title}" a été créé.`,
+                document: { connect: { id: createdDoc.id } },
+            } as any);
 
             res.status(201).json(createdDoc);
         } catch (err) {
@@ -260,6 +270,19 @@ export class DocumentController {
                 },
                 targets: [{ id: updatedDocument.id, type: 'DOCUMENT' }],
             });
+
+            // Notification: Document updated - notify reviewers
+            if (reGetUpdatedDocument?.reviews && reGetUpdatedDocument.reviews.length > 0) {
+                for (const review of reGetUpdatedDocument.reviews) {
+                    await NotificationService.create({
+                        user: { connect: { id: review.reviewerId } },
+                        type: 'DOCUMENT_UPDATED',
+                        title: `Document mis à jour : ${reGetUpdatedDocument.title}`,
+                        message: `Le document "${reGetUpdatedDocument.title}" a été mis à jour.`,
+                        document: { connect: { id: documentId! } },
+                    } as any);
+                }
+            }
 
             res.json(updatedDocument);
         } catch (err) {
