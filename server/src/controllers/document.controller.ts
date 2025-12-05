@@ -14,9 +14,11 @@ import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
+import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
     private service: DocumentService;
+    private complianceService: ComplianceService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
@@ -28,6 +30,7 @@ export class DocumentController {
         this.versionService = new DocumentVersionService();
         this.reviewService = new DocumentReviewService();
         this.recenltyViewed = new RecentlyViewedService();
+        this.complianceService = new ComplianceService();
     }
 
     async create(req: Request, res: Response) {
@@ -91,6 +94,30 @@ export class DocumentController {
                     },
                 },
                 folderId: folder.id,
+            });
+            
+            // === AJOUT : Création automatique du ClauseCompliance ===
+            if (isoClause) {
+                console.log("isoclause *******", isoClause);
+                
+                await this.complianceService.createClause({
+                    isoClauseId: isoClause,
+                    ownerId: owner || null,
+                    status: 'COMPLIANT', // par défaut
+                    priority: 'MEDIUM',  // par défaut
+                    progress: 0,
+                    documents: 1,        // ce document est compté
+                    lastReviewed: null,
+                    nextReview: null,
+                });
+            }
+
+            // === Création automatique de DocumentCompliance pour ce document === 
+            await this.complianceService.createDocument({ 
+                documentId: createdDoc.id, 
+                status: 'COMPLIANT', 
+                description: 'Automatically created upon document creation', 
+                checkedAt: new Date(), 
             });
 
             // link document to users (Authors and Reviewers)

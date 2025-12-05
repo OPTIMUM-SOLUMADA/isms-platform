@@ -20,16 +20,20 @@ export type AuditEntry = {
 
 export type ComplianceClause = {
   id: string;
-  clause: string;
-  title: string;
-  progress: number;
-  status: "compliant" | "partial" | "non-compliant" | "not-started";
-  documents: number;
-  lastReviewed: string;
-  nextReview: string;
-  owner: string;
-  priority: "high" | "medium" | "low";
+  isoClauseId: string;          // correspond à isoClauseId dans Prisma
+  ownerId?: string;             // correspond à ownerId dans Prisma
+  clause: string;               // nom ou code de la clause (ex: "A.5.1")
+  title: string;                // titre descriptif de la clause
+  progress: number;             // 0-100
+  status: "COMPLIANT" | "PARTIALLY_COMPLIANT" | "NON_COMPLIANT" | "NOT_APPLICABLE"; // enum du back
+  priority: "HIGH" | "MEDIUM" | "LOW";  // enum du back
+  documents: number;            // nombre de documents associés
+  lastReviewed?: string;        // Date ISO string
+  nextReview?: string;          // Date ISO string
+  createdAt: string;            // Date ISO string
+  updatedAt: string;            // Date ISO string
 };
+
 
 type DocumentStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "EXPIRED";
 export type DocumentClassification =

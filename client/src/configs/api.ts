@@ -90,6 +90,14 @@ export const API_CONFIG = {
       DELETE: (id: string | number) => `/api/iso-clauses/${id}`,
       SEARCH: "/api/iso-clauses/search",
     },
+    COMPLIANCE: {
+      BASE: "/api/compliance",
+      LIST: () => "/api/compliance",               // GET "/"
+      GET: (id: string | number) => `/api/compliance/${id}`,      // GET "/:id"
+      CREATE: () => "/api/compliance",            // POST "/"
+      UPDATE: (id: string | number) => `/api/compliance/${id}`,   // PUT "/:id"
+      DELETE: (id: string | number) => `/api/compliance/${id}`    // DELETE "/:id"
+    },
     DOCUMENT_TYPES: {
       BASE: "/api/document-types",
       GET: (id: string | number) => `/api/document-types/${id}`,
