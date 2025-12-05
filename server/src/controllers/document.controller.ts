@@ -14,6 +14,7 @@ import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
+import NotificationService from '@/services/notification.service';
 
 export class DocumentController {
     private service: DocumentService;
@@ -99,6 +100,20 @@ export class DocumentController {
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
             });
+
+            // Send notifications to assigned users
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentCreated({
+                    documentId: createdDoc.id,
+                    documentTitle: title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    creatorId: req.user?.id || '',
+                });
+            }
 
             // link departmentRoles to document
             this.departmentRoleDocument.createMany(
@@ -410,6 +425,14 @@ export class DocumentController {
                     // open it to avoid permission error
                     await openDocumentInBrowser(currentVersion.fileUrl!);
             }
+
+            // 3- Send notifications
+            await NotificationService.notifyDocumentPublished({
+                documentId: document.id,
+                documentTitle: document.title,
+                documentClassification: document.classification,
+                ...(req.user?.id && { creatorId: req.user.id }),
+            });
 
             res.json(document);
         } catch (err) {

@@ -1,10 +1,10 @@
 import prisma from '@/database/prisma';
 import { Prisma, NotificationType, Classification } from '@prisma/client';
-import { 
-    getDocumentAssignmentMessage, 
-    getPublicDocumentMessage, 
+import {
+    getDocumentAssignmentMessage,
+    getPublicDocumentMessage,
     getDocumentPublishedMessage,
-    getNotificationTemplate 
+    getNotificationTemplate,
 } from '@/utils/notification-messages';
 
 export class NotificationService {
@@ -12,7 +12,15 @@ export class NotificationService {
         return prisma.notification.create({ data });
     }
 
-    async list({ filter = {}, page = 1, limit = 20 }: { filter?: any; page?: number; limit?: number }) {
+    async list({
+        filter = {},
+        page = 1,
+        limit = 20,
+    }: {
+        filter?: any;
+        page?: number;
+        limit?: number;
+    }) {
         const where = filter || {};
         const total = await prisma.notification.count({ where });
         const notifications = await prisma.notification.findMany({
@@ -30,11 +38,14 @@ export class NotificationService {
                 },
             },
         });
-        return { notifications, pagination: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+        return {
+            notifications,
+            pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+        };
     }
 
     async findById(id: string) {
-        return prisma.notification.findUnique({ 
+        return prisma.notification.findUnique({
             where: { id },
             include: {
                 document: {
@@ -49,11 +60,17 @@ export class NotificationService {
     }
 
     async markRead(id: string) {
-        return prisma.notification.update({ where: { id }, data: { isRead: true, readAt: new Date() } });
+        return prisma.notification.update({
+            where: { id },
+            data: { isRead: true, readAt: new Date() },
+        });
     }
 
     async markAllRead(userId: string) {
-        return prisma.notification.updateMany({ where: { userId }, data: { isRead: true, readAt: new Date() } });
+        return prisma.notification.updateMany({
+            where: { userId },
+            data: { isRead: true, readAt: new Date() },
+        });
     }
 
     async delete(id: string) {
@@ -77,7 +94,7 @@ export class NotificationService {
         additionalInfo?: string;
     }) {
         const template = getNotificationTemplate(type, documentTitle, additionalInfo);
-        
+
         return this.create({
             user: { connect: { id: userId } },
             type,
@@ -96,18 +113,28 @@ export class NotificationService {
         title,
         message,
         documentId,
+        documentTitle,
+        additionalInfo,
     }: {
         userIds: string[];
         type: NotificationType;
-        title: string;
-        message: string;
+        title?: string;
+        message?: string;
         documentId?: string;
+        documentTitle?: string;
+        additionalInfo?: string;
     }) {
+        // Generate template if title/message not provided
+        const base =
+            title && message
+                ? { title, message }
+                : getNotificationTemplate(type, documentTitle, additionalInfo);
+
         const notifications = userIds.map((userId) => ({
             userId,
             type,
-            title,
-            message,
+            title: base.title,
+            message: base.message,
             documentId: documentId ?? null,
         }));
 
@@ -187,9 +214,7 @@ export class NotificationService {
         document.reviewers.forEach((reviewer) => userIds.add(reviewer.userId));
 
         // Filter out excluded users
-        const filteredUserIds = Array.from(userIds).filter(
-            (id) => !excludeUserIds.includes(id)
-        );
+        const filteredUserIds = Array.from(userIds).filter((id) => !excludeUserIds.includes(id));
 
         if (filteredUserIds.length === 0) return;
 

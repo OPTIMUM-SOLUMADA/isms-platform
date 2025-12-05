@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { CheckIcon, BellIcon, FileTextIcon, AlertCircleIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { notificationService } from "@/services/notificationService"

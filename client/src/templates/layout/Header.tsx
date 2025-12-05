@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 // import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationService } from '@/services/notificationService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
@@ -30,6 +30,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { t } = useTranslation();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Fetch notifications
   const { data: notificationsData, isLoading: notificationsLoading } = useQuery({
@@ -97,9 +98,44 @@ export function Header({ onMenuClick }: HeaderProps) {
                 )}
               </Button>
             </DropdownMenuTrigger>
+            
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>{t("header.notifications.title")}</DropdownMenuLabel>
+              {/* Distinct header section */}
+              <DropdownMenuItem className="p-0 cursor-default" disabled>
+                <div className="px-4 pt-3 pb-2 flex items-center justify-between w-full">
+                  <div className="text-base font-bold text-black">
+                    Notifications
+                  </div>
+                </div>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
+
+              {/* Header actions */}
+              <div className="px-4 mt-3 pb-2 flex items-center justify-between text-xs">
+                {/* Left: delete all */}
+                <button
+                  className="text-destructive hover:underline transition"
+                  onClick={() => {
+                    // delete all
+                  }}
+                >
+                  Effacer les notifications
+                </button>
+
+                {/* Right: mark all read */}
+                <button
+                  className="text-primary hover:underline transition"
+                  onClick={async () => {
+                    await notificationService.markAllAsRead();
+                    // Refresh notifications queries
+                    await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+                  }}
+                >
+                  Marquer tout comme lu
+                </button>
+              </div>
+
+              
               {notificationsLoading ? (
                 <div className="p-4 space-y-3">
                   {[1, 2, 3].map((i) => (
