@@ -182,14 +182,14 @@ export default function DocumentDetailPage() {
             )}
 
             {hasActionPermission("document.edit") && (
-              <Button variant="outline" onClick={() => navigate(`/documents/edit/${document.id}`)}>
+              <Button variant="outline" disabled={document.published || !hasActionPermission("document.edit")} onClick={() => navigate(`/documents/edit/${document.id}`)}>
                 <Pencil className="h-4 w-4 mr-1" />
                 {t("document.view.actions.edit.label")}
               </Button>
             )}
 
             {hasActionPermission("document.delete") && (
-              <Button variant="destructive" onClick={handleDelete}>
+              <Button variant="destructive" disabled={document.published || !hasActionPermission("document.delete")} onClick={handleDelete}>
                 <Trash2 className="h-4 w-4 mr-1" />
                 {t("document.view.actions.delete.label")}
               </Button>
