@@ -20,6 +20,7 @@ import { notificationService } from '@/services/notificationService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getLocalizedNotification } from '@/lib/notificationI18n';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -50,11 +51,10 @@ export function Header({ onMenuClick }: HeaderProps) {
   }
 
   const handleNotificationClick = async (notificationId: string, documentId?: string | null) => {
-    // Mark as read
     await notificationService.markAsRead(notificationId);
-    // Navigate to document if exists
+    await queryClient.invalidateQueries({ queryKey: ['notifications'] });
     if (documentId) {
-      navigate(`/documents/${documentId}`);
+      navigate(`/documents/view/${documentId}`);
     }
   };
 
@@ -104,7 +104,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               <DropdownMenuItem className="p-0 cursor-default" disabled>
                 <div className="px-4 pt-3 pb-2 flex items-center justify-between w-full">
                   <div className="text-base font-bold text-black">
-                    Notifications
+                    {t('header.notifications.title')}
                   </div>
                 </div>
               </DropdownMenuItem>
@@ -119,7 +119,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                     // delete all
                   }}
                 >
-                  Effacer les notifications
+                  {t('header.notifications.deleteAll')}
                 </button>
 
                 {/* Right: mark all read */}
@@ -131,7 +131,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                     await queryClient.invalidateQueries({ queryKey: ['notifications'] });
                   }}
                 >
-                  Marquer tout comme lu
+                  {t('header.notifications.markAllAsRead')}
                 </button>
               </div>
 
@@ -147,7 +147,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground">
-                  Aucune notification
+                  {t('header.notifications.empty')}
                 </div>
               ) : (
                 notifications.map((notification) => (
@@ -156,13 +156,17 @@ export function Header({ onMenuClick }: HeaderProps) {
                     className="flex-col items-start py-3 cursor-pointer"
                     onClick={() => handleNotificationClick(notification.id, notification.documentId)}
                   >
-                    <div className="flex items-center gap-2 w-full">
-                      <div className="font-medium flex-1">{notification.title}</div>
-                      {!notification.isRead && (
-                        <div className="h-2 w-2 rounded-full bg-blue-500" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">{notification.message}</div>
+                    {(() => { const localized = getLocalizedNotification(notification, t); return (
+                      <>
+                        <div className="flex items-center gap-2 w-full">
+                          <div className="font-medium flex-1">{localized.title}</div>
+                          {!notification.isRead && (
+                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-500">{localized.message}</div>
+                      </>
+                    ); })()}
                     <div className="text-xs text-gray-400 mt-1">
                       {formatDistanceToNow(new Date(notification.createdAt), {
                         addSuffix: true,
@@ -179,7 +183,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                     className="text-center justify-center text-sm text-primary"
                     onClick={() => navigate('/notifications')}
                   >
-                    Voir toutes les notifications
+                    {t('header.notifications.viewAll')}
                   </DropdownMenuItem>
                 </>
               )}
