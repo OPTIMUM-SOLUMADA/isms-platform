@@ -249,7 +249,7 @@ export class NotificationService {
             const template = getDocumentAssignmentMessage('author', documentTitle);
             await this.notifyUsers({
                 userIds: notifyAuthorIds,
-                type: NotificationType.DOCUMENT_UPDATED,
+                type: NotificationType.DOCUMENT_CREATED,
                 title: template.title,
                 message: template.message,
                 documentId,
@@ -260,6 +260,51 @@ export class NotificationService {
         const notifyReviewerIds = reviewerIds.filter((id) => id !== creatorId);
         if (notifyReviewerIds.length > 0) {
             const template = getDocumentAssignmentMessage('reviewer', documentTitle);
+            await this.notifyUsers({
+                userIds: notifyReviewerIds,
+                type: NotificationType.DOCUMENT_CREATED,
+                title: template.title,
+                message: template.message,
+                documentId,
+            });
+        }
+    }
+
+    /**
+     * Create notification when a document is updated
+     * Same logic as notifyDocumentCreated: notify authors and reviewers (excluding updater)
+     */
+    async notifyDocumentUpdated({
+        documentId,
+        documentTitle,
+        authorIds = [],
+        reviewerIds = [],
+        updaterId,
+    }: {
+        documentId: string;
+        documentTitle: string;
+        authorIds?: string[];
+        reviewerIds?: string[];
+        updaterId: string;
+    }) {
+        // Prepare a generic update template
+        const template = getNotificationTemplate(NotificationType.DOCUMENT_UPDATED, documentTitle);
+
+        // Notify authors except updater
+        const notifyAuthorIds = authorIds.filter((id) => id !== updaterId);
+        if (notifyAuthorIds.length > 0) {
+            await this.notifyUsers({
+                userIds: notifyAuthorIds,
+                type: NotificationType.DOCUMENT_UPDATED,
+                title: template.title,
+                message: template.message,
+                documentId,
+            });
+        }
+
+        // Notify reviewers except updater
+        const notifyReviewerIds = reviewerIds.filter((id) => id !== updaterId);
+        if (notifyReviewerIds.length > 0) {
             await this.notifyUsers({
                 userIds: notifyReviewerIds,
                 type: NotificationType.DOCUMENT_UPDATED,
