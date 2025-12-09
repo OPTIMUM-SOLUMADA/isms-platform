@@ -263,6 +263,20 @@ export class DocumentController {
 
             const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
 
+            // Send notifications to assigned users about document update
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentUpdated({
+                    documentId: updatedDocument.id,
+                    documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    updaterId: req.user?.id || '',
+                });
+            }
+
             // Audit
             await req.log({
                 event: AuditEventType.DOCUMENT_EDIT,
