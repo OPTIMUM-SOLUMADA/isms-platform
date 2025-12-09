@@ -11,14 +11,14 @@ interface NotificationTemplate {
 export function getNotificationTemplate(
     type: NotificationType,
     documentTitle?: string,
-    additionalInfo?: string
+    additionalInfo?: string,
 ): NotificationTemplate {
     switch (type) {
         // Review notifications
         case NotificationType.REVIEW_NEEDED:
             return {
                 title: 'Revue nécessaire',
-                message: documentTitle 
+                message: documentTitle
                     ? `Vous avez une revue à consulter pour le document "${documentTitle}"`
                     : 'Vous avez une revue à consulter',
             };
@@ -116,7 +116,10 @@ export function getNotificationTemplate(
 /**
  * Generate custom message for document assignment
  */
-export function getDocumentAssignmentMessage(role: 'author' | 'reviewer', documentTitle: string): NotificationTemplate {
+export function getDocumentAssignmentMessage(
+    role: 'author' | 'reviewer',
+    documentTitle: string,
+): NotificationTemplate {
     if (role === 'author') {
         return {
             title: 'Nouveau document créé',
