@@ -2199,7 +2199,78 @@
     "notifications": {
       "title": "Notifications",
       "empty": "No notifications",
-      "markAllAsRead": "Mark all as read"
+      "markAllAsRead": "Mark all as read",
+      "deleteAll": "Delete all notifications",
+      "viewAll": "View all notifications"
+    }
+  },
+  "notifications": {
+    "loading": "Loading notifications...",
+    "error": "Error loading notifications",
+    "emptyByDocument": "No notifications for this document",
+    "templates": {
+      "REVIEW_NEEDED": {
+        "title": "Review needed",
+        "message": "You have a review to check for \u201C{{title}}\u201D"
+      },
+      "REVIEW_OVERDUE": {
+        "title": "Review overdue",
+        "message": "The review for \u201C{{title}}\u201D is overdue"
+      },
+      "REVIEW_COMPLETED": {
+        "title": "Review completed",
+        "message": "The review for \u201C{{title}}\u201D has been completed"
+      },
+      "DOCUMENT_UPDATED": {
+        "title": "Document updated",
+        "message": "The document \u201C{{title}}\u201D has been updated"
+      },
+      "DOCUMENT_APPROVED": {
+        "title": "Document approved",
+        "message": "The document \u201C{{title}}\u201D has been approved"
+      },
+      "VERSION_CREATED": {
+        "title": "New version created",
+        "message": "A new version of \u201C{{title}}\u201D has been created"
+      },
+      "VERSION_APPROVED": {
+        "title": "Version approved",
+        "message": "The version of \u201C{{title}}\u201D has been approved"
+      },
+      "VERSION_REJECTED": {
+        "title": "Version rejected",
+        "message": "The version of \u201C{{title}}\u201D has been rejected"
+      },
+      "USER_INVITED": {
+        "title": "Invitation received",
+        "message": "You have been invited to join the platform"
+      },
+      "NONCONFORMITY_CREATED": {
+        "title": "Nonconformity created",
+        "message": "A nonconformity has been created for \u201C{{title}}\u201D"
+      },
+      "ACTION_CREATED": {
+        "title": "Action created",
+        "message": "A corrective action has been created for \u201C{{title}}\u201D"
+      },
+      "ASSIGNMENT": {
+        "author": {
+          "title": "New document created",
+          "message": "You have been assigned as an author to \u201C{{title}}\u201D"
+        },
+        "reviewer": {
+          "title": "New document created",
+          "message": "You have been assigned as a reviewer to \u201C{{title}}\u201D"
+        }
+      },
+      "PUBLIC_PUBLISHED": {
+        "title": "Public document published",
+        "message": "The public document \u201C{{title}}\u201D has been published"
+      },
+      "DOCUMENT_PUBLISHED": {
+        "title": "Document published",
+        "message": "The document \u201C{{title}}\u201D has been published"
+      }
     }
   },
   "sidebar": {
@@ -2300,4 +2371,5 @@
     },
     "troubleshootHint": "Or check your connection"
   }
+  
 }

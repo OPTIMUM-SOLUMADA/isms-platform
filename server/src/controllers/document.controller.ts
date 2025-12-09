@@ -14,6 +14,7 @@ import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
+import NotificationService from '@/services/notification.service';
 // import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
@@ -96,13 +97,26 @@ export class DocumentController {
                 folderId: folder.id,
             });
 
-
             // link document to users (Authors and Reviewers)
             await this.service.linkDocumentToUsers({
                 documentId: createdDoc.id,
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
             });
+
+            // Send notifications to assigned users
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentCreated({
+                    documentId: createdDoc.id,
+                    documentTitle: title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    creatorId: req.user?.id || '',
+                });
+            }
 
             // link departmentRoles to document
             this.departmentRoleDocument.createMany(
@@ -252,6 +266,20 @@ export class DocumentController {
             }
 
             const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
+
+            // Send notifications to assigned users about document update
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentUpdated({
+                    documentId: updatedDocument.id,
+                    documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    updaterId: req.user?.id || '',
+                });
+            }
 
             // Audit
             await req.log({
@@ -415,6 +443,14 @@ export class DocumentController {
                     // open it to avoid permission error
                     await openDocumentInBrowser(currentVersion.fileUrl!);
             }
+
+            // 3- Send notifications
+            await NotificationService.notifyDocumentPublished({
+                documentId: document.id,
+                documentTitle: document.title,
+                documentClassification: document.classification,
+                ...(req.user?.id && { creatorId: req.user.id }),
+            });
 
             res.json(document);
         } catch (err) {

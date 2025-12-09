@@ -349,3 +349,51 @@ export type RecentlyViewedDocument = {
   document: Document;
   user: User;
 }
+
+export type NotificationType =
+  // Review notifications
+  | "REVIEW_NEEDED"
+  | "REVIEW_OVERDUE"
+  | "REVIEW_COMPLETED"
+  // Document notifications
+  | "DOCUMENT_CREATED"
+  | "DOCUMENT_UPDATED"
+  | "DOCUMENT_APPROVED"
+  // Version notifications
+  | "VERSION_CREATED"
+  | "VERSION_APPROVED"
+  | "VERSION_REJECTED"
+  // User & invitation notifications
+  | "USER_INVITED"
+  // Compliance notifications
+  | "NONCONFORMITY_CREATED"
+  | "ACTION_CREATED";
+
+export type Notification = {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string | null;
+  documentId?: string | null;
+  createdAt: string;
+
+  user?: User;
+  document?: {
+    id: string;
+    title: string;
+    status: DocumentStatus;
+  };
+}
+
+export type NotificationListResponse = {
+  notifications: Notification[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
