@@ -2189,7 +2189,9 @@
         "notifications": {
             "title": "Notifications",
             "empty": "Aucune notification",
-            "markAllAsRead": "Tout marquer comme lu"
+            "markAllAsRead": "Marquer tout comme lu",
+            "deleteAll": "Effacer les notifications",
+            "viewAll": "Voir toutes les notifications"
         }
     },
     "sidebar": {
@@ -2289,5 +2291,75 @@
             }
         },
         "troubleshootHint": "Ou vérifiez votre connexion"
+    }
+    ,
+    "notifications": {
+        "loading": "Chargement des notifications...",
+        "error": "Erreur lors du chargement des notifications",
+        "emptyByDocument": "Aucune notification pour ce document",
+        "templates": {
+            "REVIEW_NEEDED": {
+                "title": "Revue nécessaire",
+                "message": "Vous avez une revue à consulter pour \u201C{{title}}\u201D"
+            },
+            "REVIEW_OVERDUE": {
+                "title": "Revue en retard",
+                "message": "La revue du document \u201C{{title}}\u201D est en retard"
+            },
+            "REVIEW_COMPLETED": {
+                "title": "Revue terminée",
+                "message": "La revue du document \u201C{{title}}\u201D a été complétée"
+            },
+            "DOCUMENT_UPDATED": {
+                "title": "Document mis à jour",
+                "message": "Le document \u201C{{title}}\u201D a été mis à jour"
+            },
+            "DOCUMENT_APPROVED": {
+                "title": "Document approuvé",
+                "message": "Le document \u201C{{title}}\u201D a été approuvé"
+            },
+            "VERSION_CREATED": {
+                "title": "Nouvelle version créée",
+                "message": "Une nouvelle version du document \u201C{{title}}\u201D a été créée"
+            },
+            "VERSION_APPROVED": {
+                "title": "Version approuvée",
+                "message": "La version du document \u201C{{title}}\u201D a été approuvée"
+            },
+            "VERSION_REJECTED": {
+                "title": "Version rejetée",
+                "message": "La version du document \u201C{{title}}\u201D a été rejetée"
+            },
+            "USER_INVITED": {
+                "title": "Invitation reçue",
+                "message": "Vous avez été invité à rejoindre la plateforme"
+            },
+            "NONCONFORMITY_CREATED": {
+                "title": "Non-conformité créée",
+                "message": "Une non-conformité a été créée pour le document \u201C{{title}}\u201D"
+            },
+            "ACTION_CREATED": {
+                "title": "Action créée",
+                "message": "Une action corrective a été créée pour le document \u201C{{title}}\u201D"
+            },
+            "ASSIGNMENT": {
+                "author": {
+                    "title": "Nouveau document créé",
+                    "message": "Vous avez été assigné en tant qu'auteur au document \u201C{{title}}\u201D"
+                },
+                "reviewer": {
+                    "title": "Nouveau document créé",
+                    "message": "Vous avez été assigné en tant que réviseur au document \u201C{{title}}\u201D"
+                }
+            },
+            "PUBLIC_PUBLISHED": {
+                "title": "Document public publié",
+                "message": "Le document public \u201C{{title}}\u201D a été publié"
+            },
+            "DOCUMENT_PUBLISHED": {
+                "title": "Document publié",
+                "message": "Le document \u201C{{title}}\u201D a été publié"
+            }
+        }
     }
 }
