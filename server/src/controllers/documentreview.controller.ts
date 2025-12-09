@@ -246,6 +246,55 @@ export class DocumentReviewController {
         }
     }
 
+    async getMyReviewsAndApproved(req: Request, res: Response) {
+        try {
+            const { userId = '' } = req.params;
+            const { page = '1', limit = '50', status= "ALL" } = req.query;
+            const data = await service.getReviewsAndApprovedByUserId({
+                userId,
+                page: Number(page),
+                limit: Number(limit),
+                filter: {
+                    ...(status === 'ALL' && {}),
+                    ...(status === 'PENDING' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: new Date() } }],
+                    }),
+                    ...(status === 'EXPIRED' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        dueDate: { lte: new Date() },
+                    }),
+                    ...(status === 'APPROVED' && {
+                        isCompleted: false,
+                        decision: 'APPROVE',
+                    }),
+                    ...(status === 'REJECTED' && {
+                        isCompleted: false,
+                        decision: 'REJECT',
+                        comment: { not: '' },
+                    }),
+                    ...(status === 'COMPLETED' && {
+                        isCompleted: true,
+                        decision: { isSet: true },
+                    }),
+                },
+            });
+            return res.json({
+                reviews: data.data,
+                pagination: {
+                    total: data.total,
+                    limit: data.limit,
+                    page: data.page,
+                    totalPages: data.totalPages,
+                },
+            });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }  
+    }
+
     async getMyReviewsStats(req: Request, res: Response) {
         try {
             const { userId = '' } = req.params;
