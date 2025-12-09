@@ -6,7 +6,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 // import { profileMenuItems } from '@/constants/header';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationService } from '@/services/notificationService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
@@ -33,17 +32,30 @@ export function Header({ onMenuClick }: HeaderProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Fetch notifications
-  const { data: notificationsData, isLoading: notificationsLoading } = useQuery({
+  // Infinite notifications
+  const {
+    data: notificationsPages,
+    isLoading: notificationsLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['notifications', user?.id],
-    queryFn: async () => {
-      const response = await notificationService.list({ limit: 5 });
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await notificationService.list({ page: pageParam as number, limit: 20 });
       return response.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const pagination = (lastPage as any).pagination;
+      if (!pagination) return undefined;
+      const next = pagination.page + 1;
+      return next <= pagination.totalPages ? next : undefined;
     },
     enabled: !!user?.id,
   });
 
-  const notifications = notificationsData?.notifications || [];
+  const notifications = (notificationsPages?.pages || []).flatMap((p: any) => p.notifications) || [];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const signOut = async () => {
@@ -99,41 +111,35 @@ export function Header({ onMenuClick }: HeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             
-            <DropdownMenuContent align="end" className="w-80">
-              {/* Distinct header section */}
-              <DropdownMenuItem className="p-0 cursor-default" disabled>
+            <DropdownMenuContent align="end" className="w-80 max-h-[30rem] overflow-y-auto p-0">
+              {/* Fixed header (title + actions) */}
+              <div className="sticky top-0 z-20 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 border-b">
                 <div className="px-4 pt-3 pb-2 flex items-center justify-between w-full">
                   <div className="text-base font-bold text-black">
                     {t('header.notifications.title')}
                   </div>
                 </div>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              {/* Header actions */}
-              <div className="px-4 mt-3 pb-2 flex items-center justify-between text-xs">
-                {/* Left: delete all */}
-                <button
-                  className="text-destructive hover:underline transition"
-                  onClick={() => {
-                    // delete all
-                  }}
-                >
-                  {t('header.notifications.deleteAll')}
-                </button>
-
-                {/* Right: mark all read */}
-                <button
-                  className="text-primary hover:underline transition"
-                  onClick={async () => {
-                    await notificationService.markAllAsRead();
-                    // Refresh notifications queries
-                    await queryClient.invalidateQueries({ queryKey: ['notifications'] });
-                  }}
-                >
-                  {t('header.notifications.markAllAsRead')}
-                </button>
+                <div className="px-4 pb-2 flex items-center justify-between text-xs">
+                  <button
+                    className="text-destructive hover:underline transition"
+                    onClick={() => {
+                      // delete all
+                    }}
+                  >
+                    {t('header.notifications.deleteAll')}
+                  </button>
+                  <button
+                    className="text-primary hover:underline transition"
+                    onClick={async () => {
+                      await notificationService.markAllAsRead();
+                      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+                    }}
+                  >
+                    {t('header.notifications.markAllAsRead')}
+                  </button>
+                </div>
               </div>
+              {/* No extra spacer; header covers the top with solid background */}
 
               
               {notificationsLoading ? (
@@ -150,7 +156,8 @@ export function Header({ onMenuClick }: HeaderProps) {
                   {t('header.notifications.empty')}
                 </div>
               ) : (
-                notifications.map((notification) => (
+                <div className="pt-2">
+                {notifications.map((notification) => (
                   <DropdownMenuItem 
                     key={notification.id}
                     className="flex-col items-start py-3 cursor-pointer"
@@ -174,18 +181,21 @@ export function Header({ onMenuClick }: HeaderProps) {
                       })}
                     </div>
                   </DropdownMenuItem>
-                ))
+                ))}
+                </div>
               )}
-              {notifications.length > 0 && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="text-center justify-center text-sm text-primary"
-                    onClick={() => navigate('/notifications')}
+              {/* Infinite loader */}
+              {hasNextPage && (
+                <div className="px-4 py-2">
+                  <Button
+                    variant="ghost"
+                    disabled={isFetchingNextPage}
+                    className="w-full"
+                    onClick={() => fetchNextPage()}
                   >
-                    {t('header.notifications.viewAll')}
-                  </DropdownMenuItem>
-                </>
+                    {isFetchingNextPage ? '...' : t('common.table.pagination.next')}
+                  </Button>
+                </div>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
