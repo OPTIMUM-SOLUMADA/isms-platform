@@ -14,9 +14,11 @@ import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
+// import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
     private service: DocumentService;
+    // private complianceService: ComplianceService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
@@ -28,6 +30,7 @@ export class DocumentController {
         this.versionService = new DocumentVersionService();
         this.reviewService = new DocumentReviewService();
         this.recenltyViewed = new RecentlyViewedService();
+        // this.complianceService = new ComplianceService();
     }
 
     async create(req: Request, res: Response) {
@@ -92,6 +95,7 @@ export class DocumentController {
                 },
                 folderId: folder.id,
             });
+
 
             // link document to users (Authors and Reviewers)
             await this.service.linkDocumentToUsers({
@@ -216,7 +220,8 @@ export class DocumentController {
             const updatedDocument = await this.service.update(documentId!, {
                 ...(title && { title }),
                 ...(description && { description }),
-                ...(status && { status }),
+                // If document is APPROVED and being updated, reset to IN_REVIEW
+                status: document.status === 'APPROVED' ? 'IN_REVIEW' : status || document.status,
                 ...(reviewFrequency && { reviewFrequency }),
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),

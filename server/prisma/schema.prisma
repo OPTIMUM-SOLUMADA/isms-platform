@@ -110,6 +110,7 @@ model User {
   recentlyViews          RecentlyViewedDocument[]
   nonConformity          NonConformity[]
   correctiveAction       CorrectiveAction[]
+  clauseCompliances      ClauseCompliance[]
 
   @@index([email, isActive])
   @@index([role])
@@ -599,6 +600,9 @@ model CorrectiveAction {
   nonConformity NonConformity @relation(fields: [nonConformityId], references: [id], onDelete: Cascade)
   owner         User?          @relation(fields: [ownerId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("corrective_actions")
 }
 
@@ -609,14 +613,30 @@ enum ClauseComplianceStatus {
   NOT_APPLICABLE
 }
 
+enum ClausePriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+
 model ClauseCompliance {
-  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
-  isoClauseId String                 @db.ObjectId
-  status      ClauseComplianceStatus @default(COMPLIANT)
-  evidence    String?
-  checkedAt   DateTime               @default(now())
+  id           String                 @id @default(auto()) @map("_id") @db.ObjectId
+  isoClauseId  String                 @db.ObjectId
+  ownerId      String?                @db.ObjectId
+  status       ClauseComplianceStatus @default(COMPLIANT)
+  priority     ClausePriority         @default(MEDIUM)
+  progress     Int                    @default(0)
+  documents    Int                    @default(0)
+  lastReviewed DateTime?
+  nextReview   DateTime?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 
   isoClause ISOClause @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+  owner     User?      @relation(fields: [ownerId], references: [id], onDelete: SetNull)
 
   @@map("clause_compliance")
+  @@index([isoClauseId])
 }
+
