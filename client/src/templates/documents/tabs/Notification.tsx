@@ -4,6 +4,8 @@ import { notificationService } from "@/services/notificationService"
 import { Notification as NotificationType } from "@/types"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslation } from "react-i18next"
+import { getLocalizedNotification } from "@/lib/notificationI18n"
 
 import {
   Timeline,
@@ -15,7 +17,6 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/ui/timeline"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface NotificationProps {
@@ -52,6 +53,7 @@ const getNotificationColor = (type: string) => {
 }
 
 export default function Notification({ documentId }: NotificationProps) {
+  const { t } = useTranslation()
   const { data, isLoading, error } = useQuery({
     queryKey: ["notifications", documentId],
     queryFn: async () => {
@@ -80,7 +82,7 @@ export default function Notification({ documentId }: NotificationProps) {
   if (error) {
     return (
       <div className="p-5 text-center text-red-500">
-        Erreur lors du chargement des notifications
+        {t('notifications.error')}
       </div>
     )
   }
@@ -90,7 +92,7 @@ export default function Notification({ documentId }: NotificationProps) {
   if (notifications.length === 0) {
     return (
       <div className="p-5 text-center text-muted-foreground">
-        Aucune notification pour ce document
+        {t('notifications.emptyByDocument')}
       </div>
     )
   }
@@ -111,11 +113,9 @@ export default function Notification({ documentId }: NotificationProps) {
               })}
             </TimelineDate>
             <TimelineTitle className="flex items-center gap-2">
-              {notification.title}
+              {getLocalizedNotification(notification, t).title}
               {!notification.isRead && (
-                <Badge variant="secondary" className="ml-2">
-                  Nouveau
-                </Badge>
+                <span className="ml-2 h-2 w-2 rounded-full bg-blue-500" aria-hidden="true"></span>
               )}
             </TimelineTitle>
             <TimelineIndicator
@@ -128,7 +128,7 @@ export default function Notification({ documentId }: NotificationProps) {
               )}
             </TimelineIndicator>
           </TimelineHeader>
-          <TimelineContent>{notification.message}</TimelineContent>
+          <TimelineContent>{getLocalizedNotification(notification, t).message}</TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>
