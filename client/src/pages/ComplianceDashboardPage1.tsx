@@ -48,10 +48,6 @@ export default function ComplianceDashboardPage() {
             <h1 className="page-title">Compliance Dashboard</h1>
             <p className="page-description">ISO 27001 compliance status and progress tracking</p>
           </div>
-          <Button className="flex items-center space-x-2">
-            <FileText className="h-4 w-4" />
-            <span>Generate Report</span>
-          </Button>
         </div>
 
         {/* Overview Stats */}
@@ -212,7 +208,7 @@ export default function ComplianceDashboardPage() {
             </Card>
 
             {/* Compliance Trends */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <TrendingUp className="h-5 w-5 text-green-600" />
@@ -255,7 +251,7 @@ export default function ComplianceDashboardPage() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

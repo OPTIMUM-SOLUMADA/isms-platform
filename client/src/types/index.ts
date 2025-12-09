@@ -32,6 +32,8 @@ export type ComplianceClause = {
   nextReview?: string;          // Date ISO string
   createdAt: string;            // Date ISO string
   updatedAt: string;            // Date ISO string
+  isoClause: ISOClause;
+  owner: User | null;
 };
 
 

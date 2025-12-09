@@ -9,6 +9,8 @@ export class ComplianceController {
   async listClause(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await service.listClause();
+      console.log("rsulti", result);
+      
       res.json(result);
     } catch (err) {
       next(err);

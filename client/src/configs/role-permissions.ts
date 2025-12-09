@@ -88,7 +88,7 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "published-document.page.access",
     ],
     [RoleType.VIEWER]: [
-        "documents.page.access",
+        // "documents.page.access",
         "compliance.page.access",
         "settings.page.access",
         "published-document.page.access",
