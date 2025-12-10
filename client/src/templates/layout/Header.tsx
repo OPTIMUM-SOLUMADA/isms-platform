@@ -119,25 +119,27 @@ export function Header({ onMenuClick }: HeaderProps) {
                     {t('header.notifications.title')}
                   </div>
                 </div>
-                <div className="px-4 pb-2 flex items-center justify-between text-xs">
-                  <button
-                    className="text-destructive hover:underline transition"
-                    onClick={() => {
-                      // delete all
-                    }}
-                  >
-                    {t('header.notifications.deleteAll')}
-                  </button>
-                  <button
-                    className="text-primary hover:underline transition"
-                    onClick={async () => {
-                      await notificationService.markAllAsRead();
-                      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
-                    }}
-                  >
-                    {t('header.notifications.markAllAsRead')}
-                  </button>
-                </div>
+                {notifications.length > 0 && (
+                  <div className="px-4 pb-2 flex items-center justify-between text-xs">
+                    <button
+                      className="text-destructive hover:underline transition"
+                      onClick={() => {
+                        // delete all
+                      }}
+                    >
+                      {t('header.notifications.deleteAll')}
+                    </button>
+                    <button
+                      className="text-primary hover:underline transition"
+                      onClick={async () => {
+                        await notificationService.markAllAsRead();
+                        await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+                      }}
+                    >
+                      {t('header.notifications.markAllAsRead')}
+                    </button>
+                  </div>
+                )}
               </div>
               {/* No extra spacer; header covers the top with solid background */}
 
