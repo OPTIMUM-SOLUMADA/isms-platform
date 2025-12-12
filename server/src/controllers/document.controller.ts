@@ -184,6 +184,8 @@ export class DocumentController {
             // find document
             const document = await this.service.getDocumentById(documentId!);
 
+            console.log("dicyle", document);
+            
             if (!document) {
                 res.status(404).json({
                     error: 'Document not found',

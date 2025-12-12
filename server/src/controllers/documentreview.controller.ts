@@ -180,14 +180,14 @@ export class DocumentReviewController {
                 status: 'SUCCESS',
             });
 
-            // Notification: Version approved - notify document owner/authors
-            await NotificationService.create({
-                user: { connect: { id: document!.ownerId } },
-                type: 'VERSION_APPROVED',
-                title: `Version approuvée : ${document!.title}`,
-                message: `La version du document "${document!.title}" a été approuvée.`,
-                document: { connect: { id: review.documentId } },
-            } as any);
+            // // Notification: Version approved - notify document owner/authors
+            // await NotificationService.create({
+            //     user: { connect: { id: document!.ownerId } },
+            //     type: 'VERSION_APPROVED',
+            //     title: `Version approuvée : ${document!.title}`,
+            //     message: `La version du document "${document!.title}" a été approuvée.`,
+            //     document: { connect: { id: review.documentId } },
+            // } as any);
 
             return res.json(type);
         } catch (error: any) {
@@ -244,6 +244,55 @@ export class DocumentReviewController {
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
         }
+    }
+
+    async getMyReviewsAndApproved(req: Request, res: Response) {
+        try {
+            const { userId = '' } = req.params;
+            const { page = '1', limit = '50', status= "ALL" } = req.query;
+            const data = await service.getReviewsAndApprovedByUserId({
+                userId,
+                page: Number(page),
+                limit: Number(limit),
+                filter: {
+                    ...(status === 'ALL' && {}),
+                    ...(status === 'PENDING' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: new Date() } }],
+                    }),
+                    ...(status === 'EXPIRED' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        dueDate: { lte: new Date() },
+                    }),
+                    ...(status === 'APPROVED' && {
+                        isCompleted: false,
+                        decision: 'APPROVE',
+                    }),
+                    ...(status === 'REJECTED' && {
+                        isCompleted: false,
+                        decision: 'REJECT',
+                        comment: { not: '' },
+                    }),
+                    ...(status === 'COMPLETED' && {
+                        isCompleted: true,
+                        decision: { isSet: true },
+                    }),
+                },
+            });
+            return res.json({
+                reviews: data.data,
+                pagination: {
+                    total: data.total,
+                    limit: data.limit,
+                    page: data.page,
+                    totalPages: data.totalPages,
+                },
+            });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }  
     }
 
     async getMyReviewsStats(req: Request, res: Response) {
