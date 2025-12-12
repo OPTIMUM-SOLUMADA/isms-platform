@@ -180,14 +180,14 @@ export class DocumentReviewController {
                 status: 'SUCCESS',
             });
 
-            // Notification: Version approved - notify document owner/authors
-            await NotificationService.create({
-                user: { connect: { id: document!.ownerId } },
-                type: 'VERSION_APPROVED',
-                title: `Version approuvée : ${document!.title}`,
-                message: `La version du document "${document!.title}" a été approuvée.`,
-                document: { connect: { id: review.documentId } },
-            } as any);
+            // // Notification: Version approved - notify document owner/authors
+            // await NotificationService.create({
+            //     user: { connect: { id: document!.ownerId } },
+            //     type: 'VERSION_APPROVED',
+            //     title: `Version approuvée : ${document!.title}`,
+            //     message: `La version du document "${document!.title}" a été approuvée.`,
+            //     document: { connect: { id: review.documentId } },
+            // } as any);
 
             return res.json(type);
         } catch (error: any) {
