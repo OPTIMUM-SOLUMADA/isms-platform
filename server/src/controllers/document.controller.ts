@@ -285,6 +285,20 @@ export class DocumentController {
                             ? calculateNextReviewDate(updatedDocument.reviewFrequency)
                             : null;
 
+                        // Reset existing reviews decisions to null (pending state)
+                        await prisma.documentReview.updateMany({
+                            where: {
+                                documentId: updatedDocument.id,
+                                documentVersionId: currentVersion.id,
+                            },
+                            data: {
+                                decision: null,
+                                isCompleted: false,
+                                completedAt: null,
+                                reviewDate: null,
+                            },
+                        });
+
                         // Use updateAssignedReviewersToDocument which already handles duplicates
                         await this.reviewService.updateAssignedReviewersToDocument({
                             documentId: updatedDocument.id,

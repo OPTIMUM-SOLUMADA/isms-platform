@@ -116,6 +116,13 @@ export const useUpdateDocument = () => {
       });
       setDocuments(docs.map((d) => (d.id === vars.id ? updatedDoc : d)));
       queryClient.invalidateQueries({ queryKey: ["departements"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["documents", vars.id] });
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviewStats"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["my-reviews-due-soon"] });
+      queryClient.invalidateQueries({ queryKey: ["my-expired-and-reviews-due-soon"] });
     },
     onError: () => {
       toast({
