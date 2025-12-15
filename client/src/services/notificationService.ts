@@ -34,6 +34,10 @@ export const notificationService = {
     return axios.delete(notificationApi.DELETE(id));
   },
 
+  deleteAll: async () => {
+    return axios.delete(notificationApi.DELETE_ALL);
+  },
+
   getByDocument: async (documentId: string) => {
     return axios.get<NotificationListResponse>(notificationApi.BASE, {
       params: { documentId },

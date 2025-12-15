@@ -5,6 +5,8 @@ import {
     getPublicDocumentMessage,
     getDocumentPublishedMessage,
     getNotificationTemplate,
+    getPartialApprovalMessage,
+    getDocumentRejectionMessage,
 } from '@/utils/notification-messages';
 
 export class NotificationService {
@@ -75,6 +77,12 @@ export class NotificationService {
 
     async delete(id: string) {
         return prisma.notification.delete({ where: { id } });
+    }
+
+    async deleteAll(userId: string) {
+        return prisma.notification.deleteMany({
+            where: { userId },
+        });
     }
 
     /**
@@ -350,6 +358,84 @@ export class NotificationService {
                 excludeUserIds: creatorId ? [creatorId] : [],
             });
         }
+    }
+
+    /**
+     * Notify authors about partial document approval
+     */
+    async notifyPartialApproval({
+        documentId,
+        documentTitle,
+        authorIds,
+        approvedReviewers,
+        pendingReviewers,
+    }: {
+        documentId: string;
+        documentTitle: string;
+        authorIds: string[];
+        approvedReviewers: Array<{ id: string; name: string }>;
+        pendingReviewers: Array<{ id: string; name: string }>;
+    }) {
+        if (authorIds.length === 0) return;
+
+        const template = getPartialApprovalMessage(
+            documentTitle,
+            approvedReviewers.map(r => r.name),
+            pendingReviewers.map(r => r.name)
+        );
+
+        const notifications = authorIds.map((authorId) => ({
+            userId: authorId,
+            type: NotificationType.DOCUMENT_PARTIALLY_APPROVED,
+            title: template.title,
+            message: template.message,
+            documentId,
+            metadata: {
+                approvedReviewers: approvedReviewers.map(r => ({ id: r.id, name: r.name })),
+                pendingReviewers: pendingReviewers.map(r => ({ id: r.id, name: r.name })),
+            },
+        }));
+
+        return prisma.notification.createMany({
+            data: notifications,
+        });
+    }
+
+    /**
+     * Notify authors about document rejection
+     */
+    async notifyDocumentRejection({
+        documentId,
+        documentTitle,
+        authorIds,
+        rejectedByReviewers,
+    }: {
+        documentId: string;
+        documentTitle: string;
+        authorIds: string[];
+        rejectedByReviewers: Array<{ id: string; name: string }>;
+    }) {
+        if (authorIds.length === 0) return;
+
+        const template = getDocumentRejectionMessage(
+            documentTitle,
+            rejectedByReviewers.map(r => r.name)
+        );
+
+        const notifications = authorIds.map((authorId) => ({
+            userId: authorId,
+            type: NotificationType.DOCUMENT_REJECTED,
+            title: template.title,
+            message: template.message,
+            documentId,
+            metadata: {
+                rejectedBy: rejectedByReviewers.map(r => ({ id: r.id, name: r.name })),
+            },
+        }));
+
+        return prisma.notification.createMany({
+            data: notifications,
+        });
     }
 }
 
