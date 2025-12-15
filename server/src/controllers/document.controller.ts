@@ -185,7 +185,7 @@ export class DocumentController {
 
             // find document
             const document = await this.service.getDocumentById(documentId!);
-            
+
             if (!document) {
                 res.status(404).json({
                     error: 'Document not found',
@@ -268,15 +268,17 @@ export class DocumentController {
             });
 
             // If document was APPROVED and now IN_REVIEW, OR if document has been viewed, create review assignments
-            const shouldCreateReviews = 
+            const shouldCreateReviews =
                 (document.status === 'APPROVED' && updatedDocument.status === 'IN_REVIEW') ||
                 hasBeenViewed > 0;
 
             if (shouldCreateReviews) {
                 try {
                     const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
-                    const reviewerIdsArray = reviewers ? reviewers.split(',').filter((id: string) => id) : [];
-                    
+                    const reviewerIdsArray = reviewers
+                        ? reviewers.split(',').filter((id: string) => id)
+                        : [];
+
                     if (reviewerIdsArray.length > 0 && currentVersion) {
                         // Calculate due date based on reviewFrequency
                         const reviewDueDate = updatedDocument.reviewFrequency
