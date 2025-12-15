@@ -18,6 +18,8 @@ function safeSchedule(cronExp: string, name: string, fn: () => Promise<void>) {
 export function registerCronJobs() {
     // Every minute
     safeSchedule('* * * * *', 'GENERATE_DOCUMENT_REVIEWS', generateDocumentReviewsJob);
+    // Every minute
+    // safeSchedule('* * * * *', 'GENERATE_DOCUMENT_REVIEWS', notifyUpcomingReviewsJob);
 
     // Every 15 minutes
     safeSchedule('*/15 * * * *', 'NOTIFY_REVIEWERS', notifyReviewersJob);

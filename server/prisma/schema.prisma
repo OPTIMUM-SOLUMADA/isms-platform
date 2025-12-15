@@ -224,6 +224,9 @@ model Document {
 
   classification Classification @default(CONFIDENTIAL)
 
+  // ➕ Ajout pour la notification 1 mois avant
+  lastPreReviewNotification DateTime?
+  
   departmentRoles DepartmentRoleDocument[]
 
   categoryId String?       @db.ObjectId

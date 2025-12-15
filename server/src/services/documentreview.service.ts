@@ -1,9 +1,9 @@
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentReview, Prisma } from '@prisma/client';
+import { DocumentReview, NotificationType, Prisma } from '@prisma/client';
 import { EmailService } from './email.service';
-import { addHours } from 'date-fns';
+import { addHours, subMonths } from 'date-fns';
 import { toHashRouterUrl } from '@/utils/baseurl';
 
 const emailService = new EmailService();
@@ -714,4 +714,48 @@ export class DocumentReviewService {
             orderBy: { completedAt: 'desc' },
         });
     }
+
+    async sendUpcomingReviewNotification({
+        documentId,
+        nextReviewDate,
+    }: {
+        documentId: string;
+        nextReviewDate: Date;
+    }) {
+        if (!nextReviewDate) return;
+
+        const notifyDate = subMonths(nextReviewDate, 1);
+        const now = new Date();
+        if (now < notifyDate) return;
+
+        const document = await prisma.document.findUnique({
+            where: { id: documentId },
+            include: {
+                reviewers: {
+                    include: {
+                        user: {
+                            select: { id: true, name: true, email: true },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!document || !document.reviewers.length) return;
+
+        for (const reviewer of document.reviewers) {
+            await prisma.notification.create({
+                data: {
+                    userId: reviewer.user.id,
+                    type: NotificationType.REVIEW_NEEDED,
+                    title: 'Upcoming Document Review',
+                    message: `The document "${document.title}" is scheduled for review on ${nextReviewDate.toDateString()}. Please prepare.`,
+                    documentId: document.id,
+                },
+            });
+        }
+
+        console.log(`[NOTIFY] Upcoming review notification sent for document ${documentId}`);
+    }
+
 }
