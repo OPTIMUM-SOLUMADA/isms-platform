@@ -336,7 +336,7 @@ export class DocumentReviewController {
     async getMyReviewsAndApproved(req: Request, res: Response) {
         try {
             const { userId = '' } = req.params;
-            const { page = '1', limit = '50', status= "ALL" } = req.query;
+            const { page = '1', limit = '50', status = 'ALL' } = req.query;
             const data = await service.getReviewsAndApprovedByUserId({
                 userId,
                 page: Number(page),
@@ -379,7 +379,7 @@ export class DocumentReviewController {
             });
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
-        }  
+        }
     }
 
     async getMyReviewsStats(req: Request, res: Response) {
