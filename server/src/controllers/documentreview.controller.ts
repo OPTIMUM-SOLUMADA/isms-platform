@@ -9,6 +9,7 @@ import { stripHtmlAndClamp } from '@/utils/review';
 import { getChanges } from '@/utils/change';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import NotificationService from '@/services/notification.service';
+import prisma from '@/database/prisma';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
@@ -108,13 +109,90 @@ export class DocumentReviewController {
 
             // Notification: Review completed - notify assigner/owner
             if (review.assignedById) {
-                await NotificationService.create({
-                    user: { connect: { id: review.assignedById } },
-                    type: 'REVIEW_COMPLETED',
-                    title: `Revue complétée : ${review.document.title}`,
-                    message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
-                    document: { connect: { id: review.documentId } },
-                } as any);
+                // Verify user exists before creating notification
+                const assignedByUser = await prisma.user.findUnique({
+                    where: { id: review.assignedById },
+                });
+
+                if (assignedByUser) {
+                    await NotificationService.create({
+                        user: { connect: { id: review.assignedById } },
+                        type: 'REVIEW_COMPLETED',
+                        title: `Revue complétée : ${review.document.title}`,
+                        message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
+                        document: { connect: { id: review.documentId } },
+                    } as any);
+                }
+            }
+
+            // Récupérer le document avec tous les reviewers et leurs reviews
+            const documentWithReviews = await prisma.document.findUnique({
+                where: { id: review.documentId },
+                include: {
+                    authors: { include: { user: true } },
+                    reviewers: {
+                        include: {
+                            user: {
+                                include: {
+                                    documentReviews: {
+                                        where: {
+                                            documentId: review.documentId,
+                                            documentVersionId: review.documentVersionId,
+                                        },
+                                        orderBy: { createdAt: 'desc' },
+                                        take: 1,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (documentWithReviews) {
+                const authorIds = documentWithReviews.authors.map((a: any) => a.userId);
+
+                // Analyser les statuts des reviews
+                const approvedReviewers: Array<{ id: string; name: string }> = [];
+                const rejectedReviewers: Array<{ id: string; name: string }> = [];
+                const pendingReviewers: Array<{ id: string; name: string }> = [];
+
+                documentWithReviews.reviewers.forEach((reviewer: any) => {
+                    const latestReview = reviewer.user.documentReviews[0];
+                    const userName = reviewer.user?.name || reviewer.user?.email || 'Utilisateur';
+
+                    if (latestReview?.decision === 'APPROVE') {
+                        approvedReviewers.push({ id: reviewer.userId, name: userName });
+                    } else if (latestReview?.decision === 'REJECT') {
+                        rejectedReviewers.push({ id: reviewer.userId, name: userName });
+                    } else {
+                        pendingReviewers.push({ id: reviewer.userId, name: userName });
+                    }
+                });
+
+                // Envoyer les notifications appropriées
+                if (rejectedReviewers.length > 0 && authorIds.length > 0) {
+                    // Notification de rejet
+                    await NotificationService.notifyDocumentRejection({
+                        documentId: review.documentId,
+                        documentTitle: documentWithReviews.title,
+                        authorIds,
+                        rejectedByReviewers: rejectedReviewers,
+                    });
+                } else if (
+                    approvedReviewers.length > 0 &&
+                    pendingReviewers.length > 0 &&
+                    authorIds.length > 0
+                ) {
+                    // Notification d'approbation partielle
+                    await NotificationService.notifyPartialApproval({
+                        documentId: review.documentId,
+                        documentTitle: documentWithReviews.title,
+                        authorIds,
+                        approvedReviewers,
+                        pendingReviewers,
+                    });
+                }
             }
 
             return res.json(type);
@@ -180,14 +258,23 @@ export class DocumentReviewController {
                 status: 'SUCCESS',
             });
 
-            // // Notification: Version approved - notify document owner/authors
-            // await NotificationService.create({
-            //     user: { connect: { id: document!.ownerId } },
-            //     type: 'VERSION_APPROVED',
-            //     title: `Version approuvée : ${document!.title}`,
-            //     message: `La version du document "${document!.title}" a été approuvée.`,
-            //     document: { connect: { id: review.documentId } },
-            // } as any);
+            // Notification: Version approved - notify document owner/authors
+            if (document?.ownerId) {
+                // Verify owner exists before creating notification
+                const owner = await prisma.user.findUnique({
+                    where: { id: document.ownerId },
+                });
+
+                if (owner) {
+                    await NotificationService.create({
+                        user: { connect: { id: document.ownerId } },
+                        type: 'VERSION_APPROVED',
+                        title: `Version approuvée : ${document.title}`,
+                        message: `La version du document "${document.title}" a été approuvée.`,
+                        document: { connect: { id: review.documentId } },
+                    } as any);
+                }
+            }
 
             return res.json(type);
         } catch (error: any) {

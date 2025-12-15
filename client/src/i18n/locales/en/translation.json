@@ -2229,6 +2229,17 @@
         "title": "Document approved",
         "message": "The document \u201C{{title}}\u201D has been approved"
       },
+      "DOCUMENT_PARTIALLY_APPROVED": {
+        "title": "Partial approval",
+        "message": "The document \u201C{{title}}\u201D has received partial approvals",
+        "approvedBy": "Approved by",
+        "pendingReviewers": "Pending reviews from"
+      },
+      "DOCUMENT_REJECTED": {
+        "title": "Document rejected",
+        "message": "The document \u201C{{title}}\u201D has been rejected",
+        "rejectedBy": "Rejected by"
+      },
       "VERSION_CREATED": {
         "title": "New version created",
         "message": "A new version of \u201C{{title}}\u201D has been created"

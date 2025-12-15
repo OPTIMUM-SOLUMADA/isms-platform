@@ -56,6 +56,22 @@ export function getNotificationTemplate(
                     : 'Un document a été approuvé',
             };
 
+        case NotificationType.DOCUMENT_PARTIALLY_APPROVED:
+            return {
+                title: 'Approbation partielle',
+                message: documentTitle
+                    ? `Le document "${documentTitle}" a reçu des approbations partielles`
+                    : 'Un document a reçu des approbations partielles',
+            };
+
+        case NotificationType.DOCUMENT_REJECTED:
+            return {
+                title: 'Document rejeté',
+                message: documentTitle
+                    ? `Le document "${documentTitle}" a été rejeté`
+                    : 'Un document a été rejeté',
+            };
+
         // Version notifications
         case NotificationType.VERSION_CREATED:
             return {
@@ -150,5 +166,37 @@ export function getDocumentPublishedMessage(documentTitle: string): Notification
     return {
         title: 'Document publié',
         message: `Le document "${documentTitle}" a été publié`,
+    };
+}
+
+/**
+ * Generate message for partial document approval with reviewer lists
+ */
+export function getPartialApprovalMessage(
+    documentTitle: string,
+    approvedBy: string[],
+    pendingReviewers: string[],
+): NotificationTemplate {
+    const approvedNames = approvedBy.join(', ');
+    const pendingNames = pendingReviewers.join(', ');
+    
+    return {
+        title: 'Approbation partielle',
+        message: `Le document "${documentTitle}" a été approuvé par ${approvedNames}. En attente de l'avis de ${pendingNames}.`,
+    };
+}
+
+/**
+ * Generate message for document rejection with reviewer list
+ */
+export function getDocumentRejectionMessage(
+    documentTitle: string,
+    rejectedBy: string[],
+): NotificationTemplate {
+    const rejectedNames = rejectedBy.join(', ');
+    
+    return {
+        title: 'Document rejeté',
+        message: `Le document "${documentTitle}" a été rejeté par ${rejectedNames}.`,
     };
 }

@@ -147,6 +147,7 @@ export const API_CONFIG = {
       MARK_READ: (id: string | number) => `/api/notifications/${id}/read`,
       MARK_ALL_READ: "/api/notifications/mark-all-read",
       DELETE: (id: string | number) => `/api/notifications/${id}`,
+      DELETE_ALL: "/api/notifications/delete-all",
       BY_DOCUMENT: (documentId: string | number) => `/api/notifications?documentId=${documentId}`,
     },
   },

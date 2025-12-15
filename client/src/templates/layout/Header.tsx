@@ -20,6 +20,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { getLocalizedNotification } from '@/lib/notificationI18n';
+import { useState } from 'react';
+import { NotificationWithReviewers } from '@/components/NotificationWithReviewers';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -31,6 +33,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Infinite notifications
   const {
@@ -119,25 +122,31 @@ export function Header({ onMenuClick }: HeaderProps) {
                     {t('header.notifications.title')}
                   </div>
                 </div>
-                <div className="px-4 pb-2 flex items-center justify-between text-xs">
-                  <button
-                    className="text-destructive hover:underline transition"
-                    onClick={() => {
-                      // delete all
-                    }}
-                  >
-                    {t('header.notifications.deleteAll')}
-                  </button>
-                  <button
-                    className="text-primary hover:underline transition"
-                    onClick={async () => {
-                      await notificationService.markAllAsRead();
-                      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
-                    }}
-                  >
-                    {t('header.notifications.markAllAsRead')}
-                  </button>
-                </div>
+                {notifications.length > 0 && (
+                  <div className="px-4 pb-2 flex items-center justify-between text-xs">
+                    <button
+                      className="text-destructive hover:underline transition disabled:opacity-50"
+                      disabled={isDeleting}
+                      onClick={async () => {
+                        setIsDeleting(true);
+                        await notificationService.deleteAll();
+                        await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+                        setIsDeleting(false);
+                      }}
+                    >
+                      {isDeleting ? t('common.deleting', { defaultValue: 'Suppression...' }) : t('header.notifications.deleteAll')}
+                    </button>
+                    <button
+                      className="text-primary hover:underline transition"
+                      onClick={async () => {
+                        await notificationService.markAllAsRead();
+                        await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+                      }}
+                    >
+                      {t('header.notifications.markAllAsRead')}
+                    </button>
+                  </div>
+                )}
               </div>
               {/* No extra spacer; header covers the top with solid background */}
 
@@ -160,7 +169,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                 {notifications.map((notification) => (
                   <DropdownMenuItem 
                     key={notification.id}
-                    className="flex-col items-start py-3 cursor-pointer"
+                    className={`flex-col items-start py-3 cursor-pointer transition-all duration-300 ${isDeleting ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}
                     onClick={() => handleNotificationClick(notification.id, notification.documentId)}
                   >
                     {(() => { const localized = getLocalizedNotification(notification, t); return (
@@ -172,6 +181,10 @@ export function Header({ onMenuClick }: HeaderProps) {
                           )}
                         </div>
                         <div className="text-sm text-gray-500">{localized.message}</div>
+                        <NotificationWithReviewers 
+                          type={notification.type} 
+                          metadata={notification.metadata}
+                        />
                       </>
                     ); })()}
                     <div className="text-xs text-gray-400 mt-1">

@@ -2318,6 +2318,17 @@
                 "title": "Document approuvé",
                 "message": "Le document \u201C{{title}}\u201D a été approuvé"
             },
+            "DOCUMENT_PARTIALLY_APPROVED": {
+                "title": "Approbation partielle",
+                "message": "Le document \u201C{{title}}\u201D a reçu des approbations partielles",
+                "approvedBy": "Approuvé par",
+                "pendingReviewers": "En attente de l'avis de"
+            },
+            "DOCUMENT_REJECTED": {
+                "title": "Document rejeté",
+                "message": "Le document \u201C{{title}}\u201D a été rejeté",
+                "rejectedBy": "Rejeté par"
+            },
             "VERSION_CREATED": {
                 "title": "Nouvelle version créée",
                 "message": "Une nouvelle version du document \u201C{{title}}\u201D a été créée"

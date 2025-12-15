@@ -76,6 +76,16 @@ export class NotificationController {
             res.status(400).json({ error: (err as Error).message });
         }
     }
+
+    async deleteAll(req: Request, res: Response) {
+        try {
+            const userId = req.user!.id;
+            const result = await service.deleteAll(userId);
+            res.json(result);
+        } catch (err) {
+            res.status(400).json({ error: (err as Error).message });
+        }
+    }
 }
 
 export default new NotificationController();
