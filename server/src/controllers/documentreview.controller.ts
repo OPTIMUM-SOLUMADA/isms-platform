@@ -96,27 +96,6 @@ export class DocumentReviewController {
                 comment,
             });
 
-            // If decision is APPROVE, check if all reviews are approved to update document status
-            if (decision === 'APPROVE') {
-                const allReviews = await prisma.documentReview.findMany({
-                    where: {
-                        documentId: review.documentId,
-                        documentVersionId: review.documentVersionId,
-                    },
-                });
-
-                const allApproved = allReviews.every(
-                    (r) => r.decision === 'APPROVE' || r.id === reviewId,
-                );
-
-                if (allApproved && allReviews.length > 0) {
-                    // Update document status to APPROVED
-                    await documentService.update(review.documentId, {
-                        status: 'APPROVED',
-                    });
-                }
-            }
-
             // Audit for decision made
             await req.log({
                 event: AuditEventType.DOCUMENT_REVIEW_SUBMITTED,

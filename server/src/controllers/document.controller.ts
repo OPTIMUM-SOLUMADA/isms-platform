@@ -262,6 +262,27 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
+            // Reset ALL existing reviews when document is updated (decision -> null = IN_REVIEW state)
+            try {
+                const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                if (currentVersion) {
+                    await prisma.documentReview.updateMany({
+                        where: {
+                            documentId: updatedDocument.id,
+                            documentVersionId: currentVersion.id,
+                        },
+                        data: {
+                            decision: null,
+                            isCompleted: false,
+                            completedAt: null,
+                            reviewDate: null,
+                        },
+                    });
+                }
+            } catch (err) {
+                console.log('Failed to reset review decisions', err);
+            }
+
             // Check if document has been viewed by users
             const hasBeenViewed = await prisma.recentlyViewedDocument.count({
                 where: { documentId: updatedDocument.id },
@@ -284,20 +305,6 @@ export class DocumentController {
                         const reviewDueDate = updatedDocument.reviewFrequency
                             ? calculateNextReviewDate(updatedDocument.reviewFrequency)
                             : null;
-
-                        // Reset existing reviews decisions to null (pending state)
-                        await prisma.documentReview.updateMany({
-                            where: {
-                                documentId: updatedDocument.id,
-                                documentVersionId: currentVersion.id,
-                            },
-                            data: {
-                                decision: null,
-                                isCompleted: false,
-                                completedAt: null,
-                                reviewDate: null,
-                            },
-                        });
 
                         // Use updateAssignedReviewersToDocument which already handles duplicates
                         await this.reviewService.updateAssignedReviewersToDocument({
