@@ -394,6 +394,9 @@ enum NotificationType {
   DOCUMENT_CREATED
   DOCUMENT_UPDATED
   DOCUMENT_APPROVED
+  DOCUMENT_PARTIALLY_APPROVED
+  DOCUMENT_REJECTED
+  DOCUMENT_EXPIRED
   // Version notifications
   VERSION_CREATED
   VERSION_APPROVED
@@ -414,6 +417,7 @@ model Notification {
   isRead     Boolean          @default(false)
   readAt     DateTime?
   documentId String?          @db.ObjectId // Lien optionnel vers un document
+  metadata   Json?            // Données supplémentaires (ex: listes de reviewers)
   createdAt  DateTime         @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)

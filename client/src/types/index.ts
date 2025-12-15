@@ -359,6 +359,9 @@ export type NotificationType =
   | "DOCUMENT_CREATED"
   | "DOCUMENT_UPDATED"
   | "DOCUMENT_APPROVED"
+  | "DOCUMENT_PARTIALLY_APPROVED"
+  | "DOCUMENT_REJECTED"
+  | "DOCUMENT_EXPIRED"
   // Version notifications
   | "VERSION_CREATED"
   | "VERSION_APPROVED"
@@ -378,6 +381,11 @@ export type Notification = {
   isRead: boolean;
   readAt?: string | null;
   documentId?: string | null;
+  metadata?: {
+    approvedReviewers?: Array<{ id: string; name: string }>;
+    pendingReviewers?: Array<{ id: string; name: string }>;
+    rejectedBy?: Array<{ id: string; name: string }>;
+  };
   createdAt: string;
 
   user?: User;

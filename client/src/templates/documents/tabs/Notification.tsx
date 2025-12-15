@@ -6,6 +6,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useTranslation } from "react-i18next"
 import { getLocalizedNotification } from "@/lib/notificationI18n"
+import { NotificationWithReviewers } from "@/components/NotificationWithReviewers"
 
 import {
   Timeline,
@@ -42,6 +43,9 @@ const getNotificationColor = (type: string) => {
     case "DOCUMENT_APPROVED":
     case "REVIEW_COMPLETED":
       return "bg-green-500"
+    case "DOCUMENT_PARTIALLY_APPROVED":
+      return "bg-orange-500"
+    case "DOCUMENT_REJECTED":
     case "REVIEW_OVERDUE":
       return "bg-red-500"
     case "DOCUMENT_CREATED":
@@ -128,7 +132,13 @@ export default function Notification({ documentId }: NotificationProps) {
               )}
             </TimelineIndicator>
           </TimelineHeader>
-          <TimelineContent>{getLocalizedNotification(notification, t).message}</TimelineContent>
+          <TimelineContent>
+            {getLocalizedNotification(notification, t).message}
+            <NotificationWithReviewers 
+              type={notification.type} 
+              metadata={notification.metadata}
+            />
+          </TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>
