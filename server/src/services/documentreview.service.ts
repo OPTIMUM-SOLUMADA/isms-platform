@@ -423,6 +423,51 @@ export class DocumentReviewService {
         };
     }
 
+    async getReviewsAndApprovedByUserId({
+        userId,
+        limit,
+        page,
+        filter,
+    }: {
+        userId: string;
+        limit: number;
+        page: number;
+        filter?: Prisma.DocumentReviewWhereInput;
+    }) {
+        const skip = (page - 1) * limit;
+
+        const [items, total] = await prisma.$transaction([
+            prisma.documentReview.findMany({
+                skip,
+                take: limit,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    decision: 'APPROVE',
+                    ...(filter && filter),
+                },
+                include: includes,
+            }),
+            prisma.documentReview.count({
+                where: {
+                    reviewerId: userId,
+                    isCompleted: false,
+                    ...(filter && filter),
+                },
+            }),
+        ]);
+
+        return {
+            data: items,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
     async getReviewStatsByUserId(userId: string) {
         const now = new Date();
 

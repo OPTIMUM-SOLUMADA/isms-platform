@@ -110,7 +110,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         files: [],
         type: "",
         classification: Classification.PUBLIC,
-        reviewFrequency: Frequencies.DAILY,
+        reviewFrequency: Frequencies.QUARTERLY,
         departmentRoles: [],
       },
       mode: "onChange",
