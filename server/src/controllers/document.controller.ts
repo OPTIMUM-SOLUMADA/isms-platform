@@ -15,6 +15,8 @@ import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
 import NotificationService from '@/services/notification.service';
+import { calculateNextReviewDate } from '@/utils/dateCalculator';
+import prisma from '@/database/prisma';
 // import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
@@ -184,8 +186,6 @@ export class DocumentController {
             // find document
             const document = await this.service.getDocumentById(documentId!);
 
-            console.log("dicyle", document);
-            
             if (!document) {
                 res.status(404).json({
                     error: 'Document not found',
@@ -261,6 +261,57 @@ export class DocumentController {
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
             });
+
+            // Check if document has been viewed by users
+            const hasBeenViewed = await prisma.recentlyViewedDocument.count({
+                where: { documentId: updatedDocument.id },
+            });
+
+            // If document was APPROVED and now IN_REVIEW, OR if document has been viewed, create review assignments
+            const shouldCreateReviews =
+                (document.status === 'APPROVED' && updatedDocument.status === 'IN_REVIEW') ||
+                hasBeenViewed > 0;
+
+            if (shouldCreateReviews) {
+                try {
+                    const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                    const reviewerIdsArray = reviewers
+                        ? reviewers.split(',').filter((id: string) => id)
+                        : [];
+
+                    if (reviewerIdsArray.length > 0 && currentVersion) {
+                        // Calculate due date based on reviewFrequency
+                        const reviewDueDate = updatedDocument.reviewFrequency
+                            ? calculateNextReviewDate(updatedDocument.reviewFrequency)
+                            : null;
+
+                        // Reset existing reviews decisions to null (pending state)
+                        await prisma.documentReview.updateMany({
+                            where: {
+                                documentId: updatedDocument.id,
+                                documentVersionId: currentVersion.id,
+                            },
+                            data: {
+                                decision: null,
+                                isCompleted: false,
+                                completedAt: null,
+                                reviewDate: null,
+                            },
+                        });
+
+                        // Use updateAssignedReviewersToDocument which already handles duplicates
+                        await this.reviewService.updateAssignedReviewersToDocument({
+                            documentId: updatedDocument.id,
+                            documentVersionId: currentVersion.id,
+                            reviewerIds: reviewerIdsArray,
+                            ...(req.user?.id ? { userId: req.user.id } : {}),
+                            dueDate: reviewDueDate,
+                        });
+                    }
+                } catch (err) {
+                    console.log('Failed to create document reviews', err);
+                }
+            }
 
             if (file) {
                 // Delete old file

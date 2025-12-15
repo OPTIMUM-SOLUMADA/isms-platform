@@ -96,6 +96,27 @@ export class DocumentReviewController {
                 comment,
             });
 
+            // If decision is APPROVE, check if all reviews are approved to update document status
+            if (decision === 'APPROVE') {
+                const allReviews = await prisma.documentReview.findMany({
+                    where: {
+                        documentId: review.documentId,
+                        documentVersionId: review.documentVersionId,
+                    },
+                });
+
+                const allApproved = allReviews.every(
+                    (r) => r.decision === 'APPROVE' || r.id === reviewId,
+                );
+
+                if (allApproved && allReviews.length > 0) {
+                    // Update document status to APPROVED
+                    await documentService.update(review.documentId, {
+                        status: 'APPROVED',
+                    });
+                }
+            }
+
             // Audit for decision made
             await req.log({
                 event: AuditEventType.DOCUMENT_REVIEW_SUBMITTED,
@@ -336,7 +357,7 @@ export class DocumentReviewController {
     async getMyReviewsAndApproved(req: Request, res: Response) {
         try {
             const { userId = '' } = req.params;
-            const { page = '1', limit = '50', status= "ALL" } = req.query;
+            const { page = '1', limit = '50', status = 'ALL' } = req.query;
             const data = await service.getReviewsAndApprovedByUserId({
                 userId,
                 page: Number(page),
@@ -379,7 +400,7 @@ export class DocumentReviewController {
             });
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
-        }  
+        }
     }
 
     async getMyReviewsStats(req: Request, res: Response) {
