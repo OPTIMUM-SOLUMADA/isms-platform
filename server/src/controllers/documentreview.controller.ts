@@ -91,7 +91,7 @@ export class DocumentReviewController {
                 return;
             }
 
-            const type = await service.submitReviewDecision(reviewId!, {
+            const updatedReview = await service.submitReviewDecision(reviewId!, {
                 decision,
                 comment,
             });
@@ -125,25 +125,26 @@ export class DocumentReviewController {
                 }
             }
 
-            // Récupérer le document avec tous les reviewers et leurs reviews
+            // Récupérer TOUTES les reviews pour cette version du document (pas juste la dernière par utilisateur)
+            const allReviewsForVersion = await prisma.documentReview.findMany({
+                where: {
+                    documentId: review.documentId,
+                    documentVersionId: review.documentVersionId,
+                },
+                include: {
+                    reviewer: true,
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+
+            // Récupérer le document avec tous les reviewers et auteurs
             const documentWithReviews = await prisma.document.findUnique({
                 where: { id: review.documentId },
                 include: {
                     authors: { include: { user: true } },
                     reviewers: {
                         include: {
-                            user: {
-                                include: {
-                                    documentReviews: {
-                                        where: {
-                                            documentId: review.documentId,
-                                            documentVersionId: review.documentVersionId,
-                                        },
-                                        orderBy: { createdAt: 'desc' },
-                                        take: 1,
-                                    },
-                                },
-                            },
+                            user: true,
                         },
                     },
                 },
@@ -152,13 +153,21 @@ export class DocumentReviewController {
             if (documentWithReviews) {
                 const authorIds = documentWithReviews.authors.map((a: any) => a.userId);
 
+                // Créer une map des dernières reviews par reviewer
+                const reviewsByReviewer = new Map<string, any>();
+                allReviewsForVersion.forEach((rev) => {
+                    if (!reviewsByReviewer.has(rev.reviewerId)) {
+                        reviewsByReviewer.set(rev.reviewerId, rev);
+                    }
+                });
+
                 // Analyser les statuts des reviews
                 const approvedReviewers: Array<{ id: string; name: string }> = [];
                 const rejectedReviewers: Array<{ id: string; name: string }> = [];
                 const pendingReviewers: Array<{ id: string; name: string }> = [];
 
                 documentWithReviews.reviewers.forEach((reviewer: any) => {
-                    const latestReview = reviewer.user.documentReviews[0];
+                    const latestReview = reviewsByReviewer.get(reviewer.userId);
                     const userName = reviewer.user?.name || reviewer.user?.email || 'Utilisateur';
 
                     if (latestReview?.decision === 'APPROVE') {
@@ -195,7 +204,7 @@ export class DocumentReviewController {
                 }
             }
 
-            return res.json(type);
+            return res.json(updatedReview);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
         }
@@ -336,7 +345,7 @@ export class DocumentReviewController {
     async getMyReviewsAndApproved(req: Request, res: Response) {
         try {
             const { userId = '' } = req.params;
-            const { page = '1', limit = '50', status= "ALL" } = req.query;
+            const { page = '1', limit = '50', status = 'ALL' } = req.query;
             const data = await service.getReviewsAndApprovedByUserId({
                 userId,
                 page: Number(page),
@@ -379,7 +388,7 @@ export class DocumentReviewController {
             });
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
-        }  
+        }
     }
 
     async getMyReviewsStats(req: Request, res: Response) {
