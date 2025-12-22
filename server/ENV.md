@@ -7,11 +7,12 @@ Below is a description of all the environment variables and their purposes.
 
 ### ⚙️ Required Variables
 
-| Variable         | Description                                                                                                                                           |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **DATABASE_URL** | MongoDB connection string used by the application to connect to your database. Example: `mongodb+srv://username:password@cluster.mongodb.net/dbname`. |
-| **PORT**         | The port on which the backend server will run. Default: `8080`.                                                                                       |
-| **CORS_ORIGIN**  | The URL of the frontend application (React). Used to allow cross-origin requests. Example: `http://localhost:5173`.                                   |
+| Variable              | Description                                                                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DATABASE_URL**      | PostgreSQL connection string for the main relational database. Example: `postgresql://username:password@localhost:5432/isms_db`.                                |
+| **DATABASE_URL_MONGO** | MongoDB connection string for audit logs and notifications. Example: `mongodb+srv://username:password@cluster.mongodb.net/isms_logs`.                          |
+| **PORT**              | The port on which the backend server will run. Default: `8080`.                                                                                                  |
+| **CORS_ORIGIN**       | The URL of the frontend application (React). Used to allow cross-origin requests. Example: `http://localhost:5173`.                                             |
 
 ---
 

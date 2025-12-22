@@ -1,35 +1,36 @@
-import { Department, Prisma } from '@prisma/client';
-import prisma from '@/database/prisma';
+import { prismaPostgres } from '@/database/prisma';
+import { Department, Prisma } from '../../node_modules/.prisma/client/postgresql';
 import { UserService } from './user.service';
 
 const depIncludes: Prisma.DepartmentInclude = {
-    createdBy: {
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-        },
-    },
-    roles: {
-        select: {
-            id: true,
-            name: true,
-            description: true,
-            createdBy: {
+    functions: {
+        include: {
+            users: {
                 select: {
-                    id: true,
+                    id_user: true,
                     name: true,
                     email: true,
-                    role: true,
-                    createdAt: true,
                 },
             },
         },
     },
+    department_document_classifications: {
+        include: {
+            document: {
+                select: {
+                    id_document: true,
+                    title: true,
+                },
+            },
+            classification: true,
+        },
+    },
 };
 
+/**
+ * Service for managing departments
+ * Uses PostgreSQL for relational department data
+ */
 export class DepartmentService {
     protected userService: UserService;
     constructor() {
@@ -37,48 +38,48 @@ export class DepartmentService {
     }
 
     async createDepartment(data: Prisma.DepartmentCreateInput) {
-        return prisma.department.create({ data, include: depIncludes });
+        return prismaPostgres.department.create({ data, include: depIncludes });
     }
 
     async getDepartmentById(id: string) {
-        return prisma.department.findUnique({
-            where: { id },
+        return prismaPostgres.department.findUnique({
+            where: { id_department: id },
             include: depIncludes,
         });
     }
 
     async getDepartmentByName(name: string) {
-        return prisma.department.findUnique({
+        return prismaPostgres.department.findFirst({
             where: { name },
             include: depIncludes,
         });
     }
 
     async updateDepartment(id: string, data: Prisma.DepartmentUpdateInput) {
-        return prisma.department.update({
-            where: { id },
+        return prismaPostgres.department.update({
+            where: { id_department: id },
             data,
             include: depIncludes,
         });
     }
 
     async deleteDepartment(id: string) {
-        return prisma.department.delete({ where: { id } });
+        return prismaPostgres.department.delete({ where: { id_department: id } });
     }
 
     async listDepartments({
         filter,
         page = 1,
         limit = 20,
-        orderBy = { createdAt: 'desc' },
+        orderBy = { created_at: 'desc' },
     }: {
         filter?: Prisma.DepartmentWhereInput;
         page?: number;
         limit?: number;
         orderBy?: Prisma.DepartmentOrderByWithRelationInput;
     }) {
-        const total = await prisma.department.count();
-        const departments = await prisma.department.findMany({
+        const total = await prismaPostgres.department.count({ where: filter });
+        const departments = await prismaPostgres.department.findMany({
             include: depIncludes,
             where: filter || {},
             skip: (page - 1) * limit,
@@ -100,7 +101,7 @@ export class DepartmentService {
     }
 
     async search(query: string) {
-        return prisma.department.findMany({
+        return prismaPostgres.department.findMany({
             where: {
                 OR: [
                     { name: { contains: query, mode: 'insensitive' } },
@@ -108,7 +109,7 @@ export class DepartmentService {
                 ],
             },
             select: {
-                id: true,
+                id_department: true,
                 name: true,
                 description: true,
             },

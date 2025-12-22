@@ -45,7 +45,9 @@ export class GoogleDriveController {
 
             if (existingAccount) {
                 // Find working directory if exists
-                const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
+                const workingDir = await driveService.findFolderById(
+                    existingAccount.working_dir_id!,
+                );
                 workingDirId = workingDir?.id || '';
             } else {
                 // Create working directory
@@ -57,9 +59,11 @@ export class GoogleDriveController {
 
             await gAccountService.create({
                 email: userInfo.email!,
-                googleId: userInfo.id!,
-                tokens: tokens,
-                workingDirId: workingDirId,
+                google_id: userInfo.id!,
+                access_token: tokens?.access_token,
+                refresh_token: tokens?.refresh_token,
+                token_expiry: tokens?.expiry_date ? new Date(tokens.expiry_date) : null,
+                working_dir_id: workingDirId,
             });
 
             return res.redirect('/');
@@ -97,8 +101,8 @@ export class GoogleDriveController {
                 const grantPromise = grantDocumentPermissions(version, driveService);
 
                 // Open URL in Puppeteer (if exists)
-                const openPromise = version.fileUrl
-                    ? openDocumentInBrowser(version.fileUrl)
+                const openPromise = version.file_url
+                    ? openDocumentInBrowser(version.file_url)
                     : Promise.resolve();
 
                 // Run both concurrently

@@ -1,5 +1,5 @@
-import prisma from '@/database/prisma';
-import { Prisma, NotificationType, Classification } from '@prisma/client';
+import { prismaMongo, prismaPostgres } from '@/database/prisma';
+import { Prisma as MongoPrisma, NotificationType } from '../../node_modules/.prisma/client/mongodb';
 import {
     getDocumentAssignmentMessage,
     getPublicDocumentMessage,
@@ -9,9 +9,14 @@ import {
     getDocumentRejectionMessage,
 } from '@/utils/notification-messages';
 
+/**
+ * Service for managing notifications
+ * Uses MongoDB for notification storage (high-volume, flexible schema)
+ * Uses PostgreSQL for user/document lookups (relational data)
+ */
 export class NotificationService {
-    async create(data: Prisma.NotificationCreateInput) {
-        return prisma.notification.create({ data });
+    async create(data: MongoPrisma.NotificationCreateInput) {
+        return prismaMongo.notification.create({ data });
     }
 
     async list({
@@ -19,68 +24,100 @@ export class NotificationService {
         page = 1,
         limit = 20,
     }: {
-        filter?: any;
+        filter?: MongoPrisma.NotificationWhereInput;
         page?: number;
         limit?: number;
     }) {
         const where = filter || {};
-        const total = await prisma.notification.count({ where });
-        const notifications = await prisma.notification.findMany({
+        const total = await prismaMongo.notification.count({ where });
+        const notifications = await prismaMongo.notification.findMany({
             where,
             orderBy: { createdAt: 'desc' },
             skip: (page - 1) * limit,
             take: limit,
-            include: {
-                document: {
-                    select: {
-                        id: true,
-                        title: true,
-                        status: true,
-                    },
-                },
-            },
         });
+
+        // Enrich notifications with document data from PostgreSQL if documentId exists
+        const enrichedNotifications = await Promise.all(
+            notifications.map(async (notification) => {
+                if (notification.documentId) {
+                    const document = await prismaPostgres.document.findUnique({
+                        where: { id_document: notification.documentId },
+                        select: {
+                            id_document: true,
+                            title: true,
+                            status: true,
+                        },
+                    });
+                    return {
+                        ...notification,
+                        document: document ? {
+                            id: document.id_document,
+                            title: document.title,
+                            status: document.status,
+                        } : null,
+                    };
+                }
+                return { ...notification, document: null };
+            })
+        );
+
         return {
-            notifications,
+            notifications: enrichedNotifications,
             pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
         };
     }
 
     async findById(id: string) {
-        return prisma.notification.findUnique({
+        const notification = await prismaMongo.notification.findUnique({
             where: { id },
-            include: {
-                document: {
-                    select: {
-                        id: true,
-                        title: true,
-                        status: true,
-                    },
-                },
-            },
         });
+
+        if (!notification) return null;
+
+        // Enrich with document data if exists
+        if (notification.documentId) {
+            const document = await prismaPostgres.document.findUnique({
+                where: { id_document: notification.documentId },
+                select: {
+                    id_document: true,
+                    title: true,
+                    status: true,
+                },
+            });
+            return {
+                ...notification,
+                document: document ? {
+                    id: document.id_document,
+                    title: document.title,
+                    status: document.status,
+                } : null,
+            };
+        }
+
+        return { ...notification, document: null };
     }
 
     async markRead(id: string) {
-        return prisma.notification.update({
+        return prismaMongo.notification.update({
             where: { id },
             data: { isRead: true, readAt: new Date() },
         });
     }
 
     async markAllRead(userId: string) {
-        return prisma.notification.updateMany({
+        return prismaMongo.notification.updateMany({
             where: { userId },
             data: { isRead: true, readAt: new Date() },
         });
     }
 
     async delete(id: string) {
-        return prisma.notification.delete({ where: { id } });
+        return prismaMongo.notification.delete({ where: { id } });
     }
 
     async deleteAll(userId: string) {
-        return prisma.notification.deleteMany({
+        return prismaMongo.notification.deleteMany({
             where: { userId },
         });
     }
@@ -104,11 +141,11 @@ export class NotificationService {
         const template = getNotificationTemplate(type, documentTitle, additionalInfo);
 
         return this.create({
-            user: { connect: { id: userId } },
+            userId,
             type,
             title: template.title,
             message: template.message,
-            ...(documentId && { document: { connect: { id: documentId } } }),
+            ...(documentId && { documentId }),
         });
     }
 
@@ -146,7 +183,7 @@ export class NotificationService {
             documentId: documentId ?? null,
         }));
 
-        return prisma.notification.createMany({
+        return prismaMongo.notification.createMany({
             data: notifications,
         });
     }
@@ -167,30 +204,30 @@ export class NotificationService {
         documentId?: string;
         excludeUserIds?: string[];
     }) {
-        // Get all active users except those excluded
-        const users = await prisma.user.findMany({
+        // Get all active users from PostgreSQL except those excluded
+        const users = await prismaPostgres.user.findMany({
             where: {
-                isActive: true,
-                id: { notIn: excludeUserIds },
+                is_active: true,
+                id_user: { notIn: excludeUserIds },
             },
-            select: { id: true },
+            select: { id_user: true },
         });
 
         const notifications = users.map((user) => ({
-            userId: user.id,
+            userId: user.id_user,
             type,
             title,
             message,
             documentId: documentId ?? null,
         }));
 
-        return prisma.notification.createMany({
+        return prismaMongo.notification.createMany({
             data: notifications,
         });
     }
 
     /**
-     * Notify users assigned to a document (authors, reviewers, owner)
+     * Notify users assigned to a document (authors, reviewers)
      */
     async notifyDocumentAssignees({
         documentId,
@@ -205,21 +242,22 @@ export class NotificationService {
         message: string;
         excludeUserIds?: string[];
     }) {
-        // Get document with all assigned users
-        const document = await prisma.document.findUnique({
-            where: { id: documentId },
-            include: {
-                authors: { select: { userId: true } },
-                reviewers: { select: { userId: true } },
-            },
-        });
-
-        if (!document) return;
+        // Get document with all assigned users from PostgreSQL
+        const [authors, reviewers] = await Promise.all([
+            prismaPostgres.documentAuthor.findMany({
+                where: { id_document: documentId },
+                select: { id_user: true },
+            }),
+            prismaPostgres.documentReviewer.findMany({
+                where: { id_document: documentId },
+                select: { id_user: true },
+            }),
+        ]);
 
         // Collect all unique user IDs
         const userIds = new Set<string>();
-        document.authors.forEach((author) => userIds.add(author.userId));
-        document.reviewers.forEach((reviewer) => userIds.add(reviewer.userId));
+        authors.forEach((author) => userIds.add(author.id_user));
+        reviewers.forEach((reviewer) => userIds.add(reviewer.id_user));
 
         // Filter out excluded users
         const filteredUserIds = Array.from(userIds).filter((id) => !excludeUserIds.includes(id));
@@ -324,20 +362,20 @@ export class NotificationService {
     }
 
     /**
-     * Create notification when a public document is published
+     * Create notification when a document is published
      */
     async notifyDocumentPublished({
         documentId,
         documentTitle,
-        documentClassification,
+        isPublic,
         creatorId,
     }: {
         documentId: string;
         documentTitle: string;
-        documentClassification: Classification;
+        isPublic: boolean;
         creatorId?: string;
     }) {
-        if (documentClassification === Classification.PUBLIC) {
+        if (isPublic) {
             // Notify all users for public documents
             const template = getPublicDocumentMessage(documentTitle);
             return this.notifyAllUsers({
@@ -396,7 +434,7 @@ export class NotificationService {
             },
         }));
 
-        return prisma.notification.createMany({
+        return prismaMongo.notification.createMany({
             data: notifications,
         });
     }
@@ -433,7 +471,7 @@ export class NotificationService {
             },
         }));
 
-        return prisma.notification.createMany({
+        return prismaMongo.notification.createMany({
             data: notifications,
         });
     }

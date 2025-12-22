@@ -1,16 +1,15 @@
-import prisma from '@/database/prisma';
-import { AuditEventType, AuditStatus, AuditTargetType, Prisma } from '@prisma/client';
+import { prismaMongo } from '@/database/prisma';
+import { 
+    AuditEventType, 
+    AuditStatus, 
+    AuditTargetType, 
+    Prisma 
+} from '../../node_modules/.prisma/client/mongodb';
 import { endOfDay, startOfDay } from 'date-fns';
 
-const includes: Prisma.AuditLogInclude = {
-    user: {
-        select: { id: true, name: true, email: true },
-    },
-};
-
-export type AuditLogPayload = Prisma.AuditLogGetPayload<{ include: typeof includes }>;
 /**
  * Service handling creation and retrieval of audit logs
+ * Uses MongoDB for high-volume, flexible schema audit logging
  */
 export class AuditService {
     /**
@@ -18,7 +17,7 @@ export class AuditService {
      */
     static async create(data: Prisma.AuditLogCreateInput) {
         try {
-            const log = await prisma.auditLog.create({
+            const log = await prismaMongo.auditLog.create({
                 data,
             });
             return log;
@@ -70,18 +69,15 @@ export class AuditService {
             ...(status && { status }),
         };
 
-        const [items, total, events] = await prisma.$transaction([
-            prisma.auditLog.findMany({
+        const [items, total, events] = await prismaMongo.$transaction([
+            prismaMongo.auditLog.findMany({
                 where: customWhere,
-                include: {
-                    user: { select: { id: true, name: true, role: true, email: true } },
-                },
                 orderBy: { timestamp: 'desc' },
                 skip,
                 take: limit,
             }),
-            prisma.auditLog.count({ where: customWhere }),
-            prisma.auditLog.findMany({
+            prismaMongo.auditLog.count({ where: customWhere }),
+            prismaMongo.auditLog.findMany({
                 distinct: ['eventType'],
                 select: { eventType: true },
             }),
@@ -100,7 +96,15 @@ export class AuditService {
      * Get logs for a specific document
      */
     static async findByDocument(documentId: string, limit = 50) {
-        return prisma.auditLog.findMany({
+        return prismaMongo.auditLog.findMany({
+            where: {
+                targets: {
+                    some: {
+                        id: documentId,
+                        type: 'DOCUMENT',
+                    },
+                },
+            },
             orderBy: { timestamp: 'desc' },
             take: limit,
         });
@@ -110,7 +114,7 @@ export class AuditService {
      * Delete old logs (for cleanup or GDPR compliance)
      */
     static async deleteOlderThan(date: Date) {
-        const result = await prisma.auditLog.deleteMany({
+        const result = await prismaMongo.auditLog.deleteMany({
             where: { timestamp: { lt: date } },
         });
         return result.count;
@@ -120,12 +124,12 @@ export class AuditService {
         const now = new Date();
         const start = startOfDay(now);
         const end = endOfDay(now);
-        const [total, success, failure, today] = await prisma.$transaction([
-            prisma.auditLog.count(),
-            prisma.auditLog.count({ where: { status: 'SUCCESS' } }),
-            prisma.auditLog.count({ where: { status: 'FAILURE' } }),
+        const [total, success, failure, today] = await prismaMongo.$transaction([
+            prismaMongo.auditLog.count(),
+            prismaMongo.auditLog.count({ where: { status: 'SUCCESS' } }),
+            prismaMongo.auditLog.count({ where: { status: 'FAILURE' } }),
             // todays events
-            prisma.auditLog.count({
+            prismaMongo.auditLog.count({
                 where: {
                     timestamp: {
                         gte: start,

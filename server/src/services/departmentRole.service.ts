@@ -1,40 +1,17 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 const include: Prisma.DepartmentRoleInclude = {
-    createdBy: {
+    department_role_users: {
         select: {
-            id: true,
-            name: true,
-            role: true,
-            createdAt: true,
-            email: true,
+            id_department_role_user: true,
+            id_user: true,
         },
     },
-    departmentRoleUsers: {
+    department_role_documents: {
         select: {
-            id: true,
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    role: true,
-                    createdAt: true,
-                },
-            },
-        },
-    },
-    departmentRoleDocuments: {
-        select: {
-            id: true,
-            document: {
-                select: {
-                    id: true,
-                    title: true,
-                    fileUrl: true,
-                },
-            },
+            id_department_role_document: true,
+            id_document: true,
         },
     },
 };
@@ -42,36 +19,36 @@ const include: Prisma.DepartmentRoleInclude = {
 export class DepartmentRoleService {
     async addRoles(data: Prisma.DepartmentRoleCreateInput) {
         console.log(data);
-        return prisma.departmentRole.create({
+        return prismaPostgres.departmentRole.create({
             data,
         });
     }
 
     async findAll() {
-        return prisma.departmentRole.findMany({
-            include: { department: true },
+        return prismaPostgres.departmentRole.findMany({
+            include,
         });
     }
 
     async getRole(id: string) {
-        return prisma.departmentRole.findUnique({
-            where: { id },
-            include: { department: true },
+        return prismaPostgres.departmentRole.findUnique({
+            where: { id_department_role: id },
+            include,
         });
     }
 
     async listDepartmentsRole({ id, page, limit }: { id: string; page: number; limit: number }) {
-        return prisma.departmentRole.findMany({
-            where: { departmentId: id },
-            include: { department: true },
+        return prismaPostgres.departmentRole.findMany({
+            where: { id_department: id },
+            include,
             skip: (page - 1) * limit,
             take: limit,
         });
     }
     async findById(id: string) {
-        return prisma.departmentRole.findUnique({
-            where: { id },
-            include: { department: true },
+        return prismaPostgres.departmentRole.findUnique({
+            where: { id_department_role: id },
+            include,
         });
     }
 
@@ -81,30 +58,30 @@ export class DepartmentRoleService {
         if (data.name !== undefined) updateData.name = data.name;
         if (data.description !== undefined) updateData.description = data.description;
 
-        return prisma.departmentRole.update({
-            where: { id },
+        return prismaPostgres.departmentRole.update({
+            where: { id_department_role: id },
             data: updateData,
         });
     }
 
     async removeRoles(id: string) {
-        return prisma.departmentRole.delete({ where: { id } });
+        return prismaPostgres.departmentRole.delete({ where: { id_department_role: id } });
     }
 
     async list({
         filter,
         page = 1,
         limit = 20,
-        orderBy = { createdAt: 'desc' },
+        orderBy = { created_at: 'desc' },
     }: {
         filter?: Prisma.DepartmentRoleWhereInput;
         page?: number;
         limit?: number;
         orderBy?: Prisma.DepartmentRoleOrderByWithRelationInput;
     }) {
-        const total = await prisma.departmentRole.count();
+        const total = await prismaPostgres.departmentRole.count();
 
-        const departmentRoles = await prisma.departmentRole.findMany({
+        const departmentRoles = await prismaPostgres.departmentRole.findMany({
             where: filter || {},
             skip: (page - 1) * limit,
             take: limit,

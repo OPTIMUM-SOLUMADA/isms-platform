@@ -1,35 +1,34 @@
-import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { ISOClause, Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { IsoClause, Prisma } from '../../node_modules/.prisma/client/postgresql';
 
-const includes: Prisma.ISOClauseInclude = {
-    documents: {
-        select: {
-            id: true,
-            title: true,
-            fileUrl: true,
+const includes: Prisma.IsoClauseInclude = {
+    document_clauses: {
+        include: {
+            document: {
+                select: {
+                    id_document: true,
+                    title: true,
+                },
+            },
         },
     },
-    createdBy: {
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-        },
-    },
+    clause_compliances: true,
 };
 
+/**
+ * Service for managing ISO clauses
+ * Uses PostgreSQL for relational data
+ */
 export class ISOClauseService {
-    async create(data: Prisma.ISOClauseCreateInput): Promise<ISOClause> {
-        return prisma.iSOClause.create({
+    async create(data: Prisma.IsoClauseCreateInput): Promise<IsoClause> {
+        return prismaPostgres.isoClause.create({
             data,
             include: includes,
         });
     }
 
-    async findAll(): Promise<ISOClause[]> {
-        const clauses = await prisma.iSOClause.findMany({
+    async findAll(): Promise<IsoClause[]> {
+        const clauses = await prismaPostgres.isoClause.findMany({
             include: includes,
         });
 
@@ -43,30 +42,30 @@ export class ISOClauseService {
         return isoClausesList;
     }
 
-    async findByCode(code: string): Promise<ISOClause | null> {
-        return prisma.iSOClause.findUnique({
+    async findByCode(code: string): Promise<IsoClause | null> {
+        return prismaPostgres.isoClause.findFirst({
             where: { code },
         });
     }
 
-    async findById(id: string): Promise<ISOClause | null> {
-        return prisma.iSOClause.findUnique({
-            where: { id },
+    async findById(id: string): Promise<IsoClause | null> {
+        return prismaPostgres.isoClause.findUnique({
+            where: { id_iso_clause: id },
             include: includes,
         });
     }
 
-    async update(id: string, data: Prisma.ISOClauseUpdateInput): Promise<ISOClause> {
-        return prisma.iSOClause.update({
-            where: { id },
+    async update(id: string, data: Prisma.IsoClauseUpdateInput): Promise<IsoClause> {
+        return prismaPostgres.isoClause.update({
+            where: { id_iso_clause: id },
             data,
             include: includes,
         });
     }
 
-    async delete(id: string): Promise<ISOClause> {
-        return prisma.iSOClause.delete({
-            where: { id },
+    async delete(id: string): Promise<IsoClause> {
+        return prismaPostgres.isoClause.delete({
+            where: { id_iso_clause: id },
             include: includes,
         });
     }
@@ -75,20 +74,17 @@ export class ISOClauseService {
         filter,
         page = 1,
         limit = 20,
-        orderBy = { createdAt: 'desc' },
     }: {
-        filter?: Prisma.ISOClauseWhereInput;
+        filter?: Prisma.IsoClauseWhereInput;
         page?: number;
         limit?: number;
-        orderBy?: Prisma.ISOClauseOrderByWithRelationInput;
     }) {
-        const total = await prisma.iSOClause.count();
-        const iSOClauses = await prisma.iSOClause.findMany({
+        const total = await prismaPostgres.isoClause.count({ where: filter });
+        const iSOClauses = await prismaPostgres.isoClause.findMany({
             include: includes,
             where: filter || {},
             skip: (page - 1) * limit,
             take: limit,
-            orderBy,
         });
 
         const totalPages = Math.ceil(total / limit);
@@ -105,7 +101,7 @@ export class ISOClauseService {
     }
 
     async search(query: string) {
-        return prisma.iSOClause.findMany({
+        return prismaPostgres.isoClause.findMany({
             where: {
                 ...(query && {
                     OR: [
@@ -116,7 +112,7 @@ export class ISOClauseService {
                 }),
             },
             select: {
-                id: true,
+                id_iso_clause: true,
                 code: true,
                 name: true,
                 description: true,
@@ -126,7 +122,7 @@ export class ISOClauseService {
     }
 
     async initialize() {
-        const count = await prisma.iSOClause.count();
+        const count = await prismaPostgres.isoClause.count();
         if (count > 0) {
             console.log('ISO Clauses table already initialized');
             return [];
@@ -201,7 +197,7 @@ export class ISOClauseService {
             },
         ];
 
-        const result: ISOClause[] = [];
+        const result: IsoClause[] = [];
         for (const isoClause of isoClausesList) {
             const existing = await this.findByCode(isoClause.code);
             if (!existing) {

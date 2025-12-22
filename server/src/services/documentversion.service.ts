@@ -1,49 +1,43 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
+/**
+ * Service for managing document versions
+ * Uses PostgreSQL for relational data
+ */
 export class DocumentVersionService {
     async getById(id: string) {
-        return prisma.documentVersion.findFirst({
+        return prismaPostgres.version.findFirst({
             where: {
-                id,
+                id_version: id,
             },
             include: {
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                        createdAt: true,
-                    },
-                },
                 document: {
                     select: {
-                        id: true,
+                        id_document: true,
                         title: true,
-                        folderId: true,
-                        authors: {
+                        document_authors: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
                         },
-                        reviewers: {
+                        document_reviewers: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
@@ -55,97 +49,87 @@ export class DocumentVersionService {
     }
 
     async getByDocumentId(documentId: string) {
-        return prisma.documentVersion.findMany({
+        return prismaPostgres.version.findMany({
             where: {
-                documentId,
+                id_document: documentId,
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: { created_at: 'desc' },
             include: {
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                        createdAt: true,
-                    },
-                },
                 document: {
                     select: {
-                        id: true,
+                        id_document: true,
                         title: true,
-                        authors: {
+                        document_authors: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
                         },
-                        reviewers: {
+                        document_reviewers: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
                         },
                     },
                 },
-                documentReviews: true,
+                document_reviewers: true,
             },
         });
     }
 
-    async create(data: Prisma.DocumentVersionCreateInput) {
-        return prisma.documentVersion.create({ data });
+    async create(data: Prisma.VersionCreateInput) {
+        return prismaPostgres.version.create({ data });
     }
 
-    async update(id: string, data: Prisma.DocumentVersionUpdateInput) {
-        return prisma.documentVersion.update({ where: { id }, data });
+    async update(id: string, data: Prisma.VersionUpdateInput) {
+        return prismaPostgres.version.update({ where: { id_version: id }, data });
     }
 
     async getCurrentVersionByDocumentId(documentId: string) {
-        return prisma.documentVersion.findFirst({
-            where: { documentId, isCurrent: true },
+        return prismaPostgres.version.findFirst({
+            where: { id_document: documentId, is_current: true },
             include: {
                 document: {
                     select: {
-                        id: true,
+                        id_document: true,
                         title: true,
-                        folderId: true,
-                        authors: {
+                        document_authors: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
                         },
-                        reviewers: {
+                        document_reviewers: {
                             select: {
                                 user: {
                                     select: {
-                                        id: true,
+                                        id_user: true,
                                         name: true,
                                         email: true,
+                                        created_at: true,
                                         role: true,
-                                        createdAt: true,
                                     },
                                 },
                             },
@@ -160,29 +144,25 @@ export class DocumentVersionService {
     async createPatchedVersion(
         documentId: string,
         data: {
-            userId: string;
             version: string;
             fileUrl?: string;
-            googleDriveFileId: string;
             comment?: string;
         },
     ) {
-        return prisma.$transaction(async (tx) => {
+        return prismaPostgres.$transaction(async (tx) => {
             // set current to false for all version of the doc
-            await tx.documentVersion.updateMany({
-                where: { documentId: documentId },
-                data: { isCurrent: false },
+            await tx.version.updateMany({
+                where: { id_document: documentId },
+                data: { is_current: false },
             });
 
-            // set current to true for the new version
-            return await tx.documentVersion.create({
+            // create the new version
+            return await tx.version.create({
                 data: {
-                    document: { connect: { id: documentId } },
-                    isCurrent: true,
+                    document: { connect: { id_document: documentId } },
+                    is_current: true,
                     version: data.version,
-                    ...(data.fileUrl && { fileUrl: data.fileUrl }),
-                    createdBy: { connect: { id: data.userId } },
-                    googleDriveFileId: data.googleDriveFileId,
+                    ...(data.fileUrl && { file_url: data.fileUrl }),
                     ...(data.comment && { comment: data.comment }),
                 },
             });

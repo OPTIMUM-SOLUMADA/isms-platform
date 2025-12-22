@@ -1,43 +1,29 @@
-import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentOwner, Prisma } from '@prisma/client';
-
-const includes: Prisma.DocumentOwnerInclude = {
-    documents: {
-        select: {
-            id: true,
-            title: true,
-            fileUrl: true,
-        },
-    },
-};
+import { prismaPostgres } from '@/database/prisma';
+import { DocumentOwner, Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 export class OwnerService {
     async create(data: Prisma.DocumentOwnerCreateInput): Promise<DocumentOwner> {
-        return prisma.documentOwner.create({
+        return prismaPostgres.documentOwner.create({
             data,
-            include: includes,
         });
     }
 
     async findById(id: string): Promise<DocumentOwner | null> {
-        return prisma.documentOwner.findUnique({
-            where: { id },
-            include: includes,
+        return prismaPostgres.documentOwner.findUnique({
+            where: { id_document_owner: id },
         });
     }
 
     async update(id: string, data: Prisma.DocumentOwnerUpdateInput): Promise<DocumentOwner> {
-        return prisma.documentOwner.update({
-            where: { id },
+        return prismaPostgres.documentOwner.update({
+            where: { id_document_owner: id },
             data,
-            include: includes,
         });
     }
 
     async delete(id: string): Promise<DocumentOwner> {
-        return prisma.documentOwner.delete({
-            where: { id },
-            include: includes,
+        return prismaPostgres.documentOwner.delete({
+            where: { id_document_owner: id },
         });
     }
 
@@ -50,9 +36,8 @@ export class OwnerService {
         page?: number;
         limit?: number;
     }) {
-        const total = await prisma.documentOwner.count();
-        const documentOwners = await prisma.documentOwner.findMany({
-            include: includes,
+        const total = await prismaPostgres.documentOwner.count();
+        const documentOwners = await prismaPostgres.documentOwner.findMany({
             where: filter || {},
             skip: (page - 1) * limit,
             take: limit,
@@ -79,7 +64,7 @@ export class OwnerService {
         ];
 
         try {
-            const count = await prisma.documentOwner.count();
+            const count = await prismaPostgres.documentOwner.count();
             if (count > 0) {
                 console.log('Owners table already initialized');
                 return [];

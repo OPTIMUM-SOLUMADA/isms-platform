@@ -1,5 +1,5 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 export class DocumentApprovalService {
     /**
@@ -7,7 +7,7 @@ export class DocumentApprovalService {
      */
     async create(data: Prisma.DocumentApprovalCreateInput) {
         try {
-            return await prisma.documentApproval.create({ data });
+            return await prismaPostgres.documentApproval.create({ data });
         } catch (error) {
             console.error('Error creating document approval:', error);
             // throw error;
@@ -20,18 +20,13 @@ export class DocumentApprovalService {
      */
     async findAll(filters?: { documentId?: string; versionId?: string; approverId?: string }) {
         try {
-            return await prisma.documentApproval.findMany({
+            return await prismaPostgres.documentApproval.findMany({
                 where: {
-                    ...(filters?.documentId && { documentId: filters?.documentId }),
-                    ...(filters?.versionId && { versionId: filters?.versionId }),
-                    ...(filters?.approverId && { approverId: filters?.approverId }),
+                    ...(filters?.documentId && { id_document: filters?.documentId }),
+                    ...(filters?.versionId && { id_version: filters?.versionId }),
+                    ...(filters?.approverId && { id_approver: filters?.approverId }),
                 },
-                include: {
-                    document: true,
-                    version: true,
-                    approver: true,
-                },
-                orderBy: { approvedAt: 'desc' },
+                orderBy: { approved_at: 'desc' },
             });
         } catch (error) {
             console.error('Error fetching document approvals:', error);
@@ -44,18 +39,13 @@ export class DocumentApprovalService {
      */
     async findUnique(documentId: string, versionId: string, approverId: string) {
         try {
-            return await prisma.documentApproval.findUnique({
+            return await prismaPostgres.documentApproval.findUnique({
                 where: {
-                    documentId_versionId_approverId: {
-                        documentId,
-                        versionId,
-                        approverId,
+                    id_document_id_version_id_approver: {
+                        id_document: documentId,
+                        id_version: versionId,
+                        id_approver: approverId,
                     },
-                },
-                include: {
-                    document: true,
-                    version: true,
-                    approver: true,
                 },
             });
         } catch (error) {
@@ -69,8 +59,8 @@ export class DocumentApprovalService {
      */
     async deleteByApproverId(approverId: string) {
         try {
-            return await prisma.documentApproval.deleteMany({
-                where: { approverId },
+            return await prismaPostgres.documentApproval.deleteMany({
+                where: { id_approver: approverId },
             });
         } catch (error) {
             console.error('Error deleting document approvals by approver id:', error);
@@ -85,12 +75,12 @@ export class DocumentApprovalService {
      */
     async delete(documentId: string, versionId: string, approverId: string) {
         try {
-            return await prisma.documentApproval.delete({
+            return await prismaPostgres.documentApproval.delete({
                 where: {
-                    documentId_versionId_approverId: {
-                        documentId,
-                        versionId,
-                        approverId,
+                    id_document_id_version_id_approver: {
+                        id_document: documentId,
+                        id_version: versionId,
+                        id_approver: approverId,
                     },
                 },
             });
@@ -105,8 +95,8 @@ export class DocumentApprovalService {
      */
     async countByVersion(versionId: string) {
         try {
-            return await prisma.documentApproval.count({
-                where: { versionId },
+            return await prismaPostgres.documentApproval.count({
+                where: { id_version: versionId },
             });
         } catch (error) {
             console.error('Error counting document approvals:', error);

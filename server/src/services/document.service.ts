@@ -1,80 +1,54 @@
+/* eslint-disable no-restricted-imports */
 import {
-    DocumentReview,
-    DocumentStatus,
     Prisma,
+    DocumentStatus,
     ReviewDecision,
     ReviewFrequency,
-} from '@prisma/client';
-import prisma from '@/database/prisma';
+} from '../../node_modules/.prisma/client/postgresql';
+import type { DocumentReview } from '../../node_modules/.prisma/client/postgresql';
+import { prismaPostgres } from '@/database/prisma';
 import { UserService } from './user.service';
 import { DocumentAuthorService } from './documentauthor.service';
 
 const includes: Prisma.DocumentInclude = {
-    approvals: true,
-    isoClause: true,
-    reviews: true,
     versions: true,
     type: true,
-    owner: {
-        select: {
-            id: true,
-            name: true,
-            logo: true,
-            createdAt: true,
-        },
-    },
-    authors: {
+    review_frequency: true,
+    document_authors: {
         include: {
             user: {
                 select: {
-                    id: true,
+                    id_user: true,
                     name: true,
                     email: true,
                     role: true,
-                    createdAt: true,
-                    departmentRoleUsers: {
-                        select: {
-                            id: true,
-                            departmentRole: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                },
-                            },
-                        },
-                    },
+                    created_at: true,
                 },
             },
         },
     },
-    reviewers: {
+    document_reviewers: {
         include: {
             user: {
                 select: {
-                    id: true,
+                    id_user: true,
                     name: true,
                     email: true,
                     role: true,
-                    createdAt: true,
-                    departmentRoleUsers: {
-                        select: {
-                            id: true,
-                            departmentRole: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                },
-                            },
-                        },
-                    },
+                    created_at: true,
                 },
             },
         },
     },
-    departmentRoles: {
-        select: {
-            id: true,
-            departmentRole: true,
+    document_clauses: {
+        include: {
+            iso_clause: true,
+        },
+    },
+    department_document_classifications: {
+        include: {
+            department: true,
+            classification: true,
         },
     },
 };
@@ -92,12 +66,12 @@ export class DocumentService {
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
-        const nextReviewDate = new Date(); //this.calculateNextReviewDate(new Date(), data.reviewFrequency);
+        const next_review_date = new Date();
 
-        return prisma.document.create({
+        return prismaPostgres.document.create({
             data: {
                 ...data,
-                nextReviewDate,
+                next_review_date,
             },
             include: this.documentInclude,
         });
@@ -105,103 +79,95 @@ export class DocumentService {
 
     async linkDocumentToUsers({
         documentId,
+        versionId,
         reviewerIds,
         authors,
     }: {
         documentId: string;
+        versionId: string;
         reviewerIds: string[];
         authors: string[];
     }) {
         if (!authors.length && !reviewerIds.length) return;
 
-        await prisma.$transaction([
-            prisma.documentAuthor.createMany({
-                data: authors.map((userId) => ({ documentId, userId })),
+        await prismaPostgres.$transaction([
+            prismaPostgres.documentAuthor.createMany({
+                data: authors.map((userId) => ({ id_document: documentId, id_user: userId, id_version: versionId })),
             }),
-            prisma.documentReviewer.createMany({
-                data: reviewerIds.map((userId) => ({ documentId, userId })),
+            prismaPostgres.documentReviewer.createMany({
+                data: reviewerIds.map((userId) => ({ id_document: documentId, id_user: userId, id_version: versionId, is_approuved: false })),
             }),
         ]);
     }
     async reLinkDocumentToUsers({
         documentId,
+        versionId,
         reviewerIds,
         authors,
     }: {
         documentId: string;
+        versionId: string;
         reviewerIds: string[];
         authors: string[];
     }) {
         // Delete old links
-        await prisma.$transaction([
-            prisma.documentAuthor.deleteMany({ where: { documentId } }),
-            prisma.documentReviewer.deleteMany({ where: { documentId } }),
+        await prismaPostgres.$transaction([
+            prismaPostgres.documentAuthor.deleteMany({ where: { id_document: documentId } }),
+            prismaPostgres.documentReviewer.deleteMany({ where: { id_document: documentId } }),
         ]);
 
         if (!authors.length && !reviewerIds.length) return;
 
-        await prisma.$transaction([
-            prisma.documentAuthor.createMany({
-                data: authors.map((userId) => ({ documentId, userId })),
+        await prismaPostgres.$transaction([
+            prismaPostgres.documentAuthor.createMany({
+                data: authors.map((userId) => ({ id_document: documentId, id_user: userId, id_version: versionId })),
             }),
-            prisma.documentReviewer.createMany({
-                data: reviewerIds.map((userId) => ({ documentId, userId })),
+            prismaPostgres.documentReviewer.createMany({
+                data: reviewerIds.map((userId) => ({ id_document: documentId, id_user: userId, id_version: versionId, is_approuved: false })),
             }),
         ]);
     }
 
     async update(id: string, data: Prisma.DocumentUpdateInput) {
-        return prisma.document.update({
-            where: { id },
-            data: {
-                ...data,
-                ...(data.reviewFrequency && {
-                    nextReviewDate: this.calculateNextReviewDate(
-                        new Date(),
-                        data.reviewFrequency! as ReviewFrequency,
-                    ),
-                }),
-            },
+        return prismaPostgres.document.update({
+            where: { id_document: id },
+            data,
             include: this.documentInclude,
         });
     }
 
     async updateDocumentWithDetails(
         id: string,
+        versionId: string,
         data: Prisma.DocumentUpdateInput,
         ownerIds: string[],
         reviewerIds: string[],
     ) {
-        return prisma.$transaction(async (tx) => {
+        return prismaPostgres.$transaction(async (tx) => {
             // Update the document fields
             const doc = await tx.document.update({
-                where: { id },
-                data: {
-                    ...data,
-                    ...(data.reviewFrequency && {
-                        nextReviewDate: this.calculateNextReviewDate(
-                            new Date(),
-                            data.reviewFrequency! as ReviewFrequency,
-                        ),
-                    }),
-                },
+                where: { id_document: id },
+                data,
             });
 
             // Replace owners (delete old, insert new)
-            await tx.documentAuthor.deleteMany({ where: { documentId: id } });
+            await tx.documentAuthor.deleteMany({ where: { id_document: id } });
             const ownersData = ownerIds.map((userId) => ({
-                documentId: id,
-                userId,
+                id_document: id,
+                id_user: userId,
+                id_version: versionId,
             }));
             if (ownersData.length) {
                 await tx.documentAuthor.createMany({ data: ownersData });
             }
 
             // Remove reviewers (delete old, insert new)
-            await tx.documentReviewer.deleteMany({ where: { documentId: id } });
+            await tx.documentReviewer.deleteMany({ where: { id_document: id } });
             const reviewersData = reviewerIds.map((userId) => ({
-                documentId: id,
-                userId,
+                id_document: id,
+                id_user: userId,
+                id_version: versionId,
+                is_approuved: false,
             }));
             if (reviewersData.length) {
                 await tx.documentReviewer.createMany({ data: reviewersData });
@@ -209,34 +175,34 @@ export class DocumentService {
 
             // Return the updated document with owners
             return tx.document.findUnique({
-                where: { id: doc.id },
+                where: { id_document: doc.id_document },
                 include: this.documentInclude,
             });
         });
     }
 
     async getDocumentById(id: string) {
-        return prisma.document.findUnique({
-            where: { id },
+        return prismaPostgres.document.findUnique({
+            where: { id_document: id },
             include: this.documentInclude,
         });
     }
 
     async updateDocument(id: string, data: Prisma.DocumentUpdateInput) {
-        return prisma.document.update({
-            where: { id },
+        return prismaPostgres.document.update({
+            where: { id_document: id },
             data,
             include: this.documentInclude,
         });
     }
 
     async deleteDocument(id: string) {
-        // Delete any DepartmentRoleDocument referencing this document
-        await prisma.departmentRoleDocument.deleteMany({
-            where: { documentId: id },
+        // Delete any department document classifications referencing this document
+        await prismaPostgres.departmentDocumentClassification.deleteMany({
+            where: { id_document: id },
         });
-        return prisma.document.delete({
-            where: { id },
+        return prismaPostgres.document.delete({
+            where: { id_document: id },
             include: this.documentInclude,
         });
     }
@@ -244,16 +210,16 @@ export class DocumentService {
     async listDocuments({ page = 1, limit = 50 }: { page: number; limit: number }) {
         const skip = (page - 1) * limit;
 
-        const [items, total] = await prisma.$transaction([
-            prisma.document.findMany({
+        const [items, total] = await prismaPostgres.$transaction([
+            prismaPostgres.document.findMany({
                 skip,
                 take: limit,
                 orderBy: {
-                    updatedAt: 'desc',
+                    updated_at: 'desc',
                 },
                 include: this.documentInclude,
             }),
-            prisma.document.count(),
+            prismaPostgres.document.count(),
         ]);
 
         return {
@@ -266,12 +232,12 @@ export class DocumentService {
 
     // document stats
     async getDocumentStats() {
-        const [total, draft, inReview, approved, expired] = await prisma.$transaction([
-            prisma.document.count(),
-            prisma.document.count({ where: { status: 'DRAFT' } }),
-            prisma.document.count({ where: { status: 'IN_REVIEW' } }),
-            prisma.document.count({ where: { status: 'APPROVED' } }),
-            prisma.document.count({ where: { status: 'EXPIRED' } }),
+        const [total, draft, inReview, approved, expired] = await prismaPostgres.$transaction([
+            prismaPostgres.document.count(),
+            prismaPostgres.document.count({ where: { status: 'DRAFT' } }),
+            prismaPostgres.document.count({ where: { status: 'IN_REVIEW' } }),
+            prismaPostgres.document.count({ where: { status: 'APPROVED' } }),
+            prismaPostgres.document.count({ where: { status: 'EXPIRED' } }),
         ]);
 
         return {
@@ -285,11 +251,11 @@ export class DocumentService {
 
     // publish document
     async publishDocument(id: string) {
-        return prisma.document.update({
-            where: { id },
+        return prismaPostgres.document.update({
+            where: { id_document: id },
             data: {
-                published: true,
-                publicationDate: new Date(),
+                is_published: true,
+                publication_date: new Date(),
             },
             include: this.documentInclude,
         });
@@ -297,11 +263,11 @@ export class DocumentService {
 
     // unpublish document
     async unpublishDocument(id: string) {
-        return prisma.document.update({
-            where: { id },
+        return prismaPostgres.document.update({
+            where: { id_document: id },
             data: {
-                published: false,
-                publicationDate: null,
+                is_published: false,
+                publication_date: null,
             },
             include: this.documentInclude,
         });
@@ -343,10 +309,10 @@ export class DocumentService {
     }
 
     updateDocumentStatus(
-        doc: Prisma.DocumentGetPayload<{ include: { reviewers: true } }>,
+        doc: Prisma.DocumentGetPayload<{ include: { document_reviewers: true, review_frequency: true } }>,
         reviews: DocumentReview[],
     ): DocumentStatus {
-        const pendingReviews = reviews.filter((r) => r.documentId === doc.id && !r.isCompleted);
+        const pendingReviews = reviews.filter((r) => r.id_document === doc.id_document && !r.is_completed);
 
         if (pendingReviews.length > 0) {
             return DocumentStatus.IN_REVIEW;
@@ -354,13 +320,13 @@ export class DocumentService {
 
         const approvedReviews = reviews.filter(
             (r) =>
-                r.documentId === doc.id && r.isCompleted && r.decision === ReviewDecision.APPROVE,
+                r.id_document === doc.id_document && r.is_completed && r.decision === ReviewDecision.APPROVE,
         );
 
-        if (approvedReviews.length === doc.reviewers.length) {
+        if (approvedReviews.length === doc.document_reviewers.length) {
             // Vérifier si la révision n’est pas encore expirée
             const lastReviewDate = approvedReviews
-                .map((r) => r.reviewDate!)
+                .map((r) => r.review_date!)
                 .sort((a, b) => b.getTime() - a.getTime())[0];
 
             if (!lastReviewDate) {
@@ -369,7 +335,7 @@ export class DocumentService {
 
             const nextReviewDate = this.calculateNextReviewDate(
                 lastReviewDate,
-                doc.reviewFrequency,
+                doc.review_frequency?.frequency,
             );
             if (nextReviewDate && nextReviewDate < new Date()) {
                 return DocumentStatus.EXPIRED;
@@ -382,41 +348,30 @@ export class DocumentService {
     }
 
     async filterDocuments(filter: Prisma.DocumentWhereInput) {
-        return prisma.document.findMany({
+        return prismaPostgres.document.findMany({
             where: filter,
             include: {
-                reviewers: {
+                document_reviewers: {
                     select: {
                         user: {
                             select: {
-                                id: true,
+                                id_user: true,
                                 name: true,
                                 email: true,
                                 role: true,
-                                createdAt: true,
-                                departmentRoleUsers: {
-                                    select: {
-                                        id: true,
-                                        departmentRole: {
-                                            select: {
-                                                id: true,
-                                                name: true,
-                                            },
-                                        },
-                                    },
-                                },
+                                created_at: true,
                             },
                         },
                     },
                 },
                 versions: {
-                    orderBy: { createdAt: 'desc' },
+                    orderBy: { created_at: 'desc' },
                     take: 1,
-                    where: { isCurrent: true },
+                    where: { is_current: true },
                     select: {
-                        id: true,
-                        createdAt: true,
-                        documentId: true,
+                        id_version: true,
+                        created_at: true,
+                        id_document: true,
                         version: true,
                     },
                 },
@@ -427,9 +382,12 @@ export class DocumentService {
     // Get published document where user is in department or its classification is PUBLIC
     async getPublishedDocumentsByUserId(userId: string) {
         // get user
-        const user = await prisma.user.findUnique({
+        const user = await prismaPostgres.user.findUnique({
             where: {
-                id: userId,
+                id_user: userId,
+            },
+            include: {
+                role: true,
             },
         });
 
@@ -437,32 +395,9 @@ export class DocumentService {
             throw new Error('User not found');
         }
 
-        return prisma.document.findMany({
+        return prismaPostgres.document.findMany({
             where: {
-                AND: [
-                    { published: true },
-
-                    {
-                        ...(user.role === 'ADMIN' || user.role === 'CONTRIBUTOR'
-                            ? {}
-                            : {
-                                  OR: [
-                                      {
-                                          departmentRoles: {
-                                              some: {
-                                                  departmentRole: {
-                                                      departmentRoleUsers: { some: { userId } },
-                                                  },
-                                              },
-                                          },
-                                      },
-                                      {
-                                          classification: 'PUBLIC',
-                                      },
-                                  ],
-                              }),
-                    },
-                ],
+                is_published: true,
             },
             include: this.documentInclude,
         });

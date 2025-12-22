@@ -1,0 +1,438 @@
+// This is your Prisma schema file for PostgreSQL,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../node_modules/.prisma/client/postgresql"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Department {
+  id_department String   @id @default(uuid()) @db.VarChar(40)
+  name          String   @db.VarChar(50)
+  description   String?
+  created_at    DateTime @default(now()) @db.Timestamptz
+  updated_at    DateTime? @db.Timestamptz
+
+  functions                        Function[]
+  department_document_classifications DepartmentDocumentClassification[]
+
+  @@map("department")
+}
+
+model Role {
+  id_role     String   @id @default(uuid()) @db.VarChar(40)
+  name        String   @db.VarChar(50)
+  description String?
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime? @db.Timestamptz
+
+  users User[]
+
+  @@map("role")
+}
+
+model Classification {
+  id_classification String @id @default(uuid()) @db.VarChar(40)
+  name              String @db.VarChar(20)
+
+  department_document_classifications DepartmentDocumentClassification[]
+
+  @@map("classification")
+}
+
+model ReviewFrequency {
+  id_review_frequency String @id @default(uuid()) @db.VarChar(40)
+  name                String @db.VarChar(50)
+
+  documents Document[]
+
+  @@map("review_frequency")
+}
+
+model Type {
+  id_type     String   @id @default(uuid()) @db.VarChar(40)
+  name        String   @db.VarChar(50)
+  description String?
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime? @db.Timestamptz
+
+  documents Document[]
+
+  @@map("type")
+}
+
+model Function {
+  id_function   String   @id @default(uuid()) @db.VarChar(40)
+  name          String   @db.VarChar(20)
+  description   String?
+  created_at    DateTime @default(now()) @db.Timestamptz
+  updated_at    DateTime? @db.Timestamptz
+  id_department String   @db.VarChar(40)
+
+  department Department @relation(fields: [id_department], references: [id_department], onDelete: Cascade)
+
+  users User[]
+
+  @@map("function_")
+}
+
+model IsoClause {
+  id_iso_clause String @id @default(uuid()) @db.VarChar(40)
+  code          String @db.VarChar(20)
+  name          String @db.VarChar(255)
+  description   String?
+
+  clause_compliances ClauseCompliance[]
+  document_clauses   DocumentClause[]
+
+  @@map("iso_clause")
+}
+
+model NonConformityStatus {
+  id_non_conformity_status String @id @default(uuid()) @db.VarChar(50)
+  name                     String @db.VarChar(50)
+
+  non_conformities  NonConformity[]
+  corrective_actions CorrectiveAction[]
+
+  @@map("non_conformity_status")
+}
+
+model NonConformityType {
+  id_non_conformity_type String @id @default(uuid()) @db.VarChar(50)
+  name                   String @db.VarChar(50)
+
+  non_conformities NonConformity[]
+
+  @@map("non_conformity_type")
+}
+
+model ActionStatus {
+  id_action_status String @id @default(uuid()) @db.VarChar(40)
+  name             String @db.VarChar(50)
+
+  corrective_actions CorrectiveAction[]
+
+  @@map("action_status")
+}
+
+model ClauseComplianceRisk {
+  id_clause_compliance_risk String @id @default(uuid()) @db.VarChar(40)
+  name                      String @db.VarChar(20)
+
+  clause_compliances ClauseCompliance[]
+
+  @@map("clause_compliance_risk")
+}
+
+model ClauseComplianceStatus {
+  id_clause_compilance_status String @id @default(uuid()) @db.VarChar(40)
+  name                        String @db.VarChar(30)
+
+  clause_compliances ClauseCompliance[]
+
+  @@map("clause_compilance_status")
+}
+
+model User {
+  id_user       String   @id @default(uuid()) @db.VarChar(40)
+  email         String   @db.VarChar(50)
+  name          String   @db.VarChar(100)
+  is_active     Boolean
+  password_hash String   @db.VarChar(100)
+  last_login    DateTime? @db.Timestamptz
+  created_at    DateTime @default(now()) @db.Timestamptz
+  updated_at    DateTime? @db.Timestamptz
+  id_function   String   @db.VarChar(40)
+  id_role       String   @db.VarChar(40)
+
+  function          Function          @relation(fields: [id_function], references: [id_function], onDelete: Cascade)
+  role              Role              @relation(fields: [id_role], references: [id_role], onDelete: Cascade)
+  document_authors  DocumentAuthor[]
+  document_reviewers DocumentReviewer[]
+
+  @@map("user_")
+}
+
+model Document {
+  id_document         String   @id @default(uuid()) @db.VarChar(40)
+  title               String   @db.VarChar(100)
+  description         String?
+  status              String   @db.VarChar(10)
+  is_published        Boolean
+  publication_date    DateTime? @db.Timestamptz
+  next_review_date    DateTime @db.Date
+  updated_at          DateTime? @db.Timestamptz
+  created_at          DateTime @default(now()) @db.Timestamptz
+  id_review_frequency String   @db.VarChar(40)
+  id_type             String   @db.VarChar(40)
+
+  review_frequency                  ReviewFrequency                  @relation(fields: [id_review_frequency], references: [id_review_frequency], onDelete: Cascade)
+  type                              Type                             @relation(fields: [id_type], references: [id_type], onDelete: Cascade)
+  versions                          Version[]
+  document_authors                  DocumentAuthor[]
+  document_reviewers                DocumentReviewer[]
+  department_document_classifications DepartmentDocumentClassification[]
+  document_clauses                  DocumentClause[]
+  document_non_conformities         DocumentNonConformity[]
+
+  @@map("document")
+}
+
+model Version {
+  id_version  String   @id @default(uuid()) @db.VarChar(40)
+  version     String   @db.VarChar(20)
+  comment     String?
+  file_url    String?  @db.VarChar(250)
+  is_current  Boolean
+  created_at  DateTime @default(now()) @db.Timestamptz
+  id_document String   @db.VarChar(40)
+
+  document           Document          @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  document_authors   DocumentAuthor[]
+  document_reviewers DocumentReviewer[]
+
+  @@map("version")
+}
+
+model NonConformity {
+  id_non_conformity        String @id @default(uuid()) @db.VarChar(40)
+  id_non_conformity_status String @db.VarChar(50)
+  id_non_conformity_type   String @db.VarChar(50)
+
+  non_conformity_status NonConformityStatus @relation(fields: [id_non_conformity_status], references: [id_non_conformity_status], onDelete: Cascade)
+  non_conformity_type   NonConformityType   @relation(fields: [id_non_conformity_type], references: [id_non_conformity_type], onDelete: Cascade)
+  document_non_conformities DocumentNonConformity[]
+
+  @@map("non_conformity")
+}
+
+model CorrectiveAction {
+  id_corrective_action     String @id @default(uuid()) @db.VarChar(40)
+  description              String?
+  due_date                 DateTime? @db.Timestamptz
+  completed_at             DateTime? @db.Timestamptz
+  id_action_status         String @db.VarChar(40)
+  id_non_conformity_status String @db.VarChar(50)
+
+  action_status         ActionStatus         @relation(fields: [id_action_status], references: [id_action_status], onDelete: Cascade)
+  non_conformity_status NonConformityStatus @relation(fields: [id_non_conformity_status], references: [id_non_conformity_status], onDelete: Cascade)
+
+  @@map("corrective_action")
+}
+
+model ClauseCompliance {
+  id_clause_compliance        String @id @default(uuid()) @db.VarChar(40)
+  progress                    Int?
+  last_reviewed               DateTime? @db.Timestamptz
+  next_review                 DateTime? @db.Timestamptz
+  created_at                  DateTime @default(now()) @db.Timestamptz
+  updated_at                  DateTime? @db.Timestamptz
+  id_iso_clause               String @db.VarChar(40)
+  id_clause_compilance_status String @db.VarChar(40)
+  id_clause_compliance_risk   String @db.VarChar(40)
+
+  iso_clause               IsoClause               @relation(fields: [id_iso_clause], references: [id_iso_clause], onDelete: Cascade)
+  clause_compilance_status ClauseComplianceStatus @relation(fields: [id_clause_compilance_status], references: [id_clause_compilance_status], onDelete: Cascade)
+  clause_compliance_risk   ClauseComplianceRisk   @relation(fields: [id_clause_compliance_risk], references: [id_clause_compliance_risk], onDelete: Cascade)
+
+  @@map("clause_compliance")
+}
+
+model DocumentReviewer {
+  id_user      String @db.VarChar(40)
+  id_document  String @db.VarChar(40)
+  id_version   String @db.VarChar(40)
+  is_approuved Boolean
+  approuved_at DateTime? @db.Timestamptz
+  comment      String?
+
+  user     User     @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
+  document Document @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  version  Version  @relation(fields: [id_version], references: [id_version], onDelete: Cascade)
+
+  @@id([id_user, id_document, id_version])
+  @@map("document_reviewer")
+}
+
+model DocumentAuthor {
+  id_user     String @db.VarChar(40)
+  id_document String @db.VarChar(40)
+  id_version  String @db.VarChar(40)
+
+  user     User     @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
+  document Document @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  version  Version  @relation(fields: [id_version], references: [id_version], onDelete: Cascade)
+
+  @@id([id_user, id_document, id_version])
+  @@map("document_author")
+}
+
+model DepartmentDocumentClassification {
+  id_department     String @db.VarChar(40)
+  id_document       String @db.VarChar(40)
+  id_classification String @db.VarChar(40)
+
+  department     Department     @relation(fields: [id_department], references: [id_department], onDelete: Cascade)
+  document       Document       @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  classification Classification @relation(fields: [id_classification], references: [id_classification], onDelete: Cascade)
+
+  @@id([id_department, id_document, id_classification])
+  @@map("department_document_classification")
+}
+
+model DocumentClause {
+  id_document   String @db.VarChar(40)
+  id_iso_clause String @db.VarChar(40)
+
+  document   Document   @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  iso_clause IsoClause @relation(fields: [id_iso_clause], references: [id_iso_clause], onDelete: Cascade)
+
+  @@id([id_document, id_iso_clause])
+  @@map("document_clause")
+}
+
+model DocumentNonConformity {
+  id_document       String @db.VarChar(40)
+  id_non_conformity String @db.VarChar(40)
+
+  document       Document       @relation(fields: [id_document], references: [id_document], onDelete: Cascade)
+  non_conformity NonConformity @relation(fields: [id_non_conformity], references: [id_non_conformity], onDelete: Cascade)
+
+  @@id([id_document, id_non_conformity])
+  @@map("document_non_conformity")
+}
+
+// ============ Additional models for full application support ============
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+model Invitation {
+  id_invitation String           @id @default(uuid()) @db.VarChar(40)
+  email         String           @db.VarChar(255)
+  token         String           @unique @db.VarChar(100)
+  status        InvitationStatus @default(PENDING)
+  accepted_at   DateTime?        @db.Timestamptz
+  expires_at    DateTime         @db.Timestamptz
+  created_at    DateTime         @default(now()) @db.Timestamptz
+  id_invited_by String           @db.VarChar(40)
+
+  @@map("invitation")
+}
+
+model GoogleAccount {
+  id_google_account String   @id @default(uuid()) @db.VarChar(40)
+  email             String   @db.VarChar(255)
+  google_id         String?  @db.VarChar(255)
+  access_token      String?  @db.Text
+  refresh_token     String?  @db.Text
+  token_expiry      DateTime? @db.Timestamptz
+  working_dir_id    String?  @db.VarChar(255)
+  is_logged_in      Boolean  @default(false)
+  created_at        DateTime @default(now()) @db.Timestamptz
+  updated_at        DateTime? @db.Timestamptz
+
+  @@map("google_account")
+}
+
+model DocumentOwner {
+  id_document_owner String   @id @default(uuid()) @db.VarChar(40)
+  name              String   @db.VarChar(100)
+  created_at        DateTime @default(now()) @db.Timestamptz
+
+  @@map("document_owner")
+}
+
+model DepartmentRole {
+  id_department_role String   @id @default(uuid()) @db.VarChar(40)
+  name               String   @db.VarChar(100)
+  description        String?
+  created_at         DateTime @default(now()) @db.Timestamptz
+  updated_at         DateTime? @db.Timestamptz
+  id_department      String   @db.VarChar(40)
+  id_created_by      String?  @db.VarChar(40)
+
+  department_role_users     DepartmentRoleUser[]
+  department_role_documents DepartmentRoleDocument[]
+
+  @@map("department_role")
+}
+
+model DepartmentRoleUser {
+  id_department_role_user String @id @default(uuid()) @db.VarChar(40)
+  id_department_role      String @db.VarChar(40)
+  id_user                 String @db.VarChar(40)
+
+  department_role DepartmentRole @relation(fields: [id_department_role], references: [id_department_role], onDelete: Cascade)
+
+  @@map("department_role_user")
+}
+
+model DepartmentRoleDocument {
+  id_department_role_document String @id @default(uuid()) @db.VarChar(40)
+  id_department_role          String @db.VarChar(40)
+  id_document                 String @db.VarChar(40)
+
+  department_role DepartmentRole @relation(fields: [id_department_role], references: [id_department_role], onDelete: Cascade)
+
+  @@map("department_role_document")
+}
+
+model RecentlyViewedDocument {
+  id_recently_viewed String   @id @default(uuid()) @db.VarChar(40)
+  id_user            String   @db.VarChar(40)
+  id_document        String   @db.VarChar(40)
+  viewed_at          DateTime @default(now()) @db.Timestamptz
+
+  @@map("recently_viewed_document")
+}
+
+enum ReviewDecision {
+  APPROVE
+  REJECT
+  REQUEST_CHANGES
+}
+
+model DocumentReview {
+  id_document_review String          @id @default(uuid()) @db.VarChar(40)
+  id_document        String          @db.VarChar(40)
+  id_version         String          @db.VarChar(40)
+  id_reviewer        String          @db.VarChar(40)
+  decision           ReviewDecision?
+  comment            String?         @db.Text
+  is_completed       Boolean         @default(false)
+  review_date        DateTime?       @db.Timestamptz
+  due_date           DateTime?       @db.Timestamptz
+  created_at         DateTime        @default(now()) @db.Timestamptz
+  updated_at         DateTime?       @db.Timestamptz
+
+  @@map("document_review")
+}
+
+model DocumentApproval {
+  id_document  String   @id @default(uuid()) @db.VarChar(40)
+  id_version   String   @db.VarChar(40)
+  id_approver  String   @db.VarChar(40)
+  approved_at  DateTime @default(now()) @db.Timestamptz
+  comment      String?
+
+  @@unique([id_document, id_version, id_approver])
+  @@map("document_approval")
+}
+
+enum DocumentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  EXPIRED
+}

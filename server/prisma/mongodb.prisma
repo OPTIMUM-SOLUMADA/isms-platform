@@ -1,0 +1,109 @@
+// This is your Prisma schema file for MongoDB parts,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../node_modules/.prisma/client/mongodb"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL_MONGO")
+}
+
+enum AuditEventType {
+  AUTH_LOGIN_ATTEMPT
+  AUTH_LOGIN
+  AUTH_LOGOUT
+  DOCUMENT_UPDATE
+  DOCUMENT_EDIT
+  DOCUMENT_CREATE
+  DOCUMENT_DELETE
+  DOCUMENT_DOWNLOAD
+  DOCUMENT_TYPE_CREATE
+  DOCUMENT_TYPE_UPDATE
+  DOCUMENT_TYPE_DELETE
+  DOCUMENT_VERSION_CREATED
+  DOCUMENT_VERSION_APPROVED
+  DOCUMENT_VERSION_REJECTED
+  DOCUMENT_STATUS_CHANGE
+  DOCUMENT_REVIEW_SUBMITTED
+  DOCUMENT_REVIEW_COMPLETED
+  USER_UPDATE
+  USER_ADD
+  USER_DELETE
+  DEPARTMENT_CREATE
+  DEPARTMENT_UPDATE
+  DEPARTMENT_DELETE
+  ACCESS_LOG
+  EXPORT_LOGS
+}
+
+enum AuditStatus {
+  SUCCESS
+  FAILURE
+}
+
+enum AuditTargetType {
+  DOCUMENT
+  USER
+  DEPARTMENT
+  VERSION
+  REVIEW
+  APPROVAL
+}
+
+model AuditLog {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?        @db.ObjectId
+  eventType AuditEventType
+  details   Json?          @default("{}")
+  targets   AuditTarget[]
+  ipAddress String?
+  userAgent String?
+  status    AuditStatus    @default(SUCCESS)
+  sessionId String?
+  timestamp DateTime       @default(now())
+
+  @@map("audit_logs")
+}
+
+type AuditTarget {
+  id   String          @db.ObjectId
+  type AuditTargetType
+}
+
+enum NotificationType {
+  REVIEW_NEEDED
+  REVIEW_OVERDUE
+  REVIEW_COMPLETED
+  DOCUMENT_CREATED
+  DOCUMENT_UPDATED
+  DOCUMENT_APPROVED
+  DOCUMENT_PARTIALLY_APPROVED
+  DOCUMENT_REJECTED
+  DOCUMENT_EXPIRED
+  VERSION_CREATED
+  VERSION_APPROVED
+  VERSION_REJECTED
+  USER_INVITED
+  NONCONFORMITY_CREATED
+  ACTION_CREATED
+}
+
+model Notification {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String           @db.ObjectId
+  type       NotificationType
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  readAt     DateTime?
+  documentId String?          @db.ObjectId
+  metadata   Json?
+  createdAt  DateTime         @default(now())
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}

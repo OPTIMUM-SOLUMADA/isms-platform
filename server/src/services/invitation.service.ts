@@ -1,4 +1,4 @@
-import prisma from '@/database/prisma';
+import { prismaPostgres } from '@/database/prisma';
 import crypto from 'crypto';
 
 export type InvitationData = {
@@ -13,17 +13,17 @@ export class InvitationService {
         const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
         // optional: expire old pending invitations for the same email
-        await prisma.invitation.updateMany({
+        await prismaPostgres.invitation.updateMany({
             where: { email: data.email, status: 'PENDING' },
             data: { status: 'EXPIRED' },
         });
 
-        return prisma.invitation.create({
+        return prismaPostgres.invitation.create({
             data: {
                 email: data.email,
                 token,
-                invitedById: data.invitedById,
-                expiresAt,
+                id_invited_by: data.invitedById,
+                expires_at: expiresAt,
                 status: 'PENDING',
             },
         });
@@ -33,21 +33,21 @@ export class InvitationService {
         const newToken = crypto.randomUUID();
         const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 
-        return prisma.invitation.update({
-            where: { id: invitationId },
-            data: { token: newToken, expiresAt: newExpiresAt, status: 'PENDING' },
+        return prismaPostgres.invitation.update({
+            where: { id_invitation: invitationId },
+            data: { token: newToken, expires_at: newExpiresAt, status: 'PENDING' },
         });
     }
 
     static async expireInvitation(invitationId: string) {
-        return prisma.invitation.update({
-            where: { id: invitationId },
+        return prismaPostgres.invitation.update({
+            where: { id_invitation: invitationId },
             data: { status: 'EXPIRED' },
         });
     }
 
     static async acceptInvitation(token: string, userId: string) {
-        const invitation = await prisma.invitation.findUnique({
+        const invitation = await prismaPostgres.invitation.findUnique({
             where: { token },
         });
 
@@ -55,25 +55,24 @@ export class InvitationService {
             throw new Error('Invitation invalid or already used');
         }
 
-        if (invitation.expiresAt < new Date()) {
-            await prisma.invitation.update({
-                where: { id: invitation.id },
+        if (invitation.expires_at < new Date()) {
+            await prismaPostgres.invitation.update({
+                where: { id_invitation: invitation.id_invitation },
                 data: { status: 'EXPIRED' },
             });
             throw new Error('Invitation expired');
         }
 
         // mark accepted
-        return prisma.invitation.update({
-            where: { id: invitation.id },
-            data: { status: 'ACCEPTED', acceptedAt: new Date() },
+        return prismaPostgres.invitation.update({
+            where: { id_invitation: invitation.id_invitation },
+            data: { status: 'ACCEPTED', accepted_at: new Date() },
         });
     }
 
     static async getAllInvitations() {
-        return prisma.invitation.findMany({
-            orderBy: { createdAt: 'desc' },
-            include: { invitedBy: true },
+        return prismaPostgres.invitation.findMany({
+            orderBy: { created_at: 'desc' },
         });
     }
 }

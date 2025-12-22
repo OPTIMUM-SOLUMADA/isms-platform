@@ -1,65 +1,59 @@
-import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentType, Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Type, Prisma } from '../../node_modules/.prisma/client/postgresql';
 
-const includes: Prisma.DocumentTypeInclude = {
+const includes: Prisma.TypeInclude = {
     documents: {
         select: {
-            id: true,
+            id_document: true,
             title: true,
-            fileUrl: true,
-        },
-    },
-    createdBy: {
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
         },
     },
 };
 
+/**
+ * Service for managing document types
+ * Uses PostgreSQL for relational data
+ */
 export class DocumentTypeService {
-    async create(data: Prisma.DocumentTypeCreateInput): Promise<DocumentType> {
-        return prisma.documentType.create({
+    async create(data: Prisma.TypeCreateInput): Promise<Type> {
+        return prismaPostgres.type.create({
             data,
             include: includes,
         });
     }
 
-    async findAll(): Promise<DocumentType[]> {
-        return prisma.documentType.findMany({
+    async findAll(): Promise<Type[]> {
+        return prismaPostgres.type.findMany({
             include: includes,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { created_at: 'desc' },
         });
     }
 
-    async findByName(name: string): Promise<DocumentType | null> {
-        return prisma.documentType.findUnique({
+    async findByName(name: string): Promise<Type | null> {
+        return prismaPostgres.type.findFirst({
             where: { name },
             include: includes,
         });
     }
 
-    async findById(id: string): Promise<DocumentType | null> {
-        return prisma.documentType.findUnique({
-            where: { id },
+    async findById(id: string): Promise<Type | null> {
+        return prismaPostgres.type.findUnique({
+            where: { id_type: id },
             include: includes,
         });
     }
 
-    async update(id: string, data: Prisma.DocumentTypeUpdateInput): Promise<DocumentType> {
-        return prisma.documentType.update({
-            where: { id },
+    async update(id: string, data: Prisma.TypeUpdateInput): Promise<Type> {
+        return prismaPostgres.type.update({
+            where: { id_type: id },
             data,
             include: includes,
         });
     }
 
-    async delete(id: string): Promise<DocumentType> {
-        return prisma.documentType.delete({
-            where: { id },
+    async delete(id: string): Promise<Type> {
+        return prismaPostgres.type.delete({
+            where: { id_type: id },
         });
     }
 
@@ -67,15 +61,15 @@ export class DocumentTypeService {
         filter,
         page = 1,
         limit = 20,
-        orderBy = { createdAt: 'desc' },
+        orderBy = { created_at: 'desc' },
     }: {
-        filter?: Prisma.DocumentTypeWhereInput;
+        filter?: Prisma.TypeWhereInput;
         page?: number;
         limit?: number;
-        orderBy?: Prisma.DocumentTypeOrderByWithRelationInput;
+        orderBy?: Prisma.TypeOrderByWithRelationInput;
     }) {
-        const total = await prisma.documentType.count();
-        const documentTypes = await prisma.documentType.findMany({
+        const total = await prismaPostgres.type.count({ where: filter });
+        const documentTypes = await prismaPostgres.type.findMany({
             include: includes,
             where: filter || {},
             skip: (page - 1) * limit,
@@ -97,7 +91,7 @@ export class DocumentTypeService {
     }
 
     async search(query: string) {
-        return prisma.documentType.findMany({
+        return prismaPostgres.type.findMany({
             where: {
                 OR: [
                     { name: { contains: query, mode: 'insensitive' } },
@@ -105,7 +99,7 @@ export class DocumentTypeService {
                 ],
             },
             select: {
-                id: true,
+                id_type: true,
                 name: true,
                 description: true,
             },
@@ -113,9 +107,9 @@ export class DocumentTypeService {
     }
 
     async initialize() {
-        const count = await prisma.documentType.count();
+        const count = await prismaPostgres.type.count();
         if (count > 0) {
-            console.log('DocumentTypes table already initialized');
+            console.log('Types table already initialized');
             return [];
         }
 
@@ -125,7 +119,7 @@ export class DocumentTypeService {
             { name: 'Record', description: '' },
         ];
 
-        const result: DocumentType[] = [];
+        const result: Type[] = [];
 
         for (const documentType of documentTypesList) {
             const existing = await this.findByName(documentType.name);
@@ -138,7 +132,7 @@ export class DocumentTypeService {
             }
         }
 
-        console.log('Default DocumentTypes inserted');
+        console.log('Default Types inserted');
 
         return result;
     }

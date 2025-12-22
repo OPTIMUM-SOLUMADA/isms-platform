@@ -1,27 +1,27 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 export class DepartmentRoleDocumentService {
     async createMany(data: Prisma.DepartmentRoleDocumentCreateManyInput) {
-        return prisma.departmentRoleDocument.createMany({
+        return prismaPostgres.departmentRoleDocument.createMany({
             data,
         });
     }
 
     async reCreateMany(documentId: string, data: Prisma.DepartmentRoleDocumentCreateManyInput) {
-        return prisma.departmentRoleDocument
-            .deleteMany({ where: { documentId: documentId } })
+        return prismaPostgres.departmentRoleDocument
+            .deleteMany({ where: { id_document: documentId } })
             .then(() => this.createMany(data));
     }
 
     async findAll() {
-        return prisma.departmentRoleDocument.findMany({
+        return prismaPostgres.departmentRoleDocument.findMany({
             include: {
-                departmentRole: {
+                department_role: {
                     select: {
-                        id: true,
+                        id_department_role: true,
                         name: true,
-                        departmentId: true,
+                        id_department: true,
                     },
                 },
             },
@@ -29,14 +29,14 @@ export class DepartmentRoleDocumentService {
     }
 
     async findById(id: string) {
-        return prisma.departmentRoleDocument.findFirst({
-            where: { id },
+        return prismaPostgres.departmentRoleDocument.findFirst({
+            where: { id_department_role_document: id },
             include: {
-                departmentRole: {
+                department_role: {
                     select: {
-                        id: true,
+                        id_department_role: true,
                         name: true,
-                        departmentId: true,
+                        id_department: true,
                     },
                 },
             },

@@ -10,8 +10,10 @@ dotenv.config({
 export const envSchema = z.object({
     PORT: z.number().default(8000),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-    // Database
+    // PostgreSQL Database (main relational data)
     DATABASE_URL: z.string().url(),
+    // MongoDB Database (audit logs and notifications)
+    DATABASE_URL_MONGO: z.string().url(),
 
     // Password Hashing
     BCRYPT_SALT_ROUNDS: z
@@ -69,6 +71,7 @@ const envServer = envSchema.safeParse({
     PORT: process.env.PORT ? parseInt(process.env.PORT) : undefined,
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL_MONGO: process.env.DATABASE_URL_MONGO,
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,

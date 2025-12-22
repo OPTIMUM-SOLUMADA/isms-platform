@@ -1,35 +1,41 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 export const userIncludes: Prisma.UserInclude = {
-    documentReviews: true,
-    documentApprovals: true,
-    notifications: true,
-    auditLogs: true,
-    documentAuthors: {
-        select: {
+    function: {
+        include: {
+            department: true,
+        },
+    },
+    role: true,
+    document_authors: {
+        include: {
             document: {
                 select: {
                     title: true,
-                    versions: {
-                        where: { isCurrent: true },
-                        select: {
-                            version: true,
-                            fileUrl: true,
-                        },
-                    },
+                },
+            },
+            version: {
+                select: {
+                    version: true,
+                    file_url: true,
+                    is_current: true,
                 },
             },
         },
     },
-    departmentRoleUsers: {
-        select: {
-            id: true,
-            departmentRole: {
+    document_reviewers: {
+        include: {
+            document: {
                 select: {
-                    id: true,
-                    name: true,
-                    departmentId: true,
+                    title: true,
+                    status: true,
+                },
+            },
+            version: {
+                select: {
+                    version: true,
+                    is_current: true,
                 },
             },
         },
@@ -40,10 +46,11 @@ export type UserPayload = Prisma.UserGetPayload<{ include: typeof userIncludes }
 
 /**
  * Service for managing users
+ * Uses PostgreSQL for relational user data
  */
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
-        return prisma.user.create({
+        return prismaPostgres.user.create({
             data,
             include: {
                 ...userIncludes,
@@ -52,8 +59,8 @@ export class UserService {
     }
 
     async getUserById(id: string) {
-        return prisma.user.findUnique({
-            where: { id },
+        return prismaPostgres.user.findUnique({
+            where: { id_user: id },
             include: {
                 ...userIncludes,
             },
@@ -61,18 +68,18 @@ export class UserService {
     }
 
     async getUseByIdNoInclude(id: string) {
-        return prisma.user.findUnique({
-            where: { id },
+        return prismaPostgres.user.findUnique({
+            where: { id_user: id },
         });
     }
 
     async findByEmail(email: string) {
-        return prisma.user.findUnique({ where: { email } });
+        return prismaPostgres.user.findFirst({ where: { email } });
     }
 
     async updateUser(id: string, data: Prisma.UserUpdateInput) {
-        return prisma.user.update({
-            where: { id },
+        return prismaPostgres.user.update({
+            where: { id_user: id },
             data,
             include: {
                 ...userIncludes,
@@ -81,27 +88,27 @@ export class UserService {
     }
 
     async activateUser(id: string) {
-        return prisma.user.update({
-            where: { id },
-            data: { isActive: true },
+        return prismaPostgres.user.update({
+            where: { id_user: id },
+            data: { is_active: true },
         });
     }
 
     async deactivateUser(id: string) {
-        return prisma.user.update({
-            where: { id },
-            data: { isActive: false },
+        return prismaPostgres.user.update({
+            where: { id_user: id },
+            data: { is_active: false },
         });
     }
 
     async delete(id: string) {
-        return prisma.user.delete({
-            where: { id },
+        return prismaPostgres.user.delete({
+            where: { id_user: id },
         });
     }
 
     async searchUsers(query: string) {
-        return prisma.user.findMany({
+        return prismaPostgres.user.findMany({
             where: {
                 OR: [
                     { name: { contains: query, mode: 'insensitive' } },
@@ -109,12 +116,12 @@ export class UserService {
                 ],
             },
             select: {
-                id: true,
+                id_user: true,
                 email: true,
                 name: true,
+                is_active: true,
+                last_login: true,
                 role: true,
-                isActive: true,
-                lastLogin: true,
             },
             take: 10,
         });
@@ -124,35 +131,35 @@ export class UserService {
         filter,
         page = 1,
         limit = 20,
-        orderBy = { createdAt: 'desc' },
+        orderBy = { created_at: 'desc' },
     }: {
         filter?: Prisma.UserWhereInput;
         page?: number;
         limit?: number;
         orderBy?: Prisma.UserOrderByWithRelationInput;
     }) {
-        const total = await prisma.user.count();
+        const total = await prismaPostgres.user.count({ where: filter });
 
-        const users = await prisma.user.findMany({
+        const users = await prismaPostgres.user.findMany({
             where: filter || {},
             skip: (page - 1) * limit,
             take: limit,
             orderBy,
             select: {
-                id: true,
+                id_user: true,
                 email: true,
                 name: true,
+                is_active: true,
+                last_login: true,
                 role: true,
-                isActive: true,
-                lastLogin: true,
-                departmentRoleUsers: {
+                function: {
                     select: {
-                        id: true,
-                        departmentRole: {
+                        id_function: true,
+                        name: true,
+                        department: {
                             select: {
-                                id: true,
+                                id_department: true,
                                 name: true,
-                                departmentId: true,
                             },
                         },
                     },
@@ -174,28 +181,29 @@ export class UserService {
     }
 
     async getUsersByIds(ids: string[]) {
-        return prisma.user.findMany({
-            where: { id: { in: ids } },
+        return prismaPostgres.user.findMany({
+            where: { id_user: { in: ids } },
             select: {
-                id: true,
+                id_user: true,
                 email: true,
                 name: true,
+                is_active: true,
                 role: true,
-                isActive: true,
             },
         });
     }
 
     async getUserRolesStats() {
-        const roles = await prisma.user.groupBy({
-            by: ['role'],
-            _count: {
-                role: true,
+        const roles = await prismaPostgres.role.findMany({
+            include: {
+                _count: {
+                    select: { users: true },
+                },
             },
         });
         const stats: Record<string, number> = {};
         roles.forEach((role) => {
-            stats[role.role] = role._count.role;
+            stats[role.name] = role._count.users;
         });
         return stats;
     }

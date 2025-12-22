@@ -1,48 +1,47 @@
-import prisma from '@/database/prisma';
+import { prismaPostgres } from '@/database/prisma';
 
 export class RecentlyViewedService {
     async getByUser(userId: string) {
-        return prisma.recentlyViewedDocument.findMany({
-            where: { userId, document: { published: true } },
-            orderBy: { viewedAt: 'desc' },
-            include: { document: true },
+        return prismaPostgres.recentlyViewedDocument.findMany({
+            where: { id_user: userId },
+            orderBy: { viewed_at: 'desc' },
         });
     }
 
     async markDocumentAsViewed(userId: string, documentId: string) {
         // 1. Check if previously viewed
-        const existing = await prisma.recentlyViewedDocument.findFirst({
-            where: { userId, documentId },
+        const existing = await prismaPostgres.recentlyViewedDocument.findFirst({
+            where: { id_user: userId, id_document: documentId },
         });
 
         if (existing) {
             // 2. Update viewedAt
-            await prisma.recentlyViewedDocument.update({
-                where: { id: existing.id },
-                data: { viewedAt: new Date() },
+            await prismaPostgres.recentlyViewedDocument.update({
+                where: { id_recently_viewed: existing.id_recently_viewed },
+                data: { viewed_at: new Date() },
             });
         } else {
             // 3. Create new history entry
-            await prisma.recentlyViewedDocument.create({
+            await prismaPostgres.recentlyViewedDocument.create({
                 data: {
-                    userId,
-                    documentId,
-                    viewedAt: new Date(),
+                    id_user: userId,
+                    id_document: documentId,
+                    viewed_at: new Date(),
                 },
             });
         }
 
         // 4. Keep only last 5 entries (optional)
-        const oldItems = await prisma.recentlyViewedDocument.findMany({
-            where: { userId },
-            orderBy: { viewedAt: 'desc' },
+        const oldItems = await prismaPostgres.recentlyViewedDocument.findMany({
+            where: { id_user: userId },
+            orderBy: { viewed_at: 'desc' },
             skip: 5,
         });
 
         if (oldItems.length > 0) {
-            await prisma.recentlyViewedDocument.deleteMany({
+            await prismaPostgres.recentlyViewedDocument.deleteMany({
                 where: {
-                    id: { in: oldItems.map((item) => item.id) },
+                    id_recently_viewed: { in: oldItems.map((item) => item.id_recently_viewed) },
                 },
             });
         }

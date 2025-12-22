@@ -1,29 +1,29 @@
-import prisma from '@/database/prisma';
-import { Prisma } from '@prisma/client';
+import { prismaPostgres } from '@/database/prisma';
+import { Prisma } from '../../node_modules/.prisma/client/postgresql';
 
 export class GoogleAccountService {
     async create(data: Prisma.GoogleAccountCreateInput) {
-        await prisma.googleAccount.deleteMany();
-        return prisma.googleAccount.create({ data });
+        await prismaPostgres.googleAccount.deleteMany();
+        return prismaPostgres.googleAccount.create({ data });
     }
 
     async getFirst() {
-        return prisma.googleAccount.findFirst();
+        return prismaPostgres.googleAccount.findFirst();
     }
 
     async getLast() {
-        return prisma.googleAccount.findFirst({ orderBy: { createdAt: 'desc' } });
+        return prismaPostgres.googleAccount.findFirst({ orderBy: { created_at: 'desc' } });
     }
 
     async update(id: string, data: Prisma.GoogleAccountUpdateInput) {
-        return prisma.googleAccount.update({ where: { id }, data });
+        return prismaPostgres.googleAccount.update({ where: { id_google_account: id }, data });
     }
 
     async getAll() {
-        return prisma.googleAccount.findMany();
+        return prismaPostgres.googleAccount.findMany();
     }
 
     async deleteAll() {
-        return prisma.googleAccount.deleteMany();
+        return prismaPostgres.googleAccount.deleteMany();
     }
 }

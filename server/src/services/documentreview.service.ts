@@ -1,113 +1,59 @@
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
-import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentReview, NotificationType, Prisma } from '@prisma/client';
+import { prismaPostgres, prismaMongo } from '@/database/prisma';
+import { DocumentReview, Prisma, ReviewDecision } from '../../node_modules/.prisma/client/postgresql';
+import { NotificationType } from '../../node_modules/.prisma/client/mongodb';
 import { EmailService } from './email.service';
 import { addHours, subMonths } from 'date-fns';
 import { toHashRouterUrl } from '@/utils/baseurl';
 
 const emailService = new EmailService();
 
-const includes: Prisma.DocumentReviewInclude = {
-    document: {
-        select: {
-            id: true,
-            title: true,
-            status: true,
-            reviewFrequency: true,
-            isoClause: {
-                select: {
-                    name: true,
-                    code: true,
-                },
-            },
-            versions: {
-                where: { isCurrent: true },
-                select: {
-                    version: true,
-                    createdAt: true,
-                    fileUrl: true,
-                },
-            },
-            authors: {
-                select: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true,
-                            role: true,
-                            createdAt: true,
-                        },
-                    },
-                },
-            },
-        },
-    },
-    reviewer: {
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-        },
-    },
-    documentVersion: {
-        select: {
-            id: true,
-            version: true,
-            createdAt: true,
-            fileUrl: true,
-            draftId: true,
-            draftUrl: true,
-        },
-    },
-};
+const includes: Prisma.DocumentReviewInclude = {};
 
 export class DocumentReviewService {
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
-        return prisma.documentReview.create({
+        return prismaPostgres.documentReview.create({
             data,
             include: includes,
         });
     }
 
     async findByIdWithIncludedData(id: string) {
-        return prisma.documentReview.findUnique({
-            where: { id },
+        return prismaPostgres.documentReview.findUnique({
+            where: { id_document_review: id },
             include: {
                 document: {
                     include: {
                         versions: {
-                            where: { isCurrent: true },
+                            where: { is_current: true },
                             select: {
                                 version: true,
-                                createdAt: true,
-                                fileUrl: true,
+                                created_at: true,
+                                file_url: true,
                                 document: {
                                     select: {
                                         title: true,
                                         description: true,
                                         status: true,
-                                        isoClause: {
+                                        iso_clause: {
                                             select: {
                                                 name: true,
                                                 code: true,
                                             },
                                         },
-                                        reviewers: {
+                                        document_reviewers: {
                                             include: {
                                                 user: {
                                                     select: {
                                                         name: true,
                                                         email: true,
-                                                        createdAt: true,
+                                                        created_at: true,
                                                         role: true,
-                                                        departmentRoleUsers: {
+                                                        department_role_users: {
                                                             select: {
                                                                 id: true,
-                                                                departmentRole: {
+                                                                department_role: {
                                                                     select: {
                                                                         id: true,
                                                                         name: true,
@@ -123,7 +69,7 @@ export class DocumentReviewService {
                                 },
                             },
                         },
-                        isoClause: {
+                        iso_clause: {
                             select: {
                                 name: true,
                                 code: true,
@@ -136,12 +82,12 @@ export class DocumentReviewService {
                         id: true,
                         name: true,
                         email: true,
-                        createdAt: true,
+                        created_at: true,
                         role: true,
-                        departmentRoleUsers: {
+                        department_role_users: {
                             select: {
                                 id: true,
-                                departmentRole: {
+                                department_role: {
                                     select: {
                                         id: true,
                                         name: true,
@@ -151,7 +97,7 @@ export class DocumentReviewService {
                         },
                     },
                 },
-                assignedBy: {
+                assigned_by: {
                     select: {
                         name: true,
                         email: true,
@@ -161,8 +107,8 @@ export class DocumentReviewService {
                     select: {
                         id: true,
                         version: true,
-                        createdAt: true,
-                        fileUrl: true,
+                        created_at: true,
+                        file_url: true,
                     },
                 },
             },
@@ -170,41 +116,41 @@ export class DocumentReviewService {
     }
 
     async findAll(): Promise<DocumentReview[]> {
-        return await prisma.documentReview.findMany({
+        return await prismaPostgres.documentReview.findMany({
             include: {
                 document: {
                     select: {
                         id: true,
                         title: true,
                         status: true,
-                        isoClause: {
+                        iso_clause: {
                             select: {
                                 name: true,
                                 code: true,
                             },
                         },
                         versions: {
-                            where: { isCurrent: true },
+                            where: { is_current: true },
                             select: {
                                 version: true,
-                                createdAt: true,
-                                fileUrl: true,
+                                created_at: true,
+                                file_url: true,
                             },
                         },
                     },
                 },
                 reviewer: true,
-                completedBy: {
+                completed_by: {
                     select: {
                         id: true,
                         name: true,
                         email: true,
                         role: true,
-                        createdAt: true,
-                        departmentRoleUsers: {
+                        created_at: true,
+                        department_role_users: {
                             select: {
                                 id: true,
-                                departmentRole: {
+                                department_role: {
                                     select: {
                                         id: true,
                                         name: true,
@@ -215,15 +161,15 @@ export class DocumentReviewService {
                     },
                 },
             },
-            orderBy: { reviewDate: 'desc' },
+            orderBy: { review_date: 'desc' },
         });
     }
 
     async findPendingReviews(userId?: string): Promise<DocumentReview[]> {
-        return prisma.documentReview.findMany({
+        return prismaPostgres.documentReview.findMany({
             where: {
-                decision: { isSet: true },
-                isCompleted: false,
+                decision: { not: null },
+                is_completed: false,
                 ...(userId && {
                     document: {
                         authors: {
@@ -240,19 +186,19 @@ export class DocumentReviewService {
                         id: true,
                         title: true,
                         status: true,
-                        fileUrl: true,
-                        isoClause: {
+                        file_url: true,
+                        iso_clause: {
                             select: {
                                 name: true,
                                 code: true,
                             },
                         },
                         versions: {
-                            where: { isCurrent: true },
+                            where: { is_current: true },
                             select: {
                                 version: true,
-                                createdAt: true,
-                                fileUrl: true,
+                                created_at: true,
+                                file_url: true,
                             },
                         },
                     },
@@ -262,12 +208,12 @@ export class DocumentReviewService {
                         id: true,
                         name: true,
                         email: true,
-                        createdAt: true,
+                        created_at: true,
                         role: true,
-                        departmentRoleUsers: {
+                        department_role_users: {
                             select: {
                                 id: true,
-                                departmentRole: {
+                                department_role: {
                                     select: {
                                         id: true,
                                         name: true,
@@ -282,95 +228,95 @@ export class DocumentReviewService {
     }
 
     async update(id: string, data: Prisma.DocumentReviewUpdateInput): Promise<DocumentReview> {
-        return prisma.documentReview.update({
-            where: { id },
+        return prismaPostgres.documentReview.update({
+            where: { id_document_review: id },
             data,
         });
     }
 
-    async assignReviewersToDocument({
-        documentId,
-        documentVersionId,
-        reviewerIds,
+    async assigndocument_reviewersToDocument({
+        id_document,
+        id_version,
+        id_document_reviewers,
         userId,
-        dueDate,
+        due_date,
     }: {
-        documentId: string;
-        documentVersionId: string;
-        reviewerIds: string[];
+        id_document: string;
+        id_version: string;
+        id_document_reviewers: string[];
         userId?: string;
-        dueDate?: Date | null;
+        due_date?: Date | null;
     }) {
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
-            documentId: documentId,
-            reviewerId: reviewerId,
-            dueDate: dueDate || null,
-            documentVersionId: documentVersionId,
-            ...(userId ? { assignedById: userId } : {}),
+        const data: Prisma.DocumentReviewCreateManyInput[] = id_document_reviewers.map((id_reviewer) => ({
+            id_document: id_document,
+            id_reviewer: id_reviewer,
+            due_date: due_date || null,
+            id_version: id_version,
+            ...(userId ? { assigned_byId: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        return prismaPostgres.documentReview.createMany({ data });
     }
 
-    async updateAssignedReviewersToDocument({
-        documentId,
-        documentVersionId,
-        reviewerIds,
+    async updateAssigneddocument_reviewersToDocument({
+        id_document,
+        id_version,
+        id_document_reviewers,
         userId,
-        dueDate,
+        due_date,
     }: {
-        documentId: string;
-        documentVersionId: string;
-        reviewerIds: string[];
+        id_document: string;
+        id_version: string;
+        id_document_reviewers: string[];
         userId?: string;
-        dueDate?: Date | null;
+        due_date?: Date | null;
     }) {
-        // Delete reviews where dueDate is greater than now
-        await prisma.documentReview.deleteMany({
+        // Delete reviews where due_date is greater than now
+        await prismaPostgres.documentReview.deleteMany({
             where: {
-                documentId: documentId,
-                dueDate: { gt: new Date() },
+                id_document: id_document,
+                due_date: { gt: new Date() },
             },
         });
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
-            documentId: documentId,
-            reviewerId: reviewerId,
-            dueDate: dueDate || null,
-            documentVersionId: documentVersionId,
-            ...(userId ? { assignedById: userId } : {}),
+        const data: Prisma.DocumentReviewCreateManyInput[] = id_document_reviewers.map((id_reviewer) => ({
+            id_document: id_document,
+            id_reviewer: id_reviewer,
+            due_date: due_date || null,
+            id_version: id_version,
+            ...(userId ? { assigned_byId: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        return prismaPostgres.documentReview.createMany({ data });
     }
 
     async submitReviewDecision(
         reviewId: string,
         data: Pick<
             Prisma.DocumentReviewCreateInput,
-            'comment' | 'decision' | 'isCompleted' | 'completedAt' | 'completedBy'
+            'comment' | 'decision' | 'is_completed' | 'completed_at' | 'completed_by'
         >,
     ) {
-        return prisma.documentReview.update({
+        return prismaPostgres.documentReview.update({
             where: { id: reviewId },
             data: {
                 ...data,
-                reviewDate: new Date(),
+                review_date: new Date(),
             },
         });
     }
 
     async markAsCompleted(reviewId: string) {
-        return prisma.documentReview.update({
+        return prismaPostgres.documentReview.update({
             where: { id: reviewId },
             data: {
-                isCompleted: true,
-                completedAt: new Date(),
+                is_completed: true,
+                completed_at: new Date(),
             },
         });
     }
 
     async findById(reviewId: string) {
-        return prisma.documentReview.findFirst({
+        return prismaPostgres.documentReview.findFirst({
             where: {
                 id: reviewId,
             },
@@ -391,24 +337,24 @@ export class DocumentReviewService {
     }) {
         const skip = (page - 1) * limit;
 
-        const [items, total] = await prisma.$transaction([
-            prisma.documentReview.findMany({
+        const [items, total] = await prismaPostgres.$transaction([
+            prismaPostgres.documentReview.findMany({
                 skip,
                 take: limit,
                 orderBy: {
-                    createdAt: 'desc',
+                    created_at: 'desc',
                 },
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     ...(filter && filter),
                 },
                 include: includes,
             }),
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     ...(filter && filter),
                 },
             }),
@@ -436,25 +382,25 @@ export class DocumentReviewService {
     }) {
         const skip = (page - 1) * limit;
 
-        const [items, total] = await prisma.$transaction([
-            prisma.documentReview.findMany({
+        const [items, total] = await prismaPostgres.$transaction([
+            prismaPostgres.documentReview.findMany({
                 skip,
                 take: limit,
                 orderBy: {
-                    createdAt: 'desc',
+                    created_at: 'desc',
                 },
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     decision: 'APPROVE',
                     ...(filter && filter),
                 },
                 include: includes,
             }),
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     ...(filter && filter),
                 },
             }),
@@ -472,49 +418,49 @@ export class DocumentReviewService {
         const now = new Date();
 
         // Run all count queries in a single atomic transaction
-        const [all, pending, expired, approved, rejected, completed] = await prisma.$transaction([
-            prisma.documentReview.count({
-                where: { reviewerId: userId, isCompleted: false },
+        const [all, pending, expired, approved, rejected, completed] = await prismaPostgres.$transaction([
+            prismaPostgres.documentReview.count({
+                where: { id_reviewer: userId, is_completed: false },
             }),
 
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
-                    decision: { isSet: false },
-                    OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: now } }],
+                    id_reviewer: userId,
+                    is_completed: false,
+                    decision: null,
+                    OR: [{ due_date: null }, { due_date: { gte: now } }],
                 },
             }),
 
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
-                    decision: { isSet: false },
-                    dueDate: { lte: now },
+                    id_reviewer: userId,
+                    is_completed: false,
+                    decision: null,
+                    due_date: { lte: now },
                 },
             }),
 
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     decision: 'APPROVE',
                 },
             }),
 
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
+                    id_reviewer: userId,
+                    is_completed: false,
                     decision: 'REJECT',
                 },
             }),
 
-            prisma.documentReview.count({
+            prismaPostgres.documentReview.count({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: true,
+                    id_reviewer: userId,
+                    is_completed: true,
                 },
             }),
         ]);
@@ -530,7 +476,7 @@ export class DocumentReviewService {
     }
 
     async findReview(filter: Prisma.DocumentReviewWhereInput) {
-        return prisma.documentReview.findFirst({ where: filter, include: includes });
+        return prismaPostgres.documentReview.findFirst({ where: filter, include: includes });
     }
 
     async getUpcomingReviews({
@@ -540,10 +486,10 @@ export class DocumentReviewService {
         targetDateStart: Date;
         targetDateEnd: Date;
     }) {
-        return prisma.documentReview.findMany({
+        return prismaPostgres.documentReview.findMany({
             where: {
-                isCompleted: false,
-                reviewDate: {
+                is_completed: false,
+                review_date: {
                     gte: targetDateStart,
                     lte: targetDateEnd,
                 },
@@ -564,12 +510,12 @@ export class DocumentReviewService {
                         status: true,
                         reviewFrequency: true,
                         versions: {
-                            where: { isCurrent: true },
+                            where: { is_current: true },
                             select: {
                                 id: true,
                                 version: true,
-                                createdAt: true,
-                                fileUrl: true,
+                                created_at: true,
+                                file_url: true,
                             },
                         },
                     },
@@ -579,7 +525,7 @@ export class DocumentReviewService {
     }
 
     async sendReviewNotification(review: any) {
-        const { reviewer, document, dueDate } = review;
+        const { reviewer, document, due_date } = review;
 
         const html = await EmailTemplate.reviewReminder({
             document: {
@@ -587,7 +533,7 @@ export class DocumentReviewService {
                 description: document.description,
                 status: document.status,
             },
-            dueDate: dueDate?.toDateString() || 'ASAP',
+            due_date: due_date?.toDateString() || 'ASAP',
             reviewer: { name: reviewer.name },
             year: new Date().getFullYear().toString(),
             viewDocLink: toHashRouterUrl(`/documents/view/${document.id}`),
@@ -603,11 +549,11 @@ export class DocumentReviewService {
                 html,
             });
 
-            await prisma.documentReview.update({
+            await prismaPostgres.documentReview.update({
                 where: { id: review.id },
                 data: {
-                    notifiedAt: new Date(),
-                    isNotified: true,
+                    notified_at: new Date(),
+                    is_notified: true,
                 },
             });
         } catch (err) {
@@ -616,10 +562,10 @@ export class DocumentReviewService {
     }
 
     async getActiveReviews() {
-        return prisma.documentReview.findMany({
+        return prismaPostgres.documentReview.findMany({
             where: {
-                isCompleted: false,
-                decision: { isSet: false },
+                is_completed: false,
+                decision: null,
             },
             include: includes,
         });
@@ -629,12 +575,12 @@ export class DocumentReviewService {
         const now = new Date();
         const treeHoursLater = addHours(now, 3);
 
-        return prisma.documentReview.findMany({
+        return prismaPostgres.documentReview.findMany({
             where: {
-                ...(userId && { reviewerId: userId }),
-                isCompleted: false,
-                decision: { isSet: false },
-                dueDate: {
+                ...(userId && { id_reviewer: userId }),
+                is_completed: false,
+                decision: null,
+                due_date: {
                     gte: now,
                     lte: treeHoursLater,
                 },
@@ -643,28 +589,28 @@ export class DocumentReviewService {
         });
     }
 
-    async getSubmittedReviewsByDocument(documentId: string) {
-        return prisma.documentReview.findMany({
-            where: { documentId, decision: { isSet: true }, isCompleted: false },
+    async getSubmittedReviewsByDocument(id_document: string) {
+        return prismaPostgres.documentReview.findMany({
+            where: { id_document, decision: { not: null }, is_completed: false },
             include: includes,
         });
     }
 
-    async getCompletedReviewsByDocument(documentId: string) {
-        return prisma.documentReview.findMany({
-            where: { documentId, decision: { isSet: true }, isCompleted: true },
+    async getCompletedReviewsByDocument(id_document: string) {
+        return prismaPostgres.documentReview.findMany({
+            where: { id_document, decision: { not: null }, is_completed: true },
             include: includes,
-            orderBy: { completedAt: 'desc' },
+            orderBy: { completed_at: 'desc' },
         });
     }
 
     async getExpiredReviewsByUser(userId: string) {
-        return prisma.documentReview.findMany({
+        return prismaPostgres.documentReview.findMany({
             where: {
-                reviewerId: userId,
-                isCompleted: false,
-                decision: { isSet: false },
-                dueDate: { lte: new Date() },
+                id_reviewer: userId,
+                is_completed: false,
+                decision: null,
+                due_date: { lte: new Date() },
             },
             include: includes,
         });
@@ -674,24 +620,24 @@ export class DocumentReviewService {
         const now = new Date();
         const treeHoursLater = addHours(now, 3);
 
-        const [expired, dueSoon] = await prisma.$transaction([
+        const [expired, dueSoon] = await prismaPostgres.$transaction([
             // EXPIRED REVIEWS
-            prisma.documentReview.findMany({
+            prismaPostgres.documentReview.findMany({
                 where: {
-                    reviewerId: userId,
-                    isCompleted: false,
-                    decision: { isSet: false },
-                    dueDate: { lte: new Date() },
+                    id_reviewer: userId,
+                    is_completed: false,
+                    decision: null,
+                    due_date: { lte: new Date() },
                 },
                 include: includes,
             }),
             // DUE SOON REVIEWS
-            prisma.documentReview.findMany({
+            prismaPostgres.documentReview.findMany({
                 where: {
-                    ...(userId && { reviewerId: userId }),
-                    isCompleted: false,
-                    decision: { isSet: false },
-                    dueDate: {
+                    ...(userId && { id_reviewer: userId }),
+                    is_completed: false,
+                    decision: null,
+                    due_date: {
                         gte: now,
                         lte: treeHoursLater,
                     },
@@ -703,35 +649,35 @@ export class DocumentReviewService {
         return { expired, dueSoon };
     }
 
-    async getOtherUsersReviews(documentId: string, versionId: string) {
-        return prisma.documentReview.findMany({
+    async getOtherUsersReviews(id_document: string, versionId: string) {
+        return prismaPostgres.documentReview.findMany({
             where: {
-                documentId,
-                documentVersionId: versionId,
-                isCompleted: false,
+                id_document,
+                id_version: versionId,
+                is_completed: false,
             },
             include: includes,
-            orderBy: { completedAt: 'desc' },
+            orderBy: { completed_at: 'desc' },
         });
     }
 
     async sendUpcomingReviewNotification({
-        documentId,
-        nextReviewDate,
+        id_document,
+        nextreview_date,
     }: {
-        documentId: string;
-        nextReviewDate: Date;
+        id_document: string;
+        nextreview_date: Date;
     }) {
-        if (!nextReviewDate) return;
+        if (!nextreview_date) return;
 
-        const notifyDate = subMonths(nextReviewDate, 1);
+        const notifyDate = subMonths(nextreview_date, 1);
         const now = new Date();
         if (now < notifyDate) return;
 
-        const document = await prisma.document.findUnique({
-            where: { id: documentId },
+        const document = await prismaPostgres.document.findUnique({
+            where: { id: id_document },
             include: {
-                reviewers: {
+                document_reviewers: {
                     include: {
                         user: {
                             select: { id: true, name: true, email: true },
@@ -741,21 +687,21 @@ export class DocumentReviewService {
             },
         });
 
-        if (!document || !document.reviewers.length) return;
+        if (!document || !document.document_reviewers.length) return;
 
-        for (const reviewer of document.reviewers) {
-            await prisma.notification.create({
+        for (const reviewer of document.document_reviewers) {
+            await prismaMongo.notification.create({
                 data: {
                     userId: reviewer.user.id,
                     type: NotificationType.REVIEW_NEEDED,
                     title: 'Upcoming Document Review',
-                    message: `The document "${document.title}" is scheduled for review on ${nextReviewDate.toDateString()}. Please prepare.`,
-                    documentId: document.id,
+                    message: `The document "${document.title}" is scheduled for review on ${nextreview_date.toDateString()}. Please prepare.`,
+                    id_document: document.id,
                 },
             });
         }
 
-        console.log(`[NOTIFY] Upcoming review notification sent for document ${documentId}`);
+        console.log(`[NOTIFY] Upcoming review notification sent for document ${id_document}`);
     }
 
 }

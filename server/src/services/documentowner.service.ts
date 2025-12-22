@@ -1,22 +1,5 @@
-import { DocumentOwner, Prisma } from '@prisma/client';
-import prisma from '@/database/prisma';
-
-const include: Prisma.DocumentOwnerInclude = {
-    documents: {
-        select: {
-            id: true,
-            title: true,
-            versions: {
-                where: { isCurrent: true },
-                select: {
-                    version: true,
-                    fileUrl: true,
-                },
-            },
-            fileUrl: true,
-        },
-    },
-};
+import { DocumentOwner, Prisma } from '../../node_modules/.prisma/client/postgresql';
+import { prismaPostgres } from '@/database/prisma';
 
 export class DocumentOwnerService {
     /**
@@ -24,7 +7,7 @@ export class DocumentOwnerService {
      * @param name Owner's name
      */
     async create(name: string): Promise<DocumentOwner> {
-        return prisma.documentOwner.create({
+        return prismaPostgres.documentOwner.create({
             data: { name },
         });
     }
@@ -34,9 +17,8 @@ export class DocumentOwnerService {
      * @param id Owner ID
      */
     async findById(id: string): Promise<DocumentOwner | null> {
-        return prisma.documentOwner.findUnique({
-            where: { id },
-            include, // include related documents
+        return prismaPostgres.documentOwner.findUnique({
+            where: { id_document_owner: id },
         });
     }
 
@@ -44,9 +26,7 @@ export class DocumentOwnerService {
      * Get all DocumentOwners
      */
     async findAll(): Promise<DocumentOwner[]> {
-        return prisma.documentOwner.findMany({
-            include,
-        });
+        return prismaPostgres.documentOwner.findMany();
     }
 
     /**
@@ -55,8 +35,8 @@ export class DocumentOwnerService {
      * @param name New name
      */
     async updateName(id: string, data: Prisma.DocumentOwnerUpdateInput): Promise<DocumentOwner> {
-        return prisma.documentOwner.update({
-            where: { id },
+        return prismaPostgres.documentOwner.update({
+            where: { id_document_owner: id },
             data: { ...data },
         });
     }
@@ -66,8 +46,8 @@ export class DocumentOwnerService {
      * @param id Owner ID
      */
     async delete(id: string): Promise<DocumentOwner> {
-        return prisma.documentOwner.delete({
-            where: { id },
+        return prismaPostgres.documentOwner.delete({
+            where: { id_document_owner: id },
         });
     }
 
@@ -76,10 +56,10 @@ export class DocumentOwnerService {
      * Only adds if table is empty
      */
     async initialize(defaultOwners: string[] = ['SOLUMADA']): Promise<void> {
-        const count = await prisma.documentOwner.count();
+        const count = await prismaPostgres.documentOwner.count();
         if (count === 0) {
             const createData = defaultOwners.map((name) => ({ name }));
-            await prisma.documentOwner.createMany({
+            await prismaPostgres.documentOwner.createMany({
                 data: createData,
             });
             console.log('Default DocumentOwners inserted');
