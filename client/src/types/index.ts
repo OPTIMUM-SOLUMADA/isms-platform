@@ -25,9 +25,8 @@ export type ComplianceClause = {
   clause: string;               // nom ou code de la clause (ex: "A.5.1")
   title: string;                // titre descriptif de la clause
   progress: number;             // 0-100
-  status: "COMPLIANT" | "PARTIALLY_COMPLIANT" | "NON_COMPLIANT" | "NOT_APPLICABLE"; // enum du back
-  priority: "HIGH" | "MEDIUM" | "LOW";  // enum du back
-  documents: number;            // nombre de documents associés
+  status: "COMPLIANT" | "NON_COMPLIANT"; // enum du back
+  document: Document;            // nombre de documents associés
   lastReviewed?: string;        // Date ISO string
   nextReview?: string;          // Date ISO string
   createdAt: string;            // Date ISO string
@@ -163,7 +162,8 @@ export type AuditTargetType =
   | 'DEPARTMENT'
   | 'VERSION'
   | 'REVIEW'
-  | 'APPROVAL';
+  | 'APPROVAL'
+  | 'COMPLIANCE';
 export type AuditStatus = 'SUCCESS' | 'FAILED';
 
 export type AuditTarget = {
@@ -212,6 +212,9 @@ export type AuditEventType =
   | "DEPARTMENT_CREATE"
   | "DEPARTMENT_UPDATE"
   | "DEPARTMENT_DELETE"
+  // Compliance
+  | "COMPLIANCE_CREATED"
+  | "COMPLIANCE_UPDATED"
   // Action
   | "ACCESS_LOG"
   | "EXPORT_LOGS";

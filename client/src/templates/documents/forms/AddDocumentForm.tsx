@@ -40,6 +40,7 @@ import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 import useOwnerStore from "@/stores/owner/userOwnserStore";
 import { MultiSelect } from "@/components/multi-select";
 import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
+import { useISOClauseUIStore } from "@/stores/iso-clause/useISOClauseUIStore";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -129,6 +130,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
     const { data: departmentsRes } = useFetchAllDepartments();
 
+    const { openAdd } =  useISOClauseUIStore()
 
     // const selectedDepartmentId = watch('departmentId');
     // const selectedDepartmentRole = useMemo(() => {
@@ -320,8 +322,9 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       placeholder={t("document.add.form.fields.isoClause.placeholder")}
                       onChange={field.onChange}
                       value={field.value}
-                      addLabel={t("documentType.isoClause.add.label")}
+                      addLabel={t("components.multiselect.isoClause.label")}
                       hasError={!!fieldState.error}
+                      onButtonClick={openAdd}
                     />
                   </FormControl>
                   <FormMessage />

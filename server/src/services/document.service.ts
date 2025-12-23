@@ -123,6 +123,7 @@ export class DocumentService {
             }),
         ]);
     }
+    
     async reLinkDocumentToUsers({
         documentId,
         reviewerIds,
@@ -333,8 +334,6 @@ export class DocumentService {
             case 'BIENNIAL':
                 nextDate.setFullYear(nextDate.getFullYear() + 2);
                 break;
-            case 'AS_NEEDED':
-                return null;
             default:
                 return null;
         }

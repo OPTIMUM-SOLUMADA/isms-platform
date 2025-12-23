@@ -38,7 +38,7 @@ const DepartmentDetailPage = lazy(() => import('@/pages/departments/DepartmentDe
 const ReviewWorkflowPage = lazy(() => import('@/pages/reviews/ReviewWorkflowPage'));
 const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
 const AuditLogPage = lazy(() => import('@/pages/AuditLogPage'));
-const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage1'));
+const ComplianceDashboardPage = lazy(() => import('@/pages/ComplianceDashboardPage'));
 const UserProfilePage = lazy(() => import('@/pages/users/UserProfilePage'));
 
 interface AppRoute {

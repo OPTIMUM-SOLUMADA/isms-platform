@@ -1815,6 +1815,8 @@
             "DEPARTMENT_CREATE": "Département créé",
             "DEPARTMENT_UPDATE": "Département mis à jour",
             "DEPARTMENT_DELETE": "Département supprimé",
+            "COMPLIANCE_CREATED": "Conformité créée",
+            "COMPLIANCE_UPDATED": "Conformité mise à jour",
             "ACCESS_LOG": "Journal d’accès",
             "EXPORT_LOGS": "Journaux exportés"
         },
@@ -1824,7 +1826,8 @@
             "DEPARTMENT": "Départment",
             "REVIEW": "Révision",
             "VERSION": "Version",
-            "APPROVAL": "Approbation"
+            "APPROVAL": "Approbation",
+            "COMPLIANCE": "Conformité"
         },
         "status": {
             "SUCCESS": "Succès",

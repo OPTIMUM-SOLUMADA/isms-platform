@@ -46,6 +46,7 @@ const HoverComponents: Record<AuditTargetType, React.FC<{ id: string }>> = {
     DEPARTMENT: () => <span>Department details not implemented</span>,
     REVIEW: () => <span>Review details not implemented</span>,
     APPROVAL: () => <span>Approval details not implemented</span>,
+    COMPLIANCE: ({ id }) => <DocumentTarget id={id} />,
     // add more types here easily
 };
 

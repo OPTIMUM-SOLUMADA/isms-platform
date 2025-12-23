@@ -33,8 +33,8 @@ export function getNextReviewDate(
             return addYears(base, 1);
         case 'BIENNIAL':
             return addYears(base, 2);
-        case 'AS_NEEDED':
-            return null;
+        // case 'AS_NEEDED':
+        //     return null;
         default:
             return null;
     }
