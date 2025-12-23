@@ -10,11 +10,13 @@ import { getChanges } from '@/utils/change';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import NotificationService from '@/services/notification.service';
 import prisma from '@/database/prisma';
+import { ComplianceService } from '@/services/compliance.service';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
 const approvalService = new DocumentApprovalService();
 const documentService = new DocumentService();
+const complianceService = new ComplianceService();
 
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
@@ -222,6 +224,7 @@ export class DocumentReviewController {
             }
 
             const document = await documentService.getDocumentById(review.document.id!);
+            const getCompliance = await complianceService.getByDocument(review.document.id!);
 
             // 1 - CREATE APPROVAL
             await approvalService.create({
@@ -239,7 +242,12 @@ export class DocumentReviewController {
             // 3 - MARK REVIEW AS COMPLETED
             const type = await service.markAsCompleted(reviewId!);
 
-            // 4 - Audit
+            // 4 - UPDATE COMPLIANCE STATUS 
+            const compliance = await complianceService.update(getCompliance!.id, {
+                status: 'COMPLIANT',
+            });
+
+            // 5 - Audit
             const changes = getChanges(
                 sanitizeDocument(document),
                 sanitizeDocument(updatedDocument),
@@ -257,6 +265,21 @@ export class DocumentReviewController {
                 },
                 status: 'SUCCESS',
             });
+
+            // 6 - Audit compliance update
+            if (compliance) {
+                await req.log({
+                    event: AuditEventType.COMPLIANCE_UPDATE,
+                    status: 'SUCCESS',
+                    details: {
+                        documentTitle: updatedDocument.title,
+                        previousStatus: 'NON_COMPLIANT',
+                        newStatus: 'COMPLIANT',
+                    },
+                    targets: [{ id: compliance.id, type: AuditTargetType.COMPLIANCE }],
+                });
+            }
+
 
             // Notification: Version approved - notify document owner/authors
             if (document?.ownerId) {

@@ -2,18 +2,15 @@ import {
   CheckCircle,
   AlertTriangle,
   Clock,
-  Target,
   Calendar,
   Shield,
   FileText,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WithTitle from "@/templates/layout/WithTitle";
 import { complianceStatusColors } from "@/constants/color";
 import { useFetchCompliance } from "@/hooks/queries/useComplianceQueries";
-import { useFetchISOClauses } from "@/hooks/queries/useISOClauseMutations";
 
 const statusIcons = {
   COMPLIANT: CheckCircle,
@@ -24,20 +21,11 @@ const statusIcons = {
 
 export default function ComplianceDashboard() {
   const { data: clauses = [], isLoading } = useFetchCompliance();
-  const { data: isoclause, isLoading: loadingIso } = useFetchISOClauses()
-
-  console.log("claus", isoclause);
-
 
   // Overview stats
-  const totalClauses = clauses.length;
-  const compliantClauses = clauses.filter(c => c.status === "COMPLIANT").length;
-  const partialClauses = clauses.filter(c => c.status === "PARTIALLY_COMPLIANT").length;
-  const overallCompliance =
-    totalClauses > 0
-      ? Math.round(clauses.reduce((sum, c) => sum + c.progress, 0) / totalClauses)
-      : 0;
 
+      console.log("clauses", clauses);
+      
   return (
     <WithTitle>
       <div className="space-y-6">
@@ -47,59 +35,6 @@ export default function ComplianceDashboard() {
             <h1 className="page-title">Compliance Dashboard</h1>
             <p className="page-description">ISO 27001 compliance overview</p>
           </div>
-        </div>
-
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100">Overall Compliance</p>
-                  <p className="text-3xl font-bold">{overallCompliance}%</p>
-                </div>
-                <Target className="h-12 w-12 text-green-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Compliant Clauses</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {compliantClauses}/{totalClauses}
-                  </p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Partial Compliance</p>
-                  <p className="text-2xl font-bold text-yellow-600">{partialClauses}</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Clauses</p>
-                  <p className="text-2xl font-bold text-blue-600">{totalClauses}</p>
-                </div>
-                <Calendar className="h-8 w-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Clauses List */}
@@ -124,8 +59,6 @@ export default function ComplianceDashboard() {
                           className={`h-5 w-5 ${
                             clause.status === "COMPLIANT"
                               ? "text-green-600"
-                              : clause.status === "PARTIALLY_COMPLIANT"
-                              ? "text-yellow-600"
                               : clause.status === "NON_COMPLIANT"
                               ? "text-red-600"
                               : "text-gray-600"
@@ -133,7 +66,7 @@ export default function ComplianceDashboard() {
                         />
                         <div>
                           <h4 className="font-semibold">
-                            {clause.isoClause.code} - {clause.isoClause.name}
+                            {clause.document.title}
                           </h4>
                           {/* <p className="text-sm text-gray-600">Owner: {clause.owner?.name || "N/A"}</p> */}
                         </div>
@@ -143,36 +76,63 @@ export default function ComplianceDashboard() {
                         <Badge className={complianceStatusColors[clause.status]}>
                           {clause.status.replace("_", " ")}
                         </Badge>
-                        <Badge variant={clause.priority === "HIGH" ? "destructive" : clause.priority === "MEDIUM" ? "default" : "secondary"}>
-                          {clause.priority}
-                        </Badge>
                       </div>
                     </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Progress</span>
-                        <span>{clause.progress}%</span>
-                      </div>
-                      <Progress value={clause.progress} className="h-2" />
-                    </div>
-
+                    <hr />
                       <div className="flex justify-between items-center mt-3 text-sm text-gray-600">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
                             <FileText className="h-4 w-4" />
-                            <span>{clause.documents} documents</span>
+                            <span>{clause.isoClause.code} - {clause.isoClause.name}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
-                            <span>Last reviewed: {new Date(clause.lastReviewed).toLocaleDateString()}</span>
+                            <span>Last reviewed: {clause.lastReviewed ? new Date(clause.lastReviewed).toLocaleDateString() : "N/A"}</span>
                           </div>
                         </div>
-                        <span>Next review: {new Date(clause.nextReview).toLocaleDateString()}</span>
+                        <span>Next review: {clause.nextReview ? new Date(clause.nextReview).toLocaleDateString() : "N/A"}</span>
                       </div>
                 </div>
               );
             })}
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Upcoming Reviews */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Clock className="h-5 w-5 text-blue-600" />
+                  <span>Upcoming Reviews</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* {upcomingReviews.slice(0, 5).map((clause) => {
+                  const daysUntilReview = Math.ceil(
+                    (new Date(clause.nextReview).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                  );
+
+                  return (
+                    <div key={clause.id} className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium text-sm">{clause.clause} - {clause.title}</h4>
+                      <p className="text-xs text-gray-600 mt-1">Owner: {clause.owner}</p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-gray-500">
+                          Due: {new Date(clause.nextReview).toLocaleDateString()}
+                        </span>
+                        <Badge variant={daysUntilReview <= 7 ? 'destructive' : 'secondary'} className="text-xs">
+                          {daysUntilReview} days
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {upcomingReviews.length === 0 && (
+                  <p className="text-center text-gray-500 py-4">No upcoming reviews</p>
+                )} */}
               </CardContent>
             </Card>
           </div>

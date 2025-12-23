@@ -15,6 +15,7 @@ export class ISOClauseController {
                 code,
                 ...(userId && { createdBy: { connect: { id: userId } } }),
             });
+
             // Audit: ISO clause created
             await req.log({
                 event: AuditEventType.DOCUMENT_CREATE,

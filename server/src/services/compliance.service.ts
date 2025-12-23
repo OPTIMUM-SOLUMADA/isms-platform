@@ -9,7 +9,7 @@ export class ComplianceService {
     return prisma.clauseCompliance.findMany({
       include: {
         isoClause: true,
-        owner: true,
+        document: true,
       },
       orderBy: { updatedAt: "desc" }
     });
@@ -21,10 +21,19 @@ export class ComplianceService {
       where: { id },
       include: {
         isoClause: true,
-        owner: true,}
+      }
     });
   }
 
+  // Obtenir une conformité par ID
+  async getByDocument(documentId: string) {
+    return prisma.clauseCompliance.findFirst({
+      where: { documentId: documentId },
+      include: {
+        isoClause: true,
+      }
+    });
+  }
   // Créer une conformité
   async createClause(data: any) {
     return prisma.clauseCompliance.create({
@@ -40,6 +49,8 @@ export class ComplianceService {
   }
   // Mettre à jour une conformité
   async update(id: string, data: any) {
+    console.log(id, data);
+    
     return prisma.clauseCompliance.update({
       where: { id },
       data

@@ -142,6 +142,20 @@ export const auditEventMeta = {
         color: "text-red-700 bg-red-50",
     },
 
+    // 📋 Compliance
+    COMPLIANCE_CREATED: {
+        label: "Compliance Created",
+        labelKey: "auditLog.events.COMPLIANCE_CREATED",
+        icon: FileCheck,
+        color: "text-emerald-600 bg-emerald-50",
+    },
+    COMPLIANCE_UPDATED: {
+        label: "Compliance Updated",
+        labelKey: "auditLog.events.COMPLIANCE_UPDATED",
+        icon: RefreshCcw,
+        color: "text-blue-600 bg-blue-50",
+    },
+
     // ⚙️ Action / System
     ACCESS_LOG: {
         label: "Access Log",

@@ -17,15 +17,16 @@ import { getChanges } from '@/utils/change';
 import NotificationService from '@/services/notification.service';
 import { calculateNextReviewDate } from '@/utils/dateCalculator';
 import prisma from '@/database/prisma';
-// import { ComplianceService } from '@/services/compliance.service';
+import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
     private service: DocumentService;
-    // private complianceService: ComplianceService;
+    private complianceService: ComplianceService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
     private recenltyViewed: RecentlyViewedService;
+
 
     constructor() {
         this.service = new DocumentService();
@@ -33,7 +34,7 @@ export class DocumentController {
         this.versionService = new DocumentVersionService();
         this.reviewService = new DocumentReviewService();
         this.recenltyViewed = new RecentlyViewedService();
-        // this.complianceService = new ComplianceService();
+        this.complianceService = new ComplianceService();
     }
 
     async create(req: Request, res: Response) {
@@ -106,6 +107,14 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
+            const createdCompliance = await this.complianceService.createClause( {
+                documentId: createdDoc.id,
+                isoClauseId: isoClause,
+                status: 'NON_COMPLIANT',
+                nextReview: createdDoc.nextReviewDate
+            });
+            
+
             // Send notifications to assigned users
             const authorIdsList = authors.split(',').filter((id: string) => id);
             const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
@@ -141,6 +150,18 @@ export class DocumentController {
                 targets: [{ id: createdDoc.id, type: 'DOCUMENT' }],
             });
 
+            // Audit compliance creation
+            await req.log({
+                event: AuditEventType.COMPLIANCE_CREATE,
+                status: 'SUCCESS',
+                details: {
+                    documentTitle: title,
+                    complianceStatus: 'NON_COMPLIANT',
+                    nextReview: createdDoc.nextReviewDate,
+                },
+                targets: [{ id: createdCompliance.id, type: 'COMPLIANCE' }],
+            });
+            
             res.status(201).json(createdDoc);
         } catch (err) {
             const fileUrl = req.file ? req.file.filename : null;

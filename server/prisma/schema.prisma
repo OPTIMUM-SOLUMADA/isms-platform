@@ -110,7 +110,6 @@ model User {
   recentlyViews          RecentlyViewedDocument[]
   nonConformity          NonConformity[]
   correctiveAction       CorrectiveAction[]
-  clauseCompliances      ClauseCompliance[]
 
   @@index([email, isActive])
   @@index([role])
@@ -200,7 +199,6 @@ enum ReviewFrequency {
   SEMI_ANNUAL
   YEARLY
   BIENNIAL
-  AS_NEEDED
 }
 
 enum Classification {
@@ -245,6 +243,7 @@ model Document {
   approvals     DocumentApproval[]
   notifications Notification[]
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
+  clauseCompliance ClauseCompliance[]
 
   authors            DocumentAuthor[]         @relation("DocumentAuthorDocument")
   recentlyViews      RecentlyViewedDocument[]
@@ -406,6 +405,12 @@ enum NotificationType {
   VERSION_REJECTED
   // User & invitation notifications
   USER_INVITED
+
+  //Compliance notifications
+  COMPLIANCE_CREATE
+  COMPLIANCE_UPDATE
+  COMPLIANCE_DELETE
+
   // Compliance notifications
   NONCONFORMITY_CREATED
   ACTION_CREATED
@@ -465,6 +470,13 @@ enum AuditEventType {
   DEPARTMENT_CREATE
   DEPARTMENT_UPDATE
   DEPARTMENT_DELETE
+
+  // Compliance Role
+  COMPLIANCE_CREATED
+  COMPLIANCE_UPDATED
+  COMPLIANCE_DELETED
+  NON_CONFORMITY_CREATE
+
   // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux
@@ -482,6 +494,7 @@ enum AuditTargetType {
   VERSION
   REVIEW
   APPROVAL
+  COMPLIANCE
 }
 
 type AuditTarget {
@@ -615,35 +628,43 @@ model CorrectiveAction {
 
 enum ClauseComplianceStatus {
   COMPLIANT
-  PARTIALLY_COMPLIANT
   NON_COMPLIANT
-  NOT_APPLICABLE
 }
-
-enum ClausePriority {
-  HIGH
-  MEDIUM
-  LOW
-}
-
 
 model ClauseCompliance {
   id           String                 @id @default(auto()) @map("_id") @db.ObjectId
-  isoClauseId  String                 @db.ObjectId
-  ownerId      String?                @db.ObjectId
-  status       ClauseComplianceStatus @default(COMPLIANT)
-  priority     ClausePriority         @default(MEDIUM)
-  progress     Int                    @default(0)
-  documents    Int                    @default(0)
+  isoClauseId  String                 @db.ObjectId   // Prisma stocke ObjectId ici
+  documentId   String                 @db.ObjectId
+
+  status       ClauseComplianceStatus @default(NON_COMPLIANT)
+
   lastReviewed DateTime?
   nextReview   DateTime?
+
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
 
-  isoClause ISOClause @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
-  owner     User?      @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  isoClause    ISOClause               @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+  document     Document                @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@map("clause_compliance")
   @@index([isoClauseId])
+  @@index([documentId])
 }
+
+// model ClauseCompliance {
+//   id           String                 @id @default(auto()) @map("_id") @db.ObjectId
+//   isoClauseId  String                 @db.ObjectId
+//   status       ClauseComplianceStatus @default(NON_COMPLIANT)
+//   documents    Int                    @default(0)
+//   lastReviewed DateTime?
+//   nextReview   DateTime?
+//   createdAt    DateTime               @default(now())
+//   updatedAt    DateTime               @updatedAt
+
+//   isoClause ISOClause @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+
+//   @@map("clause_compliance")
+//   @@index([isoClauseId])
+// }
 

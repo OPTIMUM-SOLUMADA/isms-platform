@@ -22,10 +22,10 @@ export function calculateNextReviewDate(frequency: ReviewFrequency): Date {
     case ReviewFrequency.BIENNIAL:
       nextReviewDate.setFullYear(nextReviewDate.getFullYear() + 2);
       break;
-    case ReviewFrequency.AS_NEEDED:
-      // For AS_NEEDED, set to 1 year by default (can be manually changed)
-      nextReviewDate.setFullYear(nextReviewDate.getFullYear() + 1);
-      break;
+    // case ReviewFrequency.AS_NEEDED:
+    //   // For AS_NEEDED, set to 1 year by default (can be manually changed)
+    //   nextReviewDate.setFullYear(nextReviewDate.getFullYear() + 1);
+    //   break;
     default:
       // Default to quarterly if unknown
       nextReviewDate.setMonth(nextReviewDate.getMonth() + 3);

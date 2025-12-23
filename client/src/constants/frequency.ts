@@ -6,7 +6,7 @@ export const Frequencies = {
     SEMI_ANNUAL: 'SEMI_ANNUAL',
     YEARLY: 'YEARLY',
     BIENNIAL: 'BIENNIAL',
-    AS_NEEDED: 'AS_NEEDED',
+    // AS_NEEDED: 'AS_NEEDED',
 } as const;
 
 
@@ -22,5 +22,5 @@ export const FrequenciesUnits = Object.values(Frequencies) as [
     typeof Frequencies.SEMI_ANNUAL,
     typeof Frequencies.YEARLY,
     typeof Frequencies.BIENNIAL,
-    typeof Frequencies.AS_NEEDED
+    // typeof Frequencies.AS_NEEDED
 ];

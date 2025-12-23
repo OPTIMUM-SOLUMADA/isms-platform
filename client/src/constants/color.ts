@@ -7,8 +7,8 @@ export const statusColors = {
 };
 
 export const complianceStatusColors = {
-    compliant: 'bg-green-100 text-green-800',
-    partial: 'bg-yellow-100 text-yellow-800',
+    COMPLIANT: 'bg-green-100 text-green-800',
+    NON_COMPLIANT: 'bg-yellow-100 text-yellow-800',
     'non-compliant': 'bg-red-100 text-red-800',
     'not-started': 'bg-gray-100 text-gray-800'
 };
