@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Files } from "lucide-react";
+import { Files, ChevronLeft, ChevronRight } from "lucide-react";
 import { DataTable } from "@/components/DataTable";
 import type { AuditLog } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,20 +15,30 @@ import { auditEventMeta } from "@/constants/auditevent";
 import { auditStatusColors } from "@/constants/color";
 import AuditDetailsViewer from "./AuditDetailsViewer";
 import { AuditTarget } from "./AuditTarget";
+import { Button } from "@/components/ui/button";
 
 // Table component using the reusable DataTable
 interface TableProps {
     data: AuditLog[];
     onView?: (audit: AuditLog) => void;
     isLoading?: boolean;
+    pagination?: {
+        currentPage: number;
+        totalPages: number;
+        total: number;
+        onPageChange: (page: number) => void;
+    };
 }
 
 const Table = ({
     data = [],
     isLoading = false,
+    pagination,
 }: TableProps) => {
     const { t } = useTranslation();
 
+    console.log("data", data);
+    
     // Define columns for UserTable
     const columns: ColumnDef<AuditLog>[] = useMemo(() => [
         {
@@ -168,25 +178,63 @@ const Table = ({
     ], [t]);
 
     return (
-        <DataTable
-            title={t("Audits list") + " (" + data.length + ")"}
-            columns={columns}
-            data={data}
-            searchableColumnId="name"
-            enableRowSelection={false}
-            isLoading={isLoading}
-            renderNoData={() => (
-                <Card className="shadow-none flex-grow">
-                    <CardContent className="p-12 text-center">
-                        <Files className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t("auditLog.table.empty.title")}</h3>
-                        <p className="text-gray-500 mb-4">{t("auditLog.table.empty.message")}</p>
+        <div className="flex flex-col gap-4 flex-grow">
+            <DataTable
+                title={t("Audits list") + " (" + (pagination?.total || data.length) + ")"}
+                columns={columns}
+                data={data}
+                searchableColumnId="name"
+                enableRowSelection={false}
+                isLoading={isLoading}
+                renderNoData={() => (
+                    <Card className="shadow-none flex-grow">
+                        <CardContent className="p-12 text-center">
+                            <Files className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">{t("auditLog.table.empty.title")}</h3>
+                            <p className="text-gray-500 mb-4">{t("auditLog.table.empty.message")}</p>
+                        </CardContent>
+                    </Card>
+                )}
+                className="flex-grow"
+                showHeader={false}
+            />
+            
+            {pagination && pagination.totalPages > 1 && (
+                <Card>
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-600">
+                                {t("common.pagination.page", { defaultValue: "Page" })} {pagination.currentPage} {t("common.pagination.of", { defaultValue: "of" })} {pagination.totalPages}
+                                {" "}
+                                <span className="text-gray-400">
+                                    ({t("common.pagination.total", { defaultValue: "Total" })}: {pagination.total})
+                                </span>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
+                                    disabled={pagination.currentPage === 1 || isLoading}
+                                >
+                                    <ChevronLeft className="h-4 w-4 mr-1" />
+                                    {t("common.pagination.previous", { defaultValue: "Previous" })}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
+                                    disabled={pagination.currentPage === pagination.totalPages || isLoading}
+                                >
+                                    {t("common.pagination.next", { defaultValue: "Next" })}
+                                    <ChevronRight className="h-4 w-4 ml-1" />
+                                </Button>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             )}
-            className="flex-grow"
-            showHeader={false}
-        />
+        </div>
     );
 }
 

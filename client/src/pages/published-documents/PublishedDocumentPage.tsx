@@ -15,9 +15,9 @@ import {
 import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useTranslation } from 'react-i18next';
 import { Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
+// import { cn } from '@/lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { Skeleton } from '@/components/ui/skeleton';
+// import { Skeleton } from '@/components/ui/skeleton';
 
 const PublishedDocumentPage = () => {
     const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''));
@@ -25,7 +25,7 @@ const PublishedDocumentPage = () => {
     const { clauses } = useISOClause();
     const { data: documents, isLoading, isError, error } = useGetPublishedDocuments();
     // get recently viewed
-    const { data: recenltyViewedDocuments, isLoading: isRecenltyViewedLoading } = useGetRecenltyViewedDocuments();
+    // const { data: recenltyViewedDocuments, isLoading: isRecenltyViewedLoading } = useGetRecenltyViewedDocuments();
 
     const navigate = useNavigate();
 
@@ -49,7 +49,7 @@ const PublishedDocumentPage = () => {
             {/* Recently viewed */}
             <div className="grow flex flex-col gap-10">
 
-                <div className="space-y-3">
+                {/*<div className="space-y-3">
                     <h1 className="font-normal text-xl text-black">
                         {t('publishedDocument.sections.recentlyViewed.title')}
                     </h1>
@@ -75,7 +75,7 @@ const PublishedDocumentPage = () => {
                             </Link>
                         ))}
 
-                        {/* Empty */}
+                        { /* Empty * /}
                         {recenltyViewedDocuments?.length === 0 && (
                             <div className="space-y-3">
                                 <div className="p-4 aspect-video border rounded-md flex items-center justify-center flex-col gap-">
@@ -88,7 +88,7 @@ const PublishedDocumentPage = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </div>*/}
 
                 <div className="space-y-3 grow flex flex-col">
                     <h1 className="font-normal text-xl text-black">

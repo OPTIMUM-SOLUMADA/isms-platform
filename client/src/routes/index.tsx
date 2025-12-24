@@ -181,7 +181,7 @@ const routeConfig: AppRoute[] = [
             // Document Review Approval
             {
                 path: "review-approval/:reviewId",
-                permission: "documents.page.access",
+                permission: "documents.review.access",
                 children: [{ index: true, element: <ReviewApprovalPage /> }],
             },
             // Patch Document Version

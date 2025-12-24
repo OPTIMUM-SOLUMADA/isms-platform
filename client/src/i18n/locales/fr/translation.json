@@ -1815,6 +1815,8 @@
             "DEPARTMENT_CREATE": "Département créé",
             "DEPARTMENT_UPDATE": "Département mis à jour",
             "DEPARTMENT_DELETE": "Département supprimé",
+            "COMPLIANCE_CREATE": "Conformité créée",
+            "COMPLIANCE_UPDATE": "Conformité mise à jour",
             "COMPLIANCE_CREATED": "Conformité créée",
             "COMPLIANCE_UPDATED": "Conformité mise à jour",
             "ACCESS_LOG": "Journal d’accès",

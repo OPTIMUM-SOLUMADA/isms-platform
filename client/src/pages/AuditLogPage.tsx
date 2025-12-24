@@ -26,17 +26,25 @@ import { addMonths, format, subMonths } from 'date-fns';
 import i18n from '@/i18n/config';
 import { useGetUsers } from '@/hooks/queries/useUserMutations';
 import { UserAvatar } from '@/components/user-avatar';
+import { useEffect } from 'react';
 
 export default function AuditLogPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
   const [filterUser, setFilterUser] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(20);
   const now = new Date();
   const [filterDateRange, setFilterDateRange] = useState<{ from: string; to: string } | null>({
     from: format(subMonths(now, 3), "yyyy-MM-dd"), // 3 months ago
     to: format(addMonths(now, 0), "yyyy-MM-dd"),
   });
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterAction, filterUser, filterStatus, filterDateRange]);
 
   const filter = useMemo(() => {
     return {
@@ -44,8 +52,10 @@ export default function AuditLogPage() {
       eventType: filterAction !== 'all' ? filterAction : undefined,
       userId: filterUser !== 'all' ? filterUser : undefined,
       status: filterStatus !== 'all' ? filterStatus : undefined,
+      page: currentPage,
+      limit: limit,
     }
-  }, [filterDateRange, filterAction, filterUser, filterStatus]);
+  }, [filterDateRange, filterAction, filterUser, filterStatus, currentPage, limit]);
 
   const { t } = useTranslation();
   const { data, isLoading } = useFetchAudits(filter);
@@ -56,7 +66,10 @@ export default function AuditLogPage() {
   const filteredAudits = useMemo(() => {
     if (!data) return [];
     if (!searchTerm) return data.data;
-    return data.data.filter((audit) => JSON.stringify(audit.details).toLowerCase().includes(searchTerm.toLowerCase()));
+    const resultat = data.data.filter((audit) => JSON.stringify(audit.details).toLowerCase().includes(searchTerm.toLowerCase()));
+    console.log("data", resultat);
+    
+    return resultat;
   }, [data, searchTerm]);
 
   function handleExport() {
@@ -222,7 +235,16 @@ export default function AuditLogPage() {
           </CardContent>
         </Card>
 
-        <AuditTable data={filteredAudits} isLoading={isLoading} />
+        <AuditTable 
+          data={filteredAudits} 
+          isLoading={isLoading}
+          pagination={{
+            currentPage: data?.page || 1,
+            totalPages: data?.totalPages || 1,
+            total: data?.total || 0,
+            onPageChange: setCurrentPage,
+          }}
+        />
       </div>
     </WithTitle>
   );
