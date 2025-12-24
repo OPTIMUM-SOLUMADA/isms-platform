@@ -38,6 +38,7 @@ import DocumentTypeSelect from "@/templates/document-types/lookup/DocumentTypeSe
 import { Classification, classifications } from "@/constants/classification";
 import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 import useOwnerStore from "@/stores/owner/userOwnserStore";
+import { usePermissions } from "@/hooks/use-permissions";
 import { MultiSelect } from "@/components/multi-select";
 import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
 import { useISOClauseUIStore } from "@/stores/iso-clause/useISOClauseUIStore";
@@ -131,7 +132,9 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const { data: departmentsRes } = useFetchAllDepartments();
 
     const { openAdd } =  useISOClauseUIStore()
-
+    const { hasAccessPermission } = usePermissions();
+    const canManageIsoClauses = hasAccessPermission("iso-clauses.page.access");
+        
     // const selectedDepartmentId = watch('departmentId');
     // const selectedDepartmentRole = useMemo(() => {
     //   return departments.find(role => role.id === selectedDepartmentId);
@@ -324,7 +327,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       value={field.value}
                       addLabel={t("components.multiselect.isoClause.label")}
                       hasError={!!fieldState.error}
-                      onButtonClick={openAdd}
+                      onButtonClick={canManageIsoClauses ? openAdd : undefined}
                     />
                   </FormControl>
                   <FormMessage />

@@ -78,6 +78,8 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "compliance.page.access",
         "audit.page.access",
         "settings.page.access",
+        "departments.page.access",
+        "document-types.page.access",
         "published-document.page.access",
     ],
     [RoleType.REVIEWER]: [
