@@ -50,6 +50,15 @@ export class ISOClauseController {
         }
     }
 
+    async findNotUsed(req: Request, res: Response) {
+        try {
+            const clauses = await service.findNotUsed();            
+            return res.json(clauses);
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
     async findById(req: Request, res: Response) {
         try {
             const clause = await service.findById(req.params.id!);

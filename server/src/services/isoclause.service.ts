@@ -104,6 +104,16 @@ export class ISOClauseService {
         };
     }
 
+    async findNotUsed() {
+        return prisma.iSOClause.findMany({
+            where: {
+                documents: {
+                    none: {},
+                },
+            },
+            include: includes,
+        });
+    }
     async search(query: string) {
         return prisma.iSOClause.findMany({
             where: {

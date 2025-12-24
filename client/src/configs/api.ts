@@ -86,6 +86,7 @@ export const API_CONFIG = {
     ISO_CLAUSES: {
       BASE: "/api/iso-clauses",
       GET: (id: string | number) => `/api/iso-clauses/${id}`,
+      GET_NOT_USED: "/api/iso-clauses/getNotUsed",
       UPDATE: (id: string | number) => `/api/iso-clauses/${id}`,
       DELETE: (id: string | number) => `/api/iso-clauses/${id}`,
       SEARCH: "/api/iso-clauses/search",

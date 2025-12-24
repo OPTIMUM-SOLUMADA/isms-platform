@@ -48,6 +48,13 @@ export const useSearchIsoClauses = () => {
     });
 };
 
+export const useFetchNotUsedISOClauses = () => {
+    return useQuery<ISOClause[], ApiAxiosError>({
+        queryKey: ["isoClauses", "notUsed"],
+        queryFn: async () => (await isoClauseService.getNotUsed()).data,
+        staleTime: 1000 * 30,
+    });
+};
 
 // -----------------------------
 // Get Document Type by ID
