@@ -1,3 +1,4 @@
+import { ComplianceService } from '@/services/compliance.service';
 import { DocumentService } from '@/services/document.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { logger } from '@/utils/logger';
@@ -5,6 +6,7 @@ import { getNextReviewDate, shouldNotifyReview } from '@/utils/review';
 
 const docService = new DocumentService();
 const reviewService = new DocumentReviewService();
+const complianceService = new ComplianceService();
 
 export async function generateDocumentReviewsJob() {
     const now = new Date();
@@ -48,8 +50,13 @@ export async function generateDocumentReviewsJob() {
         }
 
         // Upate document next review date and status
-        await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
+        const docUpdate = await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
 
+        const getCompliance = await complianceService.getByDocument(doc.id);
+        await complianceService.update(getCompliance?.id!, {
+            nextReview: docUpdate.nextReviewDate
+        });
+            
         // Create review
         await reviewService.assignReviewersToDocument({
             documentId: doc.id,
@@ -72,6 +79,7 @@ export async function notifyReviewersJob() {
 
         // Fetch all active reviews
         const reviews = await reviewService.getActiveReviews();
+        
 
         if (!reviews.length) {
             logger.info('[NOTIFY] No active reviews found');

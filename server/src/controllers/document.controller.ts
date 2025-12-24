@@ -105,7 +105,7 @@ export class DocumentController {
                 documentId: createdDoc.id,
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
-            });
+            });            
 
             const createdCompliance = await this.complianceService.createClause( {
                 documentId: createdDoc.id,
@@ -157,7 +157,7 @@ export class DocumentController {
                 details: {
                     documentTitle: title,
                     complianceStatus: 'NON_COMPLIANT',
-                    nextReview: createdDoc.nextReviewDate,
+                    // nextReview: createdDoc.nextReviewDate,
                 },
                 targets: [{ id: createdCompliance.id, type: 'COMPLIANCE' }],
             });

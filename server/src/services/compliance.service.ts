@@ -48,9 +48,7 @@ export class ComplianceService {
     });
   }
   // Mettre à jour une conformité
-  async update(id: string, data: any) {
-    console.log(id, data);
-    
+  async update(id: string, data: any) {    
     return prisma.clauseCompliance.update({
       where: { id },
       data
