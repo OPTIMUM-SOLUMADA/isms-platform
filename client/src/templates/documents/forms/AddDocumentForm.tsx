@@ -132,8 +132,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const { data: departmentsRes } = useFetchAllDepartments();
 
     const { openAdd } =  useISOClauseUIStore()
-    const { hasAccessPermission } = usePermissions();
-    const canManageIsoClauses = hasAccessPermission("iso-clauses.page.access");
         
     // const selectedDepartmentId = watch('departmentId');
     // const selectedDepartmentRole = useMemo(() => {
@@ -327,7 +325,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       value={field.value}
                       addLabel={t("components.multiselect.isoClause.label")}
                       hasError={!!fieldState.error}
-                      onButtonClick={canManageIsoClauses ? openAdd : undefined}
+                      onButtonClick={openAdd}
                     />
                   </FormControl>
                   <FormMessage />
