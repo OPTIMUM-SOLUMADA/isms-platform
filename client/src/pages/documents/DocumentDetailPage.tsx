@@ -16,7 +16,6 @@ import {
   Users,
   Building2,
   BookLock,
-  GitBranch,
   FileStack,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +47,6 @@ import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 import DepartmentRoleHoverCard from "@/templates/departments/hovercard/departmentRoleHoverCard";
-import ChangeLog from "@/templates/documents/tabs/ChangeLog";
 import DocumentVersionHistory from "@/templates/documents/tabs/DocumentVersionHistory";
 
 const tabs = [

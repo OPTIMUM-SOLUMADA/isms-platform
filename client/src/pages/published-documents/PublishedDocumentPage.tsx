@@ -1,6 +1,5 @@
 import SearchInput from '@/components/SearchInput';
-import { useGetPublishedDocuments, useGetRecenltyViewedDocuments } from '@/hooks/queries/useDocumentMutations'
-import { getFileIconByName } from '@/lib/icon';
+import { useGetPublishedDocuments } from '@/hooks/queries/useDocumentMutations'
 import { PublishedDocumentTable } from '@/templates/documents/table/PublishedDocumentTable';
 import WithTitle from '@/templates/layout/WithTitle'
 import { parseAsString, useQueryState } from 'nuqs';
@@ -16,7 +15,7 @@ import { useISOClause } from '@/contexts/ISOClauseContext';
 import { useTranslation } from 'react-i18next';
 import { Filter } from 'lucide-react';
 // import { cn } from '@/lib/utils';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // import { Skeleton } from '@/components/ui/skeleton';
 
 const PublishedDocumentPage = () => {
