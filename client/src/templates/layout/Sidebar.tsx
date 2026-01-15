@@ -11,7 +11,6 @@ import { menuItems, otherMenuItems } from '@/constants/navigation';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
-import { profileMenuItems } from '@/constants/header';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMemo } from 'react';

@@ -59,7 +59,7 @@ export default function PendingReviewsDashboardPage(): JSX.Element {
     return result;
   }, [data, filterDocument, filterStatus]);
 
-  function handleSuccess(reviewId: string) {
+  function handleSuccess() {
     // if (selectedItem?.id === reviewId) {
       setSelectedItem(null);
     // }

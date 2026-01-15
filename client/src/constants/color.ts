@@ -101,4 +101,8 @@ export const auditEventColors: Record<AuditEventType, string> = {
   // ⚙️ Action / System
   ACCESS_LOG: "bg-slate-500",
   EXPORT_LOGS: "bg-purple-500",
+
+  // 📋 Compliance
+  COMPLIANCE_CREATED: "bg-green-500",
+  COMPLIANCE_UPDATED: "bg-blue-500",
 }
