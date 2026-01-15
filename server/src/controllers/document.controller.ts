@@ -14,6 +14,7 @@ import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
+// eslint-disable-next-line import/no-named-as-default
 import NotificationService from '@/services/notification.service';
 import { calculateNextReviewDate } from '@/utils/dateCalculator';
 import prisma from '@/database/prisma';
@@ -26,7 +27,6 @@ export class DocumentController {
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
     private recenltyViewed: RecentlyViewedService;
-
 
     constructor() {
         this.service = new DocumentService();
@@ -105,15 +105,42 @@ export class DocumentController {
                 documentId: createdDoc.id,
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
-            });            
+            });
 
-            const createdCompliance = await this.complianceService.createClause( {
+            // Get the updated document with authors and reviewers
+            const documentWithUsers = await this.service.getDocumentById(createdDoc.id);
+
+            // Grant Google Drive permissions to authors and reviewers
+            if (documentWithUsers) {
+                const authorsEmail = documentWithUsers.authors
+                    .map((a: any) => a.user.email)
+                    .filter(Boolean);
+                const reviewersEmail = documentWithUsers.reviewers
+                    .map((r: any) => r.user.email)
+                    .filter(Boolean);
+
+                // Grant permissions to authors (writer) and reviewers (commenter)
+                if (authorsEmail.length > 0) {
+                    await googleDriveService.grantPermissions(result.id, authorsEmail, 'writer');
+                }
+                if (reviewersEmail.length > 0) {
+                    await googleDriveService.grantPermissions(
+                        result.id,
+                        reviewersEmail,
+                        'commenter',
+                    );
+                }
+
+                // Make file viewable with link to enable preview in emails/embeds
+                await googleDriveService.makeFileViewableWithLink(result.id);
+            }
+
+            const createdCompliance = await this.complianceService.createClause({
                 documentId: createdDoc.id,
                 isoClauseId: isoClause,
                 status: 'NON_COMPLIANT',
-                nextReview: createdDoc.nextReviewDate
+                nextReview: createdDoc.nextReviewDate,
             });
-            
 
             // Send notifications to assigned users
             const authorIdsList = authors.split(',').filter((id: string) => id);
@@ -161,7 +188,7 @@ export class DocumentController {
                 },
                 targets: [{ id: createdCompliance.id, type: 'COMPLIANCE' }],
             });
-            
+
             res.status(201).json(createdDoc);
         } catch (err) {
             const fileUrl = req.file ? req.file.filename : null;
@@ -282,6 +309,43 @@ export class DocumentController {
                 reviewerIds: reviewers.split(','),
                 authors: authors.split(','),
             });
+
+            // Get the updated document with authors and reviewers to grant permissions
+            const documentWithUsers = await this.service.getDocumentById(updatedDocument.id);
+
+            // Grant Google Drive permissions to authors and reviewers for the current version
+            if (documentWithUsers) {
+                const currentVersion = documentWithUsers.versions.find((v) => v.isCurrent);
+                if (currentVersion?.googleDriveFileId) {
+                    const authorsEmail = documentWithUsers.authors
+                        .map((a: any) => a.user.email)
+                        .filter(Boolean);
+                    const reviewersEmail = documentWithUsers.reviewers
+                        .map((r: any) => r.user.email)
+                        .filter(Boolean);
+
+                    // Grant permissions to authors (writer) and reviewers (commenter)
+                    if (authorsEmail.length > 0) {
+                        await googleDriveService.grantPermissions(
+                            currentVersion.googleDriveFileId,
+                            authorsEmail,
+                            'writer',
+                        );
+                    }
+                    if (reviewersEmail.length > 0) {
+                        await googleDriveService.grantPermissions(
+                            currentVersion.googleDriveFileId,
+                            reviewersEmail,
+                            'commenter',
+                        );
+                    }
+
+                    // Make file viewable with link to enable preview in emails/embeds
+                    await googleDriveService.makeFileViewableWithLink(
+                        currentVersion.googleDriveFileId,
+                    );
+                }
+            }
 
             // Reset ALL existing reviews when document is updated (decision -> null = IN_REVIEW state)
             try {
@@ -620,6 +684,9 @@ export class DocumentController {
                 'commenter',
             );
 
+            // Make draft viewable with link to enable preview in emails/embeds
+            await gdService.makeFileViewableWithLink(draft.id!);
+
             const updatedVersion = await this.versionService.update(version.id, {
                 draftUrl: draft.webViewLink!,
                 draftId: draft.id!,
@@ -660,6 +727,45 @@ export class DocumentController {
             res.json(document);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    /**
+     * Get a user-specific Google Drive link for a document
+     * This ensures the document opens in the user's Google account (the one they're logged in with on the site)
+     */
+    async getUserSpecificDriveLink(req: Request, res: Response) {
+        try {
+            const { documentId } = req.params;
+            const { userEmail } = req.query;
+
+            if (!userEmail || typeof userEmail !== 'string') {
+                return res.status(400).json({ error: 'User email is required' });
+            }
+
+            const document = await this.service.getDocumentById(documentId!);
+            if (!document) {
+                return res.status(404).json({ error: 'Document not found' });
+            }
+
+            const currentVersion = document.versions.find((v) => v.isCurrent);
+            if (!currentVersion?.googleDriveFileId) {
+                return res.status(404).json({ error: 'Document version not found' });
+            }
+
+            const googleDriveService = useGoogleDriveService(req);
+            const userSpecificLink = googleDriveService.getWebViewLinkForUser(
+                currentVersion.googleDriveFileId,
+                userEmail,
+            );
+
+            return res.json({
+                link: userSpecificLink,
+                fileId: currentVersion.googleDriveFileId,
+                userEmail,
+            });
+        } catch (err) {
+            return res.status(500).json({ error: (err as Error).message });
         }
     }
 }

@@ -51,6 +51,8 @@ export const API_CONFIG = {
         `/api/documents/recently-viewed/add/${userId}/${documentId}`,
       GET_RECENTLY_VIEWED: (userId: string | number) =>
         `/api/documents/recently-viewed/${userId}`,
+      GET_USER_SPECIFIC_DRIVE_LINK: (documentId: string | number) =>
+        `/api/documents/drive-link/${documentId}`,
     },
     REVIEWS: {
       BASE: "/api/document-reviews",
