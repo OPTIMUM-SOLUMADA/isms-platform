@@ -1,6 +1,5 @@
 import { SelectWithButton } from '@/components/SelectWithButton'
-import { useSearchIsoClauses } from '@/hooks/queries/useISOClauseMutations';
-import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
+import { useFetchNotUsedISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import { ISOClause } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -22,8 +21,7 @@ const ISOSelectLookup = ({
     onButtonClick
 }: Props) => {
 
-    const { data: searchResults = [] } = useSearchIsoClauses();
-    const { setQuery } = useISOClauseStore();
+    const { data: searchResults = [] } = useFetchNotUsedISOClauses();
 
     const [selected, setSelected] = useState<ISOClause | null>(null);
 
@@ -35,10 +33,6 @@ const ISOSelectLookup = ({
             ? searchResults
             : [selected, ...(searchResults ?? [])];
     }, [searchResults, selected]);
-
-    useEffect(() => {
-        return () => setQuery('');
-    }, [setQuery]);
 
 
     // If the prop value changes (edit mode), update selected
@@ -65,7 +59,6 @@ const ISOSelectLookup = ({
             addLabel={addLabel}
             hasError={hasError}
             onButtonClick={onButtonClick}
-            onChangeSearch={setQuery}
         />
     )
 }

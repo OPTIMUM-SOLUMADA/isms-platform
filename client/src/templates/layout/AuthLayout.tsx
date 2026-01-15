@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
     const { t } = useTranslation();
+    const fullYear = new Date().getFullYear();
     return (
         <div className="min-h-screen flex flex-col w-full">
             <div className="w-full p-6 flex items-center justify-between">
@@ -36,7 +37,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
 
             {/* Footer */}
             <div className="text-center py-8 text-sm text-gray-500">
-                <p>{t('authentification.copyright')}</p>
+                <p>© {fullYear} {t('authentification.copyright')}</p>
             </div>
         </div>
     );

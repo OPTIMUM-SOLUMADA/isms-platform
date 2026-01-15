@@ -14,6 +14,8 @@ const validNotificationTypes = [
     'USER_INVITED',
     'NONCONFORMITY_CREATED',
     'ACTION_CREATED',
+    'COMPLIANCE_CREATED',
+    'COMPLIANCE_UPDATED',
 ];
 
 export const notificationListSchema = Joi.object({

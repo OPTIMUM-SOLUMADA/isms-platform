@@ -22,10 +22,7 @@ const statusIcons = {
 export default function ComplianceDashboard() {
   const { data: clauses = [], isLoading } = useFetchCompliance();
 
-  // Overview stats
-
-      console.log("clauses", clauses);
-      
+  // Overview stats      
   return (
     <WithTitle>
       <div className="space-y-6">

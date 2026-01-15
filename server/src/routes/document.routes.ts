@@ -43,5 +43,11 @@ router.post(
     '/recently-viewed/add/:userId/:documentId',
     controller.addDocumentToRecentView.bind(controller),
 );
+// Get user-specific Google Drive link
+router.get(
+    '/drive-link/:documentId',
+    googleAuthMiddleware,
+    controller.getUserSpecificDriveLink.bind(controller),
+);
 
 export default router;

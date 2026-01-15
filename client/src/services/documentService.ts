@@ -33,4 +33,8 @@ export const documentService = {
     getPublished: async (userId: string) => axios.get(docApi.GET_PUBLISHED(userId)),
     addToRecenlyViewed: async (userId: string, documentId: string) => axios.post(docApi.ADD_TO_RECENTLY_VIEWED(userId, documentId)),
     getRecenlyViewed: async (userId: string) => axios.get(docApi.GET_RECENTLY_VIEWED(userId)),
+    getUserSpecificDriveLink: async (documentId: string, userEmail: string) => 
+        axios.get(docApi.GET_USER_SPECIFIC_DRIVE_LINK(documentId), {
+            params: { userEmail }
+        }),
 };

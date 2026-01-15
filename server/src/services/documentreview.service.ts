@@ -220,19 +220,21 @@ export class DocumentReviewService {
     }
 
     async findPendingReviews(userId?: string): Promise<DocumentReview[]> {
+        console.log("yser", userId);
+        
         return prisma.documentReview.findMany({
             where: {
                 decision: { isSet: true },
                 isCompleted: false,
-                ...(userId && {
-                    document: {
-                        authors: {
-                            some: {
-                                userId,
-                            },
-                        },
-                    },
-                }),
+                // ...(userId && {
+                //     document: {
+                //         authors: {
+                //             some: {
+                //                 userId,
+                //             },
+                //         },
+                //     },
+                // }),
             },
             include: {
                 document: {

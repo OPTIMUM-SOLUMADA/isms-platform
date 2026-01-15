@@ -160,9 +160,7 @@ const Table = ({
             header: t("user.table.columns.status"),
             size: 100,
             cell: ({ row }) => {
-                const user = row.original;
-                console.log('user', user.lastLogin);
-                
+                const user = row.original;                
                 if(!user.lastLogin || currentUser.id === user.id) {
                     return
                 }

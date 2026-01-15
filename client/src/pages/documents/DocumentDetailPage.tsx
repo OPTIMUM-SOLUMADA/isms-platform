@@ -62,14 +62,14 @@ const tabs = [
       return <DocumentPreview version={currentVersion} mode="view" />
     }
   },
-  {
-    id: "change-log",
-    label: "document.view.tabs.changeLog.label",
-    icon: Clock,
-    content: (document: Document) => {
-      return <ChangeLog document={document} />
-    }
-  },
+  // {
+  //   id: "change-log",
+  //   label: "document.view.tabs.changeLog.label",
+  //   icon: Clock,
+  //   content: (document: Document) => {
+  //     return <ChangeLog document={document} />
+  //   }
+  // },
   {
     id: "version-history",
     label: "document.view.tabs.versionsHistory.label",
@@ -78,14 +78,14 @@ const tabs = [
       return <DocumentVersionHistory document={document} />
     }
   },
-  {
-    id: "reviews-log",
-    label: "document.view.tabs.reviewsLog.label",
-    icon: GitBranch,
-    content: (document: Document) => {
-      return <ChangeLog document={document} />
-    }
-  },
+  // {
+  //   id: "reviews-log",
+  //   label: "document.view.tabs.reviewsLog.label",
+  //   icon: GitBranch,
+  //   content: (document: Document) => {
+  //     return <ChangeLog document={document} />
+  //   }
+  // },
 ];
 
 const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {

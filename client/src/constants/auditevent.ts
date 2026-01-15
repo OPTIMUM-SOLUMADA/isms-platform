@@ -143,15 +143,15 @@ export const auditEventMeta = {
     },
 
     // 📋 Compliance
-    COMPLIANCE_CREATED: {
+    COMPLIANCE_CREATE: {
         label: "Compliance Created",
-        labelKey: "auditLog.events.COMPLIANCE_CREATED",
+        labelKey: "auditLog.events.COMPLIANCE_CREATE",
         icon: FileCheck,
         color: "text-emerald-600 bg-emerald-50",
     },
-    COMPLIANCE_UPDATED: {
+    COMPLIANCE_UPDATE: {
         label: "Compliance Updated",
-        labelKey: "auditLog.events.COMPLIANCE_UPDATED",
+        labelKey: "auditLog.events.COMPLIANCE_UPDATE",
         icon: RefreshCcw,
         color: "text-blue-600 bg-blue-50",
     },

@@ -120,6 +120,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const {
       handleSubmit,
       formState: { isSubmitting },
+      watch,
     } = form;
 
     // expose resetForm method
@@ -129,9 +130,21 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     }));
 
     const { data: departmentsRes } = useFetchAllDepartments();
+    const { openAdd } =  useISOClauseUIStore();
 
-    const { openAdd } =  useISOClauseUIStore()
+    // Surveiller les auteurs et reviewers sélectionnés
+    const selectedAuthors = watch("authors");
+    const selectedReviewers = watch("reviewers");
 
+    // Filtrer les utilisateurs pour exclure ceux qui sont déjà sélectionnés
+    const availableUsersForAuthors = users.filter(
+      user => user.role !== RoleType.VIEWER && !selectedReviewers?.includes(user.id)
+    );
+    
+    const availableUsersForReviewers = users.filter(
+      user => user.role !== RoleType.VIEWER && !selectedAuthors?.includes(user.id)
+    );
+        
     // const selectedDepartmentId = watch('departmentId');
     // const selectedDepartmentRole = useMemo(() => {
     //   return departments.find(role => role.id === selectedDepartmentId);
@@ -366,7 +379,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
-                      data={users.filter(user => user.role !== RoleType.VIEWER)}
+                      data={availableUsersForAuthors}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -420,7 +433,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
-                      data={users.filter(user => user.role !== RoleType.VIEWER)}
+                      data={availableUsersForReviewers}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
