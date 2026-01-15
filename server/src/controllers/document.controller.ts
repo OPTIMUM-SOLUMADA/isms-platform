@@ -152,7 +152,7 @@ export class DocumentController {
 
             // Audit compliance creation
             await req.log({
-                event: AuditEventType.COMPLIANCE_CREATE,
+                event: AuditEventType.COMPLIANCE_CREATED,
                 status: 'SUCCESS',
                 details: {
                     documentTitle: title,

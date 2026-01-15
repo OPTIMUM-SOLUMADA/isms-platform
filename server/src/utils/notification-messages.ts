@@ -39,6 +39,14 @@ export function getNotificationTemplate(
                     : 'Une revue a été complétée',
             };
 
+        case NotificationType.DOCUMENT_REVIEW_REMINDER:
+            return {
+                title: 'Rappel de révision de document',
+                message: documentTitle
+                    ? `Le document "${documentTitle}" doit être révisé demain. Le document a été dépublié et son statut changé en "En révision".`
+                    : 'Un document doit être révisé demain',
+            };
+
         // Document notifications
         case NotificationType.DOCUMENT_UPDATED:
             return {

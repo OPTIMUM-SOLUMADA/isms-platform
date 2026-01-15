@@ -24,7 +24,17 @@ export default function DocumentPreview({
 
   const replacer = modeToUrl[mode];
   const url = mode === 'edit' ? version.draftUrl : version.fileUrl;
-  const fileUrl = useMemo(() => (url || "").replace('/edit?', replacer), [replacer, url]);
+  const fileUrl = useMemo(() => {
+    if (!url) return "";
+    // Si l'URL contient déjà /preview ou /view, l'utiliser telle quelle
+    if (url.includes('/preview') || url.includes('/view')) {
+      return url;
+    }
+    // Sinon, faire le remplacement pour les anciennes URLs
+    return url.replace('/edit?', replacer);
+  }, [replacer, url]);
+
+  console.log('DocumentPreview:', { mode, url, fileUrl, version });
 
   return (
     <div className="relative w-full h-full flex flex-col grow">

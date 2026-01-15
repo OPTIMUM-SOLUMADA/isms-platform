@@ -392,6 +392,7 @@ enum NotificationType {
   REVIEW_NEEDED
   REVIEW_OVERDUE
   REVIEW_COMPLETED
+  DOCUMENT_REVIEW_REMINDER
   // Document notifications
   DOCUMENT_CREATED
   DOCUMENT_UPDATED
@@ -477,6 +478,8 @@ enum AuditEventType {
   COMPLIANCE_DELETED
   NON_CONFORMITY_CREATE
 
+  COMPLIANCE_CREATE
+  COMPLIANCE_UPDATE
   // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux

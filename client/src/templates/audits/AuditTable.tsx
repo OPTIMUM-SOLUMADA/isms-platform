@@ -36,8 +36,6 @@ const Table = ({
     pagination,
 }: TableProps) => {
     const { t } = useTranslation();
-
-    console.log("data", data);
     
     // Define columns for UserTable
     const columns: ColumnDef<AuditLog>[] = useMemo(() => [

@@ -269,7 +269,7 @@ export class DocumentReviewController {
             // 6 - Audit compliance update
             if (compliance) {
                 await req.log({
-                    event: AuditEventType.COMPLIANCE_UPDATE,
+                    event: AuditEventType.COMPLIANCE_UPDATED,
                     status: 'SUCCESS',
                     details: {
                         documentTitle: updatedDocument.title,
