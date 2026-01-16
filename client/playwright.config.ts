@@ -15,12 +15,14 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30 * 1000,
   use: {
-    baseURL: 'https://isms-platform-a2dt.onrender.com',
+    // baseURL: 'https://isms-platform-a2dt.onrender.com',
+    baseURL: 'http://localhost:5173',
     headless: true
   },
   webServer: {
     command: 'npm run dev',
-    url: 'https://isms-platform-a2dt.onrender.com',
+    // url: 'https://isms-platform-a2dt.onrender.com',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI
   }
 
