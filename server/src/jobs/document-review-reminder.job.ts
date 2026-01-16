@@ -231,7 +231,7 @@ async function sendEmailNotification(
 ): Promise<void> {
     const subject = `Révision requise : ${document.title}`;
     
-    const loginUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const loginUrl = process.env.CLIENT_URL || 'https://isms-platform-a2dt.onrender.com';
     
     const htmlContent = getDocumentReviewReminderEmailTemplate({
         recipientName: recipient.name,
