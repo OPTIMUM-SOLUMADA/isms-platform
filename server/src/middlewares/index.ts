@@ -2,7 +2,6 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import { env } from '@/configs/env';
 import { sessionMiddleware } from '@/configs/session.config';
 import { auditLogMiddleware } from '@/middlewares/auditlog.middleware';
 import { PUBLIC_PATH, VIEWS_PATH } from '@/configs/public';
