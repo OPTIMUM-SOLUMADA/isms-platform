@@ -17,7 +17,7 @@ export class ISOClauseController {
             });
 
             // Audit: ISO clause created
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_CREATE,
                 targets: [{ id: clause.id, type: 'DOCUMENT' }],
                 details: { resource: 'ISO_CLAUSE', code: clause.code, name: clause.name, description: clause.description },
@@ -79,7 +79,7 @@ export class ISOClauseController {
                 code,
             });
             // Audit: ISO clause updated
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_UPDATE,
                 targets: [{ id: clause.id, type: 'DOCUMENT' }],
                 details: { resource: 'ISO_CLAUSE', ...(getChanges(before, clause) || {}) },
@@ -105,7 +105,7 @@ export class ISOClauseController {
             await service.delete(req.params.id!);
             // Audit: ISO clause deleted
             if (clause) {
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DOCUMENT_DELETE,
                     targets: [{ id: clause.id, type: 'DOCUMENT' }],
                     details: { resource: 'ISO_CLAUSE', code: clause.code, name: clause.name },

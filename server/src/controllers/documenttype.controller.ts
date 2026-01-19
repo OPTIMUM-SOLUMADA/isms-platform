@@ -15,7 +15,7 @@ export class DocumentTypeController {
                 ...(userId && { createdBy: { connect: { id: userId } } }),
             });
             // Audit: document type created
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DOCUMENT_TYPE_CREATE,
                     targets: [{ id: clause.id, type: 'DOCUMENT' }],
                     details: { resource: 'DOCUMENT_TYPE', name: clause.name, description: clause.description },
@@ -72,7 +72,7 @@ export class DocumentTypeController {
             if (!type) return res.status(404).json({ error: 'Type not found' });
 
             // Audit: document type updated
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DOCUMENT_TYPE_UPDATE,
                     targets: [{ id: type.id, type: 'DOCUMENT' }],
                     details: { resource: 'DOCUMENT_TYPE', ...(getChanges(before, type) || {}) },
@@ -99,7 +99,7 @@ export class DocumentTypeController {
             if (!deletedDocumentType) return res.status(404).json({ error: 'Type not found' });
 
             // Audit: document type deleted
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DOCUMENT_TYPE_DELETE,
                     targets: [{ id: deletedDocumentType.id, type: 'DOCUMENT' }],
                     details: { resource: 'DOCUMENT_TYPE', name: deletedDocumentType.name, description: deletedDocumentType.description },

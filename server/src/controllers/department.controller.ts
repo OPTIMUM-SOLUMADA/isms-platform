@@ -18,7 +18,7 @@ export class DepartmentController {
                 ...(userId && { createdBy: { connect: { id: userId } } }),
             });
             // Audit
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DEPARTMENT_CREATE,
                 targets: [{ id: department.id, type: 'DEPARTMENT' }],
                 details: { name: department.name, description: department.description },
@@ -63,7 +63,7 @@ export class DepartmentController {
             });
 
             // Audit: record changes
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DEPARTMENT_UPDATE,
                 targets: [{ id: updated.id, type: 'DEPARTMENT' }],
                 details: { ...(getChanges(before, updated) || {}) },
@@ -91,7 +91,7 @@ export class DepartmentController {
 
             // Audit
             if (dept) {
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DEPARTMENT_DELETE,
                     targets: [{ id: dept.id, type: 'DEPARTMENT' }],
                     details: { name: dept.name, description: dept.description },
@@ -176,7 +176,7 @@ export class DepartmentController {
                 department: { connect: { id: req.params.id! } },
             });
             // Audit: adding a role to a department
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DEPARTMENT_UPDATE,
                 targets: [{ id: req.params.id!, type: 'DEPARTMENT' }],
                 details: { action: 'ADD_ROLE', role: { id: department.id, name: department.name, description: department.description } },
@@ -206,7 +206,7 @@ export class DepartmentController {
             const department = await serviceRole.updateRoles(req.params.id!, roles);
 
             // Audit: updating roles for department
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DEPARTMENT_UPDATE,
                 targets: [{ id: req.params.id!, type: 'DEPARTMENT' }],
                 details: { action: 'UPDATE_ROLES', before: before.departmentRoles, after: department },
@@ -228,7 +228,7 @@ export class DepartmentController {
 
             // Audit: remove role
             if (department) {
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DEPARTMENT_UPDATE,
                     targets: [{ id: department.departmentId, type: 'DEPARTMENT' }],
                     details: { action: 'REMOVE_ROLE', role: { id: department.id, name: department.name } },

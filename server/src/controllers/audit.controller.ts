@@ -67,7 +67,7 @@ export class AuditController {
             });
 
             // Audit
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.EXPORT_LOGS,
                 details: {
                     from: format(startOfDay(now), 'dd-MM-yyyy'),

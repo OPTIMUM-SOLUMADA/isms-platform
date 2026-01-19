@@ -99,7 +99,7 @@ export class DocumentReviewController {
             });
 
             // Audit for decision made
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_REVIEW_SUBMITTED,
                 targets: [
                     { type: AuditTargetType.REVIEW, id: reviewId! },
@@ -116,12 +116,17 @@ export class DocumentReviewController {
                     where: { id: review.assignedById },
                 });
 
+                // Get the current user's name
+                const currentUser = req.user?.id ? await prisma.user.findUnique({
+                    where: { id: req.user.id },
+                }) : null;
+
                 if (assignedByUser) {
                     await NotificationService.create({
                         user: { connect: { id: review.assignedById } },
                         type: 'REVIEW_COMPLETED',
                         title: `Revue complétée : ${review.document.title}`,
-                        message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
+                        message: `La revue pour "${review.document.title}" a été complétée par ${currentUser?.name || 'un utilisateur'}.`,
                         document: { connect: { id: review.documentId } },
                     } as any);
                 }
@@ -253,7 +258,7 @@ export class DocumentReviewController {
                 sanitizeDocument(updatedDocument),
             );
 
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_VERSION_APPROVED,
                 targets: [
                     { type: AuditTargetType.REVIEW, id: reviewId! },
@@ -268,7 +273,7 @@ export class DocumentReviewController {
 
             // 6 - Audit compliance update
             if (compliance) {
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.COMPLIANCE_UPDATED,
                     status: 'SUCCESS',
                     details: {
@@ -473,7 +478,7 @@ export class DocumentReviewController {
             await documentService.update(data.documentId, { status: 'IN_REVIEW' });
 
             // 10 - Audit log
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_VERSION_CREATED,
                 targets: [
                     { type: AuditTargetType.REVIEW, id: id! },

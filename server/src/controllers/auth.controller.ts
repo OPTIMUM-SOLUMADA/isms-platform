@@ -23,7 +23,7 @@ export class AuthController {
             const user = await authService.login(email, password);
             if (!user) {
                 // Audit log for login failure
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.AUTH_LOGIN_ATTEMPT,
                     details: {
                         email,
@@ -41,7 +41,7 @@ export class AuthController {
 
             if (!user.isActive) {
                 // Audit log for login failure when user is inactive
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.AUTH_LOGIN_ATTEMPT,
                     details: {
                         email,
@@ -63,7 +63,7 @@ export class AuthController {
 
             req.user = user;
             // Audit log for login
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.AUTH_LOGIN,
                 details: {
                     email: user.email,
@@ -177,7 +177,7 @@ export class AuthController {
         }
 
         // Audit log logout
-        await req.log({
+        await req.log?.({
             event: AuditEventType.AUTH_LOGOUT,
             details: {
                 email: user.email,
