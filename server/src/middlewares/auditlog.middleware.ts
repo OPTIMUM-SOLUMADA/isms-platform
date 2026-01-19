@@ -1,10 +1,11 @@
 import { AuditService } from '@/services/audit.service';
 import { Request, Response, NextFunction } from 'express';
+import { RoleType } from '@/types/roles';
 
 // Extend Express Request type for TypeScript
 declare module 'express-serve-static-core' {
   interface Request {
-    user?: { id: string }; // or number, depending on your user model
+    user?: { id: string; role?: RoleType }; // or number, depending on your user model
     log?: (data: {
       event: string;
       details?: any;

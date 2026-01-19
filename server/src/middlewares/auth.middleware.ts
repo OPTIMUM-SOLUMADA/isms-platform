@@ -1,4 +1,5 @@
 import { JwtService } from '@/services/jwt.service';
+import { RoleType } from '@/types/roles';
 import { Request, Response, NextFunction } from 'express';
 import { TokenExpiredError } from 'jsonwebtoken';
 
@@ -12,7 +13,10 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
     try {
         const payload = jwtService.verifyToken(token);
-        req.user = payload.user;
+        req.user = {
+            id: payload.user.id,
+            role: payload.user.role as RoleType | undefined
+        };
 
         return next();
     } catch (error) {

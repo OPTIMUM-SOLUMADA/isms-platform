@@ -9,6 +9,7 @@ import { hashPassword } from '@/utils/password';
 import jwt from 'jsonwebtoken';
 import { AuditEventType, AuditTargetType } from '@prisma/client';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { RoleType } from '@/types/roles';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -61,7 +62,7 @@ export class AuthController {
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-            req.user = user;
+            req.user = { id: user.id, role: user.role as RoleType | undefined };
             // Audit log for login
             await req.log?.({
                 event: AuditEventType.AUTH_LOGIN,

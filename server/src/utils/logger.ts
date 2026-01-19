@@ -3,17 +3,16 @@ import pino from 'pino';
 
 const isDev = env.NODE_ENV === 'development';
 
-export const logger = isDev
-    ? pino(
-          pino.transport({
+export const logger = pino({
+    level: isDev ? 'debug' : 'info',
+    transport: isDev
+        ? {
               target: 'pino-pretty',
               options: {
                   colorize: true,
                   translateTime: 'HH:MM:ss',
                   ignore: 'pid,hostname',
               },
-          }),
-      )
-    : pino({
-          level: 'info',
-      });
+          }
+        : undefined,
+});
