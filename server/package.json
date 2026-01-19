@@ -36,9 +36,7 @@
     "puppeteer": "^24.27.0",
     "tsconfig-paths": "^4.2.0",
     "zod": "^4.0.17",
-    "ts-node": "^10.9.2"
-  },
-  "devDependencies": {
+    "ts-node": "^10.9.2",
     "@types/body-parser": "^1.19.6",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -51,7 +49,9 @@
     "@types/mime-types": "^3.0.1",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.10.9",
-    "@types/nodemailer": "^6.4.21",
+    "@types/nodemailer": "^6.4.21"
+  },
+  "devDependencies": {
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
