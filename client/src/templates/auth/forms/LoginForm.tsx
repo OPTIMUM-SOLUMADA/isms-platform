@@ -39,8 +39,10 @@ export default function LoginForm({
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: "njatotianafiononana@gmail.com",
-            password: "Nj@to0012",
+            email: "",
+            password: "",
+            // email: "njatotianafiononana@gmail.com",
+            // password: "Nj@to0012",
             rememberMe: false
         },
         reValidateMode: "onChange"
