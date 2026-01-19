@@ -9,6 +9,7 @@ import { hashPassword } from '@/utils/password';
 import jwt from 'jsonwebtoken';
 import { AuditEventType, AuditTargetType } from '@prisma/client';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { RoleType } from '@/types/roles';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -23,7 +24,7 @@ export class AuthController {
             const user = await authService.login(email, password);
             if (!user) {
                 // Audit log for login failure
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.AUTH_LOGIN_ATTEMPT,
                     details: {
                         email,
@@ -41,7 +42,7 @@ export class AuthController {
 
             if (!user.isActive) {
                 // Audit log for login failure when user is inactive
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.AUTH_LOGIN_ATTEMPT,
                     details: {
                         email,
@@ -61,9 +62,9 @@ export class AuthController {
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-            req.user = user;
+            req.user = { id: user.id, role: user.role as RoleType | undefined };
             // Audit log for login
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.AUTH_LOGIN,
                 details: {
                     email: user.email,
@@ -177,7 +178,7 @@ export class AuthController {
         }
 
         // Audit log logout
-        await req.log({
+        await req.log?.({
             event: AuditEventType.AUTH_LOGOUT,
             details: {
                 email: user.email,

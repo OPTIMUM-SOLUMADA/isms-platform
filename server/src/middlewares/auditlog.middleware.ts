@@ -1,5 +1,19 @@
 import { AuditService } from '@/services/audit.service';
 import { Request, Response, NextFunction } from 'express';
+import { RoleType } from '@/types/roles';
+
+// Extend Express Request type for TypeScript
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: { id: string; role?: RoleType }; // or number, depending on your user model
+    log?: (data: {
+      event: string;
+      details?: any;
+      targets?: any;
+      status?: string;
+    }) => Promise<void>;
+  }
+}
 
 export const auditLogMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // get the IP and user agent of the request, if available

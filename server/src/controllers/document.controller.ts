@@ -168,7 +168,7 @@ export class DocumentController {
 
             const document = await this.service.getDocumentById(createdDoc.id);
             // Audit
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_CREATE,
                 status: 'SUCCESS',
                 details: {
@@ -178,7 +178,7 @@ export class DocumentController {
             });
 
             // Audit compliance creation
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.COMPLIANCE_CREATED,
                 status: 'SUCCESS',
                 details: {
@@ -427,7 +427,7 @@ export class DocumentController {
             }
 
             // Audit
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_EDIT,
                 status: 'SUCCESS',
                 details: {
@@ -458,7 +458,7 @@ export class DocumentController {
             await googleDriveService.deleteFolder(deleted.folderId!);
 
             // Audit
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_DELETE,
                 status: 'SUCCESS',
                 details: {
@@ -512,7 +512,7 @@ export class DocumentController {
                 const filename = `${document.title} ${document.versions.find((v) => v.isCurrent)?.version}${ext}`;
 
                 // audit log
-                await req.log({
+                await req.log?.({
                     event: AuditEventType.DOCUMENT_DOWNLOAD,
                     status: 'SUCCESS',
                     details: {
@@ -547,7 +547,7 @@ export class DocumentController {
             const driveFile = await gdService.getStreamFileById(fileId);
 
             // audit log
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.DOCUMENT_DOWNLOAD,
                 status: 'SUCCESS',
                 details: {

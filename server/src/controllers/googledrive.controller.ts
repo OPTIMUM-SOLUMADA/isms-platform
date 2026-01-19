@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Session } from 'express-session';
 import { google } from 'googleapis';
 import { GoogleAuthConfig } from '@/configs/google.config';
 import { GoogleDriveService } from '@/services/googledrive.service';
@@ -8,6 +9,7 @@ import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { env } from '@/configs/env';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
+import { RequestWithGoogleAccount } from '@/types/request';
 
 const gAccountService = new GoogleAccountService();
 const documentVersion = new DocumentVersionService();
@@ -69,24 +71,48 @@ export class GoogleDriveController {
         }
     }
 
-    static async listDriveFiles(req: Request, res: Response) {
+    static async listDriveFiles(req: RequestWithGoogleAccount, res: Response) {
         try {
-            const user = req.session?.gooleAccount;
-            if (!user) return res.status(401).json({ error: 'Not authenticated' });
+            // Cast pour indiquer à TypeScript que googleAccount existe
+            const session = req.session as Session & { googleAccount?: {
+                googleId: string;
+                email: string;
+                tokens: {
+                    access_token: string;
+                    refresh_token?: string;
+                    scope?: string;
+                    token_type?: string;
+                    id_token?: string;
+                    refresh_token_expires_in?: number;
+                    expiry_date?: number;
+                } | null;
+                workingDirId?: string;
+            }};
+
+            const user = session.googleAccount;
+            if (!user) {
+                return res.status(401).json({ error: 'Not authenticated' });
+            }
 
             const driveService = new GoogleDriveService(user.tokens);
             const files = await driveService.listFiles();
 
-            return res.set('Content-Type', 'application/json').send(JSON.stringify(files, null, 2));
+            return res
+                .set('Content-Type', 'application/json')
+                .send(JSON.stringify(files, null, 2));
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Failed to list files' });
         }
     }
 
-    static async grantPermissions(req: Request, res: Response) {
+    static async grantPermissions(req: RequestWithGoogleAccount, res: Response) {
         try {
             const { documentId } = req.params;
+            
+            if (!documentId) {
+                return res.status(400).json({ error: 'documentId is required' });
+            }
             const versions = await documentVersion.getByDocumentId(documentId!);
 
             const driveService = useGoogleDriveService(req);

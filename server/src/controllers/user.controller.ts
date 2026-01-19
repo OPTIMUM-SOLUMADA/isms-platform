@@ -47,7 +47,7 @@ export class UserController {
             await depRoleUserService.createMany(userRoles);
 
             // Audit log
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.USER_ADD,
                 targets: [
                     {
@@ -208,7 +208,7 @@ export class UserController {
             const regetUpdatedUser = await service.getUserById(id!);
 
             // Update user audit log
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.USER_UPDATE,
                 targets: [
                     {
@@ -257,7 +257,7 @@ export class UserController {
             // const { userId } = req.query;
                         
             // Audit log
-            await req.log({
+            await req.log?.({
                 event: AuditEventType.USER_DELETE,
                 targets: [
                     {
