@@ -1,23 +1,17 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
     "outDir": "build",
-
     "module": "commonjs",
     "target": "esnext",
-    
     "lib": ["esnext"],
     "types": ["node", "jest"],
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
