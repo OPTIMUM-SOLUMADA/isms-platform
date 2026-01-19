@@ -239,6 +239,17 @@ export class GoogleDriveService implements IGoogleDriveService {
         await this.drive.permissions.delete({ fileId, permissionId: 'anyone' });
     }
 
+    /**
+     * Make file viewable by anyone with the link (enables preview in emails/embeds)
+     * This is less permissive than makeFilePublicReadable as it requires the link
+     */
+    async makeFileViewableWithLink(fileId: string) {
+        await this.createPermission(fileId, { 
+            role: 'reader', 
+            type: 'anyone',
+        });
+    }
+
     // ---------------------------
     // Folder helpers
     // ---------------------------
@@ -321,5 +332,15 @@ export class GoogleDriveService implements IGoogleDriveService {
 
     getWebContentLink(fileId: string) {
         return `https://drive.google.com/uc?id=${fileId}&export=download`;
+    }
+
+    /**
+     * Generate a Google Drive link that opens with a specific user account
+     * @param fileId The Google Drive file ID
+     * @param userEmail The email of the user who should open the file
+     * @returns URL that will open in the specified Google account
+     */
+    getWebViewLinkForUser(fileId: string, userEmail: string) {
+        return `https://drive.google.com/file/d/${fileId}/view?authuser=${encodeURIComponent(userEmail)}`;
     }
 }

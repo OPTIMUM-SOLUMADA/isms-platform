@@ -13,8 +13,8 @@ const AccessPermissionRoute: React.FC<AccessPermissionRouteProps> = ({ requiredP
         return <Navigate to="/unauthorized" replace />;
     }
 
-    if (requiredPermission)
-        console.log("Me has perm: ", hasAccessPermission(requiredPermission));
+    // if (requiredPermission)
+    //     console.log("Me has perm: ", hasAccessPermission(requiredPermission));
 
     return <Outlet />;
 };

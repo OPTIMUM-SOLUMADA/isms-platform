@@ -1,7 +1,7 @@
 {
   "authentification": {
     "title": "Authentication",
-    "copyright": "© 2025 ISMS Solumada. All rights reserved.",
+    "copyright": "ISMS Solumada. All rights reserved.",
     "login": {
       "title": "Login",
       "subtitle": "Enter your credentials to access the ISMS portal",
@@ -141,6 +141,10 @@
       "departments": {
         "title": "Departments",
         "value": "{{count}} departments"
+      },
+      "pendingReviews": {
+        "title": "Pending reviews",
+        "value": "{{count}} reviews"
       }
     },
     "actions": {
@@ -152,6 +156,55 @@
       },
       "viewDepartments": {
         "label": "View departments"
+      }
+    },
+    "card": {
+      "recentActivity": {
+        "title": "Recent activity",
+        "subtitle": "Latest actions in the system",
+        "loading": "Loading recent activity...",
+        "actions": {
+          "viewAll": {
+            "label": "View all activities"
+          }
+        }
+      },
+      "deadline": {
+        "title": "Upcoming deadlines",
+        "subtitle": "Reviews approaching their due date",
+        "list": {
+          "empty": "There are no upcoming deadlines."
+        },
+        "loading": "Loading upcoming deadlines...",
+        "actions": {
+          "viewAll": {
+            "label": "View all deadlines"
+          }
+        }
+      },
+      "quickActions": {
+        "title": "Quick actions",
+        "newDocument": {
+          "label": "New document"
+        },
+        "publishedDocuments": {
+          "label": "Published documents"
+        },
+        "manageUsers": {
+          "label": "Manage users"
+        },
+        "auditLogs": {
+          "label": "Audit logs"
+        },
+        "documentReviews": {
+          "label": "Document reviews"
+        },
+        "pendingReview": {
+          "label": "Pending reviews"
+        }
+      },
+      "userRole": {
+        "title": "User roles"
       }
     }
   },
@@ -1729,6 +1782,28 @@
   "auditLog": {
     "title": "Audit Log",
     "subtitle": "Track all system activities and changes for compliance",
+    "filters": {
+      "search": {
+        "label": "Search by user, action, IP address or user agent",
+        "placeholder": "Search logs..."
+      },
+      "event": {
+        "label": "Filter by event",
+        "placeholder": "All events"
+      },
+      "status": {
+        "label": "Filter by status",
+        "placeholder": "All statuses"
+      },
+      "user": {
+        "label": "Filter by user",
+        "placeholder": "All users"
+      },
+      "dateRange": {
+        "label": "Filter by date range",
+        "placeholder": "Select a date range"
+      }
+    },
     "events": {
       "AUTH_LOGIN_ATTEMPT": "Login Attempt",
       "AUTH_LOGIN": "Login",
@@ -1736,19 +1811,37 @@
       "DOCUMENT_CREATE": "Document Created",
       "DOCUMENT_EDIT": "Document Edited",
       "DOCUMENT_UPDATE": "Document Updated",
+      "DOCUMENT_DELETE": "Document Deleted",
+      "DOCUMENT_DOWNLOAD": "Document Downloaded",
       "DOCUMENT_VERSION_CREATED": "Version Created",
       "DOCUMENT_VERSION_APPROVED": "Version Approved",
       "DOCUMENT_VERSION_REJECTED": "Version Rejected",
       "DOCUMENT_STATUS_CHANGE": "Status Changed",
       "DOCUMENT_REVIEW_SUBMITTED": "Review Submitted",
+      "DOCUMENT_REVIEW_COMPLETED": "Review Completed",
       "USER_ADD": "User Added",
       "USER_UPDATE": "User Updated",
       "USER_DELETE": "User Deleted",
       "DEPARTMENT_CREATE": "Department Created",
       "DEPARTMENT_UPDATE": "Department Updated",
       "DEPARTMENT_DELETE": "Department Deleted",
+      "COMPLIANCE_CREATE": "Compliance Created",
+      "COMPLIANCE_UPDATE": "Compliance Updated",
+      "COMPLIANCE_CREATE": "Compliance Created",
+      "COMPLIANCE_UPDATE": "Compliance Updated",
+      "COMPLIANCE_CREATED": "Compliance Created",
+      "COMPLIANCE_UPDATED": "Compliance Updated",
       "ACCESS_LOG": "Access Log",
       "EXPORT_LOGS": "Logs Exported"
+    },
+    "targets": {
+      "DOCUMENT": "Document",
+      "USER": "User",
+      "DEPARTMENT": "Department",
+      "REVIEW": "Review",
+      "VERSION": "Version",
+      "APPROVAL": "Approval",
+      "COMPLIANCE": "Compliance"
     },
     "status": {
       "SUCCESS": "Success",
@@ -1759,11 +1852,13 @@
         "event": "Event",
         "status": "Status",
         "user": "User",
-        "action": "Action",
+        "action": "Event",
         "ipAddress": "IP Address",
         "timestamp": "Timestamp",
-        "details": "Details",
-        "types": "Types"
+        "details": "Détails",
+        "types": "Types",
+        "targets": "Cibles",
+        "userAgent": "User Agent"
       },
       "empty": {
         "title": "No logs",
@@ -1771,12 +1866,20 @@
       },
       "cells": {
         "details": {
-          "title": "Details",
+          "title": "Détails",
           "actions": {
-            "view": {
+            "viewMore": {
               "label": "View more"
+            },
+            "viewLess": {
+              "label": "Voir less"
             }
           }
+        },
+        "types": {
+          "DOCUMENT": "Document",
+          "USER": "User",
+          "REVIEW": "Review"
         }
       }
     },
@@ -1790,6 +1893,29 @@
       "export": {
         "label": "Export Logs"
       }
+    },
+    "details": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "department": "Department",
+      "status": "Status",
+      "description": "Description",
+      "title": "Titre",
+      "type": "Type",
+      "version": "Version",
+      "reviewers": "Reviewers",
+      "owners": "Owners",
+      "departments": "Departments",
+      "authors": "Authors",
+      "reviewFrequency": "Review Frequency",
+      "classification": "Classification",
+      "isoClause": "Clause/Control Number",
+      "comment": "Comment",
+      "decision": "Decision",
+      "from": "From",
+      "to": "To",
+      "document": "Document"
     }
   },
   "unauthorized": {
@@ -1976,6 +2102,15 @@
         "addNew": "Add a new fonction",
         "loading": "Loading fonctions...",
         "searching": "Searching fonction..."
+      },
+      "isoClause": {
+        "label": "Clause/Control Numbers",
+        "placeholder": "Select Clause/Control Numbers",
+        "search": "Search Clause/Control Numbers...",
+        "empty": "No Clause/Control Number found.",
+        "addNew": "Add a new Clause/Control Number",
+        "loading": "Loading Clause/Control Numbers...",
+        "searching": "Searching Clause/Control Numbers..."
       }
     },
     "document": {
@@ -1995,6 +2130,27 @@
     "dueDateProgress": {
       "left": "{{time}} left",
       "overdue": "Overdue by {{time}}"
+    },
+    "dateRangePicker": {
+      "presetRanges": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last7": "Last 7 days",
+        "last14": "Last 14 days",
+        "last30": "Last 30 days",
+        "thisWeek": "This week",
+        "lastWeek": "Last week",
+        "thisMonth": "This month",
+        "lastMonth": "Last month"
+      },
+      "actions": {
+        "cancel": {
+          "label": "Cancel"
+        },
+        "apply": {
+          "label": "Apply"
+        }
+      }
     }
   },
   "navigation": {
@@ -2059,7 +2215,89 @@
     "notifications": {
       "title": "Notifications",
       "empty": "No notifications",
-      "markAllAsRead": "Mark all as read"
+      "markAllAsRead": "Mark all as read",
+      "deleteAll": "Delete all notifications",
+      "viewAll": "View all notifications"
+    }
+  },
+  "notifications": {
+    "loading": "Loading notifications...",
+    "error": "Error loading notifications",
+    "emptyByDocument": "No notifications for this document",
+    "templates": {
+      "REVIEW_NEEDED": {
+        "title": "Review needed",
+        "message": "You have a review to check for \u201C{{title}}\u201D"
+      },
+      "REVIEW_OVERDUE": {
+        "title": "Review overdue",
+        "message": "The review for \u201C{{title}}\u201D is overdue"
+      },
+      "REVIEW_COMPLETED": {
+        "title": "Review completed",
+        "message": "The review for \u201C{{title}}\u201D has been completed"
+      },
+      "DOCUMENT_UPDATED": {
+        "title": "Document updated",
+        "message": "The document \u201C{{title}}\u201D has been updated"
+      },
+      "DOCUMENT_APPROVED": {
+        "title": "Document approved",
+        "message": "The document \u201C{{title}}\u201D has been approved"
+      },
+      "DOCUMENT_PARTIALLY_APPROVED": {
+        "title": "Partial approval",
+        "message": "The document \u201C{{title}}\u201D has received partial approvals",
+        "approvedBy": "Approved by",
+        "pendingReviewers": "Pending reviews from"
+      },
+      "DOCUMENT_REJECTED": {
+        "title": "Document rejected",
+        "message": "The document \u201C{{title}}\u201D has been rejected",
+        "rejectedBy": "Rejected by"
+      },
+      "VERSION_CREATED": {
+        "title": "New version created",
+        "message": "A new version of \u201C{{title}}\u201D has been created"
+      },
+      "VERSION_APPROVED": {
+        "title": "Version approved",
+        "message": "The version of \u201C{{title}}\u201D has been approved"
+      },
+      "VERSION_REJECTED": {
+        "title": "Version rejected",
+        "message": "The version of \u201C{{title}}\u201D has been rejected"
+      },
+      "USER_INVITED": {
+        "title": "Invitation received",
+        "message": "You have been invited to join the platform"
+      },
+      "NONCONFORMITY_CREATED": {
+        "title": "Nonconformity created",
+        "message": "A nonconformity has been created for \u201C{{title}}\u201D"
+      },
+      "ACTION_CREATED": {
+        "title": "Action created",
+        "message": "A corrective action has been created for \u201C{{title}}\u201D"
+      },
+      "ASSIGNMENT": {
+        "author": {
+          "title": "New document created",
+          "message": "You have been assigned as an author to \u201C{{title}}\u201D"
+        },
+        "reviewer": {
+          "title": "New document created",
+          "message": "You have been assigned as a reviewer to \u201C{{title}}\u201D"
+        }
+      },
+      "PUBLIC_PUBLISHED": {
+        "title": "Public document published",
+        "message": "The public document \u201C{{title}}\u201D has been published"
+      },
+      "DOCUMENT_PUBLISHED": {
+        "title": "Document published",
+        "message": "The document \u201C{{title}}\u201D has been published"
+      }
     }
   },
   "sidebar": {
@@ -2149,5 +2387,16 @@
         }
       }
     }
+  },
+  "networkError": {
+    "title": "Network Error",
+    "description": "There seems to be a connection problem. Please check your Internet connection and try again.",
+    "actions": {
+      "retry": {
+        "label": "Retry"
+      }
+    },
+    "troubleshootHint": "Or check your connection"
   }
+  
 }

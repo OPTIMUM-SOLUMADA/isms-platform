@@ -10,11 +10,19 @@ import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentVersionService } from '@/services/documentversion.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { RecentlyViewedService } from '@/services/recenltyview.service';
-import { Classification } from '@prisma/client';
+import { AuditEventType, Classification } from '@prisma/client';
 import { openDocumentInBrowser } from '@/utils/puppeteer';
+import { sanitizeDocument } from '@/utils/sanitize-document';
+import { getChanges } from '@/utils/change';
+// eslint-disable-next-line import/no-named-as-default
+import NotificationService from '@/services/notification.service';
+import { calculateNextReviewDate } from '@/utils/dateCalculator';
+import prisma from '@/database/prisma';
+import { ComplianceService } from '@/services/compliance.service';
 
 export class DocumentController {
     private service: DocumentService;
+    private complianceService: ComplianceService;
     private departmentRoleDocument: DepartmentRoleDocumentService;
     private versionService: DocumentVersionService;
     private reviewService: DocumentReviewService;
@@ -26,6 +34,7 @@ export class DocumentController {
         this.versionService = new DocumentVersionService();
         this.reviewService = new DocumentReviewService();
         this.recenltyViewed = new RecentlyViewedService();
+        this.complianceService = new ComplianceService();
     }
 
     async create(req: Request, res: Response) {
@@ -98,6 +107,55 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
+            // Get the updated document with authors and reviewers
+            const documentWithUsers = await this.service.getDocumentById(createdDoc.id);
+
+            // Grant Google Drive permissions to authors and reviewers
+            if (documentWithUsers) {
+                const authorsEmail = documentWithUsers.authors
+                    .map((a: any) => a.user.email)
+                    .filter(Boolean);
+                const reviewersEmail = documentWithUsers.reviewers
+                    .map((r: any) => r.user.email)
+                    .filter(Boolean);
+
+                // Grant permissions to authors (writer) and reviewers (commenter)
+                if (authorsEmail.length > 0) {
+                    await googleDriveService.grantPermissions(result.id, authorsEmail, 'writer');
+                }
+                if (reviewersEmail.length > 0) {
+                    await googleDriveService.grantPermissions(
+                        result.id,
+                        reviewersEmail,
+                        'commenter',
+                    );
+                }
+
+                // Make file viewable with link to enable preview in emails/embeds
+                await googleDriveService.makeFileViewableWithLink(result.id);
+            }
+
+            const createdCompliance = await this.complianceService.createClause({
+                documentId: createdDoc.id,
+                isoClauseId: isoClause,
+                status: 'NON_COMPLIANT',
+                nextReview: createdDoc.nextReviewDate,
+            });
+
+            // Send notifications to assigned users
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentCreated({
+                    documentId: createdDoc.id,
+                    documentTitle: title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    creatorId: req.user?.id || '',
+                });
+            }
+
             // link departmentRoles to document
             this.departmentRoleDocument.createMany(
                 departmentRoles.split(',').map((departmentRoleId: any) => ({
@@ -107,6 +165,29 @@ export class DocumentController {
             );
 
             if (fileUrl) FileService.deleteFile(DOCUMENT_UPLOAD_PATH, fileUrl);
+
+            const document = await this.service.getDocumentById(createdDoc.id);
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_CREATE,
+                status: 'SUCCESS',
+                details: {
+                    ...getChanges(sanitizeDocument(document!), {}),
+                },
+                targets: [{ id: createdDoc.id, type: 'DOCUMENT' }],
+            });
+
+            // Audit compliance creation
+            await req.log({
+                event: AuditEventType.COMPLIANCE_CREATED,
+                status: 'SUCCESS',
+                details: {
+                    documentTitle: title,
+                    complianceStatus: 'NON_COMPLIANT',
+                    // nextReview: createdDoc.nextReviewDate,
+                },
+                targets: [{ id: createdCompliance.id, type: 'COMPLIANCE' }],
+            });
 
             res.status(201).json(createdDoc);
         } catch (err) {
@@ -203,7 +284,8 @@ export class DocumentController {
             const updatedDocument = await this.service.update(documentId!, {
                 ...(title && { title }),
                 ...(description && { description }),
-                ...(status && { status }),
+                // If document is APPROVED and being updated, reset to IN_REVIEW
+                status: document.status === 'APPROVED' ? 'IN_REVIEW' : status || document.status,
                 ...(reviewFrequency && { reviewFrequency }),
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
@@ -228,10 +310,134 @@ export class DocumentController {
                 authors: authors.split(','),
             });
 
+            // Get the updated document with authors and reviewers to grant permissions
+            const documentWithUsers = await this.service.getDocumentById(updatedDocument.id);
+
+            // Grant Google Drive permissions to authors and reviewers for the current version
+            if (documentWithUsers) {
+                const currentVersion = documentWithUsers.versions.find((v) => v.isCurrent);
+                if (currentVersion?.googleDriveFileId) {
+                    const authorsEmail = documentWithUsers.authors
+                        .map((a: any) => a.user.email)
+                        .filter(Boolean);
+                    const reviewersEmail = documentWithUsers.reviewers
+                        .map((r: any) => r.user.email)
+                        .filter(Boolean);
+
+                    // Grant permissions to authors (writer) and reviewers (commenter)
+                    if (authorsEmail.length > 0) {
+                        await googleDriveService.grantPermissions(
+                            currentVersion.googleDriveFileId,
+                            authorsEmail,
+                            'writer',
+                        );
+                    }
+                    if (reviewersEmail.length > 0) {
+                        await googleDriveService.grantPermissions(
+                            currentVersion.googleDriveFileId,
+                            reviewersEmail,
+                            'commenter',
+                        );
+                    }
+
+                    // Make file viewable with link to enable preview in emails/embeds
+                    await googleDriveService.makeFileViewableWithLink(
+                        currentVersion.googleDriveFileId,
+                    );
+                }
+            }
+
+            // Reset ALL existing reviews when document is updated (decision -> null = IN_REVIEW state)
+            try {
+                const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                if (currentVersion) {
+                    await prisma.documentReview.updateMany({
+                        where: {
+                            documentId: updatedDocument.id,
+                            documentVersionId: currentVersion.id,
+                        },
+                        data: {
+                            decision: null,
+                            isCompleted: false,
+                            completedAt: null,
+                            reviewDate: null,
+                        },
+                    });
+                }
+            } catch (err) {
+                console.log('Failed to reset review decisions', err);
+            }
+
+            // Check if document has been viewed by users
+            const hasBeenViewed = await prisma.recentlyViewedDocument.count({
+                where: { documentId: updatedDocument.id },
+            });
+
+            // If document was APPROVED and now IN_REVIEW, OR if document has been viewed, create review assignments
+            const shouldCreateReviews =
+                (document.status === 'APPROVED' && updatedDocument.status === 'IN_REVIEW') ||
+                hasBeenViewed > 0;
+
+            if (shouldCreateReviews) {
+                try {
+                    const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                    const reviewerIdsArray = reviewers
+                        ? reviewers.split(',').filter((id: string) => id)
+                        : [];
+
+                    if (reviewerIdsArray.length > 0 && currentVersion) {
+                        // Calculate due date based on reviewFrequency
+                        const reviewDueDate = updatedDocument.reviewFrequency
+                            ? calculateNextReviewDate(updatedDocument.reviewFrequency)
+                            : null;
+
+                        // Use updateAssignedReviewersToDocument which already handles duplicates
+                        await this.reviewService.updateAssignedReviewersToDocument({
+                            documentId: updatedDocument.id,
+                            documentVersionId: currentVersion.id,
+                            reviewerIds: reviewerIdsArray,
+                            ...(req.user?.id ? { userId: req.user.id } : {}),
+                            dueDate: reviewDueDate,
+                        });
+                    }
+                } catch (err) {
+                    console.log('Failed to create document reviews', err);
+                }
+            }
+
             if (file) {
                 // Delete old file
                 await FileService.deleteFile(DOCUMENT_UPLOAD_PATH, document.fileUrl!);
             }
+
+            const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
+
+            // Send notifications to assigned users about document update
+            const authorIdsList = authors.split(',').filter((id: string) => id);
+            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
+
+            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+                await NotificationService.notifyDocumentUpdated({
+                    documentId: updatedDocument.id,
+                    documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
+                    authorIds: authorIdsList,
+                    reviewerIds: reviewerIdsList,
+                    updaterId: req.user?.id || '',
+                });
+            }
+
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_EDIT,
+                status: 'SUCCESS',
+                details: {
+                    ...getChanges(
+                        sanitizeDocument(document),
+                        sanitizeDocument(reGetUpdatedDocument!),
+                    ),
+                },
+                targets: [{ id: updatedDocument.id, type: 'DOCUMENT' }],
+            });
 
             res.json(updatedDocument);
         } catch (err) {
@@ -250,6 +456,17 @@ export class DocumentController {
             const versionsIds = deleted.versions.map((version) => version.googleDriveFileId);
             await googleDriveService.deleteFiles(versionsIds);
             await googleDriveService.deleteFolder(deleted.folderId!);
+
+            // Audit
+            await req.log({
+                event: AuditEventType.DOCUMENT_DELETE,
+                status: 'SUCCESS',
+                details: {
+                    title: deleted.title,
+                    authors: deleted.authors.map((a: any) => a.user?.name),
+                },
+                targets: [{ id: deleted.id, type: 'DOCUMENT' }],
+            });
 
             res.status(204).json(deleted);
         } catch (err) {
@@ -294,6 +511,17 @@ export class DocumentController {
 
                 const filename = `${document.title} ${document.versions.find((v) => v.isCurrent)?.version}${ext}`;
 
+                // audit log
+                await req.log({
+                    event: AuditEventType.DOCUMENT_DOWNLOAD,
+                    status: 'SUCCESS',
+                    details: {
+                        title: document.title,
+                        version: document.versions.find((v) => v.isCurrent)?.version,
+                    },
+                    targets: [{ id: document.id, type: 'DOCUMENT' }],
+                });
+
                 res.download(filePath, filename);
             }
         } catch (err) {
@@ -317,6 +545,17 @@ export class DocumentController {
             const file = await gdService.getFileById(fileId);
 
             const driveFile = await gdService.getStreamFileById(fileId);
+
+            // audit log
+            await req.log({
+                event: AuditEventType.DOCUMENT_DOWNLOAD,
+                status: 'SUCCESS',
+                details: {
+                    title: document.title,
+                    version: document.versions.find((v) => v.isCurrent)?.version,
+                },
+                targets: [{ id: document.id, type: 'DOCUMENT' }],
+            });
 
             // Set minimal headers to prompt download
             res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
@@ -349,6 +588,14 @@ export class DocumentController {
                     // open it to avoid permission error
                     await openDocumentInBrowser(currentVersion.fileUrl!);
             }
+
+            // 3- Send notifications
+            await NotificationService.notifyDocumentPublished({
+                documentId: document.id,
+                documentTitle: document.title,
+                documentClassification: document.classification,
+                ...(req.user?.id && { creatorId: req.user.id }),
+            });
 
             res.json(document);
         } catch (err) {
@@ -437,6 +684,9 @@ export class DocumentController {
                 'commenter',
             );
 
+            // Make draft viewable with link to enable preview in emails/embeds
+            await gdService.makeFileViewableWithLink(draft.id!);
+
             const updatedVersion = await this.versionService.update(version.id, {
                 draftUrl: draft.webViewLink!,
                 draftId: draft.id!,
@@ -477,6 +727,45 @@ export class DocumentController {
             res.json(document);
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    /**
+     * Get a user-specific Google Drive link for a document
+     * This ensures the document opens in the user's Google account (the one they're logged in with on the site)
+     */
+    async getUserSpecificDriveLink(req: Request, res: Response) {
+        try {
+            const { documentId } = req.params;
+            const { userEmail } = req.query;
+
+            if (!userEmail || typeof userEmail !== 'string') {
+                return res.status(400).json({ error: 'User email is required' });
+            }
+
+            const document = await this.service.getDocumentById(documentId!);
+            if (!document) {
+                return res.status(404).json({ error: 'Document not found' });
+            }
+
+            const currentVersion = document.versions.find((v) => v.isCurrent);
+            if (!currentVersion?.googleDriveFileId) {
+                return res.status(404).json({ error: 'Document version not found' });
+            }
+
+            const googleDriveService = useGoogleDriveService(req);
+            const userSpecificLink = googleDriveService.getWebViewLinkForUser(
+                currentVersion.googleDriveFileId,
+                userEmail,
+            );
+
+            return res.json({
+                link: userSpecificLink,
+                fileId: currentVersion.googleDriveFileId,
+                userEmail,
+            });
+        } catch (err) {
+            return res.status(500).json({ error: (err as Error).message });
         }
     }
 }

@@ -77,6 +77,12 @@ a:hover {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0rem;
+
+    
+    --color-admin: #3a8d35;          /* same as text-theme */
+    --color-contributor: #4f46e5;         /* indigo-600 */
+    --color-reviewer: #d97706;            /* amber-600 */
+    --color-viewer: #6b7280;   
   }
 
   * {

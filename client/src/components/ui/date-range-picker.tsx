@@ -14,6 +14,8 @@ import {
 import { Switch } from './switch'
 import { ChevronUpIcon, ChevronDownIcon, CheckIcon } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
+import { getDateFnsLocale } from '@/lib/date'
 
 export interface DateRangePickerProps {
     /** Click handler for applying the updates from DateRangePicker. */
@@ -278,6 +280,8 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
             )
         }
 
+        const {t} = useTranslation();
+
         useEffect(() => {
             checkPreset()
         }, [range])
@@ -485,7 +489,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                                         <SelectContent>
                                             {PRESETS.map((preset) => (
                                                 <SelectItem key={preset.name} value={preset.name}>
-                                                    {preset.label}
+                                                    {t(`components.dateRangePicker.presetRanges.${preset.name}`, { defaultValue: preset.label })}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -509,6 +513,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                                                 )
                                             )
                                         }
+                                        locale={getDateFnsLocale()}
                                     />
                                 </div>
                             </div>
@@ -520,7 +525,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                                         <PresetButton
                                             key={preset.name}
                                             preset={preset.name}
-                                            label={preset.label}
+                                            label={t(`components.dateRangePicker.presetRanges.${preset.name}`, { defaultValue: preset.label })}
                                             isSelected={selectedPreset === preset.name}
                                         />
                                     ))}
@@ -536,7 +541,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                             }}
                             variant="ghost"
                         >
-                            Cancel
+                            {t("components.dateRangePicker.actions.cancel.label")}
                         </Button>
                         <Button
                             onClick={() => {
@@ -549,7 +554,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                                 }
                             }}
                         >
-                            Update
+                            {t("components.dateRangePicker.actions.apply.label")}
                         </Button>
                     </div>
                 </PopoverContent>

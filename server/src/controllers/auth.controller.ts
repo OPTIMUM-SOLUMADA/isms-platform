@@ -8,6 +8,7 @@ import { env } from '@/configs/env';
 import { hashPassword } from '@/utils/password';
 import jwt from 'jsonwebtoken';
 import { AuditEventType, AuditTargetType } from '@prisma/client';
+import { toHashRouterUrl } from '@/utils/baseurl';
 
 const authService = new AuthService();
 const jwtService = new JwtService();
@@ -60,6 +61,7 @@ export class AuthController {
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
+            req.user = user;
             // Audit log for login
             await req.log({
                 event: AuditEventType.AUTH_LOGIN,
@@ -96,7 +98,6 @@ export class AuthController {
     refresh = async (req: Request, res: Response) => {
         console.log('[AuthController] Refreshing token...');
         const refreshToken = req.cookies['refreshToken'];
-        console.log(refreshToken);
         if (!refreshToken) {
             res.status(403).send('Access Denied. No refresh token provided.');
             return;
@@ -112,7 +113,7 @@ export class AuthController {
                 });
             } else {
                 const accessToken = jwtService.generateAccessToken(user);
-                const { passwordHash, ...rest } = user;
+                const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
                 // Exclude password
                 res.header('Authorization', `Bearer ${accessToken}`).status(200).send(rest);
             }
@@ -165,6 +166,10 @@ export class AuthController {
         });
 
         const { userId } = req.params;
+        if (!userId) {
+            res.status(400).json({ error: 'User ID is required' });
+            return;
+        }
         const user = await userService.getUserById(userId!);
         if (!user) {
             res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
@@ -212,7 +217,7 @@ export class AuthController {
                 orgName: env.ORG_NAME,
                 year: new Date().getFullYear().toString(),
                 user: { name: user.name },
-                resetLink: `${env.CORS_ORIGIN}/reset-password?token=${resetToken}`,
+                resetLink: toHashRouterUrl(`/reset-password`, { token: resetToken }),
                 headerDescription: '',
             });
 

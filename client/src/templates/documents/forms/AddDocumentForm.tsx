@@ -40,6 +40,7 @@ import OwnerLookup from "@/templates/owners/lookup/OwnerLookup";
 import useOwnerStore from "@/stores/owner/userOwnserStore";
 import { MultiSelect } from "@/components/multi-select";
 import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
+import { useISOClauseUIStore } from "@/stores/iso-clause/useISOClauseUIStore";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -110,7 +111,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         files: [],
         type: "",
         classification: Classification.PUBLIC,
-        reviewFrequency: Frequencies.DAILY,
+        reviewFrequency: Frequencies.QUARTERLY,
         departmentRoles: [],
       },
       mode: "onChange",
@@ -119,6 +120,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const {
       handleSubmit,
       formState: { isSubmitting },
+      watch,
     } = form;
 
     // expose resetForm method
@@ -128,8 +130,21 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     }));
 
     const { data: departmentsRes } = useFetchAllDepartments();
+    const { openAdd } =  useISOClauseUIStore();
 
+    // Surveiller les auteurs et reviewers sélectionnés
+    const selectedAuthors = watch("authors");
+    const selectedReviewers = watch("reviewers");
 
+    // Filtrer les utilisateurs pour exclure ceux qui sont déjà sélectionnés
+    const availableUsersForAuthors = users.filter(
+      user => user.role !== RoleType.VIEWER && !selectedReviewers?.includes(user.id)
+    );
+    
+    const availableUsersForReviewers = users.filter(
+      user => user.role !== RoleType.VIEWER && !selectedAuthors?.includes(user.id)
+    );
+        
     // const selectedDepartmentId = watch('departmentId');
     // const selectedDepartmentRole = useMemo(() => {
     //   return departments.find(role => role.id === selectedDepartmentId);
@@ -320,8 +335,9 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                       placeholder={t("document.add.form.fields.isoClause.placeholder")}
                       onChange={field.onChange}
                       value={field.value}
-                      addLabel={t("documentType.isoClause.add.label")}
+                      addLabel={t("components.multiselect.isoClause.label")}
                       hasError={!!fieldState.error}
+                      onButtonClick={openAdd}
                     />
                   </FormControl>
                   <FormMessage />
@@ -363,7 +379,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
-                      data={users.filter(user => user.role !== RoleType.VIEWER)}
+                      data={availableUsersForAuthors}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}
@@ -417,7 +433,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                   </FormLabel>
                   <FormControl>
                     <UserMultiSelect
-                      data={users.filter(user => user.role !== RoleType.VIEWER)}
+                      data={availableUsersForReviewers}
                       value={field.value}
                       onValueChange={field.onChange}
                       hasError={!!fieldState.error}

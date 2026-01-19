@@ -6,7 +6,7 @@ import type { AddUserFormData } from "@/templates/users/forms/AddUserForm";
 import type { UpdateUserFormData } from "@/templates/users/forms/EditUserForm";
 import { ApiAxiosError } from "@/types/api";
 import useUserStore from "@/stores/user/useUserStore";
-import { User } from "@/types";
+import { RoleType, User } from "@/types";
 import { useEffect, useMemo } from "react";
 import { useDebounce } from "../use-debounce";
 import { isEqual } from "lodash";
@@ -35,6 +35,14 @@ export const useFetchUsers = () => {
     return query;
 };
 
+export const useGetUsers = () => {
+    return useQuery<{ users: User[] }, ApiAxiosError>({
+        queryKey: ["users"],
+        queryFn: async () => (await userService.list({ page: 1, limit: 500 })).data,
+        staleTime: 1000 * 60 * 5,
+    });
+};
+
 export const useSearchUsers = () => {
     const { query } = useUserStore();
     const debounceQuery = useDebounce(query, 500);
@@ -53,6 +61,14 @@ export const useFetchUsersByIds = (ids: string[]) => {
         queryFn: async () => (await userService.getUserByIds(stableIds)).data,
         // staleTime: 1000 * 5,
         enabled: stableIds.length > 0,
+    });
+};
+
+export const useGetUser = (id: string) => {
+    return useQuery<User, ApiAxiosError>({
+        queryKey: ["users", "getUser", id],
+        queryFn: async () => (await userService.getById(id)).data,
+        staleTime: 1000 * 60 * 5,
     });
 };
 
@@ -109,6 +125,7 @@ export const useUpdateUser = () => {
             });
             replaceUser(variables.id, res.data);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -133,6 +150,7 @@ export const useDeleteUser = () => {
             });
             removeUser(variables.id);
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -147,6 +165,7 @@ export const useToggleUserActivation = () => {
             active ? userService.activate(id) : userService.deactivate(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         },
     });
 };
@@ -167,5 +186,14 @@ export const useSendInvitation = () => {
                 variant: "success",
             });
         },
+    });
+};
+
+
+export const useGetUserRolesStats = () => {
+    return useQuery<Record<RoleType, number>, ApiAxiosError>({
+        queryKey: ["users", "stats", "roles"],
+        queryFn: async () => (await userService.getUserRolesStats()).data,
+        staleTime: 1000 * 60 * 5,
     });
 };

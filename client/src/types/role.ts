@@ -47,4 +47,5 @@ export type AccessPermission =
     | "departments.page.access"
     | "document-types.page.access"
     | "published-document.page.access"
-    | "iso-clauses.page.access";
+    | "iso-clauses.page.access"
+    | "documents.review.access";

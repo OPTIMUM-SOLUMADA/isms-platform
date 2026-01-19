@@ -26,6 +26,7 @@ const addUserSchema: z.ZodSchema<any> = z.object({
     departmentRoleUsers: z.array(z.string()).min(1, i18n.t("zod.errors.department.required")),
     sendInvitationLink: z.boolean().optional().default(true),
     isActive: z.boolean().optional().default(false),
+    userId: z.string().optional().default(''),
 });
 
 export type AddUserFormData = z.infer<typeof addUserSchema>;

@@ -4,11 +4,19 @@ import { DocumentVersionService } from '@/services/documentversion.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
 import { DocumentService } from '@/services/document.service';
+import { AuditEventType, AuditTargetType } from '@prisma/client';
+import { stripHtmlAndClamp } from '@/utils/review';
+import { getChanges } from '@/utils/change';
+import { sanitizeDocument } from '@/utils/sanitize-document';
+import NotificationService from '@/services/notification.service';
+import prisma from '@/database/prisma';
+import { ComplianceService } from '@/services/compliance.service';
 
 const service = new DocumentReviewService();
 const versionService = new DocumentVersionService();
 const approvalService = new DocumentApprovalService();
 const documentService = new DocumentService();
+const complianceService = new ComplianceService();
 
 export class DocumentReviewController {
     async create(req: Request, res: Response) {
@@ -73,9 +81,10 @@ export class DocumentReviewController {
 
     async makeDecision(req: Request, res: Response) {
         try {
+            const { id: reviewId } = req.params;
             const { decision, comment } = req.body;
 
-            const review = await service.findById(req.params.id!);
+            const review = await service.findById(reviewId!);
             if (!review) {
                 res.status(404).json({
                     error: 'Review not found',
@@ -84,10 +93,110 @@ export class DocumentReviewController {
                 return;
             }
 
-            const type = await service.submitReviewDecision(req.params.id!, {
+            const type = await service.submitReviewDecision(reviewId!, {
                 decision,
                 comment,
             });
+
+            // Audit for decision made
+            await req.log({
+                event: AuditEventType.DOCUMENT_REVIEW_SUBMITTED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: reviewId! },
+                    { type: AuditTargetType.DOCUMENT, id: review.documentId },
+                ],
+                details: { decision, comment: stripHtmlAndClamp(comment, 200) },
+                status: 'SUCCESS',
+            });
+
+            // Notification: Review completed - notify assigner/owner
+            if (review.assignedById) {
+                // Verify user exists before creating notification
+                const assignedByUser = await prisma.user.findUnique({
+                    where: { id: review.assignedById },
+                });
+
+                if (assignedByUser) {
+                    await NotificationService.create({
+                        user: { connect: { id: review.assignedById } },
+                        type: 'REVIEW_COMPLETED',
+                        title: `Revue complétée : ${review.document.title}`,
+                        message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
+                        document: { connect: { id: review.documentId } },
+                    } as any);
+                }
+            }
+
+            // Récupérer le document avec tous les reviewers et leurs reviews
+            const documentWithReviews = await prisma.document.findUnique({
+                where: { id: review.documentId },
+                include: {
+                    authors: { include: { user: true } },
+                    reviewers: {
+                        include: {
+                            user: {
+                                include: {
+                                    documentReviews: {
+                                        where: {
+                                            documentId: review.documentId,
+                                            documentVersionId: review.documentVersionId,
+                                        },
+                                        orderBy: { createdAt: 'desc' },
+                                        take: 1,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (documentWithReviews) {
+                const authorIds = documentWithReviews.authors.map((a: any) => a.userId);
+
+                // Analyser les statuts des reviews
+                const approvedReviewers: Array<{ id: string; name: string }> = [];
+                const rejectedReviewers: Array<{ id: string; name: string }> = [];
+                const pendingReviewers: Array<{ id: string; name: string }> = [];
+
+                documentWithReviews.reviewers.forEach((reviewer: any) => {
+                    const latestReview = reviewer.user.documentReviews[0];
+                    const userName = reviewer.user?.name || reviewer.user?.email || 'Utilisateur';
+
+                    if (latestReview?.decision === 'APPROVE') {
+                        approvedReviewers.push({ id: reviewer.userId, name: userName });
+                    } else if (latestReview?.decision === 'REJECT') {
+                        rejectedReviewers.push({ id: reviewer.userId, name: userName });
+                    } else {
+                        pendingReviewers.push({ id: reviewer.userId, name: userName });
+                    }
+                });
+
+                // Envoyer les notifications appropriées
+                if (rejectedReviewers.length > 0 && authorIds.length > 0) {
+                    // Notification de rejet
+                    await NotificationService.notifyDocumentRejection({
+                        documentId: review.documentId,
+                        documentTitle: documentWithReviews.title,
+                        authorIds,
+                        rejectedByReviewers: rejectedReviewers,
+                    });
+                } else if (
+                    approvedReviewers.length > 0 &&
+                    pendingReviewers.length > 0 &&
+                    authorIds.length > 0
+                ) {
+                    // Notification d'approbation partielle
+                    await NotificationService.notifyPartialApproval({
+                        documentId: review.documentId,
+                        documentTitle: documentWithReviews.title,
+                        authorIds,
+                        approvedReviewers,
+                        pendingReviewers,
+                    });
+                }
+            }
+
             return res.json(type);
         } catch (error: any) {
             return res.status(400).json({ error: error.message });
@@ -96,10 +205,10 @@ export class DocumentReviewController {
 
     async markAsCompleted(req: Request, res: Response) {
         try {
-            console.log(req.body);
+            const { id: reviewId } = req.params;
             const { userId } = req.body;
 
-            const review = await service.findById(req.params.id!);
+            const review = await service.findById(reviewId!);
 
             if (!review) {
                 res.status(404).json({
@@ -114,6 +223,9 @@ export class DocumentReviewController {
                 return;
             }
 
+            const document = await documentService.getDocumentById(review.document.id!);
+            const getCompliance = await complianceService.getByDocument(review.document.id!);
+
             // 1 - CREATE APPROVAL
             await approvalService.create({
                 document: { connect: { id: review.document.id! } },
@@ -123,13 +235,73 @@ export class DocumentReviewController {
             });
 
             // 2 - UPDATE DOCUMENT STATUS
-            await documentService.update(review.document.id!, { status: 'APPROVED' });
+            const updatedDocument = await documentService.update(review.document.id!, {
+                status: 'APPROVED',
+            });
 
             // 3 - MARK REVIEW AS COMPLETED
-            const type = await service.markAsCompleted(req.params.id!);
+            const type = await service.markAsCompleted(reviewId!);
+
+            // 4 - UPDATE COMPLIANCE STATUS 
+            const compliance = await complianceService.update(getCompliance!.id, {
+                status: 'COMPLIANT',
+            });
+
+            // 5 - Audit
+            const changes = getChanges(
+                sanitizeDocument(document),
+                sanitizeDocument(updatedDocument),
+            );
+
+            await req.log({
+                event: AuditEventType.DOCUMENT_VERSION_APPROVED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: reviewId! },
+                    { type: AuditTargetType.DOCUMENT, id: review.documentId },
+                    { type: AuditTargetType.VERSION, id: review.documentVersion.id! },
+                ],
+                details: {
+                    ...(changes && { document: changes }),
+                },
+                status: 'SUCCESS',
+            });
+
+            // 6 - Audit compliance update
+            if (compliance) {
+                await req.log({
+                    event: AuditEventType.COMPLIANCE_UPDATED,
+                    status: 'SUCCESS',
+                    details: {
+                        documentTitle: updatedDocument.title,
+                        previousStatus: 'NON_COMPLIANT',
+                        newStatus: 'COMPLIANT',
+                    },
+                    targets: [{ id: compliance.id, type: AuditTargetType.COMPLIANCE }],
+                });
+            }
+
+
+            // Notification: Version approved - notify document owner/authors
+            if (document?.ownerId) {
+                // Verify owner exists before creating notification
+                const owner = await prisma.user.findUnique({
+                    where: { id: document.ownerId },
+                });
+
+                if (owner) {
+                    await NotificationService.create({
+                        user: { connect: { id: document.ownerId } },
+                        type: 'VERSION_APPROVED',
+                        title: `Version approuvée : ${document.title}`,
+                        message: `La version du document "${document.title}" a été approuvée.`,
+                        document: { connect: { id: review.documentId } },
+                    } as any);
+                }
+            }
 
             return res.json(type);
         } catch (error: any) {
+            console.error(error);
             return res.status(400).json({ error: error.message });
         }
     }
@@ -170,6 +342,55 @@ export class DocumentReviewController {
                 },
             });
 
+            return res.json({
+                reviews: data.data,
+                pagination: {
+                    total: data.total,
+                    limit: data.limit,
+                    page: data.page,
+                    totalPages: data.totalPages,
+                },
+            });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getMyReviewsAndApproved(req: Request, res: Response) {
+        try {
+            const { userId = '' } = req.params;
+            const { page = '1', limit = '50', status = 'ALL' } = req.query;
+            const data = await service.getReviewsAndApprovedByUserId({
+                userId,
+                page: Number(page),
+                limit: Number(limit),
+                filter: {
+                    ...(status === 'ALL' && {}),
+                    ...(status === 'PENDING' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        OR: [{ dueDate: { isSet: false } }, { dueDate: { gte: new Date() } }],
+                    }),
+                    ...(status === 'EXPIRED' && {
+                        isCompleted: false,
+                        decision: { isSet: false },
+                        dueDate: { lte: new Date() },
+                    }),
+                    ...(status === 'APPROVED' && {
+                        isCompleted: false,
+                        decision: 'APPROVE',
+                    }),
+                    ...(status === 'REJECTED' && {
+                        isCompleted: false,
+                        decision: 'REJECT',
+                        comment: { not: '' },
+                    }),
+                    ...(status === 'COMPLETED' && {
+                        isCompleted: true,
+                        decision: { isSet: true },
+                    }),
+                },
+            });
             return res.json({
                 reviews: data.data,
                 pagination: {
@@ -250,6 +471,18 @@ export class DocumentReviewController {
 
             // 8 - Update document status
             await documentService.update(data.documentId, { status: 'IN_REVIEW' });
+
+            // 10 - Audit log
+            await req.log({
+                event: AuditEventType.DOCUMENT_VERSION_CREATED,
+                targets: [
+                    { type: AuditTargetType.REVIEW, id: id! },
+                    { type: AuditTargetType.DOCUMENT, id: data.documentId },
+                    { type: AuditTargetType.VERSION, id: newVersion.id },
+                ],
+                details: { comment: stripHtmlAndClamp(comment, 200) },
+                status: 'SUCCESS',
+            });
 
             return res.json(data);
         } catch (error: any) {

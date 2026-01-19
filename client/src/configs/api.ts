@@ -4,14 +4,14 @@ export const API_CONFIG = {
   BASE_URL: env.BASE_URL,
   ENDPOINTS: {
     AUTH: {
-      LOGIN: "/api/auth/login",
-      CHANGE_PASSWORD: "/api/auth/change-password",
-      RESET_PASSWORD: "/api/auth/reset-password",
-      REFRESH: "/api/auth/refresh",
-      VERIFY: "/api/auth/verify",
-      LOGOUT: (userId: string) => `/api/auth/logout/${userId}`,
-      VERIFY_RESET_TOKEN: "/api/auth/verify-reset-token",
-      VERIFY_ACCOUNT: "/api/auth/verify-account",
+      LOGIN: "/auth/login",
+      CHANGE_PASSWORD: "/auth/change-password",
+      RESET_PASSWORD: "/auth/reset-password",
+      REFRESH: "/auth/refresh",
+      VERIFY: "/auth/verify",
+      LOGOUT: (userId: string) => `/auth/logout/${userId}`,
+      VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
+      VERIFY_ACCOUNT: "/auth/verify-account",
     },
     USERS: {
       BASE: "/api/users",
@@ -23,6 +23,7 @@ export const API_CONFIG = {
       ACTIVATE: (id: string | number) => `/api/users/${id}/activate`,
       GET_USER_BY_IDS: "/api/users/by-ids",
       SEARCH: "/api/users/search",
+      USER_ROLES_STATS: "/api/users/stats/roles",
     },
     DEPARTMENTS: {
       BASE: "/api/departments",
@@ -50,6 +51,8 @@ export const API_CONFIG = {
         `/api/documents/recently-viewed/add/${userId}/${documentId}`,
       GET_RECENTLY_VIEWED: (userId: string | number) =>
         `/api/documents/recently-viewed/${userId}`,
+      GET_USER_SPECIFIC_DRIVE_LINK: (documentId: string | number) =>
+        `/api/documents/drive-link/${documentId}`,
     },
     REVIEWS: {
       BASE: "/api/document-reviews",
@@ -85,9 +88,18 @@ export const API_CONFIG = {
     ISO_CLAUSES: {
       BASE: "/api/iso-clauses",
       GET: (id: string | number) => `/api/iso-clauses/${id}`,
+      GET_NOT_USED: "/api/iso-clauses/getNotUsed",
       UPDATE: (id: string | number) => `/api/iso-clauses/${id}`,
       DELETE: (id: string | number) => `/api/iso-clauses/${id}`,
       SEARCH: "/api/iso-clauses/search",
+    },
+    COMPLIANCE: {
+      BASE: "/api/compliance",
+      LIST: () => "/api/compliance",               // GET "/"
+      GET: (id: string | number) => `/api/compliance/${id}`,      // GET "/:id"
+      CREATE: () => "/api/compliance",            // POST "/"
+      UPDATE: (id: string | number) => `/api/compliance/${id}`,   // PUT "/:id"
+      DELETE: (id: string | number) => `/api/compliance/${id}`    // DELETE "/:id"
     },
     DOCUMENT_TYPES: {
       BASE: "/api/document-types",
@@ -121,15 +133,25 @@ export const API_CONFIG = {
       GET: (id: string | number) => `/api/department-roles/${id}`,
     },
     GOOGLE_DRIVE: {
-      BASE: "/api/google-drive",
-      GET_FILES: () => `/api/google-drive/files`,
+      BASE: "/google-drive",
+      GET_FILES: () => `/google-drive/files`,
       GRANT_PERMISSIONS_TO_FILE_VERSION: (id: string | number) =>
-        `/api/google-drive/grant-permissions/${id}`,
+        `/google-drive/grant-permissions/${id}`,
     },
     AUDIT: {
       BASE: "/api/audits",
       GET: (id: string | number) => `/api/audits/${id}`,
       STATS: "/api/audits/stats",
+      EXPORT: "/api/audits/export",
+    },
+    NOTIFICATIONS: {
+      BASE: "/api/notifications",
+      GET: (id: string | number) => `/api/notifications/${id}`,
+      MARK_READ: (id: string | number) => `/api/notifications/${id}/read`,
+      MARK_ALL_READ: "/api/notifications/mark-all-read",
+      DELETE: (id: string | number) => `/api/notifications/${id}`,
+      DELETE_ALL: "/api/notifications/delete-all",
+      BY_DOCUMENT: (documentId: string | number) => `/api/notifications?documentId=${documentId}`,
     },
   },
 } as const;

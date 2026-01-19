@@ -1,7 +1,7 @@
 {
     "authentification": {
         "title": "Authentification",
-        "copyright": "© 2025 ISMS Solumada. Tous droits reservés.",
+        "copyright": "ISMS Solumada. Tous droits reservés.",
         "login": {
             "title": "Connexion",
             "subtitle": "Saisissez vos identifiants pour accéder au portail ISMS",
@@ -124,7 +124,7 @@
     },
     "dashboard": {
         "title": "Tableau de bord",
-        "subtitle": "Bienvenue dans le portail ISMS",
+        "subtitle": "Bienvenue sur le portail ISMS",
         "stats": {
             "totalUsers": {
                 "title": "Utilisateurs totaux",
@@ -141,6 +141,10 @@
             "departments": {
                 "title": "Départements",
                 "value": "{{count}} départements"
+            },
+            "pendingReviews": {
+                "title": "Révisions en attente",
+                "value": "{{count}} révisions"
             }
         },
         "actions": {
@@ -152,6 +156,55 @@
             },
             "viewDepartments": {
                 "label": "Voir les départements"
+            }
+        },
+        "card": {
+            "recentActivity": {
+                "title": "Activité récente",
+                "subtitle": "Dernières actions dans le système",
+                "loading": "Chargement de l’activité récente...",
+                "actions": {
+                    "viewAll": {
+                        "label": "Voir toutes les activités"
+                    }
+                }
+            },
+            "deadline": {
+                "title": "Échéances à venir",
+                "subtitle": "Révisions approchant leur date limite",
+                "list": {
+                    "empty": "Aucune échéance à venir."
+                },
+                "loading": "Chargement des échéances...",
+                "actions": {
+                    "viewAll": {
+                        "label": "Voir toutes les échéances"
+                    }
+                }
+            },
+            "quickActions": {
+                "title": "Actions rapides",
+                "newDocument": {
+                    "label": "Nouveau document"
+                },
+                "publishedDocuments": {
+                    "label": "Documents publiés"
+                },
+                "manageUsers": {
+                    "label": "Gérer les utilisateurs"
+                },
+                "auditLogs": {
+                    "label": "Journaux d’audit"
+                },
+                "documentReviews": {
+                    "label": "Révisions de documents"
+                },
+                "pendingReview": {
+                    "label": "Révisions en attente"
+                }
+            },
+            "userRole": {
+                "title": "Rôles des utilisateurs"
             }
         }
     },
@@ -1718,6 +1771,28 @@
     "auditLog": {
         "title": "Journal d'audit",
         "subtitle": "Suivre toutes les activités et les modifications du système pour la conformité.",
+        "filters": {
+            "search": {
+                "label": "Rechercher par utilisateur, action, adresse IP ou user agent",
+                "placeholder": "Rechercher dans les logs..."
+            },
+            "event": {
+                "label": "Filtrer par événement",
+                "placeholder": "Tous les événements"
+            },
+            "status": {
+                "label": "Filtrer par statut",
+                "placeholder": "Tous les statuts"
+            },
+            "user": {
+                "label": "Filtrer par utilisateur",
+                "placeholder": "Tous les utilisateurs"
+            },
+            "dateRange": {
+                "label": "Filtrer par plage de dates",
+                "placeholder": "Sélectionnez une plage de dates"
+            }
+        },
         "events": {
             "AUTH_LOGIN_ATTEMPT": "Tentative de connexion",
             "AUTH_LOGIN": "Connexion",
@@ -1725,19 +1800,36 @@
             "DOCUMENT_CREATE": "Document créé",
             "DOCUMENT_EDIT": "Document modifié",
             "DOCUMENT_UPDATE": "Document mis à jour",
+            "DOCUMENT_DELETE": "Document supprimé",
+            "DOCUMENT_DOWNLOAD": "Document telechargé",
             "DOCUMENT_VERSION_CREATED": "Version créée",
             "DOCUMENT_VERSION_APPROVED": "Version approuvée",
             "DOCUMENT_VERSION_REJECTED": "Version rejetée",
             "DOCUMENT_STATUS_CHANGE": "Statut modifié",
             "DOCUMENT_REVIEW_SUBMITTED": "Revue soumise",
+            "DOCUMENT_REVIEW_APPROVED": "Revue approuvée",
+            "DOCUMENT_REVIEW_COMPLETED": "Revue complétée",
             "USER_ADD": "Utilisateur ajouté",
             "USER_UPDATE": "Utilisateur mis à jour",
             "USER_DELETE": "Utilisateur supprimé",
             "DEPARTMENT_CREATE": "Département créé",
             "DEPARTMENT_UPDATE": "Département mis à jour",
             "DEPARTMENT_DELETE": "Département supprimé",
+            "COMPLIANCE_CREATE": "Conformité créée",
+            "COMPLIANCE_UPDATE": "Conformité mise à jour",
+            "COMPLIANCE_CREATED": "Conformité créée",
+            "COMPLIANCE_UPDATED": "Conformité mise à jour",
             "ACCESS_LOG": "Journal d’accès",
             "EXPORT_LOGS": "Journaux exportés"
+        },
+        "targets": {
+            "DOCUMENT": "Document",
+            "USER": "Utilisateur",
+            "DEPARTMENT": "Départment",
+            "REVIEW": "Révision",
+            "VERSION": "Version",
+            "APPROVAL": "Approbation",
+            "COMPLIANCE": "Conformité"
         },
         "status": {
             "SUCCESS": "Succès",
@@ -1748,11 +1840,13 @@
                 "event": "Evenement",
                 "status": "Statut",
                 "user": "Utilisateur",
-                "action": "Action",
+                "action": "Evénement",
                 "ipAddress": "Adresse IP",
                 "timestamp": "Date et heure",
                 "details": "Détails",
-                "types": "Types"
+                "types": "Types",
+                "targets": "Targets",
+                "userAgent": "User Agent"
             },
             "empty": {
                 "title": "Aucun journal",
@@ -1762,10 +1856,18 @@
                 "details": {
                     "title": "Détails",
                     "actions": {
-                        "view": {
+                        "viewMore": {
                             "label": "Voir plus"
+                        },
+                        "viewLess": {
+                            "label": "Voir moins"
                         }
                     }
+                },
+                "types": {
+                    "DOCUMENT": "Document",
+                    "USER": "Utilisateur",
+                    "REVIEW": "Révision"
                 }
             }
         },
@@ -1779,6 +1881,29 @@
             "export": {
                 "label": "Exporter les journaux"
             }
+        },
+        "details": {
+            "name": "Nom",
+            "email": "Email",
+            "role": "Rôle",
+            "department": "Département",
+            "status": "Statut",
+            "description": "Description",
+            "title": "Titre",
+            "type": "Type",
+            "version": "Version",
+            "reviewers": "Réviseurs",
+            "owners": "Propriétaires",
+            "departments": "Départements",
+            "authors": "Auteurs",
+            "reviewFrequency": "Fréquence de révision",
+            "classification": "Classification",
+            "isoClause": "Clause/Numéro de contrôle",
+            "comment": "Commentaire",
+            "decision": "Décision",
+            "from": "De",
+            "to": "À",
+            "document": "Document"
         }
     },
     "unauthorized": {
@@ -1984,6 +2109,27 @@
         "dueDateProgress": {
             "left": "Il reste {{time}}",
             "overdue": "En retard de {{time}}"
+        },
+        "dateRangePicker": {
+            "presetRanges": {
+                "today": "Aujourd'hui",
+                "yesterday": "Hier",
+                "last7": "Derniers 7 jours",
+                "last14": "Derniers 14 jours",
+                "last30": "Derniers 30 jours",
+                "thisWeek": "Cette semaine",
+                "lastWeek": "La semaine dernière",
+                "thisMonth": "Ce mois-ci",
+                "lastMonth": "Le mois dernier"
+            },
+            "actions": {
+                "cancel": {
+                    "label": "Annuler"
+                },
+                "apply": {
+                    "label": "Appliquer"
+                }
+            }
         }
     },
     "navigation": {
@@ -2048,7 +2194,9 @@
         "notifications": {
             "title": "Notifications",
             "empty": "Aucune notification",
-            "markAllAsRead": "Tout marquer comme lu"
+            "markAllAsRead": "Marquer tout comme lu",
+            "deleteAll": "Effacer les notifications",
+            "viewAll": "Voir toutes les notifications"
         }
     },
     "sidebar": {
@@ -2136,6 +2284,97 @@
                 "goHome": {
                     "label": "Aller à la page d'accueil"
                 }
+            }
+        }
+    },
+    "networkError": {
+        "title": "Erreur réseau",
+        "description": "Il semble y avoir un problème de connexion. Veuillez vérifier votre connexion Internet et réessayer.",
+        "actions": {
+            "retry": {
+                "label": "Réessayer"
+            }
+        },
+        "troubleshootHint": "Ou vérifiez votre connexion"
+    }
+    ,
+    "notifications": {
+        "loading": "Chargement des notifications...",
+        "error": "Erreur lors du chargement des notifications",
+        "emptyByDocument": "Aucune notification pour ce document",
+        "templates": {
+            "REVIEW_NEEDED": {
+                "title": "Revue nécessaire",
+                "message": "Vous avez une revue à consulter pour \u201C{{title}}\u201D"
+            },
+            "REVIEW_OVERDUE": {
+                "title": "Revue en retard",
+                "message": "La revue du document \u201C{{title}}\u201D est en retard"
+            },
+            "REVIEW_COMPLETED": {
+                "title": "Revue terminée",
+                "message": "La revue du document \u201C{{title}}\u201D a été complétée"
+            },
+            "DOCUMENT_UPDATED": {
+                "title": "Document mis à jour",
+                "message": "Le document \u201C{{title}}\u201D a été mis à jour"
+            },
+            "DOCUMENT_APPROVED": {
+                "title": "Document approuvé",
+                "message": "Le document \u201C{{title}}\u201D a été approuvé"
+            },
+            "DOCUMENT_PARTIALLY_APPROVED": {
+                "title": "Approbation partielle",
+                "message": "Le document \u201C{{title}}\u201D a reçu des approbations partielles",
+                "approvedBy": "Approuvé par",
+                "pendingReviewers": "En attente de l'avis de"
+            },
+            "DOCUMENT_REJECTED": {
+                "title": "Document rejeté",
+                "message": "Le document \u201C{{title}}\u201D a été rejeté",
+                "rejectedBy": "Rejeté par"
+            },
+            "VERSION_CREATED": {
+                "title": "Nouvelle version créée",
+                "message": "Une nouvelle version du document \u201C{{title}}\u201D a été créée"
+            },
+            "VERSION_APPROVED": {
+                "title": "Version approuvée",
+                "message": "La version du document \u201C{{title}}\u201D a été approuvée"
+            },
+            "VERSION_REJECTED": {
+                "title": "Version rejetée",
+                "message": "La version du document \u201C{{title}}\u201D a été rejetée"
+            },
+            "USER_INVITED": {
+                "title": "Invitation reçue",
+                "message": "Vous avez été invité à rejoindre la plateforme"
+            },
+            "NONCONFORMITY_CREATED": {
+                "title": "Non-conformité créée",
+                "message": "Une non-conformité a été créée pour le document \u201C{{title}}\u201D"
+            },
+            "ACTION_CREATED": {
+                "title": "Action créée",
+                "message": "Une action corrective a été créée pour le document \u201C{{title}}\u201D"
+            },
+            "ASSIGNMENT": {
+                "author": {
+                    "title": "Nouveau document créé",
+                    "message": "Vous avez été assigné en tant qu'auteur au document \u201C{{title}}\u201D"
+                },
+                "reviewer": {
+                    "title": "Nouveau document créé",
+                    "message": "Vous avez été assigné en tant que réviseur au document \u201C{{title}}\u201D"
+                }
+            },
+            "PUBLIC_PUBLISHED": {
+                "title": "Document public publié",
+                "message": "Le document public \u201C{{title}}\u201D a été publié"
+            },
+            "DOCUMENT_PUBLISHED": {
+                "title": "Document publié",
+                "message": "Le document \u201C{{title}}\u201D a été publié"
             }
         }
     }

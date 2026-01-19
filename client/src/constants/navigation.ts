@@ -4,7 +4,6 @@ import {
     FileText,
     GitBranch,
     Users,
-    Shield,
     Activity,
     type LucideIcon,
     Building2,
@@ -12,6 +11,7 @@ import {
     FileLock2,
     Lightbulb,
     BookCheck,
+    Shield,
 } from 'lucide-react';
 
 type MenuItem = {

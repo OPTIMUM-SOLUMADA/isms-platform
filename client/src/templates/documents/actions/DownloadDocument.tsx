@@ -1,9 +1,9 @@
 import { LoadingButton } from '@/components/ui/loading-button';
-import { useDocument } from '@/contexts/DocumentContext';
+import { useDownloadDocument } from '@/hooks/queries/useDocumentMutations';
 import { usePermissions } from '@/hooks/use-permissions';
 import { Document } from '@/types';
 import { Download } from 'lucide-react';
-import { PropsWithChildren, useMemo, useState } from 'react'
+import { PropsWithChildren, useMemo } from 'react'
 import { useTranslation } from 'react-i18next';
 
 interface DownloadDocumentProps extends PropsWithChildren {
@@ -16,10 +16,9 @@ const DownloadDocument = ({
     document,
     loadingText = ""
 }: DownloadDocumentProps) => {
-    const { download } = useDocument();
+    const { mutate:download, isPending } = useDownloadDocument();
     const { hasActionPermission } = usePermissions();
     const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
 
     const cannotBeDownloaded = useMemo(() =>
         !hasActionPermission('document.download') || document.classification !== "PUBLIC"
@@ -27,18 +26,13 @@ const DownloadDocument = ({
 
     const handleClick = async () => {
         if (cannotBeDownloaded) return;
-        try {
-            setLoading(true);
-            await download({ id: document.id });
-        } finally {
-            setLoading(false);
-        }
+        download({ id: document.id });
     };
 
     return (
         <LoadingButton
             aria-label='Download button'
-            isLoading={loading}
+            isLoading={isPending}
             loadingText={loadingText}
             variant="outline"
             onClick={handleClick}

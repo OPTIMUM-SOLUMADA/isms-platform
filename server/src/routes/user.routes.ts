@@ -24,4 +24,7 @@ router.patch('/:id/deactivate', controller.deactivate.bind(controller));
 // activate user
 router.patch('/:id/activate', controller.activate.bind(controller));
 
+// user roles stats
+router.get('/stats/roles', controller.getUserRolesStats.bind(controller));
+
 export default router;

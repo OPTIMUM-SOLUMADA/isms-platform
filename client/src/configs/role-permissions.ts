@@ -69,6 +69,7 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "document-types.page.access",
         "iso-clauses.page.access",
         "published-document.page.access",
+        "documents.review.access",
     ],
     [RoleType.CONTRIBUTOR]: [
         "dashboard.page.access",
@@ -78,18 +79,23 @@ export const roleAccessPermissions: Record<RoleType, AccessPermission[]> = {
         "compliance.page.access",
         "audit.page.access",
         "settings.page.access",
+        "departments.page.access",
+        "document-types.page.access",
         "published-document.page.access",
+        "iso-clauses.page.access",
+        "documents.review.access"
     ],
     [RoleType.REVIEWER]: [
-        "documents.page.access",
+        // "documents.page.access",
         "reviews.page.access",
-        "compliance.page.access",
+        // "compliance.page.access",
         "settings.page.access",
         "published-document.page.access",
+        "documents.review.access"
     ],
     [RoleType.VIEWER]: [
-        "documents.page.access",
-        "compliance.page.access",
+        // "documents.page.access",
+        // "compliance.page.access",
         "settings.page.access",
         "published-document.page.access",
     ],

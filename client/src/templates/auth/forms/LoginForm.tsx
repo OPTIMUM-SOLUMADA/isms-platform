@@ -41,8 +41,8 @@ export default function LoginForm({
         defaultValues: {
             email: "",
             password: "",
-            // email: "njatotianafiononana@gmail.com",
-            // password: "Nj@to0012",
+            // email: "m.pdfb001.onisoa.optimumsolutions@gmail.com",
+            // password: "SO!um2d2", //"Nj@to0012",
             rememberMe: false
         },
         reValidateMode: "onChange"

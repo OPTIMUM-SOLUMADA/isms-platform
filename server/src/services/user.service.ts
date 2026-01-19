@@ -1,7 +1,7 @@
 import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
 
-const userIncludes: Prisma.UserInclude = {
+export const userIncludes: Prisma.UserInclude = {
     documentReviews: true,
     documentApprovals: true,
     notifications: true,
@@ -35,9 +35,14 @@ const userIncludes: Prisma.UserInclude = {
         },
     },
 };
+
+export type UserPayload = Prisma.UserGetPayload<{ include: typeof userIncludes }>;
+
+/**
+ * Service for managing users
+ */
 export class UserService {
     async createUser(data: Prisma.UserCreateInput) {
-        console.log('data', data);
         return prisma.user.create({
             data,
             include: {
@@ -179,5 +184,19 @@ export class UserService {
                 isActive: true,
             },
         });
+    }
+
+    async getUserRolesStats() {
+        const roles = await prisma.user.groupBy({
+            by: ['role'],
+            _count: {
+                role: true,
+            },
+        });
+        const stats: Record<string, number> = {};
+        roles.forEach((role) => {
+            stats[role.role] = role._count.role;
+        });
+        return stats;
     }
 }

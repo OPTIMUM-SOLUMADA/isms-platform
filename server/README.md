@@ -5,6 +5,33 @@ It supports user management, email notifications, Google OAuth2, and more.
 
 ---
 
+## 📁 Folder structure
+```bash
+├── prisma                   # Prisma schema & migrations
+├── public                   # Static public assets (images, css, uploads)
+├── src                      # Application source code
+│   ├── configs              # App configuration files (env, mail, puppeteer, etc.)
+│   ├── controllers          # Route handlers (receive requests, call services)
+│   ├── database             # Prisma client, DB setup
+│   ├── init                 # App initialization logic (creating or inserting data in db before using the app)
+│   ├── jobs                 # Cron jobs / background tasks (Generating reviews)
+│   ├── middlewares          # Express middlewares (auth, error handling)
+│   ├── routes               # API routes (mapping endpoints to controllers)
+│   ├── services             # Business logic (controllers call services)
+│   ├── types                # TypeScript types/interfaces
+│   ├── utils                # Reusable helpers (date, file, string utils)
+│   ├── validators           # Request validators (Joi)
+│   ├── views                # Template views (EJS)
+│   ├── app.ts               # Express app configuration (middlewares, routes)
+│   └── server.ts            # Server entry (starts the HTTP server)
+├── templates                # Email templates
+│   ├── en                   # English templates
+│   ├── fr                   # French templates
+│   └── partials             # Reusable template parts
+├── tests                    # Automated tests (unit/integration)
+
+```
+
 ## ⚙️ Setup Guide
 
 ### 🧩 Prerequisites

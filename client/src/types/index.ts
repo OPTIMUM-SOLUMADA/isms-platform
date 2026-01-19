@@ -20,16 +20,21 @@ export type AuditEntry = {
 
 export type ComplianceClause = {
   id: string;
-  clause: string;
-  title: string;
-  progress: number;
-  status: "compliant" | "partial" | "non-compliant" | "not-started";
-  documents: number;
-  lastReviewed: string;
-  nextReview: string;
-  owner: string;
-  priority: "high" | "medium" | "low";
+  isoClauseId: string;          // correspond à isoClauseId dans Prisma
+  ownerId?: string;             // correspond à ownerId dans Prisma
+  clause: string;               // nom ou code de la clause (ex: "A.5.1")
+  title: string;                // titre descriptif de la clause
+  progress: number;             // 0-100
+  status: "COMPLIANT" | "NON_COMPLIANT"; // enum du back
+  document: Document;            // nombre de documents associés
+  lastReviewed?: string;        // Date ISO string
+  nextReview?: string;          // Date ISO string
+  createdAt: string;            // Date ISO string
+  updatedAt: string;            // Date ISO string
+  isoClause: ISOClause;
+  owner: User | null;
 };
+
 
 type DocumentStatus = "DRAFT" | "IN_REVIEW" | "APPROVED" | "EXPIRED";
 export type DocumentClassification =
@@ -157,7 +162,8 @@ export type AuditTargetType =
   | 'DEPARTMENT'
   | 'VERSION'
   | 'REVIEW'
-  | 'APPROVAL';
+  | 'APPROVAL'
+  | 'COMPLIANCE';
 export type AuditStatus = 'SUCCESS' | 'FAILED';
 
 export type AuditTarget = {
@@ -170,21 +176,46 @@ export type AuditLog = {
   userId?: string | null;
   eventType: AuditEventType;
   details?: Record<string, any> | null; // Json en Prisma => Record<string, any>
-  timestamp: Date;
+  timestamp: string;
   targets: AuditTarget[];
   status: AuditStatus;
   ipAddress?: string;
+  userAgent?: string;
 
   // Relations
   user?: User | null;
 };
+
 export type AuditEventType =
-  | "DOCUMENT_UPLOAD"
+  // Auth
+  | "AUTH_LOGIN_ATTEMPT"
+  | "AUTH_LOGIN"
+  | "AUTH_LOGOUT"
+  // Document
   | "DOCUMENT_UPDATE"
+  | "DOCUMENT_EDIT"
+  | "DOCUMENT_CREATE"
+  | "DOCUMENT_DELETE"
+  | "DOCUMENT_DOWNLOAD"
+  // Document version
   | "DOCUMENT_VERSION_CREATED"
+  | "DOCUMENT_VERSION_APPROVED"
+  | "DOCUMENT_VERSION_REJECTED"
   | "DOCUMENT_STATUS_CHANGE"
   | "DOCUMENT_REVIEW_SUBMITTED"
-  | "USER_ROLE_CHANGE"
+  | "DOCUMENT_REVIEW_COMPLETED"
+  // User
+  | "USER_UPDATE"
+  | "USER_ADD"
+  | "USER_DELETE"
+  // Department
+  | "DEPARTMENT_CREATE"
+  | "DEPARTMENT_UPDATE"
+  | "DEPARTMENT_DELETE"
+  // Compliance
+  | "COMPLIANCE_CREATED"
+  | "COMPLIANCE_UPDATED"
+  // Action
   | "ACCESS_LOG"
   | "EXPORT_LOGS";
 
@@ -320,4 +351,60 @@ export type RecentlyViewedDocument = {
 
   document: Document;
   user: User;
+}
+
+export type NotificationType =
+  // Review notifications
+  | "REVIEW_NEEDED"
+  | "REVIEW_OVERDUE"
+  | "REVIEW_COMPLETED"
+  // Document notifications
+  | "DOCUMENT_CREATED"
+  | "DOCUMENT_UPDATED"
+  | "DOCUMENT_APPROVED"
+  | "DOCUMENT_PARTIALLY_APPROVED"
+  | "DOCUMENT_REJECTED"
+  | "DOCUMENT_EXPIRED"
+  // Version notifications
+  | "VERSION_CREATED"
+  | "VERSION_APPROVED"
+  | "VERSION_REJECTED"
+  // User & invitation notifications
+  | "USER_INVITED"
+  // Compliance notifications
+  | "NONCONFORMITY_CREATED"
+  | "ACTION_CREATED";
+
+export type Notification = {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string | null;
+  documentId?: string | null;
+  metadata?: {
+    approvedReviewers?: Array<{ id: string; name: string }>;
+    pendingReviewers?: Array<{ id: string; name: string }>;
+    rejectedBy?: Array<{ id: string; name: string }>;
+  };
+  createdAt: string;
+
+  user?: User;
+  document?: {
+    id: string;
+    title: string;
+    status: DocumentStatus;
+  };
+}
+
+export type NotificationListResponse = {
+  notifications: Notification[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

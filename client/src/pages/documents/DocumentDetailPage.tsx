@@ -16,7 +16,6 @@ import {
   Users,
   Building2,
   BookLock,
-  GitBranch,
   FileStack,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +47,6 @@ import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { useDocumentUI } from "@/stores/document/useDocumentUi";
 import { useGetDocument } from "@/hooks/queries/useDocumentMutations";
 import DepartmentRoleHoverCard from "@/templates/departments/hovercard/departmentRoleHoverCard";
-import ChangeLog from "@/templates/documents/tabs/ChangeLog";
 import DocumentVersionHistory from "@/templates/documents/tabs/DocumentVersionHistory";
 
 const tabs = [
@@ -62,14 +60,14 @@ const tabs = [
       return <DocumentPreview version={currentVersion} mode="view" />
     }
   },
-  {
-    id: "change-log",
-    label: "document.view.tabs.changeLog.label",
-    icon: Clock,
-    content: (document: Document) => {
-      return <ChangeLog document={document} />
-    }
-  },
+  // {
+  //   id: "change-log",
+  //   label: "document.view.tabs.changeLog.label",
+  //   icon: Clock,
+  //   content: (document: Document) => {
+  //     return <ChangeLog document={document} />
+  //   }
+  // },
   {
     id: "version-history",
     label: "document.view.tabs.versionsHistory.label",
@@ -78,14 +76,14 @@ const tabs = [
       return <DocumentVersionHistory document={document} />
     }
   },
-  {
-    id: "reviews-log",
-    label: "document.view.tabs.reviewsLog.label",
-    icon: GitBranch,
-    content: (document: Document) => {
-      return <ChangeLog document={document} />
-    }
-  },
+  // {
+  //   id: "reviews-log",
+  //   label: "document.view.tabs.reviewsLog.label",
+  //   icon: GitBranch,
+  //   content: (document: Document) => {
+  //     return <ChangeLog document={document} />
+  //   }
+  // },
 ];
 
 const UserIcon = ({ numberOfUsers }: { numberOfUsers: number }) => {
@@ -182,14 +180,14 @@ export default function DocumentDetailPage() {
             )}
 
             {hasActionPermission("document.edit") && (
-              <Button variant="outline" onClick={() => navigate(`/documents/edit/${document.id}`)}>
+              <Button variant="outline" disabled={document.published || !hasActionPermission("document.edit")} onClick={() => navigate(`/documents/edit/${document.id}`)}>
                 <Pencil className="h-4 w-4 mr-1" />
                 {t("document.view.actions.edit.label")}
               </Button>
             )}
 
             {hasActionPermission("document.delete") && (
-              <Button variant="destructive" onClick={handleDelete}>
+              <Button variant="destructive" disabled={document.published || !hasActionPermission("document.delete")} onClick={handleDelete}>
                 <Trash2 className="h-4 w-4 mr-1" />
                 {t("document.view.actions.delete.label")}
               </Button>

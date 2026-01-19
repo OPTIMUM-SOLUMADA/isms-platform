@@ -84,7 +84,7 @@ model User {
 
   //Relation
   documentReviews   DocumentReview[]
-  documentApprovals DocumentApproval[]
+  documentApprovals DocumentApproval[] 
   notifications     Notification[]
   auditLogs         AuditLog[]
 
@@ -108,6 +108,8 @@ model User {
   createdDepartmentRoles DepartmentRole[]         @relation("DepartmentRolesCreated")
   createdISOClauses      ISOClause[]              @relation("CreatedISOClauses")
   recentlyViews          RecentlyViewedDocument[]
+  nonConformity          NonConformity[]
+  correctiveAction       CorrectiveAction[]
 
   @@index([email, isActive])
   @@index([role])
@@ -197,7 +199,6 @@ enum ReviewFrequency {
   SEMI_ANNUAL
   YEARLY
   BIENNIAL
-  AS_NEEDED
 }
 
 enum Classification {
@@ -221,6 +222,9 @@ model Document {
 
   classification Classification @default(CONFIDENTIAL)
 
+  // ➕ Ajout pour la notification 1 mois avant
+  lastPreReviewNotification DateTime?
+  
   departmentRoles DepartmentRoleDocument[]
 
   categoryId String?       @db.ObjectId
@@ -239,9 +243,12 @@ model Document {
   approvals     DocumentApproval[]
   notifications Notification[]
   reviewers     DocumentReviewer[] @relation("DocumentReviewerDocument")
+  clauseCompliance ClauseCompliance[]
 
-  authors       DocumentAuthor[]         @relation("DocumentAuthorDocument")
-  recentlyViews RecentlyViewedDocument[]
+  authors            DocumentAuthor[]         @relation("DocumentAuthorDocument")
+  recentlyViews      RecentlyViewedDocument[]
+  documentCompliance DocumentCompliance[]
+  nonConformity      NonConformity[]
 
   @@index([title])
   @@map("documents")
@@ -294,6 +301,8 @@ model ISOClause {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  clauseCompliance  ClauseCompliance[]
 
   @@map("iso_clauses")
 }
@@ -369,8 +378,8 @@ model DocumentApproval {
   versionId  String   @db.ObjectId
   approvedAt DateTime @default(now())
 
-  document Document        @relation(fields: [documentId], references: [id])
-  version  DocumentVersion @relation(fields: [versionId], references: [id])
+  document Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version  DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
   approver User            @relation(fields: [approverId], references: [id])
 
   @@unique([documentId, versionId, approverId])
@@ -379,10 +388,33 @@ model DocumentApproval {
 
 // Les notifications sont essentielles pour les rappels et les alertes.
 enum NotificationType {
+  // Review notifications
   REVIEW_NEEDED
   REVIEW_OVERDUE
-  DOCUMENT_APPROVED
+  REVIEW_COMPLETED
+  DOCUMENT_REVIEW_REMINDER
+  // Document notifications
+  DOCUMENT_CREATED
   DOCUMENT_UPDATED
+  DOCUMENT_APPROVED
+  DOCUMENT_PARTIALLY_APPROVED
+  DOCUMENT_REJECTED
+  DOCUMENT_EXPIRED
+  // Version notifications
+  VERSION_CREATED
+  VERSION_APPROVED
+  VERSION_REJECTED
+  // User & invitation notifications
+  USER_INVITED
+
+  //Compliance notifications
+  COMPLIANCE_CREATE
+  COMPLIANCE_UPDATE
+  COMPLIANCE_DELETE
+
+  // Compliance notifications
+  NONCONFORMITY_CREATED
+  ACTION_CREATED
 }
 
 model Notification {
@@ -392,12 +424,15 @@ model Notification {
   title      String
   message    String
   isRead     Boolean          @default(false)
-  documentId String?          @db.ObjectId // Ajouté : Pour lier la notification à un document
+  readAt     DateTime?
+  documentId String?          @db.ObjectId // Lien optionnel vers un document
+  metadata   Json?            // Données supplémentaires (ex: listes de reviewers)
   createdAt  DateTime         @default(now())
 
-  user     User      @relation(fields: [userId], references: [id])
-  document Document? @relation(fields: [documentId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
 
+  @@index([userId, isRead, createdAt])
   @@map("notifications")
 }
 
@@ -414,6 +449,12 @@ enum AuditEventType {
   DOCUMENT_UPDATE
   DOCUMENT_EDIT
   DOCUMENT_CREATE
+  DOCUMENT_DELETE
+  DOCUMENT_DOWNLOAD
+  // Document type (dedicated events)
+  DOCUMENT_TYPE_CREATE
+  DOCUMENT_TYPE_UPDATE
+  DOCUMENT_TYPE_DELETE
   // Document version
   DOCUMENT_VERSION_CREATED
   DOCUMENT_VERSION_APPROVED
@@ -421,6 +462,7 @@ enum AuditEventType {
 
   DOCUMENT_STATUS_CHANGE
   DOCUMENT_REVIEW_SUBMITTED
+  DOCUMENT_REVIEW_COMPLETED
   // User
   USER_UPDATE
   USER_ADD
@@ -429,6 +471,15 @@ enum AuditEventType {
   DEPARTMENT_CREATE
   DEPARTMENT_UPDATE
   DEPARTMENT_DELETE
+
+  // Compliance Role
+  COMPLIANCE_CREATED
+  COMPLIANCE_UPDATED
+  COMPLIANCE_DELETED
+  NON_CONFORMITY_CREATE
+
+  COMPLIANCE_CREATE
+  COMPLIANCE_UPDATE
   // Action
   ACCESS_LOG // Journal d'accès au document
   EXPORT_LOGS // Exportation des journaux
@@ -446,6 +497,7 @@ enum AuditTargetType {
   VERSION
   REVIEW
   APPROVAL
+  COMPLIANCE
 }
 
 type AuditTarget {
@@ -489,8 +541,133 @@ model RecentlyViewedDocument {
   documentId String   @db.ObjectId
   userId     String   @db.ObjectId
 
-  document Document @relation(fields: [documentId], references: [id])
-  user     User     @relation(fields: [userId], references: [id])
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("recently_viewed_documents")
 }
+
+
+// ===========================================================================================
+// COMPLIANCE / CONFORMITE ISO 27001
+// ===========================================================================================
+
+enum ComplianceStatus {
+  COMPLIANT
+  NON_COMPLIANT
+  WARNING
+}
+
+model DocumentCompliance {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String           @db.ObjectId
+  status      ComplianceStatus @default(COMPLIANT)
+  description String?
+  checkedAt   DateTime         @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, status])
+  @@map("document_compliance")
+}
+
+enum NonConformityType {
+  DOCUMENT_EXPIRED
+  REVIEW_OVERDUE
+  UNAUTHORIZED_ACCESS
+  MISSING_APPROVAL
+  OTHER
+}
+
+enum NonConformityStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model NonConformity {
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
+  type        NonConformityType
+  status      NonConformityStatus @default(OPEN)
+  description String?
+  detectedAt  DateTime @default(now())
+  resolvedAt  DateTime?
+
+  documentId String? @db.ObjectId
+  userId     String? @db.ObjectId
+
+  document Document? @relation(fields: [documentId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+
+  correctiveActions CorrectiveAction[]
+
+  @@map("non_conformities")
+}
+
+enum ActionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model CorrectiveAction {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  nonConformityId String       @db.ObjectId
+  description     String
+  ownerId         String?      @db.ObjectId
+  dueDate         DateTime?
+  status          ActionStatus @default(PENDING)
+  completedAt     DateTime?
+
+  nonConformity NonConformity @relation(fields: [nonConformityId], references: [id], onDelete: Cascade)
+  owner         User?          @relation(fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("corrective_actions")
+}
+
+enum ClauseComplianceStatus {
+  COMPLIANT
+  NON_COMPLIANT
+}
+
+model ClauseCompliance {
+  id           String                 @id @default(auto()) @map("_id") @db.ObjectId
+  isoClauseId  String                 @db.ObjectId   // Prisma stocke ObjectId ici
+  documentId   String                 @db.ObjectId
+
+  status       ClauseComplianceStatus @default(NON_COMPLIANT)
+
+  lastReviewed DateTime?
+  nextReview   DateTime?
+
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  isoClause    ISOClause               @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+  document     Document                @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@map("clause_compliance")
+  @@index([isoClauseId])
+  @@index([documentId])
+}
+
+// model ClauseCompliance {
+//   id           String                 @id @default(auto()) @map("_id") @db.ObjectId
+//   isoClauseId  String                 @db.ObjectId
+//   status       ClauseComplianceStatus @default(NON_COMPLIANT)
+//   documents    Int                    @default(0)
+//   lastReviewed DateTime?
+//   nextReview   DateTime?
+//   createdAt    DateTime               @default(now())
+//   updatedAt    DateTime               @updatedAt
+
+//   isoClause ISOClause @relation(fields: [isoClauseId], references: [id], onDelete: Cascade)
+
+//   @@map("clause_compliance")
+//   @@index([isoClauseId])
+// }
+

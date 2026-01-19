@@ -3,7 +3,7 @@ import AuthService from '@/services/authService';
 import { User } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { env } from '@/configs/env';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ApiAxiosError } from '@/types/api';
 
 export type LoginCredentials = {
@@ -20,6 +20,7 @@ interface AuthContextType {
     login: (data: LoginCredentials) => Promise<void>;
     logout: () => Promise<void>;
     errorCode?: string | null;
+    netWorkError?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,8 +33,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useLocalStorage<string | null>(env.ACCESS_TOKEN_KEY, null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
+    const [netWorkError, setNetworkError] = useState<boolean>(false);
     const isAuthenticated = useMemo(() => !!user, [user]);
+
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!token) {
@@ -46,9 +49,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .then(res => {
                 setUser(res.data);
             })
+            .catch((err) => {
+                if (err.message === 'Network Error') {
+                    setNetworkError(true);
+                    return;
+                }
+            })
             .finally(() => {
                 setIsLoading(false);
-            })
+            });
     }, [token]);
 
     const loginMutation = useMutation<any, ApiAxiosError, LoginCredentials>({
@@ -59,6 +68,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }),
         onSuccess: (res) => {
             setUser(res.data);
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
+            queryClient.invalidateQueries({ queryKey: ['audits'] });
         }
     });
 
@@ -78,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         errorCode: loginMutation.error?.response?.data?.code,
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
+        netWorkError,
     };
 
     return (

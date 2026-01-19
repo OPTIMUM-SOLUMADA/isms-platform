@@ -5,5 +5,6 @@ const controller = new AuditController();
 
 router.get('/', controller.getAll.bind(controller));
 router.get('/stats', controller.getStats.bind(controller));
+router.get('/export', controller.exportExcel.bind(controller));
 
 export default router;

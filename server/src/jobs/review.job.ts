@@ -1,3 +1,4 @@
+import { ComplianceService } from '@/services/compliance.service';
 import { DocumentService } from '@/services/document.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { logger } from '@/utils/logger';
@@ -5,13 +6,18 @@ import { getNextReviewDate, shouldNotifyReview } from '@/utils/review';
 
 const docService = new DocumentService();
 const reviewService = new DocumentReviewService();
+const complianceService = new ComplianceService();
 
 export async function generateDocumentReviewsJob() {
     const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(23, 59, 59, 999);
+
     const docs = await docService.filterDocuments({
         status: { in: ['DRAFT', 'IN_REVIEW'] },
         published: false,
-        nextReviewDate: { lte: now },
+        nextReviewDate: { lte: tomorrow }, // Cherche aujourd'hui ET demain
     });
 
     console.log('Found', docs.length, 'documents to review');
@@ -47,9 +53,20 @@ export async function generateDocumentReviewsJob() {
             continue;
         }
 
-        // Upate document next review date and status
-        await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
+        // Si le document est déjà IN_REVIEW, ne pas créer de nouvelle révision
+        if (doc.status === 'IN_REVIEW') {
+            console.log('Document already in review, skipping:', doc.id);
+            continue;
+        }
 
+        // Upate document next review date and status
+        const docUpdate = await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
+
+        const getCompliance = await complianceService.getByDocument(doc.id);
+        await complianceService.update(getCompliance?.id!, {
+            nextReview: docUpdate.nextReviewDate
+        });
+            
         // Create review
         await reviewService.assignReviewersToDocument({
             documentId: doc.id,
@@ -63,6 +80,68 @@ export async function generateDocumentReviewsJob() {
 
     logger.info(`[REVIEW] Created ${count} reviews`);
 }
+// export async function generateDocumentReviewsJob() {
+//     const now = new Date();
+//     const docs = await docService.filterDocuments({
+//         status: { in: ['DRAFT', 'IN_REVIEW'] },
+//         published: false,
+//         nextReviewDate: { lte: now },
+//     });
+
+//     console.log('Found', docs.length, 'documents to review');
+
+//     let count = 0;
+
+//     for (const doc of docs) {
+//         const frequency = doc.reviewFrequency;
+
+//         if (!frequency) {
+//             console.log('No frequency found for document', doc.id);
+//             continue;
+//         }
+
+//         const nextReviewDate = getNextReviewDate(doc.nextReviewDate, frequency);
+//         const lastVersionId = doc.versions[0]?.id;
+
+//         if (!lastVersionId) {
+//             console.log('No version found for document', doc.id);
+//             continue;
+//         }
+
+//         // Find review if already created
+//         const review = await reviewService.findReview({
+//             documentId: doc.id,
+//             documentVersionId: lastVersionId,
+//             isCompleted: false,
+//             reviewDate: { gte: now },
+//         });
+
+//         if (review) {
+//             console.log('Review already created for document', doc.id);
+//             continue;
+//         }
+
+//         // Upate document next review date and status
+//         const docUpdate = await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
+
+//         const getCompliance = await complianceService.getByDocument(doc.id);
+//         await complianceService.update(getCompliance?.id!, {
+//             nextReview: docUpdate.nextReviewDate
+//         });
+            
+//         // Create review
+//         await reviewService.assignReviewersToDocument({
+//             documentId: doc.id,
+//             documentVersionId: lastVersionId,
+//             reviewerIds: doc.reviewers.map((r) => r.user.id),
+//             dueDate: nextReviewDate,
+//         });
+
+//         count += 1;
+//     }
+
+//     logger.info(`[REVIEW] Created ${count} reviews`);
+// }
 
 export async function notifyReviewersJob() {
     logger.info('[NOTIFY] Starting notifyReviewersJob');
@@ -72,6 +151,7 @@ export async function notifyReviewersJob() {
 
         // Fetch all active reviews
         const reviews = await reviewService.getActiveReviews();
+        
 
         if (!reviews.length) {
             logger.info('[NOTIFY] No active reviews found');

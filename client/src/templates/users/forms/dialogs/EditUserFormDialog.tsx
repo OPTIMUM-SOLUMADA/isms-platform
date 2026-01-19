@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import EditUserForm from '../EditUserForm';
+import EditUserForm, { UpdateUserFormData } from '../EditUserForm';
 import { useTranslation } from 'react-i18next';
-import { useEffect } from "react";
 import { User } from "@/types";
 import { useUpdateUser } from "@/hooks/queries/useUserMutations";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
     open: boolean;
@@ -17,14 +17,19 @@ const EditUserFormDialog = ({
 }: Props) => {
 
     const { t } = useTranslation();
-    const { mutateAsync: updateUser, isSuccess, isPending, error, reset } = useUpdateUser();
+    const { user: activeUser } = useAuth();
+    const { mutate: updateUser, isPending, error } = useUpdateUser();
 
-    useEffect(() => {
-        if (isSuccess) {
-            onOpenChange(false);
-            reset();
-        }
-    }, [isSuccess, onOpenChange, reset]);
+    function handleUpdateUser(data: UpdateUserFormData) {
+        updateUser({
+            ...data,
+            userId: activeUser?.id
+        }, {
+            onSuccess: () => {
+                onOpenChange(false);
+            }
+        });
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,7 +40,7 @@ const EditUserFormDialog = ({
                 </DialogHeader>
                 <EditUserForm
                     user={user}
-                    onSubmit={updateUser}
+                    onSubmit={handleUpdateUser}
                     onCancel={() => onOpenChange(false)}
                     isPending={isPending}
                     error={error?.response?.data.code}

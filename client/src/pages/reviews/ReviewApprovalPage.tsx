@@ -76,9 +76,9 @@ const ReviewApprovalPage = () => {
                 <CardContent className='flex flex-col grow p-0'>
                     {data.documentVersion && (
                         <DocumentPreview
+                            className='grow'
                             version={data.documentVersion}
                             mode='view'
-                            className='grow'
                         />
                     )}
                     <div

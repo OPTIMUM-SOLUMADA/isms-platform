@@ -62,4 +62,6 @@ export const documentCreateSchema = Joi.object({
             'string.empty': 'Classification is required',
             'any.required': 'Classification is required',
         }),
+
+    userId: Joi.string().optional().allow(''),
 });

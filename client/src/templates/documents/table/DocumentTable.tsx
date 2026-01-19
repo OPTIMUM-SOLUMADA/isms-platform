@@ -32,9 +32,12 @@ interface DocumentActionsCell {
     doc: Document;
     onDelete?: (user: Document) => Promise<boolean>;
     onView?: (user: Document) => void;
+    onPublish?: (user: Document) => void;
+    // `publish` is a boolean flag indicating current published state
+    publish?: boolean;
 }
 
-const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
+const DocumentActionsCell = memo(({ doc, onView, publish }: DocumentActionsCell) => {
     const { t } = useTranslation();
     const { hasActionPermission, hasActionPermissions } = usePermissions();
     const navigate = useNavigate();
@@ -48,6 +51,7 @@ const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
     const handleOpenEdit = async () => {
         navigate(`edit/${doc.id}`);
     };
+    
 
     return (
         <>
@@ -63,16 +67,13 @@ const DocumentActionsCell = memo(({ doc, onView }: DocumentActionsCell) => {
                             <Eye className="mr-2 h-4 w-4" /> {t("user.table.actions.view")}
                         </DropdownMenuItem>
                     )}
-                    {hasActionPermission("user.update") && (
-                        <DropdownMenuItem onClick={handleOpenEdit}>
-                            <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
-                        </DropdownMenuItem>
-                    )}
-                    {hasActionPermission("user.delete") && (
-                        <DropdownMenuItem className="text-theme-danger" onClick={handleDelete}>
-                            <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
-                        </DropdownMenuItem>
-                    )}
+
+                    <DropdownMenuItem onClick={handleOpenEdit} disabled={publish || !hasActionPermission("user.update")}> 
+                        <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-theme-danger" onClick={handleDelete} disabled={publish || !hasActionPermission("user.delete")}>
+                        <Trash2 className="mr-2 h-4 w-4" /> {t("user.table.actions.delete")}
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </>
@@ -233,6 +234,7 @@ const Table = ({
                         <DocumentActionsCell
                             doc={doc}
                             onView={onView}
+                            publish={doc.published}
                         />
                     </div>
                 );

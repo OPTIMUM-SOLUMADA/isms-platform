@@ -22,6 +22,9 @@ export default function ResetPasswordPage() {
 
     const isInvitation = invitation === "true";
 
+
+    console.log("sear", searchParams);
+    
     const { login, errorCode } = useAuth();
     const {
         mutateAsync: changePassword,
@@ -43,6 +46,8 @@ export default function ResetPasswordPage() {
 
     const handleFormSubmit = useCallback(
         async (formData: ResetFormData) => {
+            console.log("email", email, token);
+            
             if (!email || !token) return;
 
             try {
