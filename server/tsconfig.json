@@ -2,16 +2,11 @@
   "compilerOptions": {
     "outDir": "build",
     "module": "commonjs",
-    "target": "esnext",
-    "lib": ["esnext"],
-    "types": ["node", "jest"],
+    "target": "es2022",
+    "lib": ["es2022"],
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -19,18 +14,7 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/configs/*": ["./src/configs/*"],
-      "@/controllers/*": ["./src/controllers/*"],
-      "@/database/*": ["./src/database/*"],
-      "@/init/*": ["./src/init/*"],
-      "@/jobs/*": ["./src/jobs/*"],
-      "@/middlewares/*": ["./src/middlewares/*"],
-      "@/routes/*": ["./src/routes/*"],
-      "@/services/*": ["./src/services/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/validators/*": ["./src/validators/*"]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules", "build"]
