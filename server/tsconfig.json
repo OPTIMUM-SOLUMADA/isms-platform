@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build",              // IMPORTANT pour tsc-alias
+    "outDir": "build",
     "module": "commonjs",
     "target": "es2022",
     "lib": ["es2022"],
@@ -14,11 +14,9 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/controllers/*": ["./src/controllers/*"],
-      "@/routes/*": ["./src/routes/*"],
-      "@/services/*": ["./src/services/*"]
+      "@/*": ["./src/*"]
     }
   },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
   "exclude": ["node_modules", "build"]
 }

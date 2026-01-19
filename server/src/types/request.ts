@@ -1,8 +1,9 @@
-import 'express-session';
+import { Request } from 'express';
+import { Session } from 'express-session';
 
-declare module 'express-session' {
-    interface SessionData {
-        gooleAccount?: {
+export interface RequestWithGoogleAccount extends Request {
+    session: Session & {
+        googleAccount?: {
             googleId: string;
             email: string;
             tokens: {
@@ -16,5 +17,5 @@ declare module 'express-session' {
             } | null;
             workingDirId?: string;
         };
-    }
+    };
 }

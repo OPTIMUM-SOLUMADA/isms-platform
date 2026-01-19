@@ -2,7 +2,7 @@ import 'express-session';
 
 declare module 'express-session' {
     interface SessionData {
-        gooleAccount?: {
+        googleAccount?: {
             googleId: string;
             email: string;
             tokens: {
