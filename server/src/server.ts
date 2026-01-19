@@ -1,3 +1,5 @@
+
+import 'module-alias/register';
 import app from './app';
 import { env } from './configs/env';
 import { initData } from './init/data.init';
