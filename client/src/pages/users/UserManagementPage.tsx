@@ -22,7 +22,6 @@ import { useUserUIStore } from '@/stores/user/useUserUIStore';
 import { useTranslation } from 'react-i18next';
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
-import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { userRoleColors } from '@/constants/color';
 import useUserStore from '@/stores/user/useUserStore';
