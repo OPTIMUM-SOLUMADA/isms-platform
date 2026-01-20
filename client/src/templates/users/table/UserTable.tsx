@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Mail, MoreHorizontal, Edit, Trash2, Users, UserPlus, Eye } from "lucide-react";
+import { Mail, MoreHorizontal, Edit, Trash2, Users, UserPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +32,7 @@ interface UserActionsCell {
     onView?: (user: User) => void;
 }
 
-const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
+const UserActionsCell = ({ user, onEdit }: UserActionsCell) => {
     const { t } = useTranslation();
     const { hasActionPermission, hasActionPermissions } = usePermissions();
     const { openDelete, setCurrentUser, openInvitation } = useUserUIStore();

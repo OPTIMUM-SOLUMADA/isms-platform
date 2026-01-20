@@ -37,7 +37,6 @@ export default function UserManagementPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDepartment, setFilterDepartment] = useState('all');
 
-  const navigate = useNavigate();
   const { hasActionPermission } = usePermissions();
 
   const { users } = useUserStore();
