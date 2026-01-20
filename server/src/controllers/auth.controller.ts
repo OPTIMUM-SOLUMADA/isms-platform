@@ -167,13 +167,20 @@ export class AuthController {
         });
 
         const { userId } = req.params;
-        if (!userId) {
-            res.status(400).json({ error: 'User ID is required' });
+        if (!userId || userId === 'undefined' || userId === 'null') {
+            res.status(200).json({ message: 'Logged out successfully' });
             return;
         }
-        const user = await userService.getUserById(userId!);
+        
+        // Validate userId format (MongoDB ObjectId should be 24 hex characters)
+        if (userId.length !== 24 || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+            res.status(200).json({ message: 'Logged out successfully' });
+            return;
+        }
+        
+        const user = await userService.getUserById(userId);
         if (!user) {
-            res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+            res.status(200).json({ message: 'Logged out successfully' });
             return;
         }
 
