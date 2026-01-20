@@ -197,7 +197,7 @@ export default function UserManagementPage() {
           data={filteredUsers}
           onEdit={handleOpenEditForm}
           onAddUser={openAdd}
-          onView={handleOpenView}
+          // onView={handleOpenView}
           onMessage={handleOpenMessage}
           isLoading={isLoading}
         />

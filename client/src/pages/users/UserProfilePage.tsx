@@ -67,14 +67,13 @@ interface Department {
 export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
     const [userData, setUserData] = useState<UserData | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         role: "",
         department: ""
     });
-    const [departments, setDepartment] = useState<Department[]>([]);
+    const [departments, setDepartment] = useState<Department[]>([]);    
 
     const [notifications, setNotifications] = useState({
         reviews: true,
@@ -91,13 +90,18 @@ export default function UserProfilePage() {
             try {
                 const res = await userService.getById(id!);
                 const data = res.data;
-
                 setUserData(data);
+                setDepartment(data.departmentRoleUsers[0].departmentRole)
+                
+                // Gérer différentes structures possibles de department
+                const departmentId = data.department?.id || data.departmentId || '';
+                console.log('Department ID:', data.departmentRoleUsers[0].departmentRole);
+                
                 setFormData({
                     name: data.name || '',
                     email: data.email || '',
                     role: data.role || '',
-                    department: data.department.id || ''
+                    department: departmentId
                 })
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -108,59 +112,17 @@ export default function UserProfilePage() {
             try {
                 const allDepart = await depService.list({ limit: 100, page: 1 });
                 const depart = allDepart.data;
-                setDepartment(depart);
+                setDepartment(depart.departments);
             } catch (error) {
                 console.error('Error fetching department data:', error);
             }
         }
-        fetchUser()
-        fetchDepartment()
+        
+        fetchUser();
+        fetchDepartment();
 
     }, [id])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSave = async () => {
-        try {
-            if (!userData) return;
-            const updateData = {
-                name: formData.name,
-                email: formData.email,
-                role: formData.role as RoleType,
-                departmentRoleUsers: [formData.department]
-            }
-
-            await userService.update(id!, updateData);
-            // Mettre à jour les données locales
-            const updatedUser = await userService.getById(userData.id);
-            setUserData(updatedUser.data);
-
-            setIsEditing(false);
-
-            // Optionnel: Afficher un message de succès
-            console.log('Profil mis à jour avec succès');
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour du profil:', error);
-        }
-        setIsEditing(false);
-    };
-
-    const handleCancel = () => {
-        if (!userData) return;
-        setFormData({
-            name: userData?.name || '',
-            email: userData?.email || '',
-            role: userData?.role || '',
-            department: userData?.department?.id || ''
-        });
-        setIsEditing(false);
-    };
 
     const formatTimestamp = (timestamp: string) => {
         return new Date(timestamp).toLocaleString();
@@ -252,29 +214,10 @@ export default function UserProfilePage() {
                 <div className="lg:col-span-2 space-y-6">
                     <Card className="border-0 shadow-none">
                         <CardHeader className="border-b rounded-t-lg">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="flex items-center space-x-2">
-                                    <User className="h-5 w-5 text-blue-600" />
-                                    <span>Personal Information</span>
-                                </CardTitle>
-                                {!isEditing ? (
-                                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                                        <Edit className="h-4 w-4 mr-2" />
-                                        Edit
-                                    </Button>
-                                ) : (
-                                    <div className="flex space-x-2">
-                                        <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700">
-                                            <Save className="h-4 w-4 mr-2" />
-                                            Save
-                                        </Button>
-                                        <Button onClick={handleCancel} variant="outline" size="sm">
-                                            <X className="h-4 w-4 mr-2" />
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
+                            <CardTitle className="flex items-center space-x-2">
+                                <User className="h-5 w-5 text-blue-600" />
+                                <span>Personal Information</span>
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -284,9 +227,8 @@ export default function UserProfilePage() {
                                         id="name"
                                         name="name"
                                         value={formData.name}
-                                        onChange={handleInputChange}
-                                        disabled={!isEditing}
-                                        className={!isEditing ? "bg-gray-50" : ""}
+                                        disabled
+                                        className="bg-gray-50"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -296,19 +238,15 @@ export default function UserProfilePage() {
                                         name="email"
                                         type="email"
                                         value={formData.email}
-                                        // onChange={handleInputChange}
-                                        disabled={!isEditing}
-                                        className={!isEditing ? "bg-gray-50" : ""}
+                                        disabled
+                                        className="bg-gray-50"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="role" className="text-sm font-medium text-gray-700">Role</Label>
                                     <Select
                                         value={formData.role}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, role: value }))
-                                        }
-                                        disabled={!isEditing}
+                                        disabled
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder={t('user.forms.update.department.placeholder')} />
@@ -324,24 +262,14 @@ export default function UserProfilePage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="department" className="text-sm font-medium text-gray-700">Department</Label>
-                                    <Select
-                                        value={formData.department}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, department: value }))
-                                        }
-                                        disabled={!isEditing}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('user.forms.update.department.placeholder')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {departments.map((department) => (
-                                                <SelectItem key={department.id} value={department.id}>
-                                                    {department.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <Input
+                                        id="department"
+                                        name="department"
+                                        type="text"
+                                        // value={departments.name}
+                                        disabled
+                                        className="bg-gray-50"
+                                    />
                                 </div>
                             </div>
 
@@ -366,21 +294,6 @@ export default function UserProfilePage() {
                         </CardContent>
                     </Card>
 
-                    {/* Recent Activity */}
-                    <Card className="border-0 shadow-none">
-                        <CardHeader className="border-b rounded-t-lg">
-                            <CardTitle className="flex items-center space-x-2">
-                                <Activity className="h-5 w-5 text-green-600" />
-                                <span>Recent Activity</span>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <Button variant="outline" className="w-full mt-4">
-                                <FileText className="h-4 w-4 mr-2" />
-                                View Full Activity Log
-                            </Button>
-                        </CardContent>
-                    </Card>
                 </div>
 
                 {/* Sidebar */}
