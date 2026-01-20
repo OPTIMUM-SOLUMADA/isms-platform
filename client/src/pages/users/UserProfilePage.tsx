@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     User,
     Calendar,
     Building,
     Shield,
-    Edit,
-    Save,
-    X,
     Camera,
     Key,
     Bell,
     FileText,
-    Activity,
     Clock,
     Settings,
     Award,
@@ -37,11 +33,10 @@ import {
 } from "@/components/ui/select"
 
 import { roles } from '@/constants/role';
-import { depService } from '@/services/departmentService';
+// import { depService } from '@/services/departmentService';
 import { UserAvatar } from '@/components/user-avatar';
 import { BreadcrumbNav } from '@/components/breadcrumb-nav';
 import BackButton from '@/components/BackButton';
-import { RoleType } from '@/types';
 
 interface UserData {
     id: string;
@@ -59,10 +54,10 @@ interface UserData {
     lastLogin: string;
     ownedDocuments: string;
 }
-interface Department {
-    id: string;
-    name: string;
-}
+// interface Department {
+//     id: string;
+//     name: string;
+// }
 
 export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -73,7 +68,6 @@ export default function UserProfilePage() {
         role: "",
         department: ""
     });
-    const [departments, setDepartment] = useState<Department[]>([]);    
 
     const [notifications, setNotifications] = useState({
         reviews: true,
@@ -91,7 +85,7 @@ export default function UserProfilePage() {
                 const res = await userService.getById(id!);
                 const data = res.data;
                 setUserData(data);
-                setDepartment(data.departmentRoleUsers[0].departmentRole)
+                // setDepartment(data.departmentRoleUsers[0].departmentRole)
                 
                 // Gérer différentes structures possibles de department
                 const departmentId = data.department?.id || data.departmentId || '';
@@ -108,18 +102,17 @@ export default function UserProfilePage() {
             }
         }
 
-        async function fetchDepartment() {
-            try {
-                const allDepart = await depService.list({ limit: 100, page: 1 });
-                const depart = allDepart.data;
-                setDepartment(depart.departments);
-            } catch (error) {
-                console.error('Error fetching department data:', error);
-            }
-        }
+        // async function fetchDepartment() {
+        //     try {
+        //         const allDepart = await depService.list({ limit: 100, page: 1 });
+        //         // setDepartment(depart.departments);
+        //     } catch (error) {
+        //         console.error('Error fetching department data:', error);
+        //     }
+        // }
         
         fetchUser();
-        fetchDepartment();
+        // fetchDepartment();
 
     }, [id])
 

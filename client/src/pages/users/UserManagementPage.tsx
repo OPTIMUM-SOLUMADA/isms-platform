@@ -74,10 +74,6 @@ export default function UserManagementPage() {
     openEdit();
   }, [openEdit, setCurrentUser]);
 
-  const handleOpenView = useCallback((user: User) => {
-    navigate(`view/${user.id}`, { state: { user } });
-  }, [navigate]);
-
   const handleOpenMessage = useCallback((user: User) => {
     window.open(`mailto:${user.email}`);
   }, []);
