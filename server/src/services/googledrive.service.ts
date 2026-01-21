@@ -33,13 +33,31 @@ type Role = 'owner' | 'writer' | 'commenter' | 'reader';
 
 export class GoogleDriveService implements IGoogleDriveService {
     private drive: drive_v3.Drive;
+    private oauth2Client: any;
     private workingFolderId: string;
 
     constructor(tokens: any, workingFolderId?: string) {
-        const auth = GoogleAuthConfig.getInstance().getClient();
-        auth.setCredentials(tokens);
-        this.drive = google.drive({ version: 'v3', auth });
+        this.oauth2Client = GoogleAuthConfig.getInstance().getClient();
+        if (!tokens || !tokens.refresh_token) {
+            throw new Error('Refresh token missing. User must re-authenticate with Google.');
+        }
+        this.oauth2Client.setCredentials(tokens);
+        // auth.setCredentials(tokens);
+        this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
         this.workingFolderId = workingFolderId || '';
+    }
+
+    private async handleInvalidGrant<T>(fn: () => Promise<T>): Promise<T> {
+        try {
+            return await fn();
+        } catch (error: any) {
+            if (error.response?.data?.error === 'invalid_grant') {
+                throw new Error(
+                    'Google token invalid or expired. User must re-authenticate.'
+                );
+            }
+            throw error;
+        }
     }
 
     getWorkingDirId() {
@@ -47,15 +65,17 @@ export class GoogleDriveService implements IGoogleDriveService {
     }
 
     async listFiles() {
-        const res = await this.drive.files.list({
-            pageSize: 10,
-            fields: 'files(id, name, mimeType, parents)',
-            includeItemsFromAllDrives: true,
-            supportsAllDrives: true,
-            corpora: 'user',
-            q: 'trashed = false',
+        return this.handleInvalidGrant(async () => {
+            const res = await this.drive.files.list({
+                pageSize: 10,
+                fields: 'files(id, name, mimeType, parents)',
+                includeItemsFromAllDrives: true,
+                supportsAllDrives: true,
+                corpora: 'user',
+                q: 'trashed = false',
+            });
+            return res.data;
         });
-        return res.data;
     }
 
     async getFileById(fileId: string) {
@@ -160,14 +180,33 @@ export class GoogleDriveService implements IGoogleDriveService {
         };
     }
 
-    async uploadFileFromBuffer(
-        buffer: Buffer,
-        options: { name: string; parents?: string[]; mimeType?: string },
-    ): Promise<UploadResult> {
-        const stream = Readable.from(buffer);
-        return this.uploadFileFromStream(stream, options);
+    // ---------------------------
+    // File helpers
+    // ---------------------------
+    async uploadFileFromBuffer(buffer: Buffer, options: { name: string; parents?: string[]; mimeType?: string }) {
+        return this.handleInvalidGrant(async () => {
+            const stream = Readable.from(buffer);
+            const res = await this.drive.files.create({
+                requestBody: {
+                    name: options.name,
+                    parents: options.parents ?? null,
+                },
+                media: {
+                    mimeType: options.mimeType || 'application/octet-stream',
+                    body: stream,
+                },
+                fields: 'id, name, mimeType, webViewLink, webContentLink',
+                supportsAllDrives: true,
+            });
+            return {
+                id: res.data.id!,
+                name: res.data.name!,
+                mimeType: res.data.mimeType!,
+                webViewLink: res.data.webViewLink!,
+                webContentLink: res.data.webContentLink!,
+            };
+        });
     }
-
     // ---------------------------
     // Delete file
     // ---------------------------
@@ -255,16 +294,27 @@ export class GoogleDriveService implements IGoogleDriveService {
     // ---------------------------
 
     async createFolder(name: string, parents?: string[]) {
-        if (!this.drive) throw new Error('Service not initialized.');
-        const res = await this.drive.files.create({
-            requestBody: {
-                name,
-                mimeType: 'application/vnd.google-apps.folder',
-                parents: parents || null,
-            },
-            fields: 'id, name',
+        return this.handleInvalidGrant(async () => {
+            const res = await this.drive.files.create({
+                requestBody: {
+                    name,
+                    mimeType: 'application/vnd.google-apps.folder',
+                    parents: parents || null,
+                },
+                fields: 'id, name',
+            });
+            return { id: res.data.id!, name: res.data.name };
         });
-        return { id: res.data.id!, name: res.data.name };
+        // if (!this.drive) throw new Error('Service not initialized.');
+        // const res = await this.drive.files.create({
+        //     requestBody: {
+        //         name,
+        //         mimeType: 'application/vnd.google-apps.folder',
+        //         parents: parents || null,
+        //     },
+        //     fields: 'id, name',
+        // });
+        // return { id: res.data.id!, name: res.data.name };
     }
 
     async updateFolderName(folderId: string, name: string) {
@@ -296,15 +346,21 @@ export class GoogleDriveService implements IGoogleDriveService {
     }
 
     async grantPermissions(documentId: string, emails: string[], role: Role) {
-        if (!this.drive) throw new Error('Service not initialized.');
-        for (const email of emails) {
-            await this.createPermission(documentId, {
-                role: role,
-                type: 'user',
-                emailAddress: email,
-            });
-        }
+        return this.handleInvalidGrant(async () => {
+            for (const email of emails) {
+                await this.drive.permissions.create({
+                    fileId: documentId,
+                    requestBody: {
+                        role,
+                        type: 'user',
+                        emailAddress: email,
+                    },
+                    sendNotificationEmail: false,
+                });
+            }
+        });
     }
+
 
     async removePermissions(documentId: string, emails: string[]) {
         if (!this.drive) throw new Error('Service not initialized.');
@@ -317,13 +373,15 @@ export class GoogleDriveService implements IGoogleDriveService {
     }
 
     // Find folder
+    
     async findFolderById(folderId: string) {
-        if (!this.drive) throw new Error('Service not initialized.');
-        const res = await this.drive.files.get({
-            fileId: folderId,
-            fields: 'id, name, mimeType, webViewLink, webContentLink',
+        return this.handleInvalidGrant(async () => {
+            const res = await this.drive.files.get({
+                fileId: folderId,
+                fields: 'id, name, mimeType, webViewLink, webContentLink',
+            });
+            return res.data;
         });
-        return res.data;
     }
 
     getWebViewLink(fileId: string) {

@@ -8,7 +8,7 @@ export class NotificationController {
     async list(req: Request, res: Response) {
         try {
             const { limit = '20', page = '1' } = req.query;
-            const userId = req.user?.id;
+            const userId = (req.user as any)?.id;
 
             const filter: any = {};
             if (userId) filter.userId = userId;
@@ -59,7 +59,7 @@ export class NotificationController {
 
     async markAllRead(req: Request, res: Response) {
         try {
-            const userId = req.user!.id;
+            const userId = (req.user as any).id;
             const result = await service.markAllRead(userId);
             res.json(result);
         } catch (err) {
@@ -79,7 +79,7 @@ export class NotificationController {
 
     async deleteAll(req: Request, res: Response) {
         try {
-            const userId = req.user!.id;
+            const userId = (req.user as any).id;
             const result = await service.deleteAll(userId);
             res.json(result);
         } catch (err) {

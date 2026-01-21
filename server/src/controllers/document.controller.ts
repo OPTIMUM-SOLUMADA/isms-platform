@@ -152,7 +152,7 @@ export class DocumentController {
                     documentTitle: title,
                     authorIds: authorIdsList,
                     reviewerIds: reviewerIdsList,
-                    creatorId: req.user?.id || '',
+                    ...((req.user as any)?.id && { creatorId: (req.user as any).id }),
                 });
             }
 
@@ -396,7 +396,7 @@ export class DocumentController {
                             documentId: updatedDocument.id,
                             documentVersionId: currentVersion.id,
                             reviewerIds: reviewerIdsArray,
-                            ...(req.user?.id ? { userId: req.user.id } : {}),
+                            ...((req.user as any)?.id ? { userId: (req.user as any).id } : {}),
                             dueDate: reviewDueDate,
                         });
                     }
@@ -422,7 +422,7 @@ export class DocumentController {
                     documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
                     authorIds: authorIdsList,
                     reviewerIds: reviewerIdsList,
-                    updaterId: req.user?.id || '',
+                    ...((req.user as any)?.id && { updaterId: (req.user as any).id }),
                 });
             }
 
@@ -594,7 +594,7 @@ export class DocumentController {
                 documentId: document.id,
                 documentTitle: document.title,
                 documentClassification: document.classification,
-                ...(req.user?.id && { creatorId: req.user.id }),
+                ...((req.user as any)?.id && { creatorId: (req.user as any).id }),
             });
 
             res.json(document);

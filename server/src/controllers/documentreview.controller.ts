@@ -121,7 +121,7 @@ export class DocumentReviewController {
                         user: { connect: { id: review.assignedById } },
                         type: 'REVIEW_COMPLETED',
                         title: `Revue complétée : ${review.document.title}`,
-                        message: `La revue pour "${review.document.title}" a été complétée par ${req.user?.name || 'un utilisateur'}.`,
+                        message: `La revue pour "${review.document.title}" a été complétée par ${(req.user as any)?.name || 'un utilisateur'}.`,
                         document: { connect: { id: review.documentId } },
                     } as any);
                 }
