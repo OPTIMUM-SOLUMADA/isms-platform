@@ -38,11 +38,6 @@ export default function LoginForm({
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "m.pdfb001.onisoa.optimumsolutions@gmail.com",
-            password: "SO!um2d2", //"Nj@to0012",
-            rememberMe: false
-        },
         reValidateMode: "onChange"
     });
 

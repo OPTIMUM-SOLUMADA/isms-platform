@@ -7,6 +7,7 @@ import { startOfDay, endOfDay, addDays } from 'date-fns';
 import { ClauseComplianceStatus, DocumentStatus } from '@prisma/client';
 import { getDocumentReviewReminderEmailTemplate } from '@/templates/emails/document-review-reminder.template';
 import { ComplianceService } from '@/services/compliance.service';
+import prisma from '@/database/mocks/prisma';
 
 const documentService = new DocumentService();
 const notificationService = new NotificationService();
@@ -22,6 +23,7 @@ interface DocumentToReview {
     published: boolean;
     authors: Array<{ user: { id: string; name: string; email: string } }>;
     reviewers: Array<{ user: { id: string; name: string; email: string } }>;
+    versions: Array<{ id: string; isCurrent: boolean }>;
 }
 
 /**
@@ -52,6 +54,10 @@ export async function documentReviewReminderJob(): Promise<void> {
 
         for (const document of documentsToReview) {
             try {
+                // 1. Reset reviews for current version
+                // await resetReviewsForCurrentVersion(document);
+
+                // 2. Continue existing logic (emails, notifications, etc.)
                 await processDocumentReview(document);
                 processedCount++;
             } catch (error) {
@@ -73,6 +79,43 @@ export async function documentReviewReminderJob(): Promise<void> {
         throw error;
     }
 }
+
+async function resetReviewsForCurrentVersion(document: {
+  id: string;
+  versions: { id: string; isCurrent: boolean }[];
+}) {
+  const currentVersion = document.versions.find(v => v.isCurrent);
+
+  if (!currentVersion) {
+    logger.warn(
+      { documentId: document.id },
+      '[REVIEW_REMINDER] No current version found, skipping reset',
+    );
+    return;
+  }
+
+  await prisma.documentReview.updateMany({
+    where: {
+      documentId: document.id,
+      documentVersionId: currentVersion.id,
+    },
+    data: {
+      decision: null,
+      isCompleted: false,
+      completedAt: null,
+      reviewDate: null,
+    },
+  });
+
+  logger.info(
+    {
+      documentId: document.id,
+      documentVersionId: currentVersion.id,
+    },
+    '[REVIEW_REMINDER] Reviews reset for current version',
+  );
+}
+
 
 /**
  * Find all documents whose nextReviewDate is tomorrow
