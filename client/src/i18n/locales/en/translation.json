@@ -1972,7 +1972,8 @@
         "matches": "Password confirmation does not match the password"
       },
       "email": {
-        "email": "Please enter a valid email address"
+        "email": "Please enter a valid email address",
+        "gmailRequired": "Administrators, Contributors and Reviewers must use a Gmail address (@gmail.com)"
       },
       "name": {
         "required": "This field is required"

@@ -17,8 +17,8 @@ const AuthService = {
     resetPassword: async (email: string) => {
         return axios.post(API.ENDPOINTS.AUTH.RESET_PASSWORD, { email });
     },
-    changePassword: async (resetToken: string, password: string) => {
-        return axios.patch(API.ENDPOINTS.AUTH.CHANGE_PASSWORD, { resetToken, password });
+    changePassword: async (resetToken: string, password: string, isInvitation: boolean = false) => {
+        return axios.patch(API.ENDPOINTS.AUTH.CHANGE_PASSWORD, { resetToken, password, isInvitation });
     },
     verifyResetToken: async (resetToken: string) => {
         return axios.post(API.ENDPOINTS.AUTH.VERIFY_RESET_TOKEN, { resetToken });

@@ -1960,7 +1960,8 @@
                 "matches": "Le mot de passe de confirmation ne correspond pas au mot de passe"
             },
             "email": {
-                "email": "Veuillez entrer une adresse email valide"
+                "email": "Veuillez entrer une adresse email valide",
+                "gmailRequired": "Les administrateurs, contributeurs et reviewers doivent utiliser une adresse Gmail (@gmail.com)"
             },
             "name": {
                 "required": "Ce champ est requis"

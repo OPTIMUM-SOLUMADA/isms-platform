@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
             if (!email || !token) return;
 
             try {
-                await changePassword({ resetToken: token, password: formData.password });
+                await changePassword({ resetToken: token, password: formData.password, isInvitation: isInvitation });
 
                 if (formData.keepSignedIn) {
                     await login({

@@ -27,6 +27,15 @@ const addUserSchema: z.ZodSchema<any> = z.object({
     sendInvitationLink: z.boolean().optional().default(true),
     isActive: z.boolean().optional().default(false),
     userId: z.string().optional().default(''),
+}).refine((data) => {
+    // Vérifier que les ADMIN, CONTRIBUTOR et REVIEWER utilisent des adresses Gmail
+    if (data.role === 'ADMIN' || data.role === 'CONTRIBUTOR' || data.role === 'REVIEWER') {
+        return data.email.toLowerCase().endsWith('@gmail.com');
+    }
+    return true;
+}, {
+    message: i18n.t("zod.errors.email.gmailRequired"),
+    path: ['email']
 });
 
 export type AddUserFormData = z.infer<typeof addUserSchema>;

@@ -239,7 +239,7 @@ export class AuthController {
 
     // update password
     changePassword = async (req: Request, res: Response) => {
-        const { resetToken, password } = req.body;
+        const { resetToken, password, isInvitation = false } = req.body;
         try {
             const decoded = await jwtService.verifyPasswordResetToken(resetToken);
 
@@ -262,10 +262,11 @@ export class AuthController {
             }
 
             const passwordHash = await hashPassword(password);
-            // update user password
+            // update user password and activate if it's an invitation
             await userService.updateUser(user.id, {
                 passwordResetToken: null,
                 passwordHash,
+                ...(isInvitation && { isActive: true }),
             });
 
             res.status(200).json({ message: 'Password reset successfully' });
