@@ -3,7 +3,7 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { useGetMyExpiredReviewsAndReviewsDueSoon } from '@/hooks/queries/useReviewMutation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { createSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import { getDateFnsLocale } from '@/lib/date';
 import { useTranslation } from 'react-i18next';
@@ -203,7 +203,10 @@ export function DueSoonReviewItem({ review, onViewClick }: ReviewItemProps) {
 export function ExpiredReviewItem({ review, onViewClick }: ReviewItemProps) {
 
     const { t } = useTranslation();
+    const dueDate = review?.dueDate ? new Date(review.dueDate) : null;
 
+    console.log("review.", review.dueDate);
+    
     return (
         <article
             className="w-full border rounded-lg p-4 shadow hover:shadow-lg transition-shadow bg-white space-y-2"
@@ -214,11 +217,13 @@ export function ExpiredReviewItem({ review, onViewClick }: ReviewItemProps) {
                     <div className="space-y-0">
                         <h3 className="text-sm font-medium">{review.document?.title}</h3>
                         <p className="text-xs text-gray-700 max-w-52">
-                            {t("reviewsAlert.expiredReviews.item.important", {
-                                date: format(review.dueDate, "PPpp", {
-                                    locale: getDateFnsLocale(),
-                                }),
-                            })}
+  {dueDate && isValid(dueDate)
+    ? t("reviewsAlert.expiredReviews.item.important", {
+        date: format(dueDate, "PPpp", {
+          locale: getDateFnsLocale(),
+        }),
+      })
+    : t("reviewsAlert.expiredReviews.item.noDate")}
                         </p>
                     </div>
                 </div>

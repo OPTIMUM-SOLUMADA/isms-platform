@@ -1973,7 +1973,9 @@
       },
       "email": {
         "email": "Please enter a valid email address",
-        "gmailRequired": "Administrators, Contributors and Reviewers must use a Gmail address (@gmail.com)"
+        "gmailRequired": "Administrators, Contributors and Reviewers must use an email address managed by Gmail/Google Workspace",
+        "gmailInvalid": "This email address does not use Gmail/Google Workspace. Only Gmail accounts are allowed for this role.",
+        "gmailVerificationFailed": "Unable to verify if the email uses Gmail/Google Workspace. Please try again."
       },
       "name": {
         "required": "This field is required"

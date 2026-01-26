@@ -10,6 +10,7 @@ import { AuditEventType } from '@prisma/client';
 import { getChanges } from '@/utils/change';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
+import { gmailVerificationService } from '@/services/gmail-verification.service';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -29,6 +30,8 @@ export class UserController {
                 });
                 return;
             }
+            console.log("sendInvitationLink", req.body.sendInvitationLink);
+            
 
             const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
@@ -334,6 +337,34 @@ export class UserController {
         } catch (err) {
             console.log(err);
             res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async verifyGmailAccount(req: Request, res: Response) {
+        try {
+            const { email } = req.body;
+
+            if (!email || typeof email !== 'string') {
+                res.status(400).json({
+                    error: 'Email is required',
+                    code: 'ERR_INVALID_EMAIL',
+                });
+                return;
+            }
+
+            // Vérifier si l'email utilise Gmail/Google Workspace
+            const isValid = await gmailVerificationService.verifyGmailAccount(email);
+
+            res.json({
+                valid: isValid,
+                email: email,
+            });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                error: 'Failed to verify Gmail account',
+                code: 'ERR_VERIFICATION_FAILED',
+            });
         }
     }
 }

@@ -27,4 +27,7 @@ router.patch('/:id/activate', controller.activate.bind(controller));
 // user roles stats
 router.get('/stats/roles', controller.getUserRolesStats.bind(controller));
 
+// verify gmail account
+router.post('/verify-gmail', controller.verifyGmailAccount.bind(controller));
+
 export default router;

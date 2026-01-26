@@ -7,7 +7,7 @@ import { startOfDay, endOfDay, addDays } from 'date-fns';
 import { ClauseComplianceStatus, DocumentStatus } from '@prisma/client';
 import { getDocumentReviewReminderEmailTemplate } from '@/templates/emails/document-review-reminder.template';
 import { ComplianceService } from '@/services/compliance.service';
-import prisma from '@/database/mocks/prisma';
+import prisma from '@/database/prisma';
 
 const documentService = new DocumentService();
 const notificationService = new NotificationService();
@@ -55,7 +55,7 @@ export async function documentReviewReminderJob(): Promise<void> {
         for (const document of documentsToReview) {
             try {
                 // 1. Reset reviews for current version
-                // await resetReviewsForCurrentVersion(document);
+                await resetReviewsForCurrentVersion(document);
 
                 // 2. Continue existing logic (emails, notifications, etc.)
                 await processDocumentReview(document);

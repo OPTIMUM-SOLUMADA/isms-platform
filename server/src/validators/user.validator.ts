@@ -25,14 +25,6 @@ export const userCreateSchema = Joi.object({
     sendInvitationLink: Joi.boolean().optional().default(true),
     isActive: Joi.boolean().optional().default(true),
     userId: Joi.string().optional().allow(''),
-}).custom((value, helpers) => {
-    // Vérifier que les ADMIN, CONTRIBUTOR et REVIEWER utilisent des adresses Gmail
-    if (value.role === 'ADMIN' || value.role === 'CONTRIBUTOR' || value.role === 'REVIEWER') {
-        if (!value.email.endsWith('@gmail.com')) {
-            return helpers.error('any.custom', {
-                message: 'Administrators, Contributors and Reviewers must use a Gmail address (@gmail.com)',
-            });
-        }
-    }
-    return value;
 });
+// Note: La vérification Gmail/Google Workspace est effectuée de manière asynchrone via l'endpoint /verify-gmail
+// Les utilisateurs avec les rôles ADMIN, CONTRIBUTOR et REVIEWER doivent utiliser une adresse email gérée par Gmail/Google Workspace

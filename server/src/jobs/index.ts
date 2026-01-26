@@ -29,5 +29,5 @@ export function registerCronJobs() {
     safeSchedule('0 1 * * *', 'REFRESH_GOOGLE_AUTH', refreshGoogleAuthTokensJob);
 
     // Every day at 8:00 AM - Check documents due for review tomorrow
-    safeSchedule('49 14 * * *', 'DOCUMENT_REVIEW_REMINDER', documentReviewReminderJob);
+    safeSchedule('12 15 * * *', 'DOCUMENT_REVIEW_REMINDER', documentReviewReminderJob);
 }
