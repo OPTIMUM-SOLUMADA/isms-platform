@@ -103,7 +103,6 @@ async function resetReviewsForCurrentVersion(document: {
       decision: null,
       isCompleted: false,
       completedAt: null,
-      reviewDate: null,
     },
   });
 
@@ -153,7 +152,7 @@ async function processDocumentReview(document: DocumentToReview): Promise<void> 
     }
 
     // Check if status is APPROVED and needs to be changed to IN_REVIEW
-    if (document.status === DocumentStatus.APPROVED) {
+    if (document.status !== DocumentStatus.IN_REVIEW) {
         updateData.status = DocumentStatus.IN_REVIEW;
         logger.info(`[REVIEW_REMINDER] Changing status to IN_REVIEW: ${document.title}`);
     }
@@ -164,16 +163,23 @@ async function processDocumentReview(document: DocumentToReview): Promise<void> 
     }
 
 // Update existing incomplete reviews with empty comments
-    const incompleteReviews = await reviewService.findByIdWithIncludedData(document.id);
+    const incompleteReviews = await reviewService.findByDocument(document.id);
+
+    console.log("inclomp", incompleteReviews);
+    
     const compliance = await complianceService.getByDocument(document.id);
-    await complianceService.update(compliance?.id!, {
-        status: ClauseComplianceStatus.NON_COMPLIANT
-    });
+    if (compliance) {
+        await complianceService.update(compliance.id, {
+            status: ClauseComplianceStatus.NON_COMPLIANT
+        });
+    }
     
     const reviewsToUpdate = Array.isArray(incompleteReviews) 
-        ? incompleteReviews.filter(review => !review.isCompleted && !review.comment)
+        ? incompleteReviews.filter(review => !review.isCompleted )
         : [];
 
+    console.log("reviewsToUpdate ==== ", reviewsToUpdate);
+        
     if (reviewsToUpdate && reviewsToUpdate.length > 0) {
         logger.info(
             `[REVIEW_REMINDER] Found ${reviewsToUpdate.length} incomplete reviews with empty comments for document: ${document.title}`

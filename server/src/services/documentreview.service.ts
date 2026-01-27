@@ -169,6 +169,101 @@ export class DocumentReviewService {
         });
     }
 
+    async findByDocument(id: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId: id },
+            include: {
+                document: {
+                    include: {
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                                document: {
+                                    select: {
+                                        title: true,
+                                        description: true,
+                                        status: true,
+                                        isoClause: {
+                                            select: {
+                                                name: true,
+                                                code: true,
+                                            },
+                                        },
+                                        reviewers: {
+                                            include: {
+                                                user: {
+                                                    select: {
+                                                        name: true,
+                                                        email: true,
+                                                        createdAt: true,
+                                                        role: true,
+                                                        departmentRoleUsers: {
+                                                            select: {
+                                                                id: true,
+                                                                departmentRole: {
+                                                                    select: {
+                                                                        id: true,
+                                                                        name: true,
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        isoClause: {
+                            select: {
+                                name: true,
+                                code: true,
+                            },
+                        },
+                    },
+                },
+                reviewer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        createdAt: true,
+                        role: true,
+                        departmentRoleUsers: {
+                            select: {
+                                id: true,
+                                departmentRole: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+                documentVersion: {
+                    select: {
+                        id: true,
+                        version: true,
+                        createdAt: true,
+                        fileUrl: true,
+                    },
+                },
+            },
+        });
+    }
     async findAll(): Promise<DocumentReview[]> {
         return await prisma.documentReview.findMany({
             include: {

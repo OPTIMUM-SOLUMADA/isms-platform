@@ -49,7 +49,6 @@ export async function generateDocumentReviewsJob() {
             reviewDate: { gte: now },
         });
 
-        console.log("frequ == ", review, doc.status);
         if (review) {
             console.log('Review already created for document', doc.id);
             continue;
@@ -63,11 +62,8 @@ export async function generateDocumentReviewsJob() {
 
         // Upate document next review date and status
         const docUpdate = await docService.updateDocument(doc.id, { nextReviewDate, status: 'IN_REVIEW' });
-
-        console.log("co === ", docUpdate);
         
         const getCompliance = await complianceService.getByDocument(doc.id);
-        console.log("get", getCompliance);
         // const isInReview = doc.status === 'IN_REVIEW';
         // await complianceService.update(getCompliance?.id!, {
         //     ...(isInReview ? {} : { dueDate: nextReviewDate }),
