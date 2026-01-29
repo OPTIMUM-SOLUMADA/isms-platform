@@ -19,6 +19,7 @@ import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
 import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
 import useDepartmentRoleStore from '@/stores/department/useDepatrmentRoleStore';
+import { RoleType } from '@/types/role';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -29,6 +30,9 @@ export default function DocumentAddPage() {
   const { departments } = useDepartmentStore();
   const { departmentRoles } = useDepartmentRoleStore();
   const { create, isCreating } = useDocument();
+  
+  // Filter users to exclude VIEWER role
+  const filteredUsers = users.filter(user => (user.role !== RoleType.VIEWER) && user.isActive);
 
   // data need to be fetched
   useFetchDepartments();
@@ -79,7 +83,7 @@ export default function DocumentAddPage() {
               ref={formRef}
               isoClauses={isoClauses}
               types={documentTypes}
-              users={users}
+              users={filteredUsers}
               departments={departments}
               departmentRoles={departmentRoles}
               onSubmit={saveDocument}

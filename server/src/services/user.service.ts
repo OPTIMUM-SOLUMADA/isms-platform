@@ -116,14 +116,14 @@ export class UserService {
                 isActive: true,
                 lastLogin: true,
             },
-            take: 10,
+            // take: 10,
         });
     }
 
     async listUsers({
         filter,
         page = 1,
-        limit = 20,
+        // limit = 20,
         orderBy = { createdAt: 'desc' },
     }: {
         filter?: Prisma.UserWhereInput;
@@ -135,8 +135,8 @@ export class UserService {
 
         const users = await prisma.user.findMany({
             where: filter || {},
-            skip: (page - 1) * limit,
-            take: limit,
+            // skip: (page - 1) * limit,
+            // take: limit,
             orderBy,
             select: {
                 id: true,
@@ -160,14 +160,14 @@ export class UserService {
             },
         });
 
-        const totalPages = Math.ceil(total / limit);
+        const totalPages = Math.ceil(total)// / limit);
 
         return {
             users,
             pagination: {
                 total,
                 page,
-                limit,
+                // limit,
                 totalPages,
             },
         };

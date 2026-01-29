@@ -29,7 +29,6 @@ import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
@@ -91,6 +90,8 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     },
     ref
   ) => {
+    console.log("users ********** ", users );
+    
     const { t } = useTranslation();
     const navigate = useNavigate();
     // const { openAdd } = useDepartmentUI()
@@ -138,11 +139,11 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
     // Filtrer les utilisateurs pour exclure ceux qui sont déjà sélectionnés
     const availableUsersForAuthors = users.filter(
-      user => user.role !== RoleType.VIEWER && !selectedReviewers?.includes(user.id)
+      user => !selectedReviewers?.includes(user.id)
     );
     
     const availableUsersForReviewers = users.filter(
-      user => user.role !== RoleType.VIEWER && !selectedAuthors?.includes(user.id)
+      user => !selectedAuthors?.includes(user.id)
     );
         
     // const selectedDepartmentId = watch('departmentId');
