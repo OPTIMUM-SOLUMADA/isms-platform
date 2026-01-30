@@ -66,6 +66,27 @@ const includes: Prisma.DocumentReviewInclude = {
 };
 
 export class DocumentReviewService {
+    /**
+     * Check if a review already exists for a document, reviewer, and version
+     */
+    async findExistingReview({
+        documentId,
+        reviewerId,
+        documentVersionId,
+    }: {
+        documentId: string;
+        reviewerId: string;
+        documentVersionId: string;
+    }) {
+        return prisma.documentReview.findFirst({
+            where: {
+                documentId,
+                reviewerId,
+                documentVersionId,
+            },
+        });
+    }
+
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
         return prisma.documentReview.create({
             data,
@@ -403,7 +424,27 @@ export class DocumentReviewService {
         
         if (uniqueReviewerIds.length === 0) return;
         
-        const data: Prisma.DocumentReviewCreateManyInput[] = uniqueReviewerIds.map((reviewerId) => ({
+        // Check existing reviews to avoid duplicates
+        const existingReviews = await prisma.documentReview.findMany({
+            where: {
+                documentId,
+                documentVersionId,
+                reviewerId: { in: uniqueReviewerIds },
+            },
+            select: { reviewerId: true },
+        });
+
+        const existingReviewerIds = new Set(existingReviews.map(r => r.reviewerId));
+        
+        // Only create reviews for reviewers who don't already have one
+        const newReviewerIds = uniqueReviewerIds.filter(id => !existingReviewerIds.has(id));
+        
+        if (newReviewerIds.length === 0) {
+            console.log(`[DocumentReview] All reviewers already have reviews for document ${documentId}`);
+            return;
+        }
+        
+        const data: Prisma.DocumentReviewCreateManyInput[] = newReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
             dueDate: dueDate || null,
@@ -442,6 +483,19 @@ export class DocumentReviewService {
         
         if (uniqueReviewerIds.length === 0) return;
         
+        // Check existing reviews to avoid re-creating already completed ones
+        const existingReviews = await prisma.documentReview.findMany({
+            where: {
+                documentId,
+                documentVersionId,
+                reviewerId: { in: uniqueReviewerIds },
+                isCompleted: true, // Don't recreate completed reviews
+            },
+            select: { reviewerId: true },
+        });
+
+        const completedReviewerIds = new Set(existingReviews.map(r => r.reviewerId));
+        
         const data: Prisma.DocumentReviewCreateManyInput[] = uniqueReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
@@ -449,6 +503,8 @@ export class DocumentReviewService {
             documentVersionId: documentVersionId,
             ...(userId ? { assignedById: userId } : {}),
         }));
+
+        console.log(`[DocumentReview] Creating/updating ${data.length} reviews, skipping ${completedReviewerIds.size} completed`);
 
         return prisma.documentReview.createMany({ 
             data,

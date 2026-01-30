@@ -22,6 +22,26 @@ export class DocumentReviewController {
     async create(req: Request, res: Response) {
         try {
             const { document, dueDate, reviewer, versionId } = req.body;
+            
+            // Check if a review already exists for this document, reviewer, and version
+            const existingReview = await service.findExistingReview({
+                documentId: document,
+                reviewerId: reviewer,
+                documentVersionId: versionId,
+            });
+
+            if (existingReview) {
+                return res.status(409).json({ 
+                    error: 'A review already exists for this document, reviewer, and version',
+                    code: 'ERR_REVIEW_DUPLICATE',
+                    existingReview: {
+                        id: existingReview.id,
+                        isCompleted: existingReview.isCompleted,
+                        reviewDate: existingReview.reviewDate,
+                    },
+                });
+            }
+
             const clause = await service.create({
                 document: { connect: { id: document } },
                 reviewer: { connect: { id: reviewer } },
