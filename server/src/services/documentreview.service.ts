@@ -398,7 +398,12 @@ export class DocumentReviewService {
         userId?: string;
         dueDate?: Date | null;
     }) {
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+        // Filter empty strings and remove duplicates
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (uniqueReviewerIds.length === 0) return;
+        
+        const data: Prisma.DocumentReviewCreateManyInput[] = uniqueReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
             dueDate: dueDate || null,
@@ -406,7 +411,9 @@ export class DocumentReviewService {
             ...(userId ? { assignedById: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        return prisma.documentReview.createMany({ 
+            data,
+        });
     }
 
     async updateAssignedReviewersToDocument({
@@ -429,7 +436,13 @@ export class DocumentReviewService {
                 dueDate: { gt: new Date() },
             },
         });
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+        
+        // Filter empty strings and remove duplicates
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (uniqueReviewerIds.length === 0) return;
+        
+        const data: Prisma.DocumentReviewCreateManyInput[] = uniqueReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
             dueDate: dueDate || null,
@@ -437,7 +450,9 @@ export class DocumentReviewService {
             ...(userId ? { assignedById: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        return prisma.documentReview.createMany({ 
+            data,
+        });
     }
 
     async submitReviewDecision(

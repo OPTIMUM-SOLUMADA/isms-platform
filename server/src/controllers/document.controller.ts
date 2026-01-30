@@ -100,11 +100,21 @@ export class DocumentController {
                 folderId: folder.id,
             });
 
+            // Parse and clean user IDs
+            const authorIdsList = authors
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+            const reviewerIdsList = reviewers
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+
             // link document to users (Authors and Reviewers)
             await this.service.linkDocumentToUsers({
                 documentId: createdDoc.id,
-                reviewerIds: reviewers.split(','),
-                authors: authors.split(','),
+                reviewerIds: reviewerIdsList,
+                authors: authorIdsList,
             });
 
             // Get the updated document with authors and reviewers
@@ -142,10 +152,7 @@ export class DocumentController {
                 nextReview: createdDoc.nextReviewDate,
             });
 
-            // Send notifications to assigned users
-            const authorIdsList = authors.split(',').filter((id: string) => id);
-            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
-
+            // Send notifications to assigned users (using already cleaned IDs)
             if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
                 await NotificationService.notifyDocumentCreated({
                     documentId: createdDoc.id,
@@ -303,11 +310,21 @@ export class DocumentController {
                 })),
             );
 
+            // Parse and clean user IDs
+            const updatedAuthorIdsList = authors
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+            const updatedReviewerIdsList = reviewers
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+
             // relink document to users (Authors and Reviewers)
             await this.service.reLinkDocumentToUsers({
                 documentId: updatedDocument.id,
-                reviewerIds: reviewers.split(','),
-                authors: authors.split(','),
+                reviewerIds: updatedReviewerIdsList,
+                authors: updatedAuthorIdsList,
             });
 
             // Get the updated document with authors and reviewers to grant permissions
@@ -413,15 +430,12 @@ export class DocumentController {
             const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
 
             // Send notifications to assigned users about document update
-            const authorIdsList = authors.split(',').filter((id: string) => id);
-            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
-
-            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+            if (updatedAuthorIdsList.length > 0 || updatedReviewerIdsList.length > 0) {
                 await NotificationService.notifyDocumentUpdated({
                     documentId: updatedDocument.id,
                     documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
-                    authorIds: authorIdsList,
-                    reviewerIds: reviewerIdsList,
+                    authorIds: updatedAuthorIdsList,
+                    reviewerIds: updatedReviewerIdsList,
                     ...((req.user as any)?.id && { updaterId: (req.user as any).id }),
                 });
             }

@@ -112,16 +112,27 @@ export class DocumentService {
         reviewerIds: string[];
         authors: string[];
     }) {
-        if (!authors.length && !reviewerIds.length) return;
+        // Filter empty strings and remove duplicates
+        const uniqueAuthors = [...new Set(authors.filter(id => id && id.trim()))];
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (!uniqueAuthors.length && !uniqueReviewerIds.length) return;
 
-        await prisma.$transaction([
-            prisma.documentAuthor.createMany({
-                data: authors.map((userId) => ({ documentId, userId })),
-            }),
-            prisma.documentReviewer.createMany({
-                data: reviewerIds.map((userId) => ({ documentId, userId })),
-            }),
-        ]);
+        const operations = [];
+        
+        if (uniqueAuthors.length > 0) {
+            operations.push(prisma.documentAuthor.createMany({
+                data: uniqueAuthors.map((userId) => ({ documentId, userId })),
+            }));
+        }
+        
+        if (uniqueReviewerIds.length > 0) {
+            operations.push(prisma.documentReviewer.createMany({
+                data: uniqueReviewerIds.map((userId) => ({ documentId, userId })),
+            }));
+        }
+        
+        await prisma.$transaction(operations);
     }
     
     async reLinkDocumentToUsers({
@@ -139,15 +150,19 @@ export class DocumentService {
             prisma.documentReviewer.deleteMany({ where: { documentId } }),
         ]);
 
-        if (!authors.length && !reviewerIds.length) return;
+        // Filter empty strings and remove duplicates
+        const uniqueAuthors = [...new Set(authors.filter(id => id && id.trim()))];
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (!uniqueAuthors.length && !uniqueReviewerIds.length) return;
 
         await prisma.$transaction([
-            prisma.documentAuthor.createMany({
-                data: authors.map((userId) => ({ documentId, userId })),
-            }),
-            prisma.documentReviewer.createMany({
-                data: reviewerIds.map((userId) => ({ documentId, userId })),
-            }),
+            ...(uniqueAuthors.length > 0 ? [prisma.documentAuthor.createMany({
+                data: uniqueAuthors.map((userId) => ({ documentId, userId })),
+            })] : []),
+            ...(uniqueReviewerIds.length > 0 ? [prisma.documentReviewer.createMany({
+                data: uniqueReviewerIds.map((userId) => ({ documentId, userId })),
+            })] : []),
         ]);
     }
 
