@@ -393,6 +393,16 @@ export class GoogleDriveService implements IGoogleDriveService {
     }
 
     /**
+     * Generate a Google Drive preview link for iframe embedding
+     * This URL is optimized for embedding in iframes without CORS/X-Frame-Options issues
+     * @param fileId The Google Drive file ID
+     * @returns URL that can be embedded in an iframe
+     */
+    getPreviewLink(fileId: string) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+
+    /**
      * Generate a Google Drive link that opens with a specific user account
      * @param fileId The Google Drive file ID
      * @param userEmail The email of the user who should open the file
@@ -400,5 +410,15 @@ export class GoogleDriveService implements IGoogleDriveService {
      */
     getWebViewLinkForUser(fileId: string, userEmail: string) {
         return `https://drive.google.com/file/d/${fileId}/view?authuser=${encodeURIComponent(userEmail)}`;
+    }
+
+    /**
+     * Generate a Google Drive preview link for a specific user account
+     * @param fileId The Google Drive file ID
+     * @param userEmail The email of the user who should open the file
+     * @returns Preview URL for the specified Google account
+     */
+    getPreviewLinkForUser(fileId: string, userEmail: string) {
+        return `https://drive.google.com/file/d/${fileId}/preview?authuser=${encodeURIComponent(userEmail)}`;
     }
 }

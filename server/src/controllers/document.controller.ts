@@ -75,6 +75,8 @@ export class DocumentController {
                 parents: [folder.id],
             });
 
+            const previewUrl = `https://drive.google.com/file/d/${result.id}/preview`;
+
             const fileUrl = req.file ? req.file.filename : null;
 
             const createdDoc = await this.service.createDocument({
@@ -779,6 +781,54 @@ export class DocumentController {
                 userEmail,
             });
         } catch (err) {
+            return res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    /**
+     * Get preview URL for a document version (optimized for iframe embedding)
+     * Supports both document ID and version ID
+     */
+    async getDocumentPreviewUrl(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { versionId, userEmail } = req.query;
+
+            // Try to get document first
+            const document = await this.service.getDocumentById(id!);
+            if (!document) {
+                return res.status(404).json({ error: 'Document not found' });
+            }
+
+            // Get the appropriate version
+            let targetVersion;
+            if (versionId && typeof versionId === 'string') {
+                targetVersion = document.versions.find((v) => v.id === versionId);
+            } else {
+                targetVersion = document.versions.find((v) => v.isCurrent);
+            }
+
+            if (!targetVersion?.googleDriveFileId) {
+                return res.status(404).json({ error: 'Document version not found' });
+            }
+
+            const googleDriveService = useGoogleDriveService(req);
+            
+            // Generate preview URL (with or without user-specific auth)
+            const previewUrl = userEmail && typeof userEmail === 'string'
+                ? googleDriveService.getPreviewLinkForUser(targetVersion.googleDriveFileId, userEmail)
+                : googleDriveService.getPreviewLink(targetVersion.googleDriveFileId);
+
+            const downloadUrl = googleDriveService.getWebContentLink(targetVersion.googleDriveFileId);
+
+            return res.json({
+                previewUrl,
+                downloadUrl,
+                fileId: targetVersion.googleDriveFileId,
+                version: targetVersion.version,
+            });
+        } catch (err) {
+            console.error('Error getting document preview URL:', err);
             return res.status(500).json({ error: (err as Error).message });
         }
     }
