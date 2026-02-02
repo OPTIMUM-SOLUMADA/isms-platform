@@ -34,10 +34,23 @@ axios.interceptors.response.use(
 
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (
-            error.response?.status === 401 &&
-            !originalRequest?._retry // prevent infinite loop
-        ) {
+        // Check if it's a 401 error
+        if (error.response?.status === 401 && !originalRequest?._retry) {
+            // Don't try to refresh if:
+            // 1. User is not logged in (no access token)
+            // 2. Request is to auth endpoints (login, verify-account, verify-reset-token, etc.)
+            const isAuthEndpoint = originalRequest?.url?.includes('/auth/login') ||
+                                   originalRequest?.url?.includes('/auth/verify') ||
+                                   originalRequest?.url?.includes('/auth/verify-account') ||
+                                   originalRequest?.url?.includes('/auth/verify-reset-token') ||
+                                   originalRequest?.url?.includes('/auth/change-password') ||
+                                   originalRequest?.url?.includes('/auth/reset-password');
+            
+            // If no token in localStorage or it's an auth endpoint, don't try to refresh
+            if (!accessToken || isAuthEndpoint) {
+                return Promise.reject(error);
+            }
+
             if (isRefreshing) {
                 // Queue the request until token is refreshed
                 return new Promise((resolve) => {
@@ -58,7 +71,6 @@ axios.interceptors.response.use(
                 const newToken = response.headers["authorization"]?.split(" ")[1];
                 accessToken = newToken || null;
 
-
                 // Update queued requests
                 processQueue(accessToken || undefined);
 
@@ -68,12 +80,20 @@ axios.interceptors.response.use(
                     console.log("Get new token", newToken)
                 }
                 return axios(originalRequest!);
-            } catch (refreshError) {
+            } catch (refreshError: any) {
                 console.log("Refresh token error", refreshError);
-                AuthService.logout().then(() => {
-                    localStorage.setItem(env.ACCESS_TOKEN_KEY, "");
-                });
+                // Clear token and process queue
+                accessToken = null;
+                localStorage.removeItem(env.ACCESS_TOKEN_KEY);
                 processQueue(undefined);
+                
+                // Only logout if refresh token is invalid/expired, not on network errors
+                if (refreshError?.response?.status === 401) {
+                    // Don't call logout with invalid token to avoid loops
+                    console.log("Session expired, redirecting to login");
+                    window.location.href = '/#/login';
+                }
+                
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

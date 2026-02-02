@@ -1,5 +1,6 @@
 import prisma from '@/database/prisma';
 import { Prisma } from '@prisma/client';
+import { isValidObjectId } from '@/utils/validation';
 
 export const userIncludes: Prisma.UserInclude = {
     documentReviews: true,
@@ -52,6 +53,9 @@ export class UserService {
     }
 
     async getUserById(id: string) {
+        if (!isValidObjectId(id)) {
+            return null;
+        }
         return prisma.user.findUnique({
             where: { id },
             include: {
@@ -61,6 +65,9 @@ export class UserService {
     }
 
     async getUseByIdNoInclude(id: string) {
+        if (!isValidObjectId(id)) {
+            return null;
+        }
         return prisma.user.findUnique({
             where: { id },
         });
@@ -71,6 +78,9 @@ export class UserService {
     }
 
     async updateUser(id: string, data: Prisma.UserUpdateInput) {
+        if (!isValidObjectId(id)) {
+            throw new Error(`Invalid user ID: ${id}`);
+        }
         return prisma.user.update({
             where: { id },
             data,
@@ -81,6 +91,9 @@ export class UserService {
     }
 
     async activateUser(id: string) {
+        if (!isValidObjectId(id)) {
+            throw new Error(`Invalid user ID: ${id}`);
+        }
         return prisma.user.update({
             where: { id },
             data: { isActive: true },
@@ -88,6 +101,9 @@ export class UserService {
     }
 
     async deactivateUser(id: string) {
+        if (!isValidObjectId(id)) {
+            throw new Error(`Invalid user ID: ${id}`);
+        }
         return prisma.user.update({
             where: { id },
             data: { isActive: false },
@@ -95,6 +111,9 @@ export class UserService {
     }
 
     async delete(id: string) {
+        if (!isValidObjectId(id)) {
+            throw new Error(`Invalid user ID: ${id}`);
+        }
         return prisma.user.delete({
             where: { id },
         });
