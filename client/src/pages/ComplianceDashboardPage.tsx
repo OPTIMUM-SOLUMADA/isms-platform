@@ -82,10 +82,10 @@ export default function ComplianceDashboard() {
                             <FileText className="h-4 w-4" />
                             <span>{clause.isoClause.code} - {clause.isoClause.name}</span>
                           </div>
-                          <div className="flex items-center space-x-1">
+                          {/* <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
                             <span>Last reviewed: {clause.lastReviewed ? new Date(clause.lastReviewed).toLocaleDateString() : "N/A"}</span>
-                          </div>
+                          </div> */}
                         </div>
                         <span>Next review: {clause.nextReview ? new Date(clause.nextReview).toLocaleDateString() : "N/A"}</span>
                       </div>

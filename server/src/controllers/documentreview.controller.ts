@@ -4,8 +4,8 @@ import { DocumentVersionService } from '@/services/documentversion.service';
 import { useGoogleDriveService } from '@/utils/google-drive';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
 import { DocumentService } from '@/services/document.service';
-import { AuditEventType, AuditTargetType } from '@prisma/client';
-import { stripHtmlAndClamp } from '@/utils/review';
+import { AuditEventType, AuditTargetType, ReviewDecision } from '@prisma/client';
+import { getNextReviewDate, stripHtmlAndClamp } from '@/utils/review';
 import { getChanges } from '@/utils/change';
 import { sanitizeDocument } from '@/utils/sanitize-document';
 import NotificationService from '@/services/notification.service';
@@ -66,7 +66,7 @@ export class DocumentReviewController {
     async findPendingReviews(req: Request, res: Response) {
         try {
             const { userId } = req.params;
-            const allPending = await service.findPendingReviews(userId);
+            const allPending = await service.findPendingReviews(userId);            
             return res.json(allPending);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
@@ -112,11 +112,44 @@ export class DocumentReviewController {
                 });
                 return;
             }
+            
+            // Handle case where decision is changing from REQUEST_CHANGES to APPROVE
+            if (review.decision === ReviewDecision.REQUEST_CHANGES && decision === ReviewDecision.APPROVE) {
+                const document = review.document;
+                
+                if (document.reviewFrequency) {
+                    const newDueDate = getNextReviewDate(new Date(), document.reviewFrequency);
+                    
+                    if (newDueDate) {
+                        // Update the document's nextReviewDate
+                        await documentService.updateDocument(document.id, { 
+                            nextReviewDate: newDueDate 
+                        });
+
+                        // Update all reviews for this document with the new dueDate
+                        await prisma.documentReview.updateMany({
+                            where: { documentId: document.id },
+                            data: { dueDate: newDueDate },
+                        });
+
+                        // Update related compliance
+                        const compliance = await complianceService.getByDocument(document.id);
+                        if (compliance) {
+                            await complianceService.update(compliance.id, {
+                                nextReview: newDueDate,
+                            });
+                        }
+                    }
+                }
+            }
 
             const type = await service.submitReviewDecision(reviewId!, {
                 decision,
                 comment,
             });
+
+            console.log("type ===========", type);
+            
 
             // Audit for decision made
             await req.log({

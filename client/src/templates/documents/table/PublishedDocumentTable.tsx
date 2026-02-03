@@ -96,7 +96,7 @@ const Table = ({
             },
         },
         {
-            accessorKey: "isoClause",
+            accessorKey: "publicationDate",
             enableSorting: true,
             size: 100,
             header: t("publishedDocument.sections.allDocuments.table.columns.publishedAt"),

@@ -1,10 +1,11 @@
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentReview, NotificationType, Prisma } from '@prisma/client';
+import { DocumentReview, NotificationType, Prisma, ReviewDecision } from '@prisma/client';
 import { EmailService } from './email.service';
 import { addHours, subMonths } from 'date-fns';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { getNextReviewDate } from '@/utils/review';
 
 const emailService = new EmailService();
 
@@ -340,7 +341,11 @@ export class DocumentReviewService {
         
         return prisma.documentReview.findMany({
             where: {
-                decision: { isSet: true },
+                AND: [
+                { decision: { isSet: true } },
+                { decision: { not:  ReviewDecision.REQUEST_CHANGES } },
+                ],
+                // decision: { isSet: true },
                 isCompleted: false,
                 // ...(userId && {
                 //     document: {
@@ -518,6 +523,47 @@ export class DocumentReviewService {
             'comment' | 'decision' | 'isCompleted' | 'completedAt' | 'completedBy'
         >,
     ) {
+        // Get the review with document info
+        const review = await this.findById(reviewId);
+        
+        console.log("review ====", review);
+        
+        if (!review) {
+            throw new Error('Review not found');
+        }
+
+        console.log("datat µ***", data);
+        
+        // If decision is REQUEST_CHANGES, recalculate dueDate
+        if (data.decision === ReviewDecision.REQUEST_CHANGES) {
+            const document = review.document;
+            
+            if (document.reviewFrequency) {
+                const newDueDate = getNextReviewDate(new Date(), document.reviewFrequency);
+                
+                console.log("new ====", newDueDate);
+                
+                if (newDueDate) {
+                    // Update the document's nextReviewDate
+                    await prisma.document.update({
+                        where: { id: document.id },
+                        data: { nextReviewDate: newDueDate },
+                    });
+
+                    // Update all reviews for this document with the new dueDate
+                    await prisma.documentReview.updateMany({
+                        where: { documentId: document.id },
+                        data: { dueDate: newDueDate },
+                    });
+
+                    await prisma.clauseCompliance.updateMany({
+                        where: { documentId: document.id },
+                        data: { nextReview: newDueDate },
+                    });
+                }
+            }
+        }
+
         return prisma.documentReview.update({
             where: { id: reviewId },
             data: {

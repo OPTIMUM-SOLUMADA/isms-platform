@@ -27,7 +27,7 @@ const ReviewApprovalPage = () => {
     const [openReject, setOpenReject] = useState(false);
 
     const { data, isLoading, isError } = useGetReview(reviewId);
-
+    
 
     // Check if review use for the active user
     if (data && (data.reviewer.id !== user?.id)) {
@@ -58,6 +58,10 @@ const ReviewApprovalPage = () => {
         </div>
     );
 
+    const isDisabled =
+        isLoading ||
+        (data.decision !== null && data.decision !== "REQUEST_CHANGES");
+
     return (
         <WithTitle title={t('reviewApproval.title')}>
             <div className="mb-2 flex items-center gap-5 justify-between">
@@ -81,10 +85,11 @@ const ReviewApprovalPage = () => {
                             mode='view'
                         />
                     )}
+                    
                     <div
                         className="w-full p-4 space-y-3 bg-gray-200 flex flex-col items-center justify-center"
                     >
-                        {data.decision && (
+                        {data.decision  && data.decision !== "REQUEST_CHANGES" && (
                             <div className='w-full bg-white max-w-3xl p-4 border-2 border-gray-300 rounded-lg text-sm'>
                                 {(data.decision === "REJECT" && data.comment) && (
                                     <>
@@ -113,7 +118,7 @@ const ReviewApprovalPage = () => {
                         )}
                         <fieldset
                             className="w-full flex items-center justify-center gap-4 py-4 bg-gray-200"
-                            disabled={isLoading || !!data.decision}
+                            disabled={isDisabled}
                         >
                             {/* Approve */}
                             <Button
