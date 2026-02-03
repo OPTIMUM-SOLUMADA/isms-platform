@@ -11,6 +11,7 @@ import WithTitle from "@/templates/layout/WithTitle";
 import { complianceStatusColors } from "@/constants/color";
 import { useFetchCompliance } from "@/hooks/queries/useComplianceQueries";
 import { useTranslation } from "react-i18next";
+import CircleLoading from "@/components/loading/CircleLoading";
 
 const statusIcons = {
   COMPLIANT: CheckCircle,
@@ -22,6 +23,14 @@ const statusIcons = {
 export default function ComplianceDashboard() {
   const { data: clauses = [], isLoading } = useFetchCompliance();
   const { t } = useTranslation();
+
+  if (isLoading) {
+    return (
+      <WithTitle>
+        <CircleLoading text={t("complianceDashboard.loadingClauses")} />
+      </WithTitle>
+    );
+  }
 
   // Overview stats      
   return (
@@ -46,7 +55,6 @@ export default function ComplianceDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-            {isLoading && <p>{t("complianceDashboard.loadingClauses")}</p>}
             {clauses.map((clause) => {
               const StatusIcon = statusIcons[clause.status];
               return (                    

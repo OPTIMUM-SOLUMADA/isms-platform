@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
+import CircleLoading from '@/components/loading/CircleLoading';
 
 import { Switch } from '@/components/ui/switch';
 import { useParams } from 'react-router-dom';
@@ -68,6 +69,7 @@ export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
     const [userData, setUserData] = useState<UserData | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -89,6 +91,7 @@ export default function UserProfilePage() {
 
         async function fetchUser() {
             try {
+                setIsLoading(true);
                 const res = await userService.getById(id!);
                 const data = res.data;
 
@@ -111,10 +114,12 @@ export default function UserProfilePage() {
                 setDepartment(depart);
             } catch (error) {
                 console.error('Error fetching department data:', error);
+            } finally {
+                setIsLoading(false);
             }
         }
-        fetchUser()
-        fetchDepartment()
+        
+        Promise.all([fetchUser(), fetchDepartment()]);
 
     }, [id])
 
@@ -167,6 +172,10 @@ export default function UserProfilePage() {
     };
 
     // const completionRate = Math.round((userData?.reviewsCompleted / (userData.reviewsCompleted + 5)) * 100);
+
+    if (isLoading) {
+        return <CircleLoading text={t("common.loading")} />;
+    }
 
     return (
         <div className="space-y-6">
