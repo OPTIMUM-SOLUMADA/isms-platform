@@ -286,6 +286,20 @@
         "title": "Conformité",
         "subtitle": ""
     },
+    "complianceDashboard": {
+        "title": "Tableau de bord de conformité",
+        "subtitle": "Vue d'ensemble de la conformité ISO 27001",
+        "clausesProgress": "Progrès des clauses ISO 27001",
+        "loadingClauses": "Chargement des clauses...",
+        "nextReview": "Prochaine révision",
+        "upcomingReviews": "Révisions à venir",
+        "status": {
+            "COMPLIANT": "Conforme",
+            "PARTIALLY_COMPLIANT": "Partiellement conforme",
+            "NON_COMPLIANT": "Non conforme",
+            "NOT_APPLICABLE": "Non applicable"
+        }
+    },
     "reviewApproval": {
         "title": "Approbation de document",
         "subtitle": "Examiner et approuver les documents",

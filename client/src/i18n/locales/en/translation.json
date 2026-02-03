@@ -286,6 +286,20 @@
     "title": "Compliance",
     "subtitle": ""
   },
+  "complianceDashboard": {
+    "title": "Compliance Dashboard",
+    "subtitle": "ISO 27001 compliance overview",
+    "clausesProgress": "ISO 27001 Clauses Progress",
+    "loadingClauses": "Loading clauses...",
+    "nextReview": "Next review",
+    "upcomingReviews": "Upcoming Reviews",
+    "status": {
+      "COMPLIANT": "Compliant",
+      "PARTIALLY_COMPLIANT": "Partially Compliant",
+      "NON_COMPLIANT": "Non Compliant",
+      "NOT_APPLICABLE": "Not Applicable"
+    }
+  },
   "reviewApproval": {
     "title": "Document Approval",
     "subtitle": "Review and approve documents",

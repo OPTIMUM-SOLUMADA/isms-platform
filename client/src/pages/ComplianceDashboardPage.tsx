@@ -2,7 +2,6 @@ import {
   CheckCircle,
   AlertTriangle,
   Clock,
-  Calendar,
   Shield,
   FileText,
 } from "lucide-react";
@@ -11,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import WithTitle from "@/templates/layout/WithTitle";
 import { complianceStatusColors } from "@/constants/color";
 import { useFetchCompliance } from "@/hooks/queries/useComplianceQueries";
+import { useTranslation } from "react-i18next";
 
 const statusIcons = {
   COMPLIANT: CheckCircle,
@@ -21,6 +21,7 @@ const statusIcons = {
 
 export default function ComplianceDashboard() {
   const { data: clauses = [], isLoading } = useFetchCompliance();
+  const { t } = useTranslation();
 
   // Overview stats      
   return (
@@ -29,8 +30,8 @@ export default function ComplianceDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="page-title">Compliance Dashboard</h1>
-            <p className="page-description">ISO 27001 compliance overview</p>
+            <h1 className="page-title">{t("complianceDashboard.title")}</h1>
+            <p className="page-description">{t("complianceDashboard.subtitle")}</p>
           </div>
         </div>
 
@@ -41,11 +42,11 @@ export default function ComplianceDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Shield className="h-5 w-5 text-blue-600" />
-                  <span>ISO 27001 Clauses Progress</span>
+                  <span>{t("complianceDashboard.clausesProgress")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-            {isLoading && <p>Loading clauses...</p>}
+            {isLoading && <p>{t("complianceDashboard.loadingClauses")}</p>}
             {clauses.map((clause) => {
               const StatusIcon = statusIcons[clause.status];
               return (                    
@@ -71,7 +72,7 @@ export default function ComplianceDashboard() {
 
                       <div className="flex items-center space-x-2">
                         <Badge className={complianceStatusColors[clause.status]}>
-                          {clause.status.replace("_", " ")}
+                          {t(`complianceDashboard.status.${clause.status}`)}
                         </Badge>
                       </div>
                     </div>
@@ -87,7 +88,7 @@ export default function ComplianceDashboard() {
                             <span>Last reviewed: {clause.lastReviewed ? new Date(clause.lastReviewed).toLocaleDateString() : "N/A"}</span>
                           </div> */}
                         </div>
-                        <span>Next review: {clause.nextReview ? new Date(clause.nextReview).toLocaleDateString() : "N/A"}</span>
+                        <span>{t("complianceDashboard.nextReview")}: {clause.nextReview ? new Date(clause.nextReview).toLocaleDateString() : t("common.notAvailable")}</span>
                       </div>
                 </div>
               );
@@ -102,7 +103,7 @@ export default function ComplianceDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-blue-600" />
-                  <span>Upcoming Reviews</span>
+                  <span>{t("complianceDashboard.upcomingReviews")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
