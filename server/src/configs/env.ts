@@ -64,6 +64,11 @@ export const envSchema = z.object({
     GOOGLE_REDIRECT_URI: z.string().optional().default(''),
     GOOGLE_DRIVE_WORKING_FOLDER_NAME: z.string().optional().default('ISMS Solumada Documents'),
     GOOGLE_REFRESH_TOKEN: z.string().optional().default(''),
+
+    // File Storage Configuration
+    // For Render: Set to '/var/data' to use persistent disk
+    // For local dev: Defaults to './uploads' in project root
+    STORAGE_PATH: z.string().optional(),
 });
 
 const envServer = envSchema.safeParse({
@@ -93,6 +98,7 @@ const envServer = envSchema.safeParse({
     GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
     GOOGLE_DRIVE_WORKING_FOLDER_NAME: process.env.GOOGLE_DRIVE_WORKING_FOLDER_NAME,
     GOOGLE_REFRESH_TOKEN: process.env.GOOGLE_REFRESH_TOKEN,
+    STORAGE_PATH: process.env.STORAGE_PATH,
 });
 
 if (!envServer.success) {

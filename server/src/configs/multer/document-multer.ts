@@ -1,16 +1,16 @@
 import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
-import fs from 'fs';
 import { DOCUMENT_UPLOAD_PATH } from '@/configs/upload';
 
+// Multer configuration for document uploads
+// Storage path is configured via STORAGE_PATH env variable (see configs/upload.ts)
+// For Render: STORAGE_PATH=/var/data (persistent disk)
+// For local dev: defaults to ./uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Create folder if it doesn't exist
-        if (!fs.existsSync(DOCUMENT_UPLOAD_PATH)) {
-            fs.mkdirSync(DOCUMENT_UPLOAD_PATH, { recursive: true });
-        }
-
+        // Directory is created at startup by storage.init.ts
+        // No need to check/create here for better performance
         cb(null, DOCUMENT_UPLOAD_PATH);
     },
     filename: (req, file, cb) => {

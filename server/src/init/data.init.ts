@@ -1,6 +1,7 @@
 import { DocumentTypeService } from '@/services/documenttype.service';
 import { ISOClauseService } from '@/services/isoclause.service';
 import { OwnerService } from '@/services/owner.service';
+import { initializeStorageDirectories } from '@/init/storage.init';
 
 export const initData = async () => {
     const ownerService = new OwnerService();
@@ -9,6 +10,10 @@ export const initData = async () => {
 
     try {
         console.log('[init] Initializing data...');
+        
+        // Initialize storage directories (Render persistent disk support)
+        initializeStorageDirectories();
+        
         await ownerService.initialize();
         await documentTypeService.initialize();
         await clauseService.initialize();
