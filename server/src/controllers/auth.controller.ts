@@ -77,8 +77,24 @@ export class AuthController {
                 ],
             });
 
+            // Configure cookie options based on environment
+            const isProduction = env.NODE_ENV === 'production';
+            const cookieOptions = {
+                httpOnly: true,
+                secure: isProduction, // HTTPS required in production
+                sameSite: (isProduction ? 'none' : 'strict') as 'none' | 'strict',
+                maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
+                path: '/',
+            };
+
+            console.log('[AUTH_LOGIN] Setting cookie with options:', {
+                ...cookieOptions,
+                refreshTokenLength: refreshToken.length,
+                environment: env.NODE_ENV,
+            });
+
             // set cookie and header, then send json response
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
+            res.cookie('refreshToken', refreshToken, cookieOptions)
                 .header('Authorization', `Bearer ${accessToken}`)
                 .json({
                     id: user.id,
@@ -98,10 +114,20 @@ export class AuthController {
     refresh = async (req: Request, res: Response) => {
         const refreshToken = req.cookies['refreshToken'];
         
+        console.log('[AUTH_REFRESH] Request received:', {
+            hasRefreshToken: !!refreshToken,
+            refreshTokenLength: refreshToken?.length || 0,
+            cookies: Object.keys(req.cookies || {}),
+            origin: req.headers['origin'],
+            userAgent: req.headers['user-agent'],
+        });
+        
         if (!refreshToken) {
+            console.log('[AUTH_REFRESH] ERROR: No refresh token in cookies');
             res.status(401).json({
                 error: 'Access Denied. No refresh token provided.',
                 code: 'ERR_NO_REFRESH_TOKEN',
+                availableCookies: Object.keys(req.cookies || {}),
             });
             return;
         }
@@ -135,9 +161,21 @@ export class AuthController {
 
             const accessToken = jwtService.generateAccessToken(user);
             const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
+            
+            console.log('[AUTH_REFRESH] SUCCESS: New access token generated for', user.email);
+            console.log('[AUTH_REFRESH] Token details:', {
+                accessTokenLength: accessToken.length,
+                userEmail: user.email,
+                userId: user.id,
+            });
+            
             res.header('Authorization', `Bearer ${accessToken}`).status(200).json(rest);
         } catch (error: any) {
-            console.error('Refresh token error:', error);
+            console.error('[AUTH_REFRESH] ERROR:', {
+                error: error.message,
+                stack: error.stack,
+                type: error.constructor.name,
+            });
             if (error instanceof jwt.TokenExpiredError) {
                 res.status(401).json({
                     error: 'Refresh token expired',
