@@ -77,24 +77,8 @@ export class AuthController {
                 ],
             });
 
-            // Configure cookie options based on environment
-            const isProduction = env.NODE_ENV === 'production';
-            const cookieOptions = {
-                httpOnly: true,
-                secure: isProduction, // HTTPS required in production
-                sameSite: (isProduction ? 'none' : 'strict') as 'none' | 'strict',
-                maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
-                path: '/',
-            };
-
-            console.log('[AUTH_LOGIN] Setting cookie with options:', {
-                ...cookieOptions,
-                refreshTokenLength: refreshToken.length,
-                environment: env.NODE_ENV,
-            });
-
             // set cookie and header, then send json response
-            res.cookie('refreshToken', refreshToken, cookieOptions)
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
                 .header('Authorization', `Bearer ${accessToken}`)
                 .json({
                     id: user.id,
@@ -112,86 +96,33 @@ export class AuthController {
     };
 
     refresh = async (req: Request, res: Response) => {
+        console.log('[AuthController] Refreshing token...');
         const refreshToken = req.cookies['refreshToken'];
-        
-        console.log('[AUTH_REFRESH] Request received:', {
-            hasRefreshToken: !!refreshToken,
-            refreshTokenLength: refreshToken?.length || 0,
-            cookies: Object.keys(req.cookies || {}),
-            origin: req.headers['origin'],
-            userAgent: req.headers['user-agent'],
-        });
-        
         if (!refreshToken) {
-            console.log('[AUTH_REFRESH] ERROR: No refresh token in cookies');
-            res.status(401).json({
-                error: 'Access Denied. No refresh token provided.',
-                code: 'ERR_NO_REFRESH_TOKEN',
-                availableCookies: Object.keys(req.cookies || {}),
-            });
+            res.status(403).send('Access Denied. No refresh token provided.');
             return;
         }
 
         try {
             const decoded = jwtService.verifyRefreshToken(refreshToken);
-            if (!decoded?.user?.email) {
-                res.status(401).json({
-                    error: 'Invalid token payload',
-                    code: 'ERR_INVALID_TOKEN_PAYLOAD',
-                });
-                return;
-            }
-
             const user = await userService.findByEmail(decoded.user.email);
             if (!user) {
                 res.status(404).json({
                     error: 'User not found',
                     code: 'ERR_USER_NOT_FOUND',
                 });
-                return;
-            }
-
-            if (!user.isActive) {
-                res.status(403).json({
-                    error: 'User is inactive',
-                    code: 'ERR_USER_INACTIVE',
-                });
-                return;
-            }
-
-            const accessToken = jwtService.generateAccessToken(user);
-            const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
-            
-            console.log('[AUTH_REFRESH] SUCCESS: New access token generated for', user.email);
-            console.log('[AUTH_REFRESH] Token details:', {
-                accessTokenLength: accessToken.length,
-                userEmail: user.email,
-                userId: user.id,
-            });
-            
-            res.header('Authorization', `Bearer ${accessToken}`).status(200).json(rest);
-        } catch (error: any) {
-            console.error('[AUTH_REFRESH] ERROR:', {
-                error: error.message,
-                stack: error.stack,
-                type: error.constructor.name,
-            });
-            if (error instanceof jwt.TokenExpiredError) {
-                res.status(401).json({
-                    error: 'Refresh token expired',
-                    code: 'ERR_REFRESH_TOKEN_EXPIRED',
-                });
-            } else if (error instanceof jwt.JsonWebTokenError) {
-                res.status(401).json({
-                    error: 'Invalid refresh token',
-                    code: 'ERR_INVALID_REFRESH_TOKEN',
-                });
             } else {
-                res.status(500).json({
-                    error: 'Server error',
-                    code: 'ERR_SERVER_ERROR',
-                });
+                const accessToken = jwtService.generateAccessToken(user);
+                const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
+                // Exclude password
+                res.header('Authorization', `Bearer ${accessToken}`).status(200).send(rest);
             }
+        } catch (error: any) {
+            console.error(error);
+            res.status(400).send({
+                error: 'Invalid refresh token.',
+                code: 'ERR_INVALID_REFRESH_TOKEN',
+            });
         }
     };
 
@@ -200,10 +131,7 @@ export class AuthController {
         try {
             const authHeader = req.headers['authorization'];
             if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                res.status(400).json({ 
-                    error: 'No token provided or malformed header',
-                    code: 'ERR_NO_TOKEN'
-                });
+                res.status(400).json({ error: 'No token provided or malformed header' });
                 return;
             }
 
@@ -219,69 +147,50 @@ export class AuthController {
             }
             res.json(user);
         } catch (err) {
-            console.error('Error verifying token:', err);
+            console.error(err);
             if (err instanceof jwt.TokenExpiredError) {
-                res.status(400).json({ 
-                    error: 'Token has expired',
-                    code: 'ERR_TOKEN_EXPIRED'
-                });
+                res.status(401).json({ error: 'Reset token has expired' });
             } else if (err instanceof jwt.JsonWebTokenError) {
-                res.status(400).json({ 
-                    error: 'Invalid token',
-                    code: 'ERR_INVALID_TOKEN'
-                });
+                res.status(400).json({ error: 'Invalid reset token' });
             } else {
-                res.status(500).json({ 
-                    error: 'Server error verifying token',
-                    code: 'ERR_SERVER_ERROR'
-                });
+                res.status(500).json({ error: 'Server error verifying token' });
             }
         }
     };
 
     logout = async (req: Request, res: Response) => {
-        try {
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                sameSite: 'strict',
-                secure: process.env.NODE_ENV === 'production',
-            });
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production',
+        });
 
-            // Get user from JWT (req.user is set by authenticateToken middleware)
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({ error: 'Unauthorized', code: 'ERR_UNAUTHORIZED' });
-                return;
-            }
-
-            const user = await userService.getUserById(userId);
-            if (!user) {
-                res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
-                return;
-            }
-
-            // Audit log logout
-            await req.log({
-                event: AuditEventType.AUTH_LOGOUT,
-                details: {
-                    email: user.email,
-                    role: user.role,
-                },
-                targets: [
-                    {
-                        type: AuditTargetType.USER,
-                        id: user.id,
-                    },
-                ],
-            });
-            res.status(200).json({ message: 'Logged out successfully' });
-        } catch (err) {
-            console.error('Logout error:', err);
-            res.status(500).json({
-                error: 'Server error during logout',
-                code: 'ERR_SERVER_ERROR',
-            });
+        const { userId } = req.params;
+        if (!userId) {
+            res.status(400).json({ error: 'User ID is required' });
+            return;
         }
+        const user = await userService.getUserById(userId!);
+        if (!user) {
+            res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+            return;
+        }
+
+        // Audit log logout
+        await req.log({
+            event: AuditEventType.AUTH_LOGOUT,
+            details: {
+                email: user.email,
+                role: user.role,
+            },
+            targets: [
+                {
+                    type: AuditTargetType.USER,
+                    id: user.id,
+                },
+            ],
+        });
+        res.status(200).json({ message: 'Logged out successfully' });
     };
 
     // Request password reset link
@@ -364,12 +273,12 @@ export class AuthController {
         } catch (err) {
             console.error(err);
             if (err instanceof jwt.TokenExpiredError) {
-                res.status(400).json({
+                res.status(401).json({
                     error: 'Reset token has expired',
                     code: 'ERR_RESET_TOKEN_EXPIRED',
                 });
             } else if (err instanceof jwt.JsonWebTokenError) {
-                res.status(400).json({
+                res.status(401).json({
                     error: 'Invalid reset token',
                     code: 'ERR_INVALID_RESET_TOKEN',
                 });
