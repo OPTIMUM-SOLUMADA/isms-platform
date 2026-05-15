@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -41,6 +41,7 @@ import useOwnerStore from "@/stores/owner/userOwnserStore";
 import { MultiSelect } from "@/components/multi-select";
 import { useFetchAllDepartments } from "@/hooks/queries/useDepartmentMutations";
 import { useISOClauseUIStore } from "@/stores/iso-clause/useISOClauseUIStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 const maxFileSize = 0.5 * 1024 * 1024;
 
@@ -48,6 +49,8 @@ const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   status: z.enum(DocumentStatuses),
+  version: z.string().nonempty(i18n.t("zod.errors.required")),
+  documentDate: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -93,10 +96,26 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
   ) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { user: currentUser } = useAuth();
     // const { openAdd } = useDepartmentUI()
 
     const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
     const { owners } = useOwnerStore();
+
+    // Ajouter currentUser à la liste des utilisateurs s'il n'y est pas déjà
+    const usersWithCurrent = useMemo(() => {
+      if (!currentUser) return users;
+      
+      // Vérifier si currentUser existe déjà dans la liste
+      const userExists = users.some(user => user.id === currentUser.id);
+      
+      if (userExists) {
+        return users;
+      }
+      
+      // Ajouter currentUser à la liste
+      return [currentUser as User, ...users];
+    }, [currentUser, users]);
 
     const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),
@@ -107,10 +126,12 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
         owner: owners[0]?.id || "",
         isoClause: "",
         reviewers: [],
-        authors: [],
+        authors: currentUser ? [currentUser.id] : [],
         files: [],
         type: "",
         classification: Classification.PUBLIC,
+        version: "1.0",
+        documentDate: new Date().toISOString().split("T")[0],
         reviewFrequency: Frequencies.QUARTERLY,
         departmentRoles: [],
       },
@@ -137,11 +158,11 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const selectedReviewers = watch("reviewers");
 
     // Filtrer les utilisateurs pour exclure ceux qui sont déjà sélectionnés
-    const availableUsersForAuthors = users.filter(
+    const availableUsersForAuthors = usersWithCurrent.filter(
       user => user.role !== RoleType.VIEWER && !selectedReviewers?.includes(user.id)
     );
     
-    const availableUsersForReviewers = users.filter(
+    const availableUsersForReviewers = usersWithCurrent.filter(
       user => user.role !== RoleType.VIEWER && !selectedAuthors?.includes(user.id)
     );
         
@@ -392,6 +413,49 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
             <FormField
               control={form.control}
+              name="version"
+              render={({ field, fieldState }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.version.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t("document.add.form.fields.version.placeholder")}
+                      className="border rounded-lg px-3 py-2 w-full"
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="documentDate"
+              render={({ field, fieldState }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.documentDate.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="date"
+                      className="border rounded-lg px-3 py-2 w-full"
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="reviewFrequency"
               render={({ field }) => (
                 <FormItem className="col-span-1">
@@ -399,23 +463,18 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
                     {t("document.add.form.fields.reviewFrequency.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FrequenciesUnits.map((item, index) => (
-                            <SelectItem key={index} value={item}>
-                              {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FrequenciesUnits.map((item, index) => (
+                          <SelectItem key={index} value={item}>
+                            {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

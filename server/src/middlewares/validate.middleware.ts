@@ -5,13 +5,14 @@ export const validate =
     (schema: ObjectSchema, property: 'body' | 'query' | 'params' = 'body') =>
     (req: Request, res: Response, next: NextFunction) => {
         const { error, value } = schema.validate(req[property], {
-            abortEarly: false, // return all errors, not just the first
-            allowUnknown: false, // disallow extra fields
+            abortEarly: false,
+            allowUnknown: true, // FormData peut contenir des champs non déclarés (ex: multer)
+            stripUnknown: false,
         });
 
         if (error) {
             return res.status(400).json({
-                errors: error.details.map((err) => err.message),
+                errors: error.details.map((err) => ({ field: err.path, message: err.message })),
             });
         }
 

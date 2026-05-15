@@ -148,20 +148,32 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
 
     const { mutateAsync: createDocument, isPending: isCreating, isSuccess: isCreated } = useMutation<Document, ApiAxiosError, AddDocumentFormData>({
         mutationFn: async (data) => {
+            console.log("data", data);
+            
             // create form data
             const formData = new FormData();
             const { files, ...rest } = data;
             // add file to form data
             formData.append("document", files[0]);
+
             // add rest fields to form data
             Object.entries(rest).forEach(([key, value]) => {
-                formData.append(key, value.toString());
+                if (value !== undefined && value !== null) {
+                    if (Array.isArray(value)) {
+                        formData.append(key, value.join(','));
+                    } else {
+                        formData.append(key, value.toString());
+                    }
+                }
             });
 
             // user id
             formData.append("userId", user.id);
+            console.log("form", formData);
+            
 
             const res = await documentService.create(formData);
+            
             return res.data;
         },
         onSuccess: (data) => {
@@ -195,9 +207,17 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
             const { files, ...rest } = data;
             // add file to form data
             if (files) formData.append("document", files[0]);
+
             // add rest fields to form data
             Object.entries(rest).forEach(([key, value]) => {
-                formData.append(key, value.toString());
+                if (value !== undefined && value !== null) {
+                    // Pour les tableaux, joindre avec des virgules (backend attend "id1,id2,id3")
+                    if (Array.isArray(value)) {
+                        formData.append(key, value.join(','));
+                    } else {
+                        formData.append(key, value.toString());
+                    }
+                }
             });
 
             // user id

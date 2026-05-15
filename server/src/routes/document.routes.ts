@@ -10,9 +10,9 @@ const controller = new DocumentController();
 
 router.post(
     '/',
-    validate(documentCreateSchema),
     googleAuthMiddleware,
     uploadSingleDocument,
+    validate(documentCreateSchema),
     controller.create.bind(controller),
 );
 router.get('/statistics', controller.getStatistics.bind(controller));

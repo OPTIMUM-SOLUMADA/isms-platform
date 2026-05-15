@@ -47,6 +47,8 @@ const documentSchema = cz.z.object({
   title: z.string().nonempty(i18n.t("zod.errors.required")),
   description: z.string().optional(),
   status: z.enum(DocumentStatuses),
+  version: z.string().nonempty(i18n.t("zod.errors.required")),
+  documentDate: z.string().nonempty(i18n.t("zod.errors.required")),
   reviewFrequency: z.enum(FrequenciesUnits).optional(),
   owner: z.string().min(1, i18n.t("zod.errors.required")),
   type: z.string().nonempty(i18n.t("zod.errors.required")),
@@ -63,7 +65,6 @@ const documentSchema = cz.z.object({
       }),
     })
     .optional(),
-
 });
 
 export type EditDocumentFormData = z.infer<typeof documentSchema>;
@@ -112,6 +113,10 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
         files: [],
         type: doc.categoryId,
         departmentRoles: doc.departmentRoles?.map(g => g.departmentRole?.id) || [],
+        version: doc.versions?.find(v => v.isCurrent)?.version || "1.0",
+        documentDate: doc.documentDate
+          ? new Date(doc.documentDate).toISOString().split("T")[0]
+          : "",
         reviewFrequency: doc.reviewFrequency!,
         classification: doc.classification,
       },
@@ -340,6 +345,49 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
 
             <FormField
               control={form.control}
+              name="version"
+              render={({ field, fieldState }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.version.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t("document.add.form.fields.version.placeholder")}
+                      className="border rounded-lg px-3 py-2 w-full"
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="documentDate"
+              render={({ field, fieldState }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="font-medium">
+                    {t("document.add.form.fields.documentDate.label")} <Required />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="date"
+                      className="border rounded-lg px-3 py-2 w-full"
+                      hasError={!!fieldState.error}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="reviewFrequency"
               render={({ field }) => (
                 <FormItem className="col-span-1">
@@ -347,23 +395,18 @@ const EditDocumentForm = forwardRef<EditDocumentFormRef, EdutDocumentFormProps>(
                     {t("document.add.form.fields.reviewFrequency.label")} <Required />
                   </FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FrequenciesUnits.map((item, index) => (
-                            <SelectItem key={index} value={item}>
-                              {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FrequenciesUnits.map((item, index) => (
+                          <SelectItem key={index} value={item}>
+                            {t(`document.add.form.fields.reviewFrequencyUnit.options.${item.toLowerCase()}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
