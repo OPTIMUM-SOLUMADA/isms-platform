@@ -217,6 +217,8 @@ model Document {
   reviewFrequency ReviewFrequency?
   isoClauseId     String           @db.ObjectId
 
+  documentDate    DateTime?
+
   published       Boolean   @default(false)
   publicationDate DateTime?
 

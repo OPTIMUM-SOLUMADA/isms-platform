@@ -16,7 +16,6 @@ import { sanitizeDocument } from '@/utils/sanitize-document';
 import { getChanges } from '@/utils/change';
 // eslint-disable-next-line import/no-named-as-default
 import NotificationService from '@/services/notification.service';
-import { calculateNextReviewDate } from '@/utils/dateCalculator';
 import prisma from '@/database/prisma';
 import { ComplianceService } from '@/services/compliance.service';
 
@@ -51,15 +50,19 @@ export class DocumentController {
                 owner,
                 classification,
                 departmentRoles,
+                version: versionInput,
+                documentDate,
             } = req.body;
 
             const file = req.file;
+
+            console.log('[POST /documents] body:', req.body);
 
             if (!file) {
                 throw new Error('File is required');
             }
 
-            const version = createVersion(1, 0);
+            const version = versionInput || createVersion(1, 0);
 
             const buffer = readFileSync(file.path);
             const googleDriveService = useGoogleDriveService(req);
@@ -81,16 +84,16 @@ export class DocumentController {
                 title,
                 description,
                 status,
-                reviewFrequency,
                 classification,
+                ...(reviewFrequency && { reviewFrequency }),
+                ...(documentDate && { documentDate: new Date(documentDate) }),
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 fileUrl: fileUrl,
-                // Create document version
                 versions: {
                     create: {
-                        version: version, // 1.0
+                        version,
                         isCurrent: true,
                         fileUrl: result.webViewLink,
                         downloadUrl: result.webContentLink,
@@ -120,19 +123,22 @@ export class DocumentController {
                     .filter(Boolean);
 
                 // Grant permissions to authors (writer) and reviewers (commenter)
-                if (authorsEmail.length > 0) {
-                    await googleDriveService.grantPermissions(result.id, authorsEmail, 'writer');
+                try {
+                    if (authorsEmail.length > 0) {
+                        await googleDriveService.grantPermissions(result.id, authorsEmail, 'writer');
+                    }
+                    if (reviewersEmail.length > 0) {
+                        await googleDriveService.grantPermissions(
+                            result.id,
+                            reviewersEmail,
+                            'commenter',
+                        );
+                    }
+                    // Make file viewable with link to enable preview in emails/embeds
+                    await googleDriveService.makeFileViewableWithLink(result.id);
+                } catch (permError) {
+                    console.warn('Failed to grant Drive permissions, document still created:', permError);
                 }
-                if (reviewersEmail.length > 0) {
-                    await googleDriveService.grantPermissions(
-                        result.id,
-                        reviewersEmail,
-                        'commenter',
-                    );
-                }
-
-                // Make file viewable with link to enable preview in emails/embeds
-                await googleDriveService.makeFileViewableWithLink(result.id);
             }
 
             const createdCompliance = await this.complianceService.createClause({
@@ -229,6 +235,8 @@ export class DocumentController {
                 reviewFrequency,
                 owner,
                 classification,
+                version: versionInput,
+                documentDate,
             } = req.body;
 
             // find document
@@ -287,12 +295,21 @@ export class DocumentController {
                 // If document is APPROVED and being updated, reset to IN_REVIEW
                 status: document.status === 'APPROVED' ? 'IN_REVIEW' : status || document.status,
                 ...(reviewFrequency && { reviewFrequency }),
+                ...(documentDate && { documentDate: new Date(documentDate) }),
                 ...(type && { type: { connect: { id: type } } }),
                 ...(isoClause && { isoClause: { connect: { id: isoClause } } }),
                 ...(owner && { owner: { connect: { id: owner } } }),
                 ...(file && { fileUrl: file.filename }),
                 classification,
             });
+
+            // Update version string on current version if provided
+            if (versionInput) {
+                const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                if (currentVersion) {
+                    await this.versionService.update(currentVersion.id, { version: versionInput });
+                }
+            }
 
             // link departmentRoles to document
             this.departmentRoleDocument.reCreateMany(
@@ -386,18 +403,12 @@ export class DocumentController {
                         : [];
 
                     if (reviewerIdsArray.length > 0 && currentVersion) {
-                        // Calculate due date based on reviewFrequency
-                        const reviewDueDate = updatedDocument.reviewFrequency
-                            ? calculateNextReviewDate(updatedDocument.reviewFrequency)
-                            : null;
-
-                        // Use updateAssignedReviewersToDocument which already handles duplicates
                         await this.reviewService.updateAssignedReviewersToDocument({
                             documentId: updatedDocument.id,
                             documentVersionId: currentVersion.id,
                             reviewerIds: reviewerIdsArray,
                             ...(req.user?.id ? { userId: req.user.id } : {}),
-                            dueDate: reviewDueDate,
+                            dueDate: null,
                         });
                     }
                 } catch (err) {
@@ -582,11 +593,14 @@ export class DocumentController {
             if (document.classification === Classification.PUBLIC) {
                 const gdService = useGoogleDriveService(req);
                 await gdService.makeFilePublicReadable(document.folderId!);
-                // Get current version
                 const currentVersion = document.versions.find((v) => v.isCurrent)!;
-                if (currentVersion)
-                    // open it to avoid permission error
-                    await openDocumentInBrowser(currentVersion.fileUrl!);
+                if (currentVersion) {
+                    try {
+                        await openDocumentInBrowser(currentVersion.fileUrl!);
+                    } catch (err) {
+                        console.warn('openDocumentInBrowser failed (non-blocking):', err);
+                    }
+                }
             }
 
             // 3- Send notifications
@@ -610,11 +624,14 @@ export class DocumentController {
             if (document.classification === Classification.PUBLIC) {
                 const gdService = useGoogleDriveService(req);
                 await gdService.makeFileUnreadable(document.folderId!);
-                // Get current version
                 const currentVersion = document.versions.find((v) => v.isCurrent)!;
-                if (currentVersion)
-                    // open it to avoid permission error
-                    await openDocumentInBrowser(currentVersion.fileUrl!);
+                if (currentVersion) {
+                    try {
+                        await openDocumentInBrowser(currentVersion.fileUrl!);
+                    } catch (err) {
+                        console.warn('openDocumentInBrowser failed (non-blocking):', err);
+                    }
+                }
             }
             res.json(document);
         } catch (err) {

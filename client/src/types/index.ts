@@ -50,6 +50,7 @@ export type Document = {
   status: DocumentStatus;
   nextReviewDate?: string | null;
   reviewFrequency?: Frequency | null;
+  documentDate?: string | null;
   isoClauseId: string;
   departmentId: string;
   published: boolean;

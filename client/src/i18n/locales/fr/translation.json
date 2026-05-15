@@ -863,6 +863,13 @@
                     "nextReviews": {
                         "label": "Prochaine révision"
                     },
+                    "version": {
+                        "label": "Version",
+                        "placeholder": "ex: 1.0"
+                    },
+                    "documentDate": {
+                        "label": "Date de création"
+                    },
                     "reviewFrequency": {
                         "label": "Fréquence de révision",
                         "placeholder": "Fréquence de révision"

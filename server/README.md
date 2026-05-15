@@ -102,3 +102,5 @@ BCRYPT_SALT_ROUNDS=12
 ## API Documentation
 
 For detailed API usage and endpoints, please check the [API Documentation](API.md).
+
+## dev_config_front

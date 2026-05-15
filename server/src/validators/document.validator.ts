@@ -10,30 +10,45 @@ export const documentCreateSchema = Joi.object({
         'any.required': 'Title is required',
     }),
 
-    description: Joi.string().optional(),
+    description: Joi.string().optional().allow('', null),
 
-    fileUrl: Joi.string().uri().optional(),
+    fileUrl: Joi.string().optional().allow('', null),
 
     status: Joi.string().valid('DRAFT', 'IN_REVIEW', 'APPROVED', 'EXPIRED').required().messages({
         'any.only': 'Status must be one of DRAFT, IN_REVIEW, APPROVED, EXPIRED',
         'any.required': 'Status is required',
     }),
 
-    nextReviewDate: Joi.date().iso().optional(),
+    version: Joi.string().required().messages({
+        'string.empty': 'Version is required',
+        'any.required': 'Version is required',
+    }),
+
+    // Date saisie par l'utilisateur pour le calcul de nextReviewDate
+    documentDate: Joi.string().optional().allow('', null),
+
+    nextReviewDate: Joi.string().optional().allow('', null),
 
     reviewFrequency: Joi.string()
         .valid(...reviewFrequencyValues)
-        .optional(),
+        .optional()
+        .allow('', null),
 
     owner: Joi.string().min(1).required().messages({
         'string.empty': 'Owner is required',
         'any.required': 'Owner is required',
     }),
 
-    authors: Joi.array().items(Joi.string()).min(1).required().messages({
-        'string.empty': 'Owners is required',
-        'any.required': 'Owners is required',
-    }),
+    // Accepte string CSV "id1,id2" (FormData) ou array
+    authors: Joi.alternatives()
+        .try(
+            Joi.array().items(Joi.string()).min(1),
+            Joi.string().min(1),
+        )
+        .required()
+        .messages({
+            'any.required': 'Authors are required',
+        }),
 
     type: Joi.string().min(1).required().messages({
         'string.empty': 'Type is required',
@@ -45,15 +60,27 @@ export const documentCreateSchema = Joi.object({
         'any.required': 'ISO Clause is required',
     }),
 
-    reviewers: Joi.array().items(Joi.string()).min(1).required().messages({
-        'array.min': 'At least one reviewer is required',
-        'any.required': 'Reviewers are required',
-    }),
+    // Accepte string CSV "id1,id2" (FormData) ou array
+    reviewers: Joi.alternatives()
+        .try(
+            Joi.array().items(Joi.string()).min(1),
+            Joi.string().min(1),
+        )
+        .required()
+        .messages({
+            'any.required': 'Reviewers are required',
+        }),
 
-    departmentRoles: Joi.array().items(Joi.string()).min(1).required().messages({
-        'array.min': 'At least one departmentRole is required',
-        'any.required': 'departmentRoles are required',
-    }),
+    // Accepte string CSV "id1,id2" (FormData) ou array
+    departmentRoles: Joi.alternatives()
+        .try(
+            Joi.array().items(Joi.string()).min(1),
+            Joi.string().min(1),
+        )
+        .required()
+        .messages({
+            'any.required': 'departmentRoles are required',
+        }),
 
     classification: Joi.string()
         .valid(...Object.values(classificationValues))
@@ -63,5 +90,5 @@ export const documentCreateSchema = Joi.object({
             'any.required': 'Classification is required',
         }),
 
-    userId: Joi.string().optional().allow(''),
+    userId: Joi.string().optional().allow('', null),
 });

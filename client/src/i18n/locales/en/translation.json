@@ -886,6 +886,13 @@
           "nextReviews": {
             "label": "Next review"
           },
+          "version": {
+            "label": "Version",
+            "placeholder": "e.g. 1.0"
+          },
+          "documentDate": {
+            "label": "Create date"
+          },
           "reviewFrequency": {
             "label": "Review frequency",
             "placeholder": "Review frequency"

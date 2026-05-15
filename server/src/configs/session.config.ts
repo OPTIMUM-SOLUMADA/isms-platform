@@ -2,10 +2,15 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { env } from './env';
 
+const isProd = env.NODE_ENV === 'production';
+
 export const sessionMiddleware = session({
+    name: 'isms.sid',
     secret: env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
+
+    proxy: true,
     store: MongoStore.create({
         mongoUrl: env.DATABASE_URL,
         collectionName: 'google-sessions',
@@ -13,8 +18,8 @@ export const sessionMiddleware = session({
     }),
     cookie: {
         httpOnly: true,
-        secure: env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax', // 🔥 FIX CLÉ
         maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
 });

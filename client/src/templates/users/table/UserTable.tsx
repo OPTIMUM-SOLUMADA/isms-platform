@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Mail, MoreHorizontal, Edit, Trash2, Users, UserPlus, Eye } from "lucide-react";
+import { Mail, MoreHorizontal, Edit, Trash2, Users, UserPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +32,7 @@ interface UserActionsCell {
     onView?: (user: User) => void;
 }
 
-const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
+const UserActionsCell = ({ user, onEdit }: UserActionsCell) => {
     const { t } = useTranslation();
     const { hasActionPermission, hasActionPermissions } = usePermissions();
     const { openDelete, setCurrentUser, openInvitation } = useUserUIStore();
@@ -56,11 +56,11 @@ const UserActionsCell = ({ user, onEdit, onView }: UserActionsCell) => {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    {hasActionPermission("user.read") && (
+                    {/* {hasActionPermission("user.read") && (
                         <DropdownMenuItem onClick={() => onView?.(user)}>
                             <Eye className="mr-2 h-4 w-4" /> {t("user.table.actions.view")}
                         </DropdownMenuItem>
-                    )}
+                    )} */}
                     {hasActionPermission("user.update") && (
                         <DropdownMenuItem onClick={() => onEdit?.(user)}>
                             <Edit className="mr-2 h-4 w-4" /> {t("user.table.actions.edit")}

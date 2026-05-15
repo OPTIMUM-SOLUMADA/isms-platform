@@ -22,7 +22,6 @@ import { useUserUIStore } from '@/stores/user/useUserUIStore';
 import { useTranslation } from 'react-i18next';
 import WithTitle from '@/templates/layout/WithTitle';
 import { usePermissions } from '@/hooks/use-permissions';
-import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { userRoleColors } from '@/constants/color';
 import useUserStore from '@/stores/user/useUserStore';
@@ -37,7 +36,6 @@ export default function UserManagementPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDepartment, setFilterDepartment] = useState('all');
 
-  const navigate = useNavigate();
   const { hasActionPermission } = usePermissions();
 
   const { users } = useUserStore();
@@ -73,10 +71,6 @@ export default function UserManagementPage() {
     setCurrentUser(user);
     openEdit();
   }, [openEdit, setCurrentUser]);
-
-  const handleOpenView = useCallback((user: User) => {
-    navigate(`view/${user.id}`, { state: { user } });
-  }, [navigate]);
 
   const handleOpenMessage = useCallback((user: User) => {
     window.open(`mailto:${user.email}`);
@@ -197,7 +191,7 @@ export default function UserManagementPage() {
           data={filteredUsers}
           onEdit={handleOpenEditForm}
           onAddUser={openAdd}
-          onView={handleOpenView}
+          // onView={handleOpenView}
           onMessage={handleOpenMessage}
           isLoading={isLoading}
         />

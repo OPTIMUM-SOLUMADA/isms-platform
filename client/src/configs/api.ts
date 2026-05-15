@@ -9,7 +9,7 @@ export const API_CONFIG = {
       RESET_PASSWORD: "/auth/reset-password",
       REFRESH: "/auth/refresh",
       VERIFY: "/auth/verify",
-      LOGOUT: (userId: string) => `/auth/logout/${userId}`,
+      LOGOUT: (userId?: string) => `/auth/logout/${userId || 'undefined'}`,
       VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
       VERIFY_ACCOUNT: "/auth/verify-account",
     },

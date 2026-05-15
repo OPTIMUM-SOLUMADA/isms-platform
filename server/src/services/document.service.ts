@@ -92,15 +92,23 @@ export class DocumentService {
     }
 
     async createDocument(data: Prisma.DocumentCreateInput) {
-        const nextReviewDate = new Date(); //this.calculateNextReviewDate(new Date(), data.reviewFrequency);
-
-        return prisma.document.create({
-            data: {
-                ...data,
-                nextReviewDate,
-            },
+        const doc = await prisma.document.create({
+            data,
             include: this.documentInclude,
         });
+
+        if (doc.reviewFrequency && doc.documentDate) {
+            const nextReviewDate = this.calculateNextReviewDate(doc.documentDate, doc.reviewFrequency);
+            if (nextReviewDate) {
+                return prisma.document.update({
+                    where: { id: doc.id },
+                    data: { nextReviewDate },
+                    include: this.documentInclude,
+                });
+            }
+        }
+
+        return doc;
     }
 
     async linkDocumentToUsers({
@@ -152,16 +160,30 @@ export class DocumentService {
     }
 
     async update(id: string, data: Prisma.DocumentUpdateInput) {
+        let nextReviewDate: Date | null | undefined;
+
+        if (data.reviewFrequency || data.documentDate) {
+            // Fetch current doc to get fallback values
+            const current = await prisma.document.findUnique({
+                where: { id },
+                select: { documentDate: true, reviewFrequency: true },
+            });
+
+            const frequency = (data.reviewFrequency ?? current?.reviewFrequency) as ReviewFrequency | null;
+            const baseDate = data.documentDate
+                ? new Date(data.documentDate as string)
+                : current?.documentDate ?? null;
+
+            if (frequency && baseDate) {
+                nextReviewDate = this.calculateNextReviewDate(baseDate, frequency);
+            }
+        }
+
         return prisma.document.update({
             where: { id },
             data: {
                 ...data,
-                ...(data.reviewFrequency && {
-                    nextReviewDate: this.calculateNextReviewDate(
-                        new Date(),
-                        data.reviewFrequency! as ReviewFrequency,
-                    ),
-                }),
+                ...(nextReviewDate && { nextReviewDate }),
             },
             include: this.documentInclude,
         });
@@ -179,10 +201,10 @@ export class DocumentService {
                 where: { id },
                 data: {
                     ...data,
-                    ...(data.reviewFrequency && {
+                    ...(data.reviewFrequency && data.documentDate && {
                         nextReviewDate: this.calculateNextReviewDate(
-                            new Date(),
-                            data.reviewFrequency! as ReviewFrequency,
+                            new Date(data.documentDate as string),
+                            data.reviewFrequency as ReviewFrequency,
                         ),
                     }),
                 },

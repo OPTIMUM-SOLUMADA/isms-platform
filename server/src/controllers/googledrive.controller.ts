@@ -46,9 +46,16 @@ export class GoogleDriveController {
             let workingDirId = '';
 
             if (existingAccount) {
-                // Find working directory if exists
-                const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
-                workingDirId = workingDir?.id || '';
+                try {
+                    const workingDir = await driveService.findFolderById(existingAccount.workingDirId!);
+                    workingDirId = workingDir?.id || '';
+                } catch {
+                    // Folder no longer exists in Drive, create a new one
+                    const workingDir = await driveService.createFolder(
+                        env.GOOGLE_DRIVE_WORKING_FOLDER_NAME,
+                    );
+                    workingDirId = workingDir.id;
+                }
             } else {
                 // Create working directory
                 const workingDir = await driveService.createFolder(
