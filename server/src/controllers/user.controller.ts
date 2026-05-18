@@ -10,6 +10,7 @@ import { AuditEventType } from '@prisma/client';
 import { getChanges } from '@/utils/change';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
+import { gmailVerificationService } from '@/services/gmail-verification.service';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -29,7 +30,6 @@ export class UserController {
                 });
                 return;
             }
-
             const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
             const user = await service.createUser({
@@ -49,21 +49,39 @@ export class UserController {
             // Audit log
             await req.log?.({
                 event: AuditEventType.USER_ADD,
-                targets: [
-                    {
-                        id: userId,
-                        type: 'USER',
-                    },
-                ],
-                details: {
-                    email: user.email,
-                    role: user.role,
-                    name: user.name,
-                },
+                targets: [{ id: userId, type: 'USER' }],
+                details: { email: user.email, role: user.role, name: user.name },
                 status: 'SUCCESS',
             });
 
             res.status(201).json(user);
+
+            // Envoyer l'invitation après la réponse pour ne pas bloquer le client
+            if (sendInvitationLink) {
+                try {
+                    const resetToken = jwtService.generatePasswordChangeToken(user);
+                    await service.updateUser(user.id, { passwordResetToken: resetToken });
+                    const invitationLink = toHashRouterUrl('/reset-password', {
+                        token: resetToken,
+                        invitation: true,
+                    });
+                    console.log('[CREATE_USER] Sending invitation to:', user.email);
+                    await emailService.sendMail({
+                        to: user.email,
+                        subject: 'Welcome to Solumada',
+                        html: await EmailTemplate.welcome({
+                            userName: user.name!,
+                            orgName: env.ORG_NAME,
+                            inviteLink: invitationLink,
+                            year: new Date().getFullYear().toString(),
+                            headerDescription: '',
+                        }),
+                    });
+                    console.log('[CREATE_USER] Invitation sent to:', user.email);
+                } catch (emailErr) {
+                    console.error('[CREATE_USER] Failed to send invitation email:', emailErr);
+                }
+            }
         } catch (err) {
             console.log(err);
             res.status(500).json({
@@ -100,6 +118,7 @@ export class UserController {
                 });
 
                 // SEND EMAIL INVITATION
+                console.log('[INVITATION] Sending email to:', user.email, '| Link:', invitationLink);
                 await emailService.sendMail({
                     to: user.email,
                     subject: 'Welcome to Solumada',
@@ -295,6 +314,8 @@ export class UserController {
                 page: Number(page),
                 limit: Number(limit),
             });
+
+
             res.json(data);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
@@ -334,6 +355,34 @@ export class UserController {
         } catch (err) {
             console.log(err);
             res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async verifyGmailAccount(req: Request, res: Response) {
+        try {
+            const { email } = req.body;
+
+            if (!email || typeof email !== 'string') {
+                res.status(400).json({
+                    error: 'Email is required',
+                    code: 'ERR_INVALID_EMAIL',
+                });
+                return;
+            }
+
+            // Vérifier si l'email utilise Gmail/Google Workspace
+            const isValid = await gmailVerificationService.verifyGmailAccount(email);
+
+            res.json({
+                valid: isValid,
+                email: email,
+            });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                error: 'Failed to verify Gmail account',
+                code: 'ERR_VERIFICATION_FAILED',
+            });
         }
     }
 }

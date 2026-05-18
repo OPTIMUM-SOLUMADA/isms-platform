@@ -25,11 +25,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
-import { forwardRef, useImperativeHandle, useMemo } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { RoleType } from "@/types/role";
 import { DocumentFileUpload } from "@/templates/documents/uploader/DocumentFileUpload";
 import { Frequencies, FrequenciesUnits } from "@/constants/frequency";
 import Required from "@/components/Required";
@@ -56,9 +55,17 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   departmentRoles: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
+  reviewers: z.array(z.string())
+    .nonempty(i18n.t("zod.errors.required"))
+    .refine((reviewers) => new Set(reviewers).size === reviewers.length, {
+      message: "Duplicate reviewers are not allowed",
+    }),
   classification: z.string().nonempty(i18n.t("zod.errors.required")),
-  authors: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+  authors: z.array(z.string())
+    .min(1, i18n.t("zod.errors.required"))
+    .refine((authors) => new Set(authors).size === authors.length, {
+      message: "Duplicate authors are not allowed",
+    }),
   files: z
     .array(z.custom<File>())
     .min(1, { message: i18n.t("components.fileUpload.errors.required") })
@@ -94,6 +101,7 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     },
     ref
   ) => {
+    
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { user: currentUser } = useAuth();
@@ -101,21 +109,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
     const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
     const { owners } = useOwnerStore();
-
-    // Ajouter currentUser à la liste des utilisateurs s'il n'y est pas déjà
-    const usersWithCurrent = useMemo(() => {
-      if (!currentUser) return users;
-      
-      // Vérifier si currentUser existe déjà dans la liste
-      const userExists = users.some(user => user.id === currentUser.id);
-      
-      if (userExists) {
-        return users;
-      }
-      
-      // Ajouter currentUser à la liste
-      return [currentUser as User, ...users];
-    }, [currentUser, users]);
 
     const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),
@@ -158,12 +151,12 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
     const selectedReviewers = watch("reviewers");
 
     // Filtrer les utilisateurs pour exclure ceux qui sont déjà sélectionnés
-    const availableUsersForAuthors = usersWithCurrent.filter(
-      user => user.role !== RoleType.VIEWER && !selectedReviewers?.includes(user.id)
+    const availableUsersForAuthors = users.filter(
+      user => !selectedReviewers?.includes(user.id)
     );
     
-    const availableUsersForReviewers = usersWithCurrent.filter(
-      user => user.role !== RoleType.VIEWER && !selectedAuthors?.includes(user.id)
+    const availableUsersForReviewers = users.filter(
+      user => !selectedAuthors?.includes(user.id)
     );
         
     // const selectedDepartmentId = watch('departmentId');

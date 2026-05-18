@@ -19,12 +19,19 @@ export const requestPasswordResetSchema = Joi.object({
 });
 
 export const changePasswordSchema = Joi.object({
-    password: Joi.string().required().messages({
-        'string.empty': 'Password is required',
-    }),
+    password: Joi.string()
+        .min(8)
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,;:_\-#])/)
+        .required()
+        .messages({
+            'string.empty': 'Password is required',
+            'string.min': 'Password must be at least 8 characters',
+            'string.pattern.base': 'Password must contain uppercase, lowercase, number and special character',
+        }),
     resetToken: Joi.string().required().messages({
         'string.empty': 'Reset token is required',
     }),
+    isInvitation: Joi.boolean().optional().default(false),
 });
 
 export const verifyResetTokenSchema = Joi.object({

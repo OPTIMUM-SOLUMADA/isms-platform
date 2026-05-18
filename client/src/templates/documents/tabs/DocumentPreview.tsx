@@ -34,8 +34,6 @@ export default function DocumentPreview({
     return url.replace('/edit?', replacer);
   }, [replacer, url]);
 
-  console.log('DocumentPreview:', { mode, url, fileUrl, version });
-
   return (
     <div className="relative w-full h-full flex flex-col grow">
       <Iframe

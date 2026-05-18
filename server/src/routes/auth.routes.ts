@@ -1,6 +1,8 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { AuthController } from '@/controllers/auth.controller';
 import { validate } from '@/middlewares/validate.middleware';
+import { authenticateToken } from '@/middlewares/auth.middleware';
 import {
     changePasswordSchema,
     loginSchema,
@@ -11,8 +13,16 @@ import {
 const router = express.Router();
 const authController = new AuthController();
 
-router.post('/login', validate(loginSchema), authController.login);
-router.post('/logout/:userId', authController.logout);
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many login attempts, please try again later.', code: 'ERR_TOO_MANY_REQUESTS' },
+});
+
+router.post('/login', loginLimiter, validate(loginSchema), authController.login);
+router.post('/logout', authenticateToken, authController.logout);
 router.post('/refresh', authController.refresh);
 router.post('/verify', authController.verify);
 router.post(

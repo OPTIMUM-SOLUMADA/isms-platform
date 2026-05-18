@@ -9,7 +9,7 @@ export const API_CONFIG = {
       RESET_PASSWORD: "/auth/reset-password",
       REFRESH: "/auth/refresh",
       VERIFY: "/auth/verify",
-      LOGOUT: (userId?: string) => `/auth/logout/${userId || 'undefined'}`,
+      LOGOUT: "/auth/logout",
       VERIFY_RESET_TOKEN: "/auth/verify-reset-token",
       VERIFY_ACCOUNT: "/auth/verify-account",
     },
@@ -24,6 +24,7 @@ export const API_CONFIG = {
       GET_USER_BY_IDS: "/api/users/by-ids",
       SEARCH: "/api/users/search",
       USER_ROLES_STATS: "/api/users/stats/roles",
+      VERIFY_GMAIL: "/api/users/verify-gmail",
     },
     DEPARTMENTS: {
       BASE: "/api/departments",

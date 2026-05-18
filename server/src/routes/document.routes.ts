@@ -49,5 +49,11 @@ router.get(
     googleAuthMiddleware,
     controller.getUserSpecificDriveLink.bind(controller),
 );
+// Get document preview URL (optimized for iframe)
+router.get(
+    '/preview-url/:id',
+    googleAuthMiddleware,
+    controller.getDocumentPreviewUrl.bind(controller),
+);
 
 export default router;

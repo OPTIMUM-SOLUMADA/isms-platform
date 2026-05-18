@@ -1,10 +1,11 @@
 import { EmailTemplate } from '@/configs/email-template';
 import { env } from '@/configs/env';
 import prisma from '@/database/prisma'; // adjust path to your prisma client
-import { DocumentReview, NotificationType, Prisma } from '@prisma/client';
+import { DocumentReview, NotificationType, Prisma, ReviewDecision } from '@prisma/client';
 import { EmailService } from './email.service';
 import { addHours, subMonths } from 'date-fns';
 import { toHashRouterUrl } from '@/utils/baseurl';
+import { getNextReviewDate } from '@/utils/review';
 
 const emailService = new EmailService();
 
@@ -66,6 +67,27 @@ const includes: Prisma.DocumentReviewInclude = {
 };
 
 export class DocumentReviewService {
+    /**
+     * Check if a review already exists for a document, reviewer, and version
+     */
+    async findExistingReview({
+        documentId,
+        reviewerId,
+        documentVersionId,
+    }: {
+        documentId: string;
+        reviewerId: string;
+        documentVersionId: string;
+    }) {
+        return prisma.documentReview.findFirst({
+            where: {
+                documentId,
+                reviewerId,
+                documentVersionId,
+            },
+        });
+    }
+
     async create(data: Prisma.DocumentReviewCreateInput): Promise<DocumentReview> {
         return prisma.documentReview.create({
             data,
@@ -169,6 +191,101 @@ export class DocumentReviewService {
         });
     }
 
+    async findByDocument(id: string) {
+        return prisma.documentReview.findMany({
+            where: { documentId: id },
+            include: {
+                document: {
+                    include: {
+                        versions: {
+                            where: { isCurrent: true },
+                            select: {
+                                version: true,
+                                createdAt: true,
+                                fileUrl: true,
+                                document: {
+                                    select: {
+                                        title: true,
+                                        description: true,
+                                        status: true,
+                                        isoClause: {
+                                            select: {
+                                                name: true,
+                                                code: true,
+                                            },
+                                        },
+                                        reviewers: {
+                                            include: {
+                                                user: {
+                                                    select: {
+                                                        name: true,
+                                                        email: true,
+                                                        createdAt: true,
+                                                        role: true,
+                                                        departmentRoleUsers: {
+                                                            select: {
+                                                                id: true,
+                                                                departmentRole: {
+                                                                    select: {
+                                                                        id: true,
+                                                                        name: true,
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        isoClause: {
+                            select: {
+                                name: true,
+                                code: true,
+                            },
+                        },
+                    },
+                },
+                reviewer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        createdAt: true,
+                        role: true,
+                        departmentRoleUsers: {
+                            select: {
+                                id: true,
+                                departmentRole: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                assignedBy: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+                documentVersion: {
+                    select: {
+                        id: true,
+                        version: true,
+                        createdAt: true,
+                        fileUrl: true,
+                    },
+                },
+            },
+        });
+    }
     async findAll(): Promise<DocumentReview[]> {
         return await prisma.documentReview.findMany({
             include: {
@@ -220,11 +337,14 @@ export class DocumentReviewService {
     }
 
     async findPendingReviews(userId?: string): Promise<DocumentReview[]> {
-        console.log("yser", userId);
         
         return prisma.documentReview.findMany({
             where: {
-                decision: { isSet: true },
+                AND: [
+                { decision: { isSet: true } },
+                { decision: { not:  ReviewDecision.REQUEST_CHANGES } },
+                ],
+                // decision: { isSet: true },
                 isCompleted: false,
                 // ...(userId && {
                 //     document: {
@@ -303,7 +423,32 @@ export class DocumentReviewService {
         userId?: string;
         dueDate?: Date | null;
     }) {
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+        // Filter empty strings and remove duplicates
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (uniqueReviewerIds.length === 0) return;
+        
+        // Check existing reviews to avoid duplicates
+        const existingReviews = await prisma.documentReview.findMany({
+            where: {
+                documentId,
+                documentVersionId,
+                reviewerId: { in: uniqueReviewerIds },
+            },
+            select: { reviewerId: true },
+        });
+
+        const existingReviewerIds = new Set(existingReviews.map(r => r.reviewerId));
+        
+        // Only create reviews for reviewers who don't already have one
+        const newReviewerIds = uniqueReviewerIds.filter(id => !existingReviewerIds.has(id));
+        
+        if (newReviewerIds.length === 0) {
+            console.log(`[DocumentReview] All reviewers already have reviews for document ${documentId}`);
+            return;
+        }
+        
+        const data: Prisma.DocumentReviewCreateManyInput[] = newReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
             dueDate: dueDate || null,
@@ -311,7 +456,9 @@ export class DocumentReviewService {
             ...(userId ? { assignedById: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        return prisma.documentReview.createMany({ 
+            data,
+        });
     }
 
     async updateAssignedReviewersToDocument({
@@ -334,7 +481,26 @@ export class DocumentReviewService {
                 dueDate: { gt: new Date() },
             },
         });
-        const data: Prisma.DocumentReviewCreateManyInput[] = reviewerIds.map((reviewerId) => ({
+        
+        // Filter empty strings and remove duplicates
+        const uniqueReviewerIds = [...new Set(reviewerIds.filter(id => id && id.trim()))];
+        
+        if (uniqueReviewerIds.length === 0) return;
+        
+        // Check existing reviews to avoid re-creating already completed ones
+        const existingReviews = await prisma.documentReview.findMany({
+            where: {
+                documentId,
+                documentVersionId,
+                reviewerId: { in: uniqueReviewerIds },
+                isCompleted: true, // Don't recreate completed reviews
+            },
+            select: { reviewerId: true },
+        });
+
+        const completedReviewerIds = new Set(existingReviews.map(r => r.reviewerId));
+        
+        const data: Prisma.DocumentReviewCreateManyInput[] = uniqueReviewerIds.map((reviewerId) => ({
             documentId: documentId,
             reviewerId: reviewerId,
             dueDate: dueDate || null,
@@ -342,7 +508,11 @@ export class DocumentReviewService {
             ...(userId ? { assignedById: userId } : {}),
         }));
 
-        return prisma.documentReview.createMany({ data });
+        console.log(`[DocumentReview] Creating/updating ${data.length} reviews, skipping ${completedReviewerIds.size} completed`);
+
+        return prisma.documentReview.createMany({ 
+            data,
+        });
     }
 
     async submitReviewDecision(
@@ -352,6 +522,43 @@ export class DocumentReviewService {
             'comment' | 'decision' | 'isCompleted' | 'completedAt' | 'completedBy'
         >,
     ) {
+        // Get the review with document info
+        const review = await this.findById(reviewId);
+                
+        if (!review) {
+            throw new Error('Review not found');
+        }
+        
+        // If decision is REQUEST_CHANGES, recalculate dueDate
+        if (data.decision === ReviewDecision.REQUEST_CHANGES) {
+            const document = review.document;
+            
+            if (document.reviewFrequency) {
+                const newDueDate = getNextReviewDate(new Date(), document.reviewFrequency);
+                
+                console.log("new ====", newDueDate);
+                
+                if (newDueDate) {
+                    // Update the document's nextReviewDate
+                    await prisma.document.update({
+                        where: { id: document.id },
+                        data: { nextReviewDate: newDueDate },
+                    });
+
+                    // Update all reviews for this document with the new dueDate
+                    await prisma.documentReview.updateMany({
+                        where: { documentId: document.id },
+                        data: { dueDate: newDueDate },
+                    });
+
+                    await prisma.clauseCompliance.updateMany({
+                        where: { documentId: document.id },
+                        data: { nextReview: newDueDate },
+                    });
+                }
+            }
+        }
+
         return prisma.documentReview.update({
             where: { id: reviewId },
             data: {

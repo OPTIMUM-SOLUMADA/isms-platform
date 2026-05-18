@@ -107,6 +107,16 @@ const Table = ({
     const { user: currentUser } = useAuth();
     const { pagination, setPagination } = useUserStore();
 
+    // Calculate total pages based on actual data length
+    const totalPages = Math.ceil(data.length / pagination.limit);
+
+    // Paginate data on the client side
+    const paginatedData = React.useMemo(() => {
+        const startIndex = (pagination.page - 1) * pagination.limit;
+        const endIndex = startIndex + pagination.limit;
+        return data.slice(startIndex, endIndex);
+    }, [data, pagination.page, pagination.limit]);
+
     // Define columns for UserTable
     const userColumns: ColumnDef<User>[] = useMemo(() => [
         {
@@ -195,7 +205,7 @@ const Table = ({
         <DataTable
             title={t("user.table.title")}
             columns={userColumns}
-            data={data}
+            data={paginatedData}
             searchableColumnId="name"
             enableRowSelection
             renderNoData={() => (
@@ -216,7 +226,7 @@ const Table = ({
             // pagination
             page={pagination.page}
             pageSize={pagination.limit}
-            totalCount={pagination.totalPages}
+            totalCount={totalPages}
             onPageChange={(page) => setPagination({ ...pagination, page })}
         />
     );

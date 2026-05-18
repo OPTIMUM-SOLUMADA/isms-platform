@@ -19,8 +19,8 @@ export const useVerify = () => useMutation({
     mutationFn: () => AuthService.verify(),
 });
 
-export const useChangePassword = () => useMutation<any, ApiAxiosError, { password: string, resetToken: string }>({
-    mutationFn: (payload: { password: string, resetToken: string }) => AuthService.changePassword(payload.resetToken, payload.password),
+export const useChangePassword = () => useMutation<any, ApiAxiosError, { password: string, resetToken: string, isInvitation?: boolean }>({
+    mutationFn: (payload: { password: string, resetToken: string, isInvitation?: boolean }) => AuthService.changePassword(payload.resetToken, payload.password, payload.isInvitation),
 });
 
 export const useResetPassword = () => useMutation<any, ApiAxiosError, { email: string }>({

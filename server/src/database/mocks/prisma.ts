@@ -1,3 +1,4 @@
+// src/lib/prisma.ts
 import { PrismaClient } from '@prisma/client';
 import { mockDeep, mockReset } from 'jest-mock-extended';
 

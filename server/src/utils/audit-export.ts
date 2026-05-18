@@ -1,9 +1,10 @@
 import type { AuditLogPayload } from '@/services/audit.service';
 import ExcelJS from 'exceljs';
 
+// Options for exporting audit logs
 interface ExportOptions {
     filename?: string;
-    includeHeaders?: boolean;
+    includeHeaders?: boolean;   
 }
 
 /**

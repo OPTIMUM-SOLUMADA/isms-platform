@@ -11,6 +11,7 @@ import { DepartmentRoleTable } from "@/templates/departments/table/DepartmentRol
 import useDepartmentStore from "@/stores/department/useDepatrmentStore";
 import { useFetchDepartmentRoles } from "@/hooks/queries/useDepartmentRoleMutations";
 import { useFetchDepartment } from "@/hooks/queries/useDepartmentMutations";
+import CircleLoading from "@/components/loading/CircleLoading";
 
 export default function DepartmentDetailPage() {
 
@@ -37,7 +38,7 @@ export default function DepartmentDetailPage() {
     }
   }, [department, setCurrentDepartment]);
 
-  if (isLoading) return <>Loading...</>;
+  if (isLoading) return <CircleLoading text={t("common.loading")} />;
 
   return (
     <div className="md:flex-row justify-between items-start md:items-center gap-4">

@@ -5,11 +5,12 @@ import bodyParser from 'body-parser';
 import { env } from '@/configs/env';
 import { sessionMiddleware } from '@/configs/session.config';
 import { auditLogMiddleware } from '@/middlewares/auditlog.middleware';
+import { authDiagnosticMiddleware } from '@/middlewares/auth-diagnostic.middleware';
 import { PUBLIC_PATH, VIEWS_PATH } from '@/configs/public';
 import { UPLOAD_PATH, UPLOAD_URL } from '@/configs/upload';
 
 export default function applyMiddleware(app: Application) {
-    app.set('trust proxy', 1);
+    app.set('trust proxy', 1); // 1 = trust first proxy only (not all proxies)
 
     app.use(express.urlencoded({ extended: true }));
     app.use(bodyParser.json({ limit: '50mb' }));
@@ -43,6 +44,14 @@ export default function applyMiddleware(app: Application) {
     // Static
     app.use('/static', express.static(PUBLIC_PATH));
     app.use(UPLOAD_URL, express.static(UPLOAD_PATH));
+
+    // Cookies
+    app.use(cookieParser());
+
+    // Auth diagnostic (only in development or when debugging)
+    if (env.NODE_ENV === 'development' || process.env.DEBUG_AUTH === 'true') {
+        app.use(authDiagnosticMiddleware);
+    }
 
     // Audit log (global)
     app.use(auditLogMiddleware);

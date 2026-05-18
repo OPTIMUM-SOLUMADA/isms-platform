@@ -62,7 +62,7 @@ export class AuthController {
             const accessToken = jwtService.generateAccessToken(user);
             const refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-            req.user = { id: user.id, role: user.role as RoleType | undefined };
+            req.user = { id: user.id, email: user.email, role: user.role, isActive: user.isActive };
             // Audit log for login
             await req.log?.({
                 event: AuditEventType.AUTH_LOGIN,
@@ -79,7 +79,12 @@ export class AuthController {
             });
 
             // set cookie and header, then send json response
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' })
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: env.NODE_ENV === 'production',
+                maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000,
+            })
                 .header('Authorization', `Bearer ${accessToken}`)
                 .json({
                     id: user.id,
@@ -108,16 +113,16 @@ export class AuthController {
             const decoded = jwtService.verifyRefreshToken(refreshToken);
             const user = await userService.findByEmail(decoded.user.email);
             if (!user) {
-                res.status(404).json({
-                    error: 'User not found',
-                    code: 'ERR_USER_NOT_FOUND',
-                });
-            } else {
-                const accessToken = jwtService.generateAccessToken(user);
-                const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
-                // Exclude password
-                res.header('Authorization', `Bearer ${accessToken}`).status(200).send(rest);
+                res.status(404).json({ error: 'User not found', code: 'ERR_USER_NOT_FOUND' });
+                return;
             }
+            if (!user.isActive) {
+                res.status(403).json({ error: 'Account inactive', code: 'ERR_USER_INACTIVE' });
+                return;
+            }
+            const accessToken = jwtService.generateAccessToken(user);
+            const { passwordHash, passwordResetToken, id, isActive, ...rest } = user;
+            res.header('Authorization', `Bearer ${accessToken}`).status(200).send(rest);
         } catch (error: any) {
             console.error(error);
             res.status(400).send({
@@ -146,7 +151,8 @@ export class AuthController {
                 });
                 return;
             }
-            res.json(user);
+            const { passwordHash, passwordResetToken, ...safeUser } = user;
+            res.json(safeUser);
         } catch (err) {
             console.error(err);
             if (err instanceof jwt.TokenExpiredError) {
@@ -163,41 +169,22 @@ export class AuthController {
         res.clearCookie('refreshToken', {
             httpOnly: true,
             sameSite: 'strict',
-            secure: process.env.NODE_ENV === 'production',
+            secure: env.NODE_ENV === 'production',
         });
 
-        const { userId } = req.params;
-        if (!userId || userId === 'undefined' || userId === 'null') {
-            res.status(200).json({ message: 'Logged out successfully' });
-            return;
-        }
-        
-        // Validate userId format (MongoDB ObjectId should be 24 hex characters)
-        if (userId.length !== 24 || !/^[0-9a-fA-F]{24}$/.test(userId)) {
-            res.status(200).json({ message: 'Logged out successfully' });
-            return;
-        }
-        
-        const user = await userService.getUserById(userId);
-        if (!user) {
-            res.status(200).json({ message: 'Logged out successfully' });
-            return;
+        // Utiliser l'ID depuis le token authentifié, pas depuis les params
+        const userId = req.user?.id;
+        if (userId) {
+            const user = await userService.getUserById(userId);
+            if (user) {
+                await req.log?.({
+                    event: AuditEventType.AUTH_LOGOUT,
+                    details: { email: user.email, role: user.role },
+                    targets: [{ type: AuditTargetType.USER, id: user.id }],
+                });
+            }
         }
 
-        // Audit log logout
-        await req.log?.({
-            event: AuditEventType.AUTH_LOGOUT,
-            details: {
-                email: user.email,
-                role: user.role,
-            },
-            targets: [
-                {
-                    type: AuditTargetType.USER,
-                    id: user.id,
-                },
-            ],
-        });
         res.status(200).json({ message: 'Logged out successfully' });
     };
 
@@ -205,8 +192,10 @@ export class AuthController {
     requestPasswordReset = async (req: Request, res: Response) => {
         const { email } = req.body;
         try {
+            console.log('[RESET_PASSWORD] Request for:', email);
             const user = await userService.findByEmail(email);
             if (!user) {
+                console.log('[RESET_PASSWORD] User not found:', email);
                 res.status(404).json({
                     error: 'User not found',
                     code: 'ERR_USER_NOT_FOUND',
@@ -216,16 +205,16 @@ export class AuthController {
 
             const resetToken = await jwtService.generatePasswordResetToken(user);
 
-            // update user password reset token
-            await userService.updateUser(user.id, {
-                passwordResetToken: resetToken,
-            });
+            await userService.updateUser(user.id, { passwordResetToken: resetToken });
+
+            const resetLink = toHashRouterUrl(`/reset-password`, { token: resetToken });
+            console.log('[RESET_PASSWORD] Sending email to:', user.email, '| Link:', resetLink);
 
             const template = await EmailTemplate.resetPassword({
                 orgName: env.ORG_NAME,
                 year: new Date().getFullYear().toString(),
                 user: { name: user.name },
-                resetLink: toHashRouterUrl(`/reset-password`, { token: resetToken }),
+                resetLink,
                 headerDescription: '',
             });
 
@@ -235,6 +224,7 @@ export class AuthController {
                 html: template,
             });
 
+            console.log('[RESET_PASSWORD] Email sent successfully to:', user.email);
             res.status(200).json({ message: 'Password reset email sent' });
         } catch (err) {
             console.error(err);
@@ -247,7 +237,7 @@ export class AuthController {
 
     // update password
     changePassword = async (req: Request, res: Response) => {
-        const { resetToken, password } = req.body;
+        const { resetToken, password, isInvitation = false } = req.body;
         try {
             const decoded = await jwtService.verifyPasswordResetToken(resetToken);
 
@@ -270,10 +260,11 @@ export class AuthController {
             }
 
             const passwordHash = await hashPassword(password);
-            // update user password
+            // update user password and activate if it's an invitation
             await userService.updateUser(user.id, {
                 passwordResetToken: null,
                 passwordHash,
+                ...(isInvitation && { isActive: true }),
             });
 
             res.status(200).json({ message: 'Password reset successfully' });

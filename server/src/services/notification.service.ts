@@ -123,6 +123,8 @@ export class NotificationService {
         documentId,
         documentTitle,
         additionalInfo,
+        metadata,
+        metadataByUserId,
     }: {
         userIds: string[];
         type: NotificationType;
@@ -131,6 +133,8 @@ export class NotificationService {
         documentId?: string;
         documentTitle?: string;
         additionalInfo?: string;
+        metadata?: Record<string, any>;
+        metadataByUserId?: Record<string, Record<string, any>>;
     }) {
         // Generate template if title/message not provided
         const base =
@@ -144,6 +148,7 @@ export class NotificationService {
             title: base.title,
             message: base.message,
             documentId: documentId ?? null,
+            metadata: metadataByUserId?.[userId] ?? metadata ?? undefined,
         }));
 
         return prisma.notification.createMany({
@@ -244,12 +249,14 @@ export class NotificationService {
         authorIds = [],
         reviewerIds = [],
         creatorId,
+        reviewIdByReviewerId = {},
     }: {
         documentId: string;
         documentTitle: string;
         authorIds?: string[];
         reviewerIds?: string[];
         creatorId: string;
+        reviewIdByReviewerId?: Record<string, string>;
     }) {
         // Notify authors
         const notifyAuthorIds = authorIds.filter((id) => id !== creatorId);
@@ -264,16 +271,23 @@ export class NotificationService {
             });
         }
 
-        // Notify reviewers
+        // Notify reviewers — include reviewId in metadata so the notification links directly to the review
         const notifyReviewerIds = reviewerIds.filter((id) => id !== creatorId);
         if (notifyReviewerIds.length > 0) {
             const template = getDocumentAssignmentMessage('reviewer', documentTitle);
+            const metadataByUserId = Object.fromEntries(
+                notifyReviewerIds.map((id) => [
+                    id,
+                    { reviewId: reviewIdByReviewerId[id] ?? null },
+                ]),
+            );
             await this.notifyUsers({
                 userIds: notifyReviewerIds,
                 type: NotificationType.DOCUMENT_CREATED,
                 title: template.title,
                 message: template.message,
                 documentId,
+                metadataByUserId,
             });
         }
     }
@@ -288,12 +302,14 @@ export class NotificationService {
         authorIds = [],
         reviewerIds = [],
         updaterId,
+        reviewIdByReviewerId = {},
     }: {
         documentId: string;
         documentTitle: string;
         authorIds?: string[];
         reviewerIds?: string[];
         updaterId: string;
+        reviewIdByReviewerId?: Record<string, string>;
     }) {
         // Prepare a generic update template
         const template = getNotificationTemplate(NotificationType.DOCUMENT_UPDATED, documentTitle);
@@ -310,15 +326,22 @@ export class NotificationService {
             });
         }
 
-        // Notify reviewers except updater
+        // Notify reviewers except updater — include reviewId in metadata
         const notifyReviewerIds = reviewerIds.filter((id) => id !== updaterId);
         if (notifyReviewerIds.length > 0) {
+            const metadataByUserId = Object.fromEntries(
+                notifyReviewerIds.map((id) => [
+                    id,
+                    { reviewId: reviewIdByReviewerId[id] ?? null },
+                ]),
+            );
             await this.notifyUsers({
                 userIds: notifyReviewerIds,
                 type: NotificationType.DOCUMENT_UPDATED,
                 title: template.title,
                 message: template.message,
                 documentId,
+                metadataByUserId,
             });
         }
     }

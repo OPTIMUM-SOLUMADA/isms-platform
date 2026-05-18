@@ -1,6 +1,7 @@
 import { env } from '@/configs/env';
 import { PUBLIC_PATH } from '@/configs/public';
 import nodemailer, { type SendMailOptions } from 'nodemailer';
+import { Resend } from 'resend';
 
 interface EmailOptions {
     to: string;
@@ -10,23 +11,40 @@ interface EmailOptions {
 }
 
 export class EmailService {
-    private transporter;
+    private resend: Resend | null = null;
+    private transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 
     constructor() {
-        this.transporter = nodemailer.createTransport({
-            host: env.SMTP_HOST,
-            port: Number(env.SMTP_PORT),
-            secure: env.SMTP_SECURE === 'true',
-            auth: {
-                user: env.SMTP_USER,
-                pass: env.SMTP_PASS,
-            },
-        });
+        if (env.RESEND_API_KEY) {
+            this.resend = new Resend(env.RESEND_API_KEY);
+        } else {
+            this.transporter = nodemailer.createTransport({
+                host: env.SMTP_HOST,
+                port: Number(env.SMTP_PORT),
+                secure: env.SMTP_SECURE === 'true',
+                auth: {
+                    user: env.SMTP_USER,
+                    pass: env.SMTP_PASS,
+                },
+            });
+        }
     }
 
     async sendMail(options: EmailOptions) {
-        try {
-            const info = await this.transporter.sendMail({
+        if (this.resend) {
+            const { data, error } = await this.resend.emails.send({
+                from: 'ISMS Solumada <noreply@solumada.mg>',
+                to: options.to,
+                subject: options.subject,
+                html: options.html,
+            });
+            if (error) {
+                console.error('Resend error:', error);
+                throw new Error(error.message);
+            }
+            console.log('Email sent via Resend:', data?.id);
+        } else {
+            const info = await this.transporter!.sendMail({
                 from: `"ISMS Solumada" <${env.SMTP_USER}>`,
                 to: options.to,
                 subject: options.subject,
@@ -40,10 +58,7 @@ export class EmailService {
                     ...((options.attachments?.attachments ?? []) as any[]),
                 ],
             });
-            console.log('Email sent: %s', info.messageId);
-        } catch (err) {
-            console.error('Email sending failed', err);
-            throw err;
+            console.log('Email sent via SMTP:', info.messageId);
         }
     }
 }

@@ -56,6 +56,7 @@ export const envSchema = z.object({
     SMTP_USER_NOREPLY: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_SECURE: z.string().optional().default('false'),
+    RESEND_API_KEY: z.string().optional(),
 
     ORG_NAME: z.string().optional().default('ISMS Solumada'),
     // GOOGLE
@@ -63,6 +64,12 @@ export const envSchema = z.object({
     GOOGLE_CLIENT_SECRET: z.string().optional().default(''),
     GOOGLE_REDIRECT_URI: z.string().optional().default(''),
     GOOGLE_DRIVE_WORKING_FOLDER_NAME: z.string().optional().default('ISMS Solumada Documents'),
+    GOOGLE_REFRESH_TOKEN: z.string().optional().default(''),
+
+    // File Storage Configuration
+    // For Render: Set to '/var/data' to use persistent disk
+    // For local dev: Defaults to './uploads' in project root
+    STORAGE_PATH: z.string().optional(),
 });
 
 const envServer = envSchema.safeParse({
@@ -86,11 +93,14 @@ const envServer = envSchema.safeParse({
     SMTP_USER_NOREPLY: process.env.SMTP_USER_NOREPLY,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_SECURE: process.env.SMTP_SECURE,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     ORG_NAME: process.env.ORG_NAME,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
     GOOGLE_DRIVE_WORKING_FOLDER_NAME: process.env.GOOGLE_DRIVE_WORKING_FOLDER_NAME,
+    GOOGLE_REFRESH_TOKEN: process.env.GOOGLE_REFRESH_TOKEN,
+    STORAGE_PATH: process.env.STORAGE_PATH,
 });
 
 if (!envServer.success) {

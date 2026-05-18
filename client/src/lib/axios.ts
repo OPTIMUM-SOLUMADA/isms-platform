@@ -11,11 +11,18 @@ const axios = originalAxios.create({
 
 let accessToken: string | null = localStorage.getItem(env.ACCESS_TOKEN_KEY) || null;
 let isRefreshing = false;
-let failedQueue: ((token?: string) => void)[] = [];
+let failedQueue: Array<{ resolve: (token?: string) => void; reject: (error: any) => void }> = [];
 
 // Helper to process queued requests after refresh
-const processQueue = (newToken?: string) => {
-    failedQueue.forEach((cb) => cb(newToken));
+const processQueue = (error: any = null, token: string | null = null) => {
+    console.log(`[AXIOS] Processing queue: ${failedQueue.length} requests, error:`, !!error, 'token:', !!token);
+    failedQueue.forEach((promise) => {
+        if (error) {
+            promise.reject(error);
+        } else {
+            promise.resolve(token || undefined);
+        }
+    });
     failedQueue = [];
 };
 
@@ -34,46 +41,93 @@ axios.interceptors.response.use(
 
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (
-            error.response?.status === 401 &&
-            !originalRequest?._retry // prevent infinite loop
-        ) {
+        // Check if it's a 401 error
+        if (error.response?.status === 401 && !originalRequest?._retry) {
+            console.log('[AXIOS] 401 error detected', {
+                url: originalRequest?.url,
+                hasAccessToken: !!accessToken,
+                isRefreshing
+            });
+
+            // Don't try to refresh if:
+            // 1. User is not logged in (no access token)
+            // 2. Request is to auth endpoints (login, verify-account, verify-reset-token, etc.)
+            const isAuthEndpoint = originalRequest?.url?.includes('/auth/login') ||
+                                   originalRequest?.url?.includes('/auth/verify') ||
+                                   originalRequest?.url?.includes('/auth/verify-account') ||
+                                   originalRequest?.url?.includes('/auth/verify-reset-token') ||
+                                   originalRequest?.url?.includes('/auth/change-password') ||
+                                   originalRequest?.url?.includes('/auth/reset-password');
+            
+            // If it's an auth endpoint, don't try to refresh
+            if (isAuthEndpoint) {
+                console.log('[AXIOS] Skipping refresh - auth endpoint');
+                return Promise.reject(error);
+            }
+
+            // If no token in localStorage, redirect to login
+            if (!accessToken) {
+                console.log('[AXIOS] Skipping refresh - no access token, redirecting to login');
+                window.location.href = '/#/login';
+                return Promise.reject(error);
+            }
+
+            // If refresh is already in progress, queue this request
             if (isRefreshing) {
-                // Queue the request until token is refreshed
-                return new Promise((resolve) => {
-                    failedQueue.push((token?: string) => {
-                        if (token && originalRequest?.headers) {
-                            originalRequest.headers["Authorization"] = `Bearer ${token}`;
-                        }
-                        resolve(axios(originalRequest!));
+                console.log('[AXIOS] Queuing request while refresh in progress:', originalRequest?.url);
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({
+                        resolve: (token?: string) => {
+                            if (token && originalRequest?.headers) {
+                                originalRequest.headers["Authorization"] = `Bearer ${token}`;
+                                resolve(axios(originalRequest!));
+                            } else {
+                                reject(new Error('No token available'));
+                            }
+                        },
+                        reject
                     });
                 });
             }
 
+            // Start refresh process
+            console.log('[AXIOS] Starting refresh process for:', originalRequest?.url);
             originalRequest!._retry = true;
             isRefreshing = true;
 
             try {
+                console.log('[AXIOS] Calling refresh token...');
                 const response = await AuthService.refreshToken();
                 const newToken = response.headers["authorization"]?.split(" ")[1];
                 accessToken = newToken || null;
 
+                console.log('[AXIOS] Refresh successful, got new token:', !!newToken);
 
-                // Update queued requests
-                processQueue(accessToken || undefined);
+                if (newToken) {
+                    localStorage.setItem(env.ACCESS_TOKEN_KEY, newToken);
+                }
+
+                // Update queued requests with success
+                processQueue(null, accessToken);
 
                 if (originalRequest?.headers && newToken) {
                     originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-                    localStorage.setItem(env.ACCESS_TOKEN_KEY, accessToken || "");
-                    console.log("Get new token", newToken)
                 }
                 return axios(originalRequest!);
-            } catch (refreshError) {
-                console.log("Refresh token error", refreshError);
-                AuthService.logout().then(() => {
-                    localStorage.setItem(env.ACCESS_TOKEN_KEY, "");
-                });
-                processQueue(undefined);
+            } catch (refreshError: any) {
+                console.error('[AXIOS] Refresh token error:', refreshError?.response?.status, refreshError?.response?.data);
+                
+                // Clear token and reject queued requests
+                accessToken = null;
+                localStorage.removeItem(env.ACCESS_TOKEN_KEY);
+                processQueue(refreshError, null);
+                
+                // Only redirect if refresh token is invalid/expired
+                if (refreshError?.response?.status === 401) {
+                    console.log("[AXIOS] Session expired, redirecting to login");
+                    window.location.href = '/#/login';
+                }
+                
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
