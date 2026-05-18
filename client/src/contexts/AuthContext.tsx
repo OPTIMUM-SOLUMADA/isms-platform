@@ -75,11 +75,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     const logoutMutation = useMutation<any, ApiAxiosError, void>({
-        mutationFn: async () => AuthService.logout(),
+        mutationFn: async () => {
+            try {
+                await AuthService.logout();
+            } catch {
+                // Ignore API errors — always clear local session
+            }
+        },
         onSuccess: () => {
             setToken(null);
             setUser(null);
+            queryClient.clear();
         },
+        retry: 0,
     });
 
     const value: AuthContextType = {

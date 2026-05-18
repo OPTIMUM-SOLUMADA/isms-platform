@@ -22,7 +22,7 @@ const loginLimiter = rateLimit({
 });
 
 router.post('/login', loginLimiter, validate(loginSchema), authController.login);
-router.post('/logout', authenticateToken, authController.logout);
+router.post('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 router.post('/verify', authController.verify);
 router.post(
