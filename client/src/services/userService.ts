@@ -38,4 +38,5 @@ export const userService = {
     search: async (q: string) => axios.get(api.SEARCH, { params: { q } }),
     getUserByIds: async (ids: string[]) => axios.get(api.GET_USER_BY_IDS, { params: { ids: ids.join(',') } }),
     getUserRolesStats: async () => axios.get(api.USER_ROLES_STATS),
+    verifyGmailAccount: async (email: string) => axios.post(api.VERIFY_GMAIL, { email }),
 }

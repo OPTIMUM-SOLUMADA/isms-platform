@@ -4,9 +4,10 @@ import { EmailService } from '@/services/email.service';
 import { DocumentReviewService } from '@/services/documentreview.service';
 import { logger } from '@/utils/logger';
 import { startOfDay, endOfDay, addDays } from 'date-fns';
-import { ClauseComplianceStatus, DocumentStatus } from '@prisma/client';
+import { ClauseComplianceStatus, DocumentStatus, ReviewDecision } from '@prisma/client';
 import { getDocumentReviewReminderEmailTemplate } from '@/templates/emails/document-review-reminder.template';
 import { ComplianceService } from '@/services/compliance.service';
+import prisma from '@/database/prisma';
 
 const documentService = new DocumentService();
 const notificationService = new NotificationService();
@@ -22,6 +23,7 @@ interface DocumentToReview {
     published: boolean;
     authors: Array<{ user: { id: string; name: string; email: string } }>;
     reviewers: Array<{ user: { id: string; name: string; email: string } }>;
+    versions: Array<{ id: string; isCurrent: boolean }>;
 }
 
 /**
@@ -34,17 +36,17 @@ interface DocumentToReview {
 export async function documentReviewReminderJob(): Promise<void> {
     console.log("******** ======== **********");
     
-    logger.info('[REVIEW_REMINDER] Starting document review reminder job');
+    console.log('[REVIEW_REMINDER] Starting document review reminder job');
 
     try {
         const documentsToReview = await findDocumentsDueForReviewTomorrow();
         
         if (documentsToReview.length === 0) {
-            logger.info('[REVIEW_REMINDER] No documents due for review tomorrow');
+            console.log('[REVIEW_REMINDER] No documents due for review tomorrow');
             return;
         }
 
-        logger.info(`[REVIEW_REMINDER] Found ${documentsToReview.length} documents due for review tomorrow`);
+        console.log(`[REVIEW_REMINDER] Found ${documentsToReview.length} documents due for review tomorrow`);
         console.log(`[REVIEW_REMINDER] Found ${documentsToReview.length} documents due for review tomorrow`);
 
         let processedCount = 0;
@@ -52,6 +54,10 @@ export async function documentReviewReminderJob(): Promise<void> {
 
         for (const document of documentsToReview) {
             try {
+                // 1. Reset reviews for current version
+                await resetReviewsForCurrentVersion(document);
+                // return
+                // 2. Continue existing logic (emails, notifications, etc.)
                 await processDocumentReview(document);
                 processedCount++;
             } catch (error) {
@@ -65,7 +71,7 @@ export async function documentReviewReminderJob(): Promise<void> {
 
         console.log(`[REVIEW_REMINDER] Job completed. Processed: ${processedCount}, Errors: ${errorCount}`);
         
-        logger.info(
+        console.log(
             `[REVIEW_REMINDER] Job completed. Processed: ${processedCount}, Errors: ${errorCount}`
         );
     } catch (error) {
@@ -73,6 +79,57 @@ export async function documentReviewReminderJob(): Promise<void> {
         throw error;
     }
 }
+
+async function resetReviewsForCurrentVersion(document: DocumentToReview) {
+//   const currentVersion = document.versions.find(v => v.isCurrent);
+
+//   if (!currentVersion) {
+//     logger.warn(
+//       { documentId: document.id },
+//       '[REVIEW_REMINDER] No current version found, skipping reset',
+//     );
+//     return;
+//   }
+
+  // Trouver la dernière review du document
+  const lastReview = await prisma.documentReview.findFirst({
+    where: {
+      documentId: document.id,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  if (!lastReview) {
+    logger.warn(
+      { documentId: document.id },
+      '[REVIEW_REMINDER] No review found for document, skipping reset',
+    );
+    return;
+  }
+
+  // Réinitialiser uniquement la dernière review
+  const result = await prisma.documentReview.update({
+    where: {
+      id: lastReview.id,
+    },
+    data: {
+      isCompleted: false,
+      completedAt: null,
+      decision: ReviewDecision.REQUEST_CHANGES,
+    },
+  });
+
+  console.log(
+    {
+      documentId: document.id,
+      reviewId: result.id,
+    },
+    `[REVIEW_REMINDER] Last review reset for current version`,
+  );
+}
+
 
 /**
  * Find all documents whose nextReviewDate is tomorrow
@@ -99,20 +156,25 @@ async function findDocumentsDueForReviewTomorrow(): Promise<DocumentToReview[]> 
  * - Send notifications to authors and reviewers
  */
 async function processDocumentReview(document: DocumentToReview): Promise<void> {
-    logger.info(`[REVIEW_REMINDER] Processing document: ${document.title} (ID: ${document.id})`);
+    console.log(`[REVIEW_REMINDER] Processing document: ${document.title} (ID: ${document.id})`);
 
     const updateData: { published?: boolean; status?: DocumentStatus } = {};
 
+    const reviewDoc = await reviewService.findByDocument(document.id);
+    console.log(`[REVIEW_REMINDER] Found ***** ${reviewDoc.length} reviews for document: ${document.title}`);
+    console.log("=====reveiw", reviewDoc);
+    
+    
     // Check if document is published and needs to be unpublished
     if (document.published) {
         updateData.published = false;
-        logger.info(`[REVIEW_REMINDER] Unpublishing document: ${document.title}`);
+        console.log(`[REVIEW_REMINDER] Unpublishing document: ${document.title}`);
     }
 
     // Check if status is APPROVED and needs to be changed to IN_REVIEW
-    if (document.status === DocumentStatus.APPROVED) {
+    if (document.status !== DocumentStatus.IN_REVIEW) {
         updateData.status = DocumentStatus.IN_REVIEW;
-        logger.info(`[REVIEW_REMINDER] Changing status to IN_REVIEW: ${document.title}`);
+        console.log(`[REVIEW_REMINDER] Changing status to IN_REVIEW: ${document.title}`);
     }
 
     // Update document if there are changes
@@ -120,35 +182,16 @@ async function processDocumentReview(document: DocumentToReview): Promise<void> 
         await documentService.updateDocument(document.id, updateData);
     }
 
-// Update existing incomplete reviews with empty comments
-    const incompleteReviews = await reviewService.findByIdWithIncludedData(document.id);
+    // Update compliance status to NON_COMPLIANT when review is triggered
     const compliance = await complianceService.getByDocument(document.id);
-    await complianceService.update(compliance?.id!, {
-        status: ClauseComplianceStatus.NON_COMPLIANT
-    });
-    
-    const reviewsToUpdate = Array.isArray(incompleteReviews) 
-        ? incompleteReviews.filter(review => !review.isCompleted && !review.comment)
-        : [];
-
-    if (reviewsToUpdate && reviewsToUpdate.length > 0) {
-        logger.info(
-            `[REVIEW_REMINDER] Found ${reviewsToUpdate.length} incomplete reviews with empty comments for document: ${document.title}`
-        );
-
-        for (const review of reviewsToUpdate) {
-            await reviewService.update(review.id, {
-                isCompleted: false,
-                comment: '',
-            });
-        }
-
-        logger.info(
-            `[REVIEW_REMINDER] Updated ${reviewsToUpdate.length} incomplete reviews for document: ${document.title}`
-        );
+    if (compliance) {
+        await complianceService.update(compliance.id, {
+            status: ClauseComplianceStatus.NON_COMPLIANT
+        });
+        console.log(`[REVIEW_REMINDER] Compliance status updated to NON_COMPLIANT for document: ${document.title}`);
     }
 
-    // Send notifications to all stakeholders
+    // Send notifications to all stakeholders (authors and reviewers)
     await sendReviewNotifications(document);
 }
 
@@ -158,7 +201,7 @@ async function processDocumentReview(document: DocumentToReview): Promise<void> 
 async function sendReviewNotifications(document: DocumentToReview): Promise<void> {
     const recipients = getUniqueRecipients(document);
 
-    logger.info(
+    console.log(
         `[REVIEW_REMINDER] Sending notifications to ${recipients.length} recipients for document: ${document.title}`
     );
 
@@ -170,7 +213,7 @@ async function sendReviewNotifications(document: DocumentToReview): Promise<void
             // Send email notification
             await sendEmailNotification(document, recipient);
 
-            logger.info(
+            console.log(
                 `[REVIEW_REMINDER] Notification sent to ${recipient.name} (${recipient.email})`
             );
         } catch (error) {

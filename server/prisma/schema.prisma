@@ -366,6 +366,7 @@ model DocumentReview {
 
   createdAt DateTime @default(now())
 
+  @@unique([documentId, reviewerId, documentVersionId])
   @@index([documentId])
   @@index([reviewerId])
   @@index([documentVersionId])

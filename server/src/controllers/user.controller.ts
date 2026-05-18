@@ -10,6 +10,7 @@ import { AuditEventType } from '@prisma/client';
 import { getChanges } from '@/utils/change';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import { DocumentApprovalService } from '@/services/documentapproval.service';
+import { gmailVerificationService } from '@/services/gmail-verification.service';
 
 const service = new UserService();
 const emailService = new EmailService();
@@ -29,6 +30,8 @@ export class UserController {
                 });
                 return;
             }
+            console.log("sendInvitationLink", req.body.sendInvitationLink);
+            
 
             const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
@@ -295,6 +298,27 @@ export class UserController {
                 page: Number(page),
                 limit: Number(limit),
             });
+
+
+// const oauth2Client = new google.auth.OAuth2(
+//   '481322363748-j87pe520o2s51658ldu3pk7044d1evb7.apps.googleusercontent.com',
+//   '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',
+//   'http://localhost'
+// );
+
+// const authUrl = oauth2Client.generateAuthUrl({
+//   access_type: 'offline',
+//   prompt: 'consent',
+//   scope: ['https://www.googleapis.com/auth/drive.file'],
+// });
+// async function getRefreshToken() {
+//     const code = '4/0ASc3gC359b-_shbKJOemCtQIFqjbVOWaJrjS5LOXVespH1HYqYlxXLTcvPTawiBNRxmh5g';
+//     const { tokens } = await oauth2Client.getToken(code);
+//     console.log('Refresh Token:', tokens.refresh_token);
+// }
+
+// getRefreshToken()
+
             res.json(data);
         } catch (err) {
             res.status(400).json({ error: (err as Error).message });
@@ -334,6 +358,34 @@ export class UserController {
         } catch (err) {
             console.log(err);
             res.status(400).json({ error: (err as Error).message });
+        }
+    }
+
+    async verifyGmailAccount(req: Request, res: Response) {
+        try {
+            const { email } = req.body;
+
+            if (!email || typeof email !== 'string') {
+                res.status(400).json({
+                    error: 'Email is required',
+                    code: 'ERR_INVALID_EMAIL',
+                });
+                return;
+            }
+
+            // Vérifier si l'email utilise Gmail/Google Workspace
+            const isValid = await gmailVerificationService.verifyGmailAccount(email);
+
+            res.json({
+                valid: isValid,
+                email: email,
+            });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                error: 'Failed to verify Gmail account',
+                code: 'ERR_VERIFICATION_FAILED',
+            });
         }
     }
 }

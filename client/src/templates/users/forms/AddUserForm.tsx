@@ -17,7 +17,8 @@ import { Label } from '@/components/ui/label';
 import { useFetchAllDepartments } from '@/hooks/queries/useDepartmentMutations';
 import { MultiSelect } from '@/components/multi-select';
 import Required from '@/components/Required';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { userService } from '@/services/userService';
 
 const addUserSchema: z.ZodSchema<any> = z.object({
     name: z.string().nonempty(i18n.t("zod.errors.name.required")),
@@ -28,6 +29,7 @@ const addUserSchema: z.ZodSchema<any> = z.object({
     isActive: z.boolean().optional().default(false),
     userId: z.string().optional().default(''),
 });
+// Note: La vérification Gmail est effectuée de manière asynchrone dans le formulaire
 
 export type AddUserFormData = z.infer<typeof addUserSchema>;
 
@@ -43,6 +45,8 @@ const AddUserForm = ({
 }: AddUserFormProps) => {
 
     const { t } = useTranslation();
+    const [isVerifyingGmail, setIsVerifyingGmail] = useState(false);
+    const [gmailVerificationError, setGmailVerificationError] = useState<string>('');
 
     const form = useForm<AddUserFormData>({
         resolver: zodResolver(addUserSchema),
@@ -56,9 +60,60 @@ const AddUserForm = ({
         },
     });
 
-    const { handleSubmit } = form;
+    const { handleSubmit, watch, setError, clearErrors } = form;
+    const emailValue = watch('email');
+    const roleValue = watch('role');
+
+    // Fonction pour vérifier si l'email utilise Gmail/Google Workspace
+    const verifyGmailAccount = async (email: string) => {
+        if (!email) {
+            return;
+        }
+
+        // Vérifier uniquement pour les rôles ADMIN, CONTRIBUTOR et REVIEWER
+        if (roleValue !== 'ADMIN' && roleValue !== 'CONTRIBUTOR' && roleValue !== 'REVIEWER') {
+            return;
+        }
+
+        setIsVerifyingGmail(true);
+        setGmailVerificationError('');
+        clearErrors('email');
+
+        try {
+            const response = await userService.verifyGmailAccount(email);
+            
+            if (!response.data.valid) {
+                const errorMessage = t('zod.errors.email.gmailInvalid', { defaultValue: 'Cette adresse email n\'utilise pas Gmail/Google Workspace. Seuls les comptes Gmail sont autorisés pour ce rôle.' });
+                setGmailVerificationError(errorMessage);
+                setError('email', {
+                    type: 'manual',
+                    message: errorMessage,
+                });
+            } else {
+                setGmailVerificationError('');
+                clearErrors('email');
+            }
+        } catch (err) {
+            console.error('Gmail verification failed:', err);
+            // En cas d'erreur, on ne bloque pas l'utilisateur mais on affiche un avertissement
+            const errorMessage = t('zod.errors.email.gmailVerificationFailed', { defaultValue: 'Impossible de vérifier si l\'email utilise Gmail. Veuillez réessayer.' });
+            setGmailVerificationError(errorMessage);
+        } finally {
+            setIsVerifyingGmail(false);
+        }
+    };
 
     const { data: departmentsRes } = useFetchAllDepartments();
+
+    // Vérifier l'email Gmail lorsque le rôle change
+    useEffect(() => {
+        if (emailValue && (roleValue === 'ADMIN' || roleValue === 'CONTRIBUTOR' || roleValue === 'REVIEWER')) {
+            verifyGmailAccount(emailValue);
+        } else {
+            setGmailVerificationError('');
+            clearErrors('email');
+        }
+    }, [roleValue]);
 
     const departmentRoles = useMemo(() => {
         if (!Array.isArray(departmentsRes?.departments)) return [];
@@ -102,12 +157,29 @@ const AddUserForm = ({
                         <FormItem>
                             <FormLabel>{t('user.forms.add.email.label')}</FormLabel>
                             <FormControl>
-                                <Input
-                                    {...field}
-                                    placeholder={t('user.forms.add.email.placeholder')}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        {...field}
+                                        placeholder={t('user.forms.add.email.placeholder')}
+                                        onBlur={(e) => {
+                                            field.onBlur();
+                                            verifyGmailAccount(e.target.value);
+                                        }}
+                                        disabled={isVerifyingGmail}
+                                    />
+                                    {isVerifyingGmail && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                            <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                                        </div>
+                                    )}
+                                </div>
                             </FormControl>
                             <FormMessage />
+                            {gmailVerificationError && !form.formState.errors.email && (
+                                <p className="text-sm text-yellow-600 dark:text-yellow-500 mt-1">
+                                    {gmailVerificationError}
+                                </p>
+                            )}
                         </FormItem>
                     )}
                 />

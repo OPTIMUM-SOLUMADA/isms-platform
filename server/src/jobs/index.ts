@@ -28,6 +28,6 @@ export function registerCronJobs() {
     // Every day at 1:00 AM
     safeSchedule('0 1 * * *', 'REFRESH_GOOGLE_AUTH', refreshGoogleAuthTokensJob);
 
-    // Every day at 8:00 AM - Check documents due for review tomorrow
-    safeSchedule('45 15 * * *', 'DOCUMENT_REVIEW_REMINDER', documentReviewReminderJob);
+    // Every day at 9:00 AM - Check documents due for review tomorrow
+    safeSchedule('0 9 * * *', 'DOCUMENT_REVIEW_REMINDER', documentReviewReminderJob);
 }

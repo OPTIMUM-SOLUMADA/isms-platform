@@ -19,6 +19,8 @@ import { useFetchISOClauses } from '@/hooks/queries/useISOClauseMutations';
 import useISOClauseStore from '@/stores/iso-clause/useISOClauseStore';
 import { useFetchOwners } from '@/hooks/queries/useOwnerMutations';
 import useDepartmentRoleStore from '@/stores/department/useDepatrmentRoleStore';
+import { RoleType } from '@/types/role';
+import CircleLoading from '@/components/loading/CircleLoading';
 
 export default function DocumentAddPage() {
   const navigate = useNavigate();
@@ -29,13 +31,18 @@ export default function DocumentAddPage() {
   const { departments } = useDepartmentStore();
   const { departmentRoles } = useDepartmentRoleStore();
   const { create, isCreating } = useDocument();
+  
+  // Filter users to exclude VIEWER role
+  const filteredUsers = users.filter(user => (user.role !== RoleType.VIEWER) && user.isActive);
 
   // data need to be fetched
-  useFetchDepartments();
-  useFetchDocumentTypes();
-  useFetchUsers();
-  useFetchISOClauses();
-  useFetchOwners();
+  const { isLoading: isLoadingDepartments } = useFetchDepartments();
+  const { isLoading: isLoadingDocumentTypes } = useFetchDocumentTypes();
+  const { isLoading: isLoadingUsers } = useFetchUsers();
+  const { isLoading: isLoadingClauses } = useFetchISOClauses();
+  const { isLoading: isLoadingOwners } = useFetchOwners();
+
+  const isLoading = isLoadingDepartments || isLoadingDocumentTypes || isLoadingUsers || isLoadingClauses || isLoadingOwners;
 
   const formRef = useRef<AddDocumentFormRef>(null);
 
@@ -46,6 +53,14 @@ export default function DocumentAddPage() {
     form.resetForm();
     if (!form.isStay()) navigate("/documents");
   }, [create, navigate]);
+
+  if (isLoading) {
+    return (
+      <WithTitle title={t("document.add.title")}>
+        <CircleLoading text={t("common.loading")} />
+      </WithTitle>
+    );
+  }
 
   return (
     <WithTitle title={t("document.add.title")}>
@@ -79,7 +94,7 @@ export default function DocumentAddPage() {
               ref={formRef}
               isoClauses={isoClauses}
               types={documentTypes}
-              users={users}
+              users={filteredUsers}
               departments={departments}
               departmentRoles={departmentRoles}
               onSubmit={saveDocument}

@@ -45,13 +45,20 @@ export default function UserMultiSelect({
     const [open, setOpen] = useState<boolean>(false);
     const { openAdd } = useUserUIStore();
 
-    const { setQuery } = useUserStore();
-    const { data: users = data, isLoading } = useSearchUsers();
+    const { setQuery, query } = useUserStore();
+    const { data: searchResults, isLoading } = useSearchUsers();
 
     const { data: selectedUsers = [] } = useFetchUsersByIds(value);
 
     const { t } = useTranslation();
     const { hasActionPermission } = usePermissions();
+
+    // Use search results if query exists, otherwise use filtered data prop
+    // Also filter search results by available users in data prop
+    const availableUserIds = data.map(u => u.id);
+    const users = query 
+        ? (searchResults || []).filter(u => availableUserIds.includes(u.id))
+        : data;
 
     const toggleUser = (userId: string) => {
         if (value.includes(userId)) {

@@ -78,6 +78,8 @@ export class DocumentController {
                 parents: [folder.id],
             });
 
+            const previewUrl = `https://drive.google.com/file/d/${result.id}/preview`;
+
             const fileUrl = req.file ? req.file.filename : null;
 
             const createdDoc = await this.service.createDocument({
@@ -103,11 +105,21 @@ export class DocumentController {
                 folderId: folder.id,
             });
 
+            // Parse and clean user IDs
+            const authorIdsList = authors
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+            const reviewerIdsList = reviewers
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+
             // link document to users (Authors and Reviewers)
             await this.service.linkDocumentToUsers({
                 documentId: createdDoc.id,
-                reviewerIds: reviewers.split(','),
-                authors: authors.split(','),
+                reviewerIds: reviewerIdsList,
+                authors: authorIdsList,
             });
 
             // Get the updated document with authors and reviewers
@@ -148,17 +160,14 @@ export class DocumentController {
                 nextReview: createdDoc.nextReviewDate,
             });
 
-            // Send notifications to assigned users
-            const authorIdsList = authors.split(',').filter((id: string) => id);
-            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
-
+            // Send notifications to assigned users (using already cleaned IDs)
             if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
                 await NotificationService.notifyDocumentCreated({
                     documentId: createdDoc.id,
                     documentTitle: title,
                     authorIds: authorIdsList,
                     reviewerIds: reviewerIdsList,
-                    creatorId: req.user?.id || '',
+                    ...((req.user as any)?.id && { creatorId: (req.user as any).id }),
                 });
             }
 
@@ -237,6 +246,7 @@ export class DocumentController {
                 classification,
                 version: versionInput,
                 documentDate,
+                reviewDueDate,
             } = req.body;
 
             // find document
@@ -320,11 +330,21 @@ export class DocumentController {
                 })),
             );
 
+            // Parse and clean user IDs
+            const updatedAuthorIdsList = authors
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+            const updatedReviewerIdsList = reviewers
+                .split(',')
+                .map((id: string) => id.trim())
+                .filter((id: string) => id);
+
             // relink document to users (Authors and Reviewers)
             await this.service.reLinkDocumentToUsers({
                 documentId: updatedDocument.id,
-                reviewerIds: reviewers.split(','),
-                authors: authors.split(','),
+                reviewerIds: updatedReviewerIdsList,
+                authors: updatedAuthorIdsList,
             });
 
             // Get the updated document with authors and reviewers to grant permissions
@@ -407,8 +427,8 @@ export class DocumentController {
                             documentId: updatedDocument.id,
                             documentVersionId: currentVersion.id,
                             reviewerIds: reviewerIdsArray,
-                            ...(req.user?.id ? { userId: req.user.id } : {}),
-                            dueDate: null,
+                            ...((req.user as any)?.id ? { userId: (req.user as any).id } : {}),
+                            dueDate: reviewDueDate,
                         });
                     }
                 } catch (err) {
@@ -424,16 +444,13 @@ export class DocumentController {
             const reGetUpdatedDocument = await this.service.getDocumentById(updatedDocument.id);
 
             // Send notifications to assigned users about document update
-            const authorIdsList = authors.split(',').filter((id: string) => id);
-            const reviewerIdsList = reviewers.split(',').filter((id: string) => id);
-
-            if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
+            if (updatedAuthorIdsList.length > 0 || updatedReviewerIdsList.length > 0) {
                 await NotificationService.notifyDocumentUpdated({
                     documentId: updatedDocument.id,
                     documentTitle: reGetUpdatedDocument?.title || updatedDocument.title,
-                    authorIds: authorIdsList,
-                    reviewerIds: reviewerIdsList,
-                    updaterId: req.user?.id || '',
+                    authorIds: updatedAuthorIdsList,
+                    reviewerIds: updatedReviewerIdsList,
+                    ...((req.user as any)?.id && { updaterId: (req.user as any).id }),
                 });
             }
 
@@ -608,7 +625,7 @@ export class DocumentController {
                 documentId: document.id,
                 documentTitle: document.title,
                 documentClassification: document.classification,
-                ...(req.user?.id && { creatorId: req.user.id }),
+                ...((req.user as any)?.id && { creatorId: (req.user as any).id }),
             });
 
             res.json(document);
@@ -782,6 +799,54 @@ export class DocumentController {
                 userEmail,
             });
         } catch (err) {
+            return res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
+    /**
+     * Get preview URL for a document version (optimized for iframe embedding)
+     * Supports both document ID and version ID
+     */
+    async getDocumentPreviewUrl(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { versionId, userEmail } = req.query;
+
+            // Try to get document first
+            const document = await this.service.getDocumentById(id!);
+            if (!document) {
+                return res.status(404).json({ error: 'Document not found' });
+            }
+
+            // Get the appropriate version
+            let targetVersion;
+            if (versionId && typeof versionId === 'string') {
+                targetVersion = document.versions.find((v) => v.id === versionId);
+            } else {
+                targetVersion = document.versions.find((v) => v.isCurrent);
+            }
+
+            if (!targetVersion?.googleDriveFileId) {
+                return res.status(404).json({ error: 'Document version not found' });
+            }
+
+            const googleDriveService = useGoogleDriveService(req);
+            
+            // Generate preview URL (with or without user-specific auth)
+            const previewUrl = userEmail && typeof userEmail === 'string'
+                ? googleDriveService.getPreviewLinkForUser(targetVersion.googleDriveFileId, userEmail)
+                : googleDriveService.getPreviewLink(targetVersion.googleDriveFileId);
+
+            const downloadUrl = googleDriveService.getWebContentLink(targetVersion.googleDriveFileId);
+
+            return res.json({
+                previewUrl,
+                downloadUrl,
+                fileId: targetVersion.googleDriveFileId,
+                version: targetVersion.version,
+            });
+        } catch (err) {
+            console.error('Error getting document preview URL:', err);
             return res.status(500).json({ error: (err as Error).message });
         }
     }

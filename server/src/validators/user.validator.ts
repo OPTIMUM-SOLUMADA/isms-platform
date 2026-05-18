@@ -26,3 +26,5 @@ export const userCreateSchema = Joi.object({
     isActive: Joi.boolean().optional().default(true),
     userId: Joi.string().optional().allow(''),
 });
+// Note: La vérification Gmail/Google Workspace est effectuée de manière asynchrone via l'endpoint /verify-gmail
+// Les utilisateurs avec les rôles ADMIN, CONTRIBUTOR et REVIEWER doivent utiliser une adresse email gérée par Gmail/Google Workspace

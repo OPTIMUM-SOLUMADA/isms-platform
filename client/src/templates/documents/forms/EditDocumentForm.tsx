@@ -54,9 +54,17 @@ const documentSchema = cz.z.object({
   type: z.string().nonempty(i18n.t("zod.errors.required")),
   departmentRoles: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
   isoClause: z.string().nonempty(i18n.t("zod.errors.required")),
-  reviewers: z.array(z.string()).nonempty(i18n.t("zod.errors.required")),
+  reviewers: z.array(z.string())
+    .nonempty(i18n.t("zod.errors.required"))
+    .refine((reviewers) => new Set(reviewers).size === reviewers.length, {
+      message: "Duplicate reviewers are not allowed",
+    }),
   classification: z.string().nonempty(i18n.t("zod.errors.required")),
-  authors: z.array(z.string()).min(1, i18n.t("zod.errors.required")),
+  authors: z.array(z.string())
+    .min(1, i18n.t("zod.errors.required"))
+    .refine((authors) => new Set(authors).size === authors.length, {
+      message: "Duplicate authors are not allowed",
+    }),
   files: z
     .array(z.custom<File>())
     .refine((files) => files.every((file) => file.size <= maxFileSize), {
