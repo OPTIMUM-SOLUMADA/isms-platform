@@ -337,7 +337,6 @@ export class DocumentReviewService {
     }
 
     async findPendingReviews(userId?: string): Promise<DocumentReview[]> {
-        console.log("yser", userId);
         
         return prisma.documentReview.findMany({
             where: {
@@ -525,14 +524,10 @@ export class DocumentReviewService {
     ) {
         // Get the review with document info
         const review = await this.findById(reviewId);
-        
-        console.log("review ====", review);
-        
+                
         if (!review) {
             throw new Error('Review not found');
         }
-
-        console.log("datat µ***", data);
         
         // If decision is REQUEST_CHANGES, recalculate dueDate
         if (data.decision === ReviewDecision.REQUEST_CHANGES) {

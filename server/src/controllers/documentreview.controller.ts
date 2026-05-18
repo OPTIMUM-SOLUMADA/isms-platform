@@ -147,8 +147,6 @@ export class DocumentReviewController {
                 decision,
                 comment,
             });
-
-            console.log("type ===========", type);
             
 
             // Audit for decision made

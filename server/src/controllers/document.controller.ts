@@ -52,11 +52,10 @@ export class DocumentController {
                 departmentRoles,
                 version: versionInput,
                 documentDate,
+                reviewDueDate,
             } = req.body;
 
             const file = req.file;
-
-            console.log('[POST /documents] body:', req.body);
 
             if (!file) {
                 throw new Error('File is required');
@@ -160,6 +159,31 @@ export class DocumentController {
                 nextReview: createdDoc.nextReviewDate,
             });
 
+            // Create DocumentReview entries for each reviewer
+            let reviewIdByReviewerId: Record<string, string> = {};
+            const currentVersion = createdDoc.versions?.find((v: any) => v.isCurrent) ?? createdDoc.versions?.[0];
+            if (currentVersion && reviewerIdsList.length > 0) {
+                await this.reviewService.assignReviewersToDocument({
+                    documentId: createdDoc.id,
+                    documentVersionId: currentVersion.id,
+                    reviewerIds: reviewerIdsList,
+                    userId: (req.user as any)?.id,
+                    dueDate: reviewDueDate ? new Date(reviewDueDate) : null,
+                });
+                // Fetch created reviews to map reviewerId → reviewId for notifications
+                const createdReviews = await prisma.documentReview.findMany({
+                    where: {
+                        documentId: createdDoc.id,
+                        documentVersionId: currentVersion.id,
+                        reviewerId: { in: reviewerIdsList },
+                    },
+                    select: { id: true, reviewerId: true },
+                });
+                reviewIdByReviewerId = Object.fromEntries(
+                    createdReviews.map((r) => [r.reviewerId, r.id]),
+                );
+            }
+
             // Send notifications to assigned users (using already cleaned IDs)
             if (authorIdsList.length > 0 || reviewerIdsList.length > 0) {
                 await NotificationService.notifyDocumentCreated({
@@ -168,6 +192,7 @@ export class DocumentController {
                     authorIds: authorIdsList,
                     reviewerIds: reviewerIdsList,
                     ...((req.user as any)?.id && { creatorId: (req.user as any).id }),
+                    reviewIdByReviewerId,
                 });
             }
 
@@ -405,35 +430,22 @@ export class DocumentController {
                 console.log('Failed to reset review decisions', err);
             }
 
-            // Check if document has been viewed by users
-            const hasBeenViewed = await prisma.recentlyViewedDocument.count({
-                where: { documentId: updatedDocument.id },
-            });
+            // Always sync review assignments when document is updated
+            try {
+                const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
+                const reviewerIdsArray = updatedReviewerIdsList;
 
-            // If document was APPROVED and now IN_REVIEW, OR if document has been viewed, create review assignments
-            const shouldCreateReviews =
-                (document.status === 'APPROVED' && updatedDocument.status === 'IN_REVIEW') ||
-                hasBeenViewed > 0;
-
-            if (shouldCreateReviews) {
-                try {
-                    const currentVersion = updatedDocument.versions.find((v) => v.isCurrent);
-                    const reviewerIdsArray = reviewers
-                        ? reviewers.split(',').filter((id: string) => id)
-                        : [];
-
-                    if (reviewerIdsArray.length > 0 && currentVersion) {
-                        await this.reviewService.updateAssignedReviewersToDocument({
-                            documentId: updatedDocument.id,
-                            documentVersionId: currentVersion.id,
-                            reviewerIds: reviewerIdsArray,
-                            ...((req.user as any)?.id ? { userId: (req.user as any).id } : {}),
-                            dueDate: reviewDueDate,
-                        });
-                    }
-                } catch (err) {
-                    console.log('Failed to create document reviews', err);
+                if (reviewerIdsArray.length > 0 && currentVersion) {
+                    await this.reviewService.assignReviewersToDocument({
+                        documentId: updatedDocument.id,
+                        documentVersionId: currentVersion.id,
+                        reviewerIds: reviewerIdsArray,
+                        ...((req.user as any)?.id ? { userId: (req.user as any).id } : {}),
+                        dueDate: reviewDueDate ? new Date(reviewDueDate) : null,
+                    });
                 }
+            } catch (err) {
+                console.log('Failed to sync document reviews', err);
             }
 
             if (file) {

@@ -65,10 +65,18 @@ export function Header({ onMenuClick }: HeaderProps) {
     await logout();
   }
 
-  const handleNotificationClick = async (notificationId: string, documentId?: string | null) => {
-    await notificationService.markAsRead(notificationId);
+  const handleNotificationClick = async (notification: any) => {
+    await notificationService.markAsRead(notification.id);
     await queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    if (documentId) {
+
+    const reviewId = notification.metadata?.reviewId;
+    const documentId = notification.documentId;
+
+    // Notifications de type review → naviguer directement vers la page de review
+    const reviewTypes = ['DOCUMENT_CREATED', 'DOCUMENT_UPDATED', 'REVIEW_NEEDED', 'REVIEW_COMPLETED'];
+    if (reviewId && reviewTypes.includes(notification.type)) {
+      navigate(`/review-approval/${reviewId}`);
+    } else if (documentId) {
       navigate(`/documents/view/${documentId}`);
     }
   };
@@ -170,7 +178,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   <DropdownMenuItem 
                     key={notification.id}
                     className={`flex-col items-start py-3 cursor-pointer transition-all duration-300 ${isDeleting ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}
-                    onClick={() => handleNotificationClick(notification.id, notification.documentId)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     {(() => { const localized = getLocalizedNotification(notification, t); return (
                       <>
