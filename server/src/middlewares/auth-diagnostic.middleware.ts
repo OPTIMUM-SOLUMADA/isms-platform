@@ -36,14 +36,6 @@ export function authDiagnosticMiddleware(req: Request, res: Response, next: Next
             null,
     };
 
-    // Log only on protected routes
-    const isProtectedRoute = req.path.startsWith('/api/');
-    const isAuthRoute = req.path.startsWith('/auth/');
-    
-    if (isProtectedRoute || isAuthRoute) {
-        console.log('[AUTH_DIAGNOSTIC]', JSON.stringify(diagnosticInfo, null, 2));
-    }
-
     // Add diagnostic info to request for later use
     (req as any).authDiagnostic = diagnosticInfo;
     

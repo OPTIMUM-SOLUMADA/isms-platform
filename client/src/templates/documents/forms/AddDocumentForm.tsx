@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { documentStatus, DocumentStatuses } from "@/constants/document";
 import { Textarea } from "@/components/ui/textarea";
 import UserMultiSelect from "@/templates/users/multiselect/UserMultiselect";
-import { forwardRef, useImperativeHandle, useMemo } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -109,21 +109,6 @@ const AddDocumentForm = forwardRef<AddDocumentFormRef, AddDocumentFormProps>(
 
     const [stay, setStay] = useLocalStorage("addDocumentFormStay", false);
     const { owners } = useOwnerStore();
-
-    // Ajouter currentUser à la liste des utilisateurs s'il n'y est pas déjà
-    const usersWithCurrent = useMemo(() => {
-      if (!currentUser) return users;
-      
-      // Vérifier si currentUser existe déjà dans la liste
-      const userExists = users.some(user => user.id === currentUser.id);
-      
-      if (userExists) {
-        return users;
-      }
-      
-      // Ajouter currentUser à la liste
-      return [currentUser as User, ...users];
-    }, [currentUser, users]);
 
     const form = useForm<AddDocumentFormData>({
       resolver: zodResolver(documentSchema),

@@ -10,7 +10,7 @@ import { PUBLIC_PATH, VIEWS_PATH } from '@/configs/public';
 import { UPLOAD_PATH, UPLOAD_URL } from '@/configs/upload';
 
 export default function applyMiddleware(app: Application) {
-    app.set('trust proxy', 1);
+    app.set('trust proxy', 1); // 1 = trust first proxy only (not all proxies)
 
     app.use(express.urlencoded({ extended: true }));
     app.use(bodyParser.json({ limit: '50mb' }));
@@ -47,7 +47,6 @@ export default function applyMiddleware(app: Application) {
 
     // Cookies
     app.use(cookieParser());
-    app.set('trust proxy', true);
 
     // Auth diagnostic (only in development or when debugging)
     if (env.NODE_ENV === 'development' || process.env.DEBUG_AUTH === 'true') {

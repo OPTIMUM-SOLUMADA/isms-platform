@@ -56,6 +56,7 @@ export const envSchema = z.object({
     SMTP_USER_NOREPLY: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_SECURE: z.string().optional().default('false'),
+    RESEND_API_KEY: z.string().optional(),
 
     ORG_NAME: z.string().optional().default('ISMS Solumada'),
     // GOOGLE
@@ -92,6 +93,7 @@ const envServer = envSchema.safeParse({
     SMTP_USER_NOREPLY: process.env.SMTP_USER_NOREPLY,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_SECURE: process.env.SMTP_SECURE,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     ORG_NAME: process.env.ORG_NAME,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

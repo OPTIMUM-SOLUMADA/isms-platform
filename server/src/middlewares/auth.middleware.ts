@@ -8,18 +8,6 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    // Enhanced logging for debugging
-    console.log('[AUTH_MIDDLEWARE] Request:', {
-        path: req.path,
-        method: req.method,
-        hasAuthHeader: !!authHeader,
-        headerFormat: authHeader ? authHeader.substring(0, 20) + '...' : null,
-        tokenPresent: !!token,
-        tokenLength: token?.length || 0,
-        origin: req.headers['origin'],
-        cookies: Object.keys(req.cookies || {}),
-    });
-
     if (!token) {
         console.log('[AUTH_MIDDLEWARE] ERROR: No token provided for', req.path);
         return res.status(401).json({
@@ -42,7 +30,6 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
             });
         }
 
-        console.log('[AUTH_MIDDLEWARE] SUCCESS: Token verified for user', payload.user.email);
         req.user = {
             id: payload.user.id,
             name: payload.user.name ?? null,

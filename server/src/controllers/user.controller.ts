@@ -30,9 +30,6 @@ export class UserController {
                 });
                 return;
             }
-            console.log("sendInvitationLink", req.body.sendInvitationLink);
-            
-
             const { departmentRoleUsers, sendInvitationLink, userId, ...rest } = req.body;
 
             const user = await service.createUser({
@@ -52,21 +49,39 @@ export class UserController {
             // Audit log
             await req.log?.({
                 event: AuditEventType.USER_ADD,
-                targets: [
-                    {
-                        id: userId,
-                        type: 'USER',
-                    },
-                ],
-                details: {
-                    email: user.email,
-                    role: user.role,
-                    name: user.name,
-                },
+                targets: [{ id: userId, type: 'USER' }],
+                details: { email: user.email, role: user.role, name: user.name },
                 status: 'SUCCESS',
             });
 
             res.status(201).json(user);
+
+            // Envoyer l'invitation après la réponse pour ne pas bloquer le client
+            if (sendInvitationLink) {
+                try {
+                    const resetToken = jwtService.generatePasswordChangeToken(user);
+                    await service.updateUser(user.id, { passwordResetToken: resetToken });
+                    const invitationLink = toHashRouterUrl('/reset-password', {
+                        token: resetToken,
+                        invitation: true,
+                    });
+                    console.log('[CREATE_USER] Sending invitation to:', user.email);
+                    await emailService.sendMail({
+                        to: user.email,
+                        subject: 'Welcome to Solumada',
+                        html: await EmailTemplate.welcome({
+                            userName: user.name!,
+                            orgName: env.ORG_NAME,
+                            inviteLink: invitationLink,
+                            year: new Date().getFullYear().toString(),
+                            headerDescription: '',
+                        }),
+                    });
+                    console.log('[CREATE_USER] Invitation sent to:', user.email);
+                } catch (emailErr) {
+                    console.error('[CREATE_USER] Failed to send invitation email:', emailErr);
+                }
+            }
         } catch (err) {
             console.log(err);
             res.status(500).json({
@@ -103,6 +118,7 @@ export class UserController {
                 });
 
                 // SEND EMAIL INVITATION
+                console.log('[INVITATION] Sending email to:', user.email, '| Link:', invitationLink);
                 await emailService.sendMail({
                     to: user.email,
                     subject: 'Welcome to Solumada',
@@ -299,25 +315,6 @@ export class UserController {
                 limit: Number(limit),
             });
 
-
-// const oauth2Client = new google.auth.OAuth2(
-//   '481322363748-j87pe520o2s51658ldu3pk7044d1evb7.apps.googleusercontent.com',
-//   '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',
-//   'http://localhost'
-// );
-
-// const authUrl = oauth2Client.generateAuthUrl({
-//   access_type: 'offline',
-//   prompt: 'consent',
-//   scope: ['https://www.googleapis.com/auth/drive.file'],
-// });
-// async function getRefreshToken() {
-//     const code = '4/0ASc3gC359b-_shbKJOemCtQIFqjbVOWaJrjS5LOXVespH1HYqYlxXLTcvPTawiBNRxmh5g';
-//     const { tokens } = await oauth2Client.getToken(code);
-//     console.log('Refresh Token:', tokens.refresh_token);
-// }
-
-// getRefreshToken()
 
             res.json(data);
         } catch (err) {
